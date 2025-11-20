@@ -368,7 +368,25 @@
             <a href="team-assessment-enhanced-v2.de.html?lang=de" style="color:#a93226;text-decoration:none;font-weight:700;border-left:1px solid #eee;padding-left:10px;margin-left:10px;">DE</a>
         </div>
     </div>
-    <script src="/i18n/i18n.js"></script>
+        <script src="/i18n/i18n.js"></script>
+        <script>
+        // Patch: Add robust i18n loader fallback and error logging
+        (function(){
+            function logI18nError(msg) {
+                if (window && window.console) {
+                    console.error('[TAP-IN i18n]', msg);
+                }
+            }
+            if (!window.__i18n || typeof window.__i18n.t !== 'function') {
+                logI18nError('window.__i18n or __i18n.t is missing. Falling back to English questions.');
+                window.__i18n = {
+                    t: function(k) { return undefined; },
+                    lang: 'en',
+                    localizePage: function(){}
+                };
+            }
+        })();
+        </script>
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -518,21 +536,29 @@
             }
         ];
 
-        function getQuestionsFromI18n(){
-            try{
-                const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
-                if(!t) return fallbackQuestions.slice();
-                const out = [];
-                for(let i=1;i<=20 && i<=fallbackQuestions.length;i++){
-                    const key = `team.q${i}`;
-                    let txt = t(key);
-                    // If translation is missing or blank, use fallback
-                    if(typeof txt !== 'string' || !txt.trim()) txt = fallbackQuestions[i-1].question;
-                    out.push(Object.assign({}, fallbackQuestions[i-1], { question: txt }));
+                function getQuestionsFromI18n(){
+                        try{
+                                const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
+                                if(!t) {
+                                    if(window && window.console) console.error('[TAP-IN i18n] No translation function found, using fallback questions.');
+                                    return fallbackQuestions.slice();
+                                }
+                                const out = [];
+                                for(let i=1;i<=20 && i<=fallbackQuestions.length;i++){
+                                        const key = `team.q${i}`;
+                                        let txt = t(key);
+                                        if(typeof txt !== 'string' || !txt.trim()) {
+                                            if(window && window.console) console.warn(`[TAP-IN i18n] Missing translation for ${key}, using fallback.`);
+                                            txt = fallbackQuestions[i-1].question;
+                                        }
+                                        out.push(Object.assign({}, fallbackQuestions[i-1], { question: txt }));
+                                }
+                                return out;
+                        }catch(e){
+                            if(window && window.console) console.error('[TAP-IN i18n] Error in getQuestionsFromI18n:', e);
+                            return fallbackQuestions.slice();
+                        }
                 }
-                return out;
-            }catch(e){ return fallbackQuestions.slice(); }
-        }
 
         let questions = getQuestionsFromI18n();
         let currentQuestion = 0;
