@@ -373,7 +373,7 @@
         <!-- Header -->
         <div class="header">
             <h1 data-i18n="team_header">🤝 Team Dynamics Assessment</h1>
-            <p class="subtitle">Uncover your team's hidden performance blockers based on Patrick Lencioni's 5 Dysfunctions model. Answer honestly for the most accurate insights.</p>
+            <p class="subtitle" data-i18n="team_subtitle">Uncover your team's hidden performance blockers based on Patrick Lencioni's 5 Dysfunctions model. Answer honestly for the most accurate insights.</p>
             <div class="note">
                 <strong>⏱️ 7 minutes</strong> • 20 questions across 5 key areas: Trust, Conflict, Commitment, Accountability, and Results
             </div>
@@ -395,7 +395,7 @@
 
             <div class="nav-buttons">
                 <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
-                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled data-i18n="next_btn">Next →</button>
             </div>
         </div>
 
@@ -418,7 +418,9 @@
     </div>
 
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        const questions = [
+        // fallbackQuestions holds the English/default question set. We will try to load questions
+        // from the runtime translations (i18n) when available so pages can progressively translate.
+        const fallbackQuestions = [
             // TRUST (4 questions)
             {
                 section: 'Trust',
@@ -516,6 +518,22 @@
             }
         ];
 
+        function getQuestionsFromI18n(){
+            try{
+                const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
+                if(!t) return fallbackQuestions.slice();
+                const out = [];
+                for(let i=1;i<=20 && i<=fallbackQuestions.length;i++){
+                    // Team page has a shorter set; try to read team.q1..team.q6 (or fallback)
+                    const key = `team.q${i}`;
+                    const txt = t(key) || fallbackQuestions[i-1].question;
+                    out.push(Object.assign({}, fallbackQuestions[i-1], { question: txt }));
+                }
+                return out;
+            }catch(e){ return fallbackQuestions.slice(); }
+        }
+
+        let questions = getQuestionsFromI18n();
         let currentQuestion = 0;
         let answers = {};
 
@@ -548,7 +566,7 @@
             for (let i = 1; i <= 5; i++) {
                 const selected = answers[currentQuestion] === i ? 'selected' : '';
                 html += `
-                    <label class="scale-option ${selected}" onclick="selectOption(${i})">
+                    <label class="scale-option ${selected}" onclick="selectOption(event, ${i})">
                         <input type="radio" name="q${currentQuestion}" value="${i}">
                         <div class="scale-value">${i}</div>
                         <div class="scale-label">${labels[i-1]}</div>
@@ -566,25 +584,28 @@
             updateButtons();
         }
 
-        function selectOption(value) {
+        function selectOption(e, value) {
             answers[currentQuestion] = value;
             document.querySelectorAll('.scale-option').forEach(opt => opt.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            try{ e.currentTarget.classList.add('selected'); }catch(err){}
             document.getElementById('nextBtn').disabled = false;
         }
 
         function updateProgress() {
             const progress = ((currentQuestion + 1) / questions.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
+            const qLabel = (t && t('question_label')) || 'Question';
+            document.getElementById('progressText').textContent = `${qLabel} ${currentQuestion + 1} of ${questions.length}`;
         }
 
         function updateButtons() {
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-            
+            const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
+
             prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
-            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'See Results →' : 'Next →';
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? (t && t('see_results') || 'See Results →') : (t && t('next_btn') || 'Next →');
             nextBtn.disabled = !answers.hasOwnProperty(currentQuestion);
         }
 
