@@ -6,784 +6,372 @@
     <meta name="theme-color" content="#2d2d2d">
     <title>Team Dynamics Assessment - TAP-IN</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: white;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .header h1 {
-            color: #a93226;
-            font-size: clamp(1.8em, 5vw, 2.5em);
-            margin-bottom: 15px;
-        }
-
-        .header .subtitle {
-            color: #666;
-            font-size: clamp(1em, 2.5vw, 1.2em);
-            line-height: 1.6;
-            margin-bottom: 15px;
-        }
-
-        .header .note {
-            background: #fff5f4;
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid #a93226;
-            color: #666;
-            font-size: 0.95em;
-        }
-
-        .progress-container {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-
-        .progress-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 12px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            background: linear-gradient(90deg, #a93226 0%, #c9513f 100%);
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            color: #666;
-            font-size: 0.95em;
-        }
-
-        .assessment-card {
-            background: white;
-            border-radius: 20px;
-            padding: 40px 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-
-        .section-header {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            border-left: 5px solid #a93226;
-        }
-
-        .section-title {
-            color: #a93226;
-            font-size: clamp(1.3em, 3vw, 1.6em);
-            margin-bottom: 10px;
-        }
-
-        .section-description {
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .question {
-            margin-bottom: 35px;
-            padding-bottom: 25px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .question:last-child {
-            border-bottom: none;
-        }
-
-        .question-text {
-            color: #333;
-            font-size: clamp(1em, 2.5vw, 1.15em);
-            margin-bottom: 15px;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-
-        .question-number {
-            color: #a93226;
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .scale-options {
-            display: flex;
-            justify-content: space-between;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .scale-option {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: pointer;
-            padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            transition: all 0.2s;
-            min-width: 80px;
-            flex: 1;
-            background: white;
-        }
-
-        .scale-option:hover {
-            border-color: #a93226;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(169, 50, 38, 0.15);
-        }
-
-        .scale-option.selected {
-            border-color: #a93226;
-            background: #fff5f4;
-        }
-
-        .scale-option input[type="radio"] {
-            display: none;
-        }
-
-        .scale-value {
-            font-size: 1.5em;
-            font-weight: bold;
-            color: #a93226;
-            margin-bottom: 5px;
-        }
-
-        .scale-label {
-            font-size: 0.85em;
-            color: #666;
-            text-align: center;
-        }
-
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 15px 35px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
-            color: white;
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: scale(1.05);
-            box-shadow: 0 5px 20px rgba(169, 50, 38, 0.4);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-        }
-
-        .btn-secondary:hover {
-            background: #d0d0d0;
-        }
-
-        .results {
-            display: none;
-        }
-
-        .results.active {
-            display: block;
-        }
-
-        .overall-score {
-            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
-            color: white;
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .overall-score h2 {
-            font-size: clamp(2em, 5vw, 3em);
-            margin-bottom: 15px;
-        }
-
-        .overall-score .score {
-            font-size: clamp(3em, 8vw, 5em);
-            font-weight: bold;
-            margin-bottom: 15px;
-        }
-
-        .score-section {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border-left: 5px solid #a93226;
-        }
-
-        .score-section h3 {
-            color: #a93226;
-            margin-bottom: 15px;
-            font-size: 1.4em;
-        }
-
-        .score-display {
-            font-size: 2em;
-            font-weight: bold;
-            color: #a93226;
-            margin-bottom: 10px;
-        }
-
-        .score-bar {
-            background: #e0e0e0;
-            height: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .score-bar-fill {
-            background: linear-gradient(90deg, #a93226 0%, #c9513f 100%);
-            height: 100%;
-            transition: width 0.5s ease;
-        }
-
-        .score-interpretation {
-            color: #666;
-            line-height: 1.7;
-            margin-bottom: 15px;
-        }
-
-        .recommendation {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-top: 15px;
-        }
-
-        .recommendation h4 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .cta-box {
-            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
-            color: white;
-            border-radius: 15px;
-            padding: 30px;
-            text-align: center;
-            margin-top: 30px;
-        }
-
-        .cta-box h3 {
-            margin-bottom: 15px;
-            font-size: 1.6em;
-        }
-
-        .cta-box p {
-            margin-bottom: 20px;
-            opacity: 0.95;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .header, .assessment-card {
-                padding: 25px 20px;
-            }
-
-            .scale-options {
-                gap: 8px;
-            }
-
-            .scale-option {
-                min-width: 60px;
-                padding: 12px 8px;
-            }
-
-            .nav-buttons {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-
-            .overall-score {
-                padding: 30px 20px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- language switcher (EN / DE) -->
-    <div id="lang-switch" style="position:fixed;top:16px;right:16px;z-index:1200;font-family:inherit;">
-        <div style="background:white;border-radius:999px;padding:8px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);font-size:0.95em;">
-            <a href="team-assessment-enhanced-v2.html?lang=en" style="color:#333;text-decoration:none;font-weight:700;margin-right:10px;">EN</a>
-            <a href="team-assessment-enhanced-v2.de.html?lang=de" style="color:#a93226;text-decoration:none;font-weight:700;border-left:1px solid #eee;padding-left:10px;margin-left:10px;">DE</a>
-        </div>
-    </div>
-        <script src="/i18n/i18n.js"></script>
-        <script>
-        // Patch: Add robust i18n loader fallback and error logging
-        (function(){
-            function logI18nError(msg) {
-                if (window && window.console) {
-                    console.error('[TAP-IN i18n]', msg);
-                }
-            }
-            if (!window.__i18n || typeof window.__i18n.t !== 'function') {
-                logI18nError('window.__i18n or __i18n.t is missing. Falling back to English questions.');
-                window.__i18n = {
-                    t: function(k) { return undefined; },
-                    lang: 'en',
-                    localizePage: function(){}
-                };
-            }
-        })();
-        </script>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1 data-i18n="team_header">🤝 Team Dynamics Assessment</h1>
-            <p class="subtitle" data-i18n="team_subtitle">Uncover your team's hidden performance blockers based on Patrick Lencioni's 5 Dysfunctions model. Answer honestly for the most accurate insights.</p>
-            <div class="note">
-                <strong>⏱️ 7 minutes</strong> • 20 questions across 5 key areas: Trust, Conflict, Commitment, Accountability, and Results
-            </div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="progress-container">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">Question 1 of 20</div>
-        </div>
-
-        <!-- Assessment Form -->
-        <div id="assessmentForm">
-            <div class="assessment-card" id="questionCard">
-                <!-- Questions will be dynamically inserted here -->
-            </div>
-
-            <div class="nav-buttons">
-                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
-                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled data-i18n="next_btn">Next →</button>
-            </div>
-        </div>
-
-        <!-- Results Section -->
-        <div id="results" class="results">
-            <div class="assessment-card">
-                <div id="resultContent"></div>
-                
-                <!-- CTA -->
-                <div class="cta-box">
-                    <h3>Ready to Transform Your Team?</h3>
-                    <p>Book a complimentary 30-minute Team Dynamics Strategy Session to discuss your results and create a 90-day action plan.</p>
-                    <a href="/cdn-cgi/l/email-protection#b9dad6d7cdd8dacdf9cdd8c994d0d794d8dad8dddcd4c097dad6d486caccdbd3dcdacd84eddcd8d499f8cacadccacad4dcd7cd99eacdcbd8cddcdec099eadccacad0d6d7" class="btn" style="background: white; color: #a93226;">📅 Schedule Strategy Session</a>
-                    <div style="margin-top: 20px;">
-                        <a href="index.html" class="btn" style="background: transparent; border: 2px solid white; color: white;">← Back to Assessments</a>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; }
+        /* ...existing code... */
+                    .overall-score { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; }
+                    .overall-score h2 { font-size: clamp(2em, 5vw, 3em); margin-bottom: 15px; }
+                    .overall-score .score { font-size: clamp(3em, 8vw, 5em); font-weight: bold; margin-bottom: 15px; }
+                    .score-section { background: #f8f9fa; border-radius: 15px; padding: 25px; margin-bottom: 25px; border-left: 5px solid #a93226; }
+                    .score-section h3 { color: #a93226; margin-bottom: 15px; font-size: 1.4em; }
+                    .score-display { font-size: 2em; font-weight: bold; color: #a93226; margin-bottom: 10px; }
+                    .score-bar { background: #e0e0e0; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 15px; }
+                    .score-bar-fill { background: linear-gradient(90deg, #a93226 0%, #c9513f 100%); height: 100%; transition: width 0.5s ease; }
+                    .score-interpretation { color: #666; line-height: 1.7; margin-bottom: 15px; }
+                    .recommendation { background: white; padding: 20px; border-radius: 10px; margin-top: 15px; }
+                    .recommendation h4 { color: #333; margin-bottom: 10px; }
+                    .cta-box { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
+                    .cta-box h3 { margin-bottom: 15px; font-size: 1.6em; }
+                    .cta-box p { margin-bottom: 20px; opacity: 0.95; }
+                    .hidden { display: none; }
+                    @media (max-width: 768px) { .header, .assessment-card { padding: 25px 20px; } .scale-options { gap: 8px; } .scale-option { min-width: 60px; padding: 12px 8px; } .nav-buttons { flex-direction: column; } .btn { width: 100%; } .overall-score { padding: 30px 20px; } }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <!-- Header -->
+                    <div class="header">
+                        <h1>🤝 Team Dynamics Assessment</h1>
+                        <p class="subtitle">Uncover your team's hidden performance blockers based on Patrick Lencioni's 5 Dysfunctions model. Answer honestly for the most accurate insights.</p>
+                        <div class="note">
+                            <strong>⏱️ 7 minutes</strong> • 20 questions across 5 key areas: Trust, Conflict, Commitment, Accountability, and Results
+                        </div>
+                    </div>
+                    <!-- Progress Bar -->
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">Question 1 of 20</div>
+                    </div>
+                    <!-- Assessment Form -->
+                    <div id="assessmentForm">
+                        <div class="assessment-card" id="questionCard">
+                            <!-- Questions will be dynamically inserted here -->
+                        </div>
+                        <div class="nav-buttons">
+                            <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Previous</button>
+                            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+                        </div>
+                    </div>
+                    <!-- Results Section -->
+                    <div id="results" class="results">
+                        <div class="assessment-card">
+                            <div id="resultContent"></div>
+                            <!-- CTA -->
+                            <div class="cta-box">
+                                <h3>Ready to Transform Your Team?</h3>
+                                <p>Book a complimentary 30-minute Team Dynamics Strategy Session to discuss your results and create a 90-day action plan.</p>
+                                <a href="mailto:contact@tap-in-academy.com?subject=Team Assessment Strategy Session" class="btn" style="background: white; color: #a93226;">📅 Schedule Strategy Session</a>
+                                <div style="margin-top: 20px;">
+                                    <a href="index.html" class="btn" style="background: transparent; border: 2px solid white; color: white;">← Back to Assessments</a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        // fallbackQuestions holds the English/default question set. We will try to load questions
-        // from the runtime translations (i18n) when available so pages can progressively translate.
-        const fallbackQuestions = [
-            // TRUST (4 questions)
-            {
-                section: 'Trust',
-                sectionDesc: 'The foundation of teamwork is vulnerability-based trust.',
-                question: 'Team members openly admit their mistakes and weaknesses',
-                category: 'trust'
-            },
-            {
-                question: 'People ask for help without hesitation',
-                category: 'trust'
-            },
-            {
-                question: 'Team members give each other benefit of the doubt',
-                category: 'trust'
-            },
-            {
-                question: 'People apologize quickly and genuinely when they mess up',
-                category: 'trust'
-            },
-            // CONFLICT (4 questions)
-            {
-                section: 'Conflict',
-                sectionDesc: 'Healthy teams engage in passionate, unfiltered debate.',
-                question: 'Team meetings include passionate, unfiltered debate',
-                category: 'conflict'
-            },
-            {
-                question: 'People voice disagreements during meetings (not after)',
-                category: 'conflict'
-            },
-            {
-                question: 'Conflicts get resolved quickly and cleanly',
-                category: 'conflict'
-            },
-            {
-                question: 'Team members challenge each other\'s ideas respectfully',
-                category: 'conflict'
-            },
-            // COMMITMENT (4 questions)
-            {
-                section: 'Commitment',
-                sectionDesc: 'Teams that debate effectively achieve genuine buy-in and commitment.',
-                question: 'Decisions are made with clarity and buy-in from everyone',
-                category: 'commitment'
-            },
-            {
-                question: 'Team members leave meetings confident about direction',
-                category: 'commitment'
-            },
-            {
-                question: 'People stick to decisions even when they initially disagreed',
-                category: 'commitment'
-            },
-            {
-                question: 'Deadlines and priorities are crystal clear to everyone',
-                category: 'commitment'
-            },
-            // ACCOUNTABILITY (4 questions)
-            {
-                section: 'Accountability',
-                sectionDesc: 'Committed teams hold each other accountable for high standards.',
-                question: 'Team members call each other out on performance issues',
-                category: 'accountability'
-            },
-            {
-                question: 'People take ownership when things go wrong',
-                category: 'accountability'
-            },
-            {
-                question: 'Standards are upheld even when it\'s uncomfortable',
-                category: 'accountability'
-            },
-            {
-                question: 'Team members pressure peers to deliver on commitments',
-                category: 'accountability'
-            },
-            // RESULTS (4 questions)
-            {
-                section: 'Results',
-                sectionDesc: 'Accountable teams focus on collective results over individual goals.',
-                question: 'Team celebrates collective wins over individual achievements',
-                category: 'results'
-            },
-            {
-                question: 'People sacrifice personal agendas for team goals',
-                category: 'results'
-            },
-            {
-                question: 'Success metrics are clearly defined and tracked',
-                category: 'results'
-            },
-            {
-                question: 'Team members are genuinely concerned about letting teammates down',
-                category: 'results'
-            }
-        ];
-
-                function getQuestionsFromI18n(){
-                        try{
-                                const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
-                                if(!t) {
-                                    if(window && window.console) console.error('[TAP-IN i18n] No translation function found, using fallback questions.');
-                                    return fallbackQuestions.slice();
-                                }
-                                const out = [];
-                                for(let i=1;i<=20 && i<=fallbackQuestions.length;i++){
-                                        const key = `team.q${i}`;
-                                        let txt = t(key);
-                                        if(typeof txt !== 'string' || !txt.trim()) {
-                                            if(window && window.console) console.warn(`[TAP-IN i18n] Missing translation for ${key}, using fallback.`);
-                                            txt = fallbackQuestions[i-1].question;
-                                        }
-                                        out.push(Object.assign({}, fallbackQuestions[i-1], { question: txt }));
-                                }
-                                return out;
-                        }catch(e){
-                            if(window && window.console) console.error('[TAP-IN i18n] Error in getQuestionsFromI18n:', e);
-                            return fallbackQuestions.slice();
+                <script>
+                    const questions = [
+                        // TRUST (4 questions)
+                        {
+                            section: 'Trust',
+                            sectionDesc: 'The foundation of teamwork is vulnerability-based trust.',
+                            question: 'Team members openly admit their mistakes and weaknesses',
+                            category: 'trust'
+                        },
+                        {
+                            question: 'People ask for help without hesitation',
+                            category: 'trust'
+                        },
+                        {
+                            question: 'Team members give each other benefit of the doubt',
+                            category: 'trust'
+                        },
+                        {
+                            question: 'People apologize quickly and genuinely when they mess up',
+                            category: 'trust'
+                        },
+                        // CONFLICT (4 questions)
+                        {
+                            section: 'Conflict',
+                            sectionDesc: 'Healthy teams engage in passionate, unfiltered debate.',
+                            question: 'Team meetings include passionate, unfiltered debate',
+                            category: 'conflict'
+                        },
+                        {
+                            question: 'People voice disagreements during meetings (not after)',
+                            category: 'conflict'
+                        },
+                        {
+                            question: 'Conflicts get resolved quickly and cleanly',
+                            category: 'conflict'
+                        },
+                        {
+                            question: 'Team members challenge each other\'s ideas respectfully',
+                            category: 'conflict'
+                        },
+                        // COMMITMENT (4 questions)
+                        {
+                            section: 'Commitment',
+                            sectionDesc: 'Teams that debate effectively achieve genuine buy-in and commitment.',
+                            question: 'Decisions are made with clarity and buy-in from everyone',
+                            category: 'commitment'
+                        },
+                        {
+                            question: 'Team members leave meetings confident about direction',
+                            category: 'commitment'
+                        },
+                        {
+                            question: 'People stick to decisions even when they initially disagreed',
+                            category: 'commitment'
+                        },
+                        {
+                            question: 'Deadlines and priorities are crystal clear to everyone',
+                            category: 'commitment'
+                        },
+                        // ACCOUNTABILITY (4 questions)
+                        {
+                            section: 'Accountability',
+                            sectionDesc: 'Committed teams hold each other accountable for high standards.',
+                            question: 'Team members call each other out on performance issues',
+                            category: 'accountability'
+                        },
+                        {
+                            question: 'People take ownership when things go wrong',
+                            category: 'accountability'
+                        },
+                        {
+                            question: 'Standards are upheld even when it\'s uncomfortable',
+                            category: 'accountability'
+                        },
+                        {
+                            question: 'Team members pressure peers to deliver on commitments',
+                            category: 'accountability'
+                        },
+                        // RESULTS (4 questions)
+                        {
+                            section: 'Results',
+                            sectionDesc: 'Accountable teams focus on collective results over individual goals.',
+                            question: 'Team celebrates collective wins over individual achievements',
+                            category: 'results'
+                        },
+                        {
+                            question: 'People sacrifice personal agendas for team goals',
+                            category: 'results'
+                        },
+                        {
+                            question: 'Success metrics are clearly defined and tracked',
+                            category: 'results'
+                        },
+                        {
+                            question: 'Team members are genuinely concerned about letting teammates down',
+                            category: 'results'
                         }
-                }
-
-        let questions = getQuestionsFromI18n();
-        let currentQuestion = 0;
-        let answers = {};
-
-        function renderQuestion() {
-            const q = questions[currentQuestion];
-            const card = document.getElementById('questionCard');
-            
-            let html = '';
-            
-            // Show section header for first question of each section
-            if (q.section) {
-                html += `
-                    <div class="section-header">
-                        <div class="section-title">Section ${Math.floor(currentQuestion/4) + 1}: ${q.section}</div>
-                        <div class="section-description">${q.sectionDesc}</div>
-                    </div>
-                `;
-            }
-            
-            html += `
-                <div class="question">
-                    <div class="question-text">
-                        <span class="question-number">${currentQuestion + 1}.</span>
-                        ${q.question}
-                    </div>
-                    <div class="scale-options">
-            `;
-            
-            const labels = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'];
-            for (let i = 1; i <= 5; i++) {
-                const selected = answers[currentQuestion] === i ? 'selected' : '';
-                html += `
-                    <label class="scale-option ${selected}" onclick="selectOption(event, ${i})">
-                        <input type="radio" name="q${currentQuestion}" value="${i}">
-                        <div class="scale-value">${i}</div>
-                        <div class="scale-label">${labels[i-1]}</div>
-                    </label>
-                `;
-            }
-            
-            html += `
-                    </div>
-                </div>
-            `;
-            
-            card.innerHTML = html;
-            updateProgress();
-            updateButtons();
-        }
-
-        function selectOption(e, value) {
-            answers[currentQuestion] = value;
-            document.querySelectorAll('.scale-option').forEach(opt => opt.classList.remove('selected'));
-            try{ e.currentTarget.classList.add('selected'); }catch(err){}
-            document.getElementById('nextBtn').disabled = false;
-        }
-
-        function updateProgress() {
-            const progress = ((currentQuestion + 1) / questions.length) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
-            const qLabel = (t && t('question_label')) || 'Question';
-            document.getElementById('progressText').textContent = `${qLabel} ${currentQuestion + 1} of ${questions.length}`;
-        }
-
-        function updateButtons() {
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const t = window.__i18n && window.__i18n.t ? window.__i18n.t.bind(window.__i18n) : null;
-
-            prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
-            nextBtn.textContent = currentQuestion === questions.length - 1 ? (t && t('see_results') || 'See Results →') : (t && t('next_btn') || 'Next →');
-            nextBtn.disabled = !answers.hasOwnProperty(currentQuestion);
-        }
-
-        function nextQuestion() {
-            if (currentQuestion < questions.length - 1) {
-                currentQuestion++;
-                renderQuestion();
-                window.scrollTo(0, 0);
-            } else {
-                showResults();
-            }
-        }
-
-        function previousQuestion() {
-            if (currentQuestion > 0) {
-                currentQuestion--;
-                renderQuestion();
-                window.scrollTo(0, 0);
-            }
-        }
-
-        function getScoreInterpretation(score, category) {
-            const interpretations = {
-                trust: {
-                    high: { level: 'Strong Foundation', desc: 'Your team has psychological safety and vulnerability-based trust. Members feel safe taking risks and being authentic.', color: '#27ae60' },
-                    medium: { level: 'Building Trust', desc: 'Some trust exists but isn\'t consistent under pressure. Team members are selective about vulnerability.', color: '#f39c12' },
-                    low: { level: 'Trust Gaps', desc: 'Significant issues exist. People play it safe, hide problems, and avoid vulnerability.', color: '#e67e22' },
-                    critical: { level: 'Critical', desc: 'Team is operating in survival mode. Fear and self-protection dominate interactions.', color: '#c0392b' }
-                },
-                conflict: {
-                    high: { level: 'Healthy Debate', desc: 'Your team has a productive conflict culture. Disagreements lead to better decisions and breakthroughs.', color: '#27ae60' },
-                    medium: { level: 'Selective Engagement', desc: 'Some debate happens, but certain topics remain off-limits. Artificial harmony occasionally prevails.', color: '#f39c12' },
-                    low: { level: 'Conflict Avoidance', desc: 'Important issues get swept under the rug. Disagreements happen after meetings, not during.', color: '#e67e22' },
-                    critical: { level: 'Toxic Harmony', desc: 'Team prioritizes peace over progress. Critical issues never surface.', color: '#c0392b' }
-                },
-                commitment: {
-                    high: { level: 'Clear Alignment', desc: 'Everyone knows their role and priorities. Decisions are made with genuine buy-in.', color: '#27ae60' },
-                    medium: { level: 'General Agreement', desc: 'Usually aligned, but occasional confusion about direction and priorities exists.', color: '#f39c12' },
-                    low: { level: 'Mixed Signals', desc: 'People interpret decisions differently. Lack of clarity leads to misalignment.', color: '#e67e22' },
-                    critical: { level: 'Chaos', desc: 'Team constantly changes direction. No one is confident about priorities.', color: '#c0392b' }
-                },
-                accountability: {
-                    high: { level: 'Peer Accountability', desc: 'Team self-regulates performance. Members hold each other to high standards.', color: '#27ae60' },
-                    medium: { level: 'Selective Standards', desc: 'Accountability varies by person and situation. Inconsistent enforcement of standards.', color: '#f39c12' },
-                    low: { level: 'Manager-Dependent', desc: 'Only leaders hold people accountable. Peers avoid difficult conversations.', color: '#e67e22' },
-                    critical: { level: 'No Standards', desc: 'Poor performance goes unaddressed. No one holds anyone accountable.', color: '#c0392b' }
-                },
-                results: {
-                    high: { level: 'Team-First Mindset', desc: 'Collective success drives behavior. Team celebrates together and fails together.', color: '#27ae60' },
-                    medium: { level: 'Usually Aligned', desc: 'Most people prioritize team goals, but individual agendas occasionally compete.', color: '#f39c12' },
-                    low: { level: 'Competing Priorities', desc: 'Individual success often trumps team outcomes. Mixed loyalty to collective goals.', color: '#e67e22' },
-                    critical: { level: 'Silos', desc: 'Everyone focused on personal success. No shared commitment to collective results.', color: '#c0392b' }
-                }
-            };
-            
-            const level = score >= 16 ? 'high' : score >= 11 ? 'medium' : score >= 6 ? 'low' : 'critical';
-            return interpretations[category][level];
-        }
-
-        function getRecommendation(score, category) {
-            const recommendations = {
-                trust: {
-                    high: 'Maintain this foundation through continued vulnerability and authentic communication.',
-                    medium: 'Focus on building consistent vulnerability, especially under pressure.',
-                    low: 'Start with small trust-building exercises and create psychological safety.',
-                    critical: 'Consider TAP-IN\'s White Belt Fundamentals program - intensive trust rebuilding.'
-                },
-                conflict: {
-                    high: 'Continue fostering healthy debate while maintaining respect and focus.',
-                    medium: 'Work on making all topics discussable, not just comfortable ones.',
-                    low: 'Implement structured conflict protocols and practice difficult conversations.',
-                    critical: 'TAP-IN\'s Conflict Sparring Labs can transform your conflict culture in 90 days.'
-                },
-                commitment: {
-                    high: 'Keep decision-making processes clear and maintain consistent follow-through.',
-                    medium: 'Improve decision documentation and alignment verification.',
-                    low: 'Create explicit decision protocols and confirmation processes.',
-                    critical: 'TAP-IN\'s Blue Belt Rhythm Lab establishes clear decision-making cadence.'
-                },
-                accountability: {
-                    high: 'Sustain peer accountability through continued reinforcement of standards.',
-                    medium: 'Build peer-to-peer feedback skills and accountability rituals.',
-                    low: 'Implement team agreements and peer accountability practices.',
-                    critical: 'TAP-IN\'s Purple Belt Sync program builds systematic accountability.'
-                },
-                results: {
-                    high: 'Continue aligning individual and team goals for sustained excellence.',
-                    medium: 'Strengthen connection between personal success and team outcomes.',
-                    low: 'Clarify team metrics and create shared accountability for results.',
-                    critical: 'TAP-IN\'s results-focused coaching realigns team priorities in weeks.'
-                }
-            };
-            
-            const level = score >= 16 ? 'high' : score >= 11 ? 'medium' : score >= 6 ? 'low' : 'critical';
-            return recommendations[category][level];
-        }
-
-        function showResults() {
-            // Calculate scores by category
-            const trustScore = [0,1,2,3].reduce((sum, i) => sum + (answers[i] || 0), 0);
-            const conflictScore = [4,5,6,7].reduce((sum, i) => sum + (answers[i] || 0), 0);
-            const commitmentScore = [8,9,10,11].reduce((sum, i) => sum + (answers[i] || 0), 0);
-            const accountabilityScore = [12,13,14,15].reduce((sum, i) => sum + (answers[i] || 0), 0);
-            const resultsScore = [16,17,18,19].reduce((sum, i) => sum + (answers[i] || 0), 0);
-            const totalScore = trustScore + conflictScore + commitmentScore + accountabilityScore + resultsScore;
-            
-            const categories = [
-                { name: 'Trust', score: trustScore, cat: 'trust', icon: '🤝' },
-                { name: 'Conflict Navigation', score: conflictScore, cat: 'conflict', icon: '💬' },
-                { name: 'Commitment', score: commitmentScore, cat: 'commitment', icon: '🎯' },
-                { name: 'Accountability', score: accountabilityScore, cat: 'accountability', icon: '✅' },
-                { name: 'Results Focus', score: resultsScore, cat: 'results', icon: '🏆' }
-            ];
-            
-            const overallLevel = totalScore >= 80 ? 
-                { emoji: '🌟', text: 'High-Performing Team', desc: 'Strong foundation for excellence with opportunities to sustain and scale.' } :
-                totalScore >= 60 ?
-                { emoji: '✅', text: 'Functional Team', desc: 'Solid basics with clear opportunities for improvement and growth.' } :
-                totalScore >= 40 ?
-                { emoji: '⚠️', text: 'Struggling Team', desc: 'Significant challenges requiring focused intervention and development.' } :
-                { emoji: '🚨', text: 'Critical Attention Needed', desc: 'Fundamental dysfunctions require immediate and comprehensive transformation.' };
-            
-            document.getElementById('assessmentForm').classList.add('hidden');
-            document.getElementById('results').classList.add('active');
-            
-            let html = `
-                <div class="overall-score">
-                    <h2>${overallLevel.emoji} ${overallLevel.text}</h2>
-                    <div class="score">${totalScore}/100</div>
-                    <p>${overallLevel.desc}</p>
-                </div>
-            `;
-            
-            categories.forEach(cat => {
-                const interp = getScoreInterpretation(cat.score, cat.cat);
-                const recommendation = getRecommendation(cat.score, cat.cat);
-                const percentage = (cat.score / 20) * 100;
-                
-                html += `
-                    <div class="score-section">
-                        <h3>${cat.icon} ${cat.name}: ${cat.score}/20</h3>
-                        <div class="score-bar">
-                            <div class="score-bar-fill" style="width: ${percentage}%; background: ${interp.color};"></div>
-                        </div>
-                        <div class="score-display" style="color: ${interp.color};">${interp.level}</div>
-                        <p class="score-interpretation">${interp.desc}</p>
-                        <div class="recommendation">
-                            <h4>💡 Recommendation:</h4>
-                            <p>${recommendation}</p>
-                        </div>
-                    </div>
-                `;
-            });
-          
+                    ];
+                    let currentQuestion = 0;
+                    let answers = {};
+                    function renderQuestion() {
+                        const q = questions[currentQuestion];
+                        const card = document.getElementById('questionCard');
+                        let html = '';
+                        if (q.section) {
+                            html += `
+                                <div class="section-header">
+                                    <div class="section-title">Section ${Math.floor(currentQuestion/4) + 1}: ${q.section}</div>
+                                    <div class="section-description">${q.sectionDesc}</div>
+                                </div>
+                            `;
+                        }
+                        html += `
+                            <div class="question">
+                                <div class="question-text">
+                                    <span class="question-number">${currentQuestion + 1}.</span>
+                                    ${q.question}
+                                </div>
+                                <div class="scale-options">
+                        `;
+                        const labels = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'];
+                        for (let i = 1; i <= 5; i++) {
+                            const selected = answers[currentQuestion] === i ? 'selected' : '';
+                            html += `
+                                <label class="scale-option ${selected}" onclick="selectOption(${i})">
+                                    <input type="radio" name="q${currentQuestion}" value="${i}">
+                                    <div class="scale-value">${i}</div>
+                                    <div class="scale-label">${labels[i-1]}</div>
+                                </label>
+                            `;
+                        }
+                        html += `
+                                </div>
+                            </div>
+                        `;
+                        card.innerHTML = html;
+                        updateProgress();
+                        updateButtons();
+                    }
+                    function selectOption(value) {
+                        answers[currentQuestion] = value;
+                        document.querySelectorAll('.scale-option').forEach(opt => opt.classList.remove('selected'));
+                        event.currentTarget.classList.add('selected');
+                        document.getElementById('nextBtn').disabled = false;
+                    }
+                    function updateProgress() {
+                        const progress = ((currentQuestion + 1) / questions.length) * 100;
+                        document.getElementById('progressFill').style.width = progress + '%';
+                        document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+                    }
+                    function updateButtons() {
+                        const prevBtn = document.getElementById('prevBtn');
+                        const nextBtn = document.getElementById('nextBtn');
+                        prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
+                        nextBtn.textContent = currentQuestion === questions.length - 1 ? 'See Results →' : 'Next →';
+                        nextBtn.disabled = !answers.hasOwnProperty(currentQuestion);
+                    }
+                    function nextQuestion() {
+                        if (currentQuestion < questions.length - 1) {
+                            currentQuestion++;
+                            renderQuestion();
+                            window.scrollTo(0, 0);
+                        } else {
+                            showResults();
+                        }
+                    }
+                    function previousQuestion() {
+                        if (currentQuestion > 0) {
+                            currentQuestion--;
+                            renderQuestion();
+                            window.scrollTo(0, 0);
+                        }
+                    }
+                    function getScoreInterpretation(score, category) {
+                        const interpretations = {
+                            trust: {
+                                high: { level: 'Strong Foundation', desc: 'Your team has psychological safety and vulnerability-based trust. Members feel safe taking risks and being authentic.', color: '#27ae60' },
+                                medium: { level: 'Building Trust', desc: 'Some trust exists but isn\'t consistent under pressure. Team members are selective about vulnerability.', color: '#f39c12' },
+                                low: { level: 'Trust Gaps', desc: 'Significant issues exist. People play it safe, hide problems, and avoid vulnerability.', color: '#e67e22' },
+                                critical: { level: 'Critical', desc: 'Team is operating in survival mode. Fear and self-protection dominate interactions.', color: '#c0392b' }
+                            },
+                            conflict: {
+                                high: { level: 'Healthy Debate', desc: 'Your team has a productive conflict culture. Disagreements lead to better decisions and breakthroughs.', color: '#27ae60' },
+                                medium: { level: 'Selective Engagement', desc: 'Some debate happens, but certain topics remain off-limits. Artificial harmony occasionally prevails.', color: '#f39c12' },
+                                low: { level: 'Conflict Avoidance', desc: 'Important issues get swept under the rug. Disagreements happen after meetings, not during.', color: '#e67e22' },
+                                critical: { level: 'Toxic Harmony', desc: 'Team prioritizes peace over progress. Critical issues never surface.', color: '#c0392b' }
+                            },
+                            commitment: {
+                                high: { level: 'Clear Alignment', desc: 'Everyone knows their role and priorities. Decisions are made with genuine buy-in.', color: '#27ae60' },
+                                medium: { level: 'General Agreement', desc: 'Usually aligned, but occasional confusion about direction and priorities exists.', color: '#f39c12' },
+                                low: { level: 'Mixed Signals', desc: 'People interpret decisions differently. Lack of clarity leads to misalignment.', color: '#e67e22' },
+                                critical: { level: 'Chaos', desc: 'Team constantly changes direction. No one is confident about priorities.', color: '#c0392b' }
+                            },
+                            accountability: {
+                                high: { level: 'Peer Accountability', desc: 'Team self-regulates performance. Members hold each other to high standards.', color: '#27ae60' },
+                                medium: { level: 'Selective Standards', desc: 'Accountability varies by person and situation. Inconsistent enforcement of standards.', color: '#f39c12' },
+                                low: { level: 'Manager-Dependent', desc: 'Only leaders hold people accountable. Peers avoid difficult conversations.', color: '#e67e22' },
+                                critical: { level: 'No Standards', desc: 'Poor performance goes unaddressed. No one holds anyone accountable.', color: '#c0392b' }
+                            },
+                            results: {
+                                high: { level: 'Team-First Mindset', desc: 'Collective success drives behavior. Team celebrates together and fails together.', color: '#27ae60' },
+                                medium: { level: 'Usually Aligned', desc: 'Most people prioritize team goals, but individual agendas occasionally compete.', color: '#f39c12' },
+                                low: { level: 'Competing Priorities', desc: 'Individual success often trumps team outcomes. Mixed loyalty to collective goals.', color: '#e67e22' },
+                                critical: { level: 'Silos', desc: 'Everyone focused on personal success. No shared commitment to collective results.', color: '#c0392b' }
+                            }
+                        };
+                        const level = score >= 16 ? 'high' : score >= 11 ? 'medium' : score >= 6 ? 'low' : 'critical';
+                        return interpretations[category][level];
+                    }
+                    function getRecommendation(score, category) {
+                        const recommendations = {
+                            trust: {
+                                high: 'Maintain this foundation through continued vulnerability and authentic communication.',
+                                medium: 'Focus on building consistent vulnerability, especially under pressure.',
+                                low: 'Start with small trust-building exercises and create psychological safety.',
+                                critical: 'Consider TAP-IN\'s White Belt Fundamentals program - intensive trust rebuilding.'
+                            },
+                            conflict: {
+                                high: 'Continue fostering healthy debate while maintaining respect and focus.',
+                                medium: 'Work on making all topics discussable, not just comfortable ones.',
+                                low: 'Implement structured conflict protocols and practice difficult conversations.',
+                                critical: 'TAP-IN\'s Conflict Sparring Labs can transform your conflict culture in 90 days.'
+                            },
+                            commitment: {
+                                high: 'Keep decision-making processes clear and maintain consistent follow-through.',
+                                medium: 'Improve decision documentation and alignment verification.',
+                                low: 'Create explicit decision protocols and confirmation processes.',
+                                critical: 'TAP-IN\'s Blue Belt Rhythm Lab establishes clear decision-making cadence.'
+                            },
+                            accountability: {
+                                high: 'Sustain peer accountability through continued reinforcement of standards.',
+                                medium: 'Build peer-to-peer feedback skills and accountability rituals.',
+                                low: 'Implement team agreements and peer accountability practices.',
+                                critical: 'TAP-IN\'s Purple Belt Sync program builds systematic accountability.'
+                            },
+                            results: {
+                                high: 'Continue aligning individual and team goals for sustained excellence.',
+                                medium: 'Strengthen connection between personal success and team outcomes.',
+                                low: 'Clarify team metrics and create shared accountability for results.',
+                                critical: 'TAP-IN\'s results-focused coaching realigns team priorities in weeks.'
+                            }
+                        };
+                        const level = score >= 16 ? 'high' : score >= 11 ? 'medium' : score >= 6 ? 'low' : 'critical';
+                        return recommendations[category][level];
+                    }
+                    function showResults() {
+                        // Calculate scores by category
+                        const trustScore = [0,1,2,3].reduce((sum, i) => sum + (answers[i] || 0), 0);
+                        const conflictScore = [4,5,6,7].reduce((sum, i) => sum + (answers[i] || 0), 0);
+                        const commitmentScore = [8,9,10,11].reduce((sum, i) => sum + (answers[i] || 0), 0);
+                        const accountabilityScore = [12,13,14,15].reduce((sum, i) => sum + (answers[i] || 0), 0);
+                        const resultsScore = [16,17,18,19].reduce((sum, i) => sum + (answers[i] || 0), 0);
+                        const totalScore = trustScore + conflictScore + commitmentScore + accountabilityScore + resultsScore;
+                        const categories = [
+                            { name: 'Trust', score: trustScore, cat: 'trust', icon: '🤝' },
+                            { name: 'Conflict Navigation', score: conflictScore, cat: 'conflict', icon: '💬' },
+                            { name: 'Commitment', score: commitmentScore, cat: 'commitment', icon: '🎯' },
+                            { name: 'Accountability', score: accountabilityScore, cat: 'accountability', icon: '✅' },
+                            { name: 'Results Focus', score: resultsScore, cat: 'results', icon: '🏆' }
+                        ];
+                        const overallLevel = totalScore >= 80 ? 
+                            { emoji: '🌟', text: 'High-Performing Team', desc: 'Strong foundation for excellence with opportunities to sustain and scale.' } :
+                            totalScore >= 60 ?
+                            { emoji: '✅', text: 'Functional Team', desc: 'Solid basics with clear opportunities for improvement and growth.' } :
+                            totalScore >= 40 ?
+                            { emoji: '⚠️', text: 'Struggling Team', desc: 'Significant challenges requiring focused intervention and development.' } :
+                            { emoji: '🚨', text: 'Critical Attention Needed', desc: 'Fundamental dysfunctions require immediate and comprehensive transformation.' };
+                        document.getElementById('assessmentForm').classList.add('hidden');
+                        document.getElementById('results').classList.add('active');
+                        let html = `
+                            <div class="overall-score">
+                                <h2>${overallLevel.emoji} ${overallLevel.text}</h2>
+                                <div class="score">${totalScore}/100</div>
+                                <p>${overallLevel.desc}</p>
+                            </div>
+                        `;
+                        categories.forEach(cat => {
+                            const interp = getScoreInterpretation(cat.score, cat.cat);
+                            const recommendation = getRecommendation(cat.score, cat.cat);
+                            const percentage = (cat.score / 20) * 100;
+                            html += `
+                                <div class="score-section">
+                                    <h3>${cat.icon} ${cat.name}: ${cat.score}/20</h3>
+                                    <div class="score-bar">
+                                        <div class="score-bar-fill" style="width: ${percentage}%; background: ${interp.color};"></div>
+                                    </div>
+                                    <div class="score-display" style="color: ${interp.color};">${interp.level}</div>
+                                    <p class="score-interpretation">${interp.desc}</p>
+                                    <div class="recommendation">
+                                        <h4>💡 Recommendation:</h4>
+                                        <p>${recommendation}</p>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        document.getElementById('resultContent').innerHTML = html;
+                        window.scrollTo(0, 0);
+                    }
+                    // Initialize
+                    renderQuestion();
+                </script>
+            </body>
+            </html>
+            <div class="nav-buttons">
