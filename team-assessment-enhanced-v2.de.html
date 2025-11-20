@@ -68,6 +68,17 @@
         </div>
     </div>
     <script src="/i18n/i18n.js"></script>
+        <script>
+        // Wait for i18n to be ready before rendering questions
+        function onI18nReady(cb, timeoutMs = 2000) {
+            const start = Date.now();
+            (function check() {
+                if (window.__i18n && typeof window.__i18n.t === 'function') return cb();
+                if (Date.now() - start > timeoutMs) return cb();
+                setTimeout(check, 30);
+            })();
+        }
+        </script>
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -224,10 +235,15 @@
                 return out;
             }catch(e){ return fallbackQuestions.slice(); }
         }
-        let questions = getQuestionsFromI18n();
+        let questions = [];
         let currentQuestion = 0;
         let answers = {};
+        onI18nReady(function() {
+            questions = getQuestionsFromI18n();
+            renderQuestion();
+        });
         function renderQuestion() {
+            if (!questions.length) return;
             const q = questions[currentQuestion];
             const card = document.getElementById('questionCard');
             let html = '';
