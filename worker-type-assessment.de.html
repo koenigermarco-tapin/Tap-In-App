@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#2d2d2d">
+    <title>Arbeitstyp-Assessment - TAP-IN</title>
+    <style>
+        /* Keep same styles as English file */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { background: white; border-radius: 20px; padding: 30px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .header h1 { color: #a93226; font-size: clamp(1.8em, 5vw, 2.5em); margin-bottom: 15px; }
+        .header .subtitle { color: #666; font-size: clamp(1em, 2.5vw, 1.2em); line-height: 1.6; }
+        .progress-container { background: white; border-radius: 15px; padding: 20px; margin-bottom: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); }
+        .progress-bar { background: #e0e0e0; border-radius: 10px; height: 12px; overflow: hidden; margin-bottom: 10px; }
+        .progress-fill { background: linear-gradient(90deg, #a93226 0%, #c9513f 100%); height: 100%; width: 0%; transition: width 0.3s ease; }
+        .progress-text { text-align: center; color: #666; font-size: 0.95em; }
+        .assessment-card { background: white; border-radius: 20px; padding: 40px 30px; margin-bottom: 30px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .question { margin-bottom: 35px; }
+        .question-text { color: #333; font-size: clamp(1.1em, 2.5vw, 1.3em); margin-bottom: 20px; font-weight: 500; line-height: 1.5; }
+        .question-number { color: #a93226; font-weight: bold; margin-right: 8px; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { display: flex; align-items: center; cursor: pointer; padding: 20px; border: 2px solid #e0e0e0; border-radius: 12px; transition: all 0.2s; background: white; }
+        .option:hover { border-color: #a93226; transform: translateX(5px); box-shadow: 0 4px 12px rgba(169, 50, 38, 0.15); }
+        .option.selected { border-color: #a93226; background: #fff5f4; }
+        .option input[type="radio"] { display: none; }
+        .option-label { font-size: 1.05em; color: #333; font-weight: 500; }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 15px 35px; border: none; border-radius: 10px; font-size: 1.1em; font-weight: bold; cursor: pointer; transition: all 0.2s; text-decoration: none; display: inline-block; text-align: center; }
+        .btn-primary { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; }
+        .btn-primary:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 5px 20px rgba(169, 50, 38, 0.4); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        .results { display: none; }
+        .results.active { display: block; }
+        .result-card { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 20px; padding: 50px 40px; text-align: center; margin-bottom: 30px; }
+        .result-card h2 { font-size: clamp(2.5em, 6vw, 4em); margin-bottom: 20px; }
+        .result-card .subtitle { font-size: clamp(1.2em, 3vw, 1.6em); opacity: 0.95; margin-bottom: 30px; }
+        .details-card { background: white; border-radius: 15px; padding: 30px; margin-bottom: 20px; }
+        .details-card h3 { color: #a93226; margin-bottom: 15px; font-size: 1.4em; }
+        .details-card p, .details-card ul { color: #666; line-height: 1.8; font-size: 1.05em; }
+        .details-card ul { list-style-position: inside; padding-left: 0; }
+        .details-card li { margin-bottom: 10px; }
+        .cta-box { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
+        .cta-box h3 { margin-bottom: 15px; font-size: 1.6em; }
+        .cta-box p { margin-bottom: 20px; opacity: 0.95; }
+        .hidden { display: none; }
+        @media (max-width: 768px) { .header, .assessment-card { padding: 25px 20px; } .nav-buttons { flex-direction: column; } .btn { width: 100%; } .result-card { padding: 30px 20px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏃 Arbeitstyp-Assessment</h1>
+            <p class="subtitle">Entdecke, ob du ein Sprinter, Jogger oder Ultraläufer bist. Verstehe deinen natürlichen Arbeitsrhythmus und optimiere deine Leistung in nur 5 Minuten.</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Frage 1 von 12</div>
+        </div>
+
+        <!-- Assessment Form -->
+        <div id="assessmentForm">
+            <div class="assessment-card" id="questionCard">
+                <!-- Questions will be dynamically inserted here -->
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">← Zurück</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Weiter →</button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="results">
+            <div class="assessment-card">
+                <div id="resultContent"></div>
+                
+                <!-- CTA -->
+                <div class="cta-box">
+                    <h3>Willst du dein Team optimieren?</h3>
+                    <p>Finde heraus, wie du ausgewogene Teams mit der richtigen Mischung aus Sprintern, Joggern und Ultraläufern aufbaust.</p>
+                    <a href="/cdn-cgi/l/email-protection#40232f2e34212334003421306d292e6d21232124252d396e232f2d7f3335222a2523347d172f322b253260143930256013343221342527396013253333292f2e" class="btn" style="background: white; color: #a93226;">📅 Strategie-Session buchen</a>
+                    <div style="margin-top: 20px;">
+                        <a href="index.html" class="btn" style="background: transparent; border: 2px solid white; color: white;">← Zurück zu Assessments</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        const questions = [
+            {
+                question: 'Ich arbeite am liebsten an Projekten, die:',
+                options: [
+                    { value: 'sprint', label: 'Schnelle Erfolge und sofortige Ergebnisse' },
+                    { value: 'jog', label: 'Stetiger Fortschritt über Wochen/Monate' },
+                    { value: 'ultra', label: 'Langfristige Wirkung über Jahre' }
+                ]
+            },
+            {
+                question: 'Mein idealer Arbeitsplan sieht so aus:',
+                options: [
+                    { value: 'sprint', label: 'Intensive Phasen mit Pausen' },
+                    { value: 'jog', label: 'Konstante tägliche Routine' },
+                    { value: 'ultra', label: 'Marathon-Sessions bei Inspiration' }
+                ]
+            },
+            {
+                question: 'Wenn ich vor einer Herausforderung stehe,',
+                options: [
+                    { value: 'sprint', label: 'kämpfe ich hart, bis sie schnell gelöst ist' },
+                    { value: 'jog', label: 'arbeite ich methodisch Tag für Tag' },
+                    { value: 'ultra', label: 'nehme ich sie als Teil der Reise an' }
+                ]
+            },
+            {
+                question: 'Ich fühle mich am energiereichsten, wenn:',
+                options: [
+                    { value: 'sprint', label: 'ich gegen enge Deadlines ankämpfe' },
+                    { value: 'jog', label: 'ich stetigen, messbaren Fortschritt mache' },
+                    { value: 'ultra', label: 'ich auf eine sinnvolle Vision hinarbeite' }
+                ]
+            },
+            {
+                question: 'Meine Herangehensweise beim Lernen neuer Fähigkeiten:',
+                options: [
+                    { value: 'sprint', label: 'Crash-Kurse und schnelle Einarbeitung' },
+                    { value: 'jog', label: 'Regelmäßiges Üben und Verbesserung' },
+                    { value: 'ultra', label: 'Tiefes Studium und Meisterschaft über Zeit' }
+                ]
+            },
+            {
+                question: 'Ich werde frustriert, wenn:',
+                options: [
+                    { value: 'sprint', label: 'Dinge zu langsam vorankommen' },
+                    { value: 'jog', label: 'Routinen unterbrochen werden' },
+                    { value: 'ultra', label: 'Der Fokus auf kurzfristige Erfolge gelegt wird' }
+                ]
+            },
+            {
+                question: 'Meine Produktivität lässt sich am besten beschreiben als:',
+                options: [
+                    { value: 'sprint', label: 'Hohe Intensität, kürzere Dauer' },
+                    { value: 'jog', label: 'Konstant und zuverlässig' },
+                    { value: 'ultra', label: 'Steigend über längere Zeiträume' }
+                ]
+            },
+            {
+                question: 'Bei der Zielsetzung bevorzuge ich:',
+                options: [
+                    { value: 'sprint', label: 'Dringend, in Tagen/Wochen erreichbar' },
+                    { value: 'jog', label: 'Monatliche oder vierteljährliche Meilensteine' },
+                    { value: 'ultra', label: 'Mehrjährige, transformative Ziele' }
+                ]
+            },
+            {
+                question: 'Mein Umgang mit Stress:',
+                options: [
+                    { value: 'sprint', label: 'Treibstoff für kurzfristige Leistung' },
+                    { value: 'jog', label: 'Etwas, das ich konstant manage' },
+                    { value: 'ultra', label: 'Teil bedeutungsvoller Arbeit, die ich aushalte' }
+                ]
+            },
+            {
+                question: 'Ich kommuniziere am besten durch:',
+                options: [
+                    { value: 'sprint', label: 'Kurze Updates und Aktionspunkte' },
+                    { value: 'jog', label: 'Regelmäßige Check-ins und Berichte' },
+                    { value: 'ultra', label: 'Tiefgehende Diskussionen und Strategie' }
+                ]
+            },
+            {
+                question: 'Meine ideale Projektdauer:',
+                options: [
+                    { value: 'sprint', label: '1-4 Wochen' },
+                    { value: 'jog', label: '2-6 Monate' },
+                    { value: 'ultra', label: '1+ Jahre' }
+                ]
+            },
+            {
+                question: 'Ich blühe in Umgebungen auf, die Wert legen auf:',
+                options: [
+                    { value: 'sprint', label: 'Geschwindigkeit und entschlossenes Handeln' },
+                    { value: 'jog', label: 'Zuverlässigkeit und Beständigkeit' },
+                    { value: 'ultra', label: 'Vision und Zweck' }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let answers = {};
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const card = document.getElementById('questionCard');
+            
+            let html = `
+                <div class="question">
+                    <div class="question-text">
+                        <span class="question-number">${currentQuestion + 1}.</span>
+                        ${q.question}
+                    </div>
+                    <div class="options">
+            `;
+            
+            q.options.forEach((opt) => {
+                const selected = answers[currentQuestion] === opt.value ? 'selected' : '';
+                // pass the label element (this) to the handler so it can mark it selected reliably
+                html += `
+                    <label class="option ${selected}" onclick="selectOption(this, '${opt.value}')">
+                        <input type="radio" name="q${currentQuestion}" value="${opt.value}">
+                        <div class="option-label">${opt.label}</div>
+                    </label>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            card.innerHTML = html;
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectOption(el, value) {
+            // el is the clicked label element
+            answers[currentQuestion] = value;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            if (el && el.classList) el.classList.add('selected');
+            // also set the underlying radio input to checked for accessibility
+            const input = el.querySelector('input[type="radio"]');
+            if (input) input.checked = true;
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Frage ${currentQuestion + 1} von ${questions.length}`;
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'Ergebnisse anzeigen →' : 'Weiter →';
+            nextBtn.disabled = !answers.hasOwnProperty(currentQuestion);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                window.scrollTo(0, 0);
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function showResults() {
+            const answerValues = Object.values(answers);
+            const sprintCount = answerValues.filter(a => a === 'sprint').length;
+            const jogCount = answerValues.filter(a => a === 'jog').length;
+            const ultraCount = answerValues.filter(a => a === 'ultra').length;
+            
+            let type, icon, description, strengths, challenges, teamFit, recommendations;
+            
+            if (sprintCount >= jogCount && sprintCount >= ultraCount) {
+                type = 'Sprinter';
+                icon = '🏃‍♂️';
+                description = 'Du lebst von Dringlichkeit und schnellen Erfolgen. Du bringst explosive Energie und schnelle Umsetzung in kurzfristige Herausforderungen.';
+                strengths = [
+                    'Hohe Intensität und explosive Energie',
+                    'Schnelle Entscheidungsfindung unter Druck',
+                    'Krisenmanagement und schnelle Reaktion',
+                    'Schnelles Prototyping und Experimentieren',
+                    'Kurze Durchlaufzeiten'
+                ];
+                challenges = [
+                    'Kann mit Routine- oder Wartungsarbeiten kämpfen',
+                    'Kann ausbrennen, wenn das Tempo zu lange anhält',
+                    'Verliert möglicherweise das Interesse an langfristigen Projekten',
+                    'Risiko, vor Abschluss weiterzuziehen',
+                    'Braucht klare Endpunkte und Deadlines'
+                ];
+                teamFit = 'Sprinter sind ideal für Startups, Krisensituationen und zeitkritische Projekte.';
+                recommendations = 'Plane Erholungszeiten zwischen Sprints ein. Konzentriere dich auf Projekte mit klaren Deadlines.';
+            } else if (ultraCount >= jogCount) {
+                type = 'Ultraläufer';
+                icon = '🏔️';
+                description = 'Du glänzt durch langfristige Vision und Ausdauer. Du bringst strategisches Denken und Durchhaltevermögen in transformative Projekte.';
+                strengths = [
+                    'Strategisches Denken und langfristige Planung',
+                    'Außergewöhnliche Belastbarkeit und Durchhaltevermögen',
+                    'Großes Bild und Systemdenken',
+                    'Orientierung an bedeutender Wirkung',
+                    'Fähigkeit, Motivation über Jahre aufrechtzuerhalten'
+                ];
+                challenges = [
+                    'Kann von kurzfristigen Pivot-Entscheidungen frustriert sein',
+                    'Kann in dringenden Angelegenheiten langsam wirken',
+                    'Kann zu viel in aufgegebene Projekte investieren',
+                    'Risiko, Team zu verlieren, wenn Vision nicht geteilt wird',
+                    'Braucht klare langfristige Ziele'
+                ];
+                teamFit = 'Ultraläufer gedeihen in Transformationsprojekten, F&E und strategischen Rollen.';
+                recommendations = 'Stelle sicher, dass Projekte mit langfristiger Vision übereinstimmen. Baue Meilensteine zur Motivation ein.';
+            } else {
+                type = 'Jogger';
+                icon = '🏃';
+                description = 'Du glänzt durch Beständigkeit und Zuverlässigkeit. Du bringst stetige Leistung und methodischen Fortschritt ins Team.';
+                strengths = [
+                    'Beständigkeit und Zuverlässigkeit',
+                    'Prozess-Exzellenz und Detailorientierung',
+                    'Nachhaltiges Tempo ohne Burnout',
+                    'Starker Rhythmus und Routine',
+                    'Vorhersehbar hochwertige Ergebnisse'
+                ];
+                challenges = [
+                    'Kann mit plötzlichen Veränderungen kämpfen',
+                    'Kann durch Dringlichkeitsspitzen gestört werden',
+                    'Kann sich gegen schnelle Pivot-Entscheidungen wehren',
+                    'Risiko, zu routinenorientiert zu werden',
+                    'Braucht eine stabile, vorhersehbare Umgebung'
+                ];
+                teamFit = 'Jogger sind essenziell für Betrieb, laufende Projekte und prozessgetriebene Arbeit.';
+                recommendations = 'Baue starke Routinen und Prozesse auf. Bereite dich im Voraus auf Störungen vor.';
+            }
+            
+            document.getElementById('assessmentForm').classList.add('hidden');
+            document.getElementById('results').classList.add('active');
+            
+            document.getElementById('resultContent').innerHTML = `
+                <div class="result-card">
+                    <h2>${icon} Du bist ein(e) ${type}!</h2>
+                    <p class="subtitle">${description}</p>
+                </div>
+                
+                <div class="details-card">
+                    <h3>💪 Deine Stärken</h3>
+                    <ul>
+                        ${strengths.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="details-card">
+                    <h3>⚠️ Achte darauf</h3>
+                    <ul>
+                        ${challenges.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="details-card">
+                    <h3>👥 Team-Fit</h3>
+                    <p>${teamFit}</p>
+                </div>
+                
+                <div class="details-card">
+                    <h3>🎯 Empfehlungen</h3>
+                    <p>${recommendations}</p>
+                </div>
+
+                <div class="cta-box">
+                    <h3>Willst du dein Team optimieren?</h3>
+                    <p>Finde heraus, wie du ausgewogene Teams mit der richtigen Mischung aus Sprintern, Joggern und Ultraläufern aufbaust.</p>
+                    <a href="index.html" class="btn btn-secondary">← Zurück zu Assessments</a>
+                </div>
+            `;
+
+            // scroll to top and focus results for accessibility
+            window.scrollTo(0, 0);
+            document.querySelector('.result-card').focus?.();
+        }
+
+        // initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderQuestion();
+        });
+    </script>
+</body>
+</html>

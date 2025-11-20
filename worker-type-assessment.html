@@ -444,8 +444,9 @@
             
             q.options.forEach((opt) => {
                 const selected = answers[currentQuestion] === opt.value ? 'selected' : '';
+                // pass the label element (this) to the handler so it can mark it selected reliably
                 html += `
-                    <label class="option ${selected}" onclick="selectOption('${opt.value}')">
+                    <label class="option ${selected}" onclick="selectOption(this, '${opt.value}')">
                         <input type="radio" name="q${currentQuestion}" value="${opt.value}">
                         <div class="option-label">${opt.label}</div>
                     </label>
@@ -462,10 +463,14 @@
             updateButtons();
         }
 
-        function selectOption(value) {
+        function selectOption(el, value) {
+            // el is the clicked label element
             answers[currentQuestion] = value;
             document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
-            event.currentTarget.classList.add('selected');
+            if (el && el.classList) el.classList.add('selected');
+            // also set the underlying radio input to checked for accessibility
+            const input = el.querySelector('input[type="radio"]');
+            if (input) input.checked = true;
             document.getElementById('nextBtn').disabled = false;
         }
 
@@ -602,4 +607,25 @@
                 
                 <div class="details-card">
                     <h3>🎯 Recommendations</h3>
-                    <p>${re
+                    <p>${recommendations}</p>
+                </div>
+
+                <div class="cta-box">
+                    <h3>Want to Optimize Your Team?</h3>
+                    <p>Discover how to build balanced teams with the right mix of Sprinters, Joggers, and Ultrarunners.</p>
+                    <a href="index.html" class="btn btn-secondary">← Back to Assessments</a>
+                </div>
+            `;
+
+            // scroll to top and focus results for accessibility
+            window.scrollTo(0, 0);
+            document.querySelector('.result-card').focus?.();
+        }
+
+        // initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            renderQuestion();
+        });
+    </script>
+</body>
+</html>

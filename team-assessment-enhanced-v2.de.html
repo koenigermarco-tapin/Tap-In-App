@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>Team Assessment (verbessert) - TAP‑IN</title>
+    <style>
+        /* Keep the original styling to preserve look & feel */
+        body{font-family: 'Segoe UI', Roboto, Arial, sans-serif; background: #f6f7f9; color:#333; padding:20px}
+        .card{max-width:980px;margin:0 auto;background:#fff;border-radius:16px;padding:30px;box-shadow:0 12px 40px rgba(0,0,0,0.08)}
+        h1{color:#a93226;margin-bottom:8px}
+        p.lead{color:#666;margin-bottom:20px}
+        .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+        .question{padding:16px;background:#fafafa;border-radius:10px;border:1px solid #eee}
+        .options{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+        label.option{display:flex;align-items:center;gap:12px;cursor:pointer;padding:10px;border-radius:8px}
+        input[type="radio"]{width:18px;height:18px}
+        .actions{text-align:center;margin-top:20px}
+        button.primary{background:#a93226;color:#fff;border:none;padding:12px 20px;border-radius:10px;font-weight:700;cursor:pointer}
+        .results{margin-top:24px;padding:18px;background:#fff6f5;border-radius:12px;border:1px solid #ffd8d2}
+        @media(max-width:780px){.grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Team Assessment — Verbesserte Version</h1>
+        <p class="lead">Ein strukturiertes Assessment, um Stärken, Rollen und Zusammenarbeit in deinem Team sichtbar zu machen. Dauer: ca. 12 Minuten.</p>
+
+        <div id="questions" class="grid"></div>
+
+        <div class="actions">
+            <button id="submitBtn" class="primary">Ergebnisse anzeigen</button>
+        </div>
+
+        <div id="results" class="results" style="display:none"></div>
+
+        <div style="text-align:right; margin-top:12px;"><a href="/team-assessment-enhanced-v2.html" style="color:#a93226; font-weight:bold;">English</a></div>
+    </div>
+
+    <script>
+        // compact translation of the original team assessment's logic
+        const questions = [
+            { id: 1, text: 'Mein Team arbeitet klar auf gemeinsame Ziele hin.' },
+            { id: 2, text: 'Kommunikation innerhalb des Teams ist offen und klar.' },
+            { id: 3, text: 'Rollen und Verantwortlichkeiten sind gut definiert.' },
+            { id: 4, text: 'Entscheidungen werden effizient getroffen.' },
+            { id: 5, text: 'Wir nutzen die jeweiligen Stärken der Teammitglieder.' },
+            { id: 6, text: 'Das Team reagiert gut auf Veränderungen.' }
+        ];
+
+        const container = document.getElementById('questions');
+        const resultsEl = document.getElementById('results');
+        const submitBtn = document.getElementById('submitBtn');
+
+        function render(){
+            container.innerHTML = '';
+            questions.forEach(q=>{
+                const div = document.createElement('div');
+                div.className = 'question';
+                div.innerHTML = `<div><strong>Frage ${q.id}</strong></div><div style="margin-top:8px">${q.text}</div><div class="options">`+
+                    ['Stimme überhaupt nicht zu','Stimme teilweise zu','Stimme zu','Stimme voll und ganz zu'].map((opt,i)=>
+                        `<label class="option"><input type="radio" name="q${q.id}" value="${i+1}">${opt}</label>`
+                    ).join('')+
+                    `</div>`;
+                container.appendChild(div);
+            });
+        }
+
+        function collect(){
+            const answers = {};
+            let all = true;
+            questions.forEach(q=>{
+                const val = document.querySelector(`input[name="q${q.id}"]:checked`);
+                if(val) answers[q.id] = Number(val.value);
+                else all = false;
+            });
+            return {answers, all};
+        }
+
+        function score(answers){
+            // simple average scoring for demo purposes
+            const vals = Object.values(answers);
+            if(vals.length===0) return {avg:0};
+            const avg = vals.reduce((s,n)=>s+n,0)/vals.length;
+            return {avg};
+        }
+
+        submitBtn.addEventListener('click', ()=>{
+            const {answers, all} = collect();
+            if(!all){ alert('Bitte beantworte alle Fragen.'); return; }
+            const s = score(answers);
+            resultsEl.style.display = 'block';
+            resultsEl.innerHTML = `<h3>Ergebnis</h3><p>Durchschnittliche Zustimmung: ${s.avg.toFixed(2)} / 4</p><p>Interpretation: `+
+                (s.avg>=3.5? 'Stark gut' : s.avg>=2.5? 'Solide' : s.avg>=1.5? 'Verbesserungswürdig' : 'Stark verbesserungswürdig')+`</p>`;
+            window.scrollTo({top: resultsEl.offsetTop-20, behavior:'smooth'});
+        });
+
+        render();
+    </script>
+</body>
+</html>
