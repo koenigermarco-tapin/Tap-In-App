@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="theme-color" content="#2d2d2d">
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="2.0.0">
     <title>Komplettes Führungsprofil - TAP-IN Assessment</title>
     <style>
         * {
@@ -1567,12 +1572,89 @@
         const totalQuestions = 46;
         let answeredQuestions = new Set();
 
+        // Load saved progress on page load
+        function loadSavedProgress() {
+            const saved = localStorage.getItem('tap-in-combined-progress');
+            if (saved) {
+                try {
+                    const progress = JSON.parse(saved);
+                    // Restore answers
+                    Object.entries(progress.answers || {}).forEach(([name, value]) => {
+                        const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                            answeredQuestions.add(name);
+                        }
+                    });
+                    updateProgress();
+                    
+                    // Show restore notification
+                    if (answeredQuestions.size > 0) {
+                        showNotification(`Fortschritt wiederhergestellt: ${answeredQuestions.size} von ${totalQuestions} Fragen beantwortet`);
+                    }
+                } catch (e) {
+                    console.error('Error loading progress:', e);
+                }
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const answers = {};
+            document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+                answers[radio.name] = radio.value;
+            });
+            
+            const progress = {
+                answers,
+                timestamp: new Date().toISOString(),
+                answeredCount: answeredQuestions.size
+            };
+            
+            localStorage.setItem('tap-in-combined-progress', JSON.stringify(progress));
+        }
+
+        // Clear saved progress
+        function clearProgress() {
+            localStorage.removeItem('tap-in-combined-progress');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
         // Update progress bar
         function updateProgress() {
             const answered = answeredQuestions.size;
             const percentage = (answered / totalQuestions) * 100;
             document.getElementById('progressText').textContent = `${answered}/${totalQuestions}`;
             document.getElementById('progressBar').style.width = `${percentage}%`;
+            
+            // Save progress automatically
+            if (answered > 0) {
+                saveProgress();
+            }
         }
 
         // Track all radio buttons
@@ -1603,6 +1685,9 @@
                 return;
             }
 
+            // Clear saved progress since assessment is complete
+            clearProgress();
+
             // Calculate Worker Type scores
             const workerScores = { sprinter: 0, jogger: 0, ultrarunner: 0 };
             for (let i = 1; i <= 12; i++) {
@@ -1627,9 +1712,46 @@
             for (let i = 13; i <= 16; i++) teamScores.accountability += parseInt(document.querySelector(`input[name="t${i}"]:checked`).value);
             for (let i = 17; i <= 20; i++) teamScores.results += parseInt(document.querySelector(`input[name="t${i}"]:checked`).value);
 
+            // Submit anonymous results
+            submitAnonymousResults(workerType, leadershipStyle, teamScores);
+            
             // Show results
             showResults(workerType, leadershipStyle, teamScores);
         });
+
+        // Submit anonymous results for statistics
+        async function submitAnonymousResults(workerType, leadershipStyle, teamScores) {
+            const data = {
+                workerType,
+                leadershipStyle,
+                teamScores,
+                timestamp: new Date().toISOString(),
+                language: 'de'
+            };
+
+            try {
+                // Try to submit to Netlify Function
+                await fetch('/.netlify/functions/submit-results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } catch (error) {
+                // Fallback: Store in localStorage for local stats
+                const localStats = JSON.parse(localStorage.getItem('tap-in-stats') || '{"workerType":{},"leadershipStyle":{},"teamScores":{"trust":[],"conflict":[],"commitment":[],"accountability":[],"results":[]},"totalSubmissions":0}');
+                
+                localStats.workerType[workerType] = (localStats.workerType[workerType] || 0) + 1;
+                localStats.leadershipStyle[leadershipStyle] = (localStats.leadershipStyle[leadershipStyle] || 0) + 1;
+                Object.keys(teamScores).forEach(key => {
+                    if (!localStats.teamScores[key]) localStats.teamScores[key] = [];
+                    localStats.teamScores[key].push(teamScores[key]);
+                });
+                localStats.totalSubmissions++;
+                localStats.lastUpdated = new Date().toISOString();
+                
+                localStorage.setItem('tap-in-stats', JSON.stringify(localStats));
+            }
+        }
 
         function showResults(workerType, leadershipStyle, teamScores) {
             document.getElementById('assessmentForm').style.display = 'none';
@@ -1753,12 +1875,46 @@
                         <a href="index.de.html" class="cta-btn secondary">
                             Zurück zur Startseite
                         </a>
+                        <a href="statistics.de.html" class="cta-btn secondary">
+                            📊 Statistiken ansehen
+                        </a>
                     </div>
                 </div>
             `;
 
             resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSavedProgress();
+        });
+
+        // Add CSS animation for notifications
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from {
+                    transform: translate(-50%, -100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translate(-50%, 0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideUp {
+                from {
+                    transform: translate(-50%, 0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translate(-50%, -100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

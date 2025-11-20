@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Assessment Statistics - TAP-IN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); 
+            min-height: 100vh; 
+            padding: 40px 20px; 
+            color: #333; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 40px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        .header h1 { color: #a93226; font-size: 2.5em; margin-bottom: 15px; }
+        .header p { color: #666; font-size: 1.2em; line-height: 1.6; }
+        
+        .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+            gap: 20px; 
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card h3 {
+            color: #a93226;
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            margin-bottom: 15px;
+        }
+        
+        .stat-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.95em;
+            color: #666;
+        }
+        
+        .stat-bar {
+            background: #e0e0e0;
+            height: 25px;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .stat-bar-fill {
+            background: linear-gradient(90deg, #a93226 0%, #c9513f 100%);
+            height: 100%;
+            transition: width 1s ease;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 0.85em;
+        }
+        
+        .big-stat {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+            color: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .big-stat .number {
+            font-size: 4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .big-stat .label {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: white;
+            font-size: 1.2em;
+        }
+        
+        .error {
+            background: #fff5f4;
+            border: 2px solid #a93226;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            color: #a93226;
+        }
+        
+        .last-updated {
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            background: white;
+            color: #a93226;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        
+        .back-link:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .big-stat .number { font-size: 3em; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div style="position:fixed;top:16px;right:16px;z-index:1200;">
+        <div style="background:white;border-radius:999px;padding:8px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);font-size:0.95em;">
+            <a href="statistics.html" style="color:#a93226;text-decoration:none;font-weight:700;margin-right:10px;">EN</a>
+            <a href="statistics.de.html" style="color:#333;text-decoration:none;font-weight:700;border-left:1px solid #eee;padding-left:10px;margin-left:10px;">DE</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📊 Assessment Statistics</h1>
+            <p>Anonymous aggregate data from completed assessments</p>
+        </div>
+
+        <div id="loading" class="loading">
+            <div>⏳ Loading statistics...</div>
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            <h3>Unable to load statistics</h3>
+            <p>Statistics tracking is not yet active. Complete an assessment to start collecting data!</p>
+        </div>
+
+        <div id="stats" style="display: none;">
+            <div class="big-stat">
+                <div class="number" id="totalSubmissions">0</div>
+                <div class="label">Total Assessments Completed</div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>🏃 Worker Types</h3>
+                    <div id="workerTypeStats"></div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🎯 Leadership Styles</h3>
+                    <div id="leadershipStyleStats"></div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>🤝 Average Team Health</h3>
+                    <div id="teamScoresStats"></div>
+                </div>
+            </div>
+
+            <div class="last-updated" id="lastUpdated"></div>
+            
+            <div style="text-align: center;">
+                <a href="index.html" class="back-link">← Back to Assessments</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadStatistics() {
+            try {
+                // Try to fetch from Netlify Function
+                const response = await fetch('/.netlify/functions/submit-results');
+                
+                if (!response.ok) {
+                    throw new Error('Statistics not available');
+                }
+
+                const data = await response.json();
+                displayStatistics(data);
+            } catch (error) {
+                // Fallback to localStorage if backend not available
+                const localStats = localStorage.getItem('tap-in-stats');
+                if (localStats) {
+                    displayStatistics(JSON.parse(localStats));
+                } else {
+                    showError();
+                }
+            }
+        }
+
+        function displayStatistics(data) {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('stats').style.display = 'block';
+
+            // Total submissions
+            document.getElementById('totalSubmissions').textContent = data.totalSubmissions || 0;
+
+            // Worker Types
+            const workerTypes = data.workerType || {};
+            const totalWorker = Object.values(workerTypes).reduce((a, b) => a + b, 0) || 1;
+            
+            const workerLabels = {
+                sprinter: '🏃 Sprinter - High intensity bursts',
+                jogger: '🏃‍♂️ Jogger - Steady consistent pace',
+                ultrarunner: '🏃‍♀️ Ultrarunner - Long-term endurance'
+            };
+
+            let workerHTML = '';
+            Object.entries(workerTypes).forEach(([type, count]) => {
+                const percentage = Math.round((count / totalWorker) * 100);
+                workerHTML += `
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>${workerLabels[type]}</span>
+                            <span>${count} (${percentage}%)</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: ${percentage}%">
+                                ${percentage}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('workerTypeStats').innerHTML = workerHTML;
+
+            // Leadership Styles
+            const leadershipStyles = data.leadershipStyle || {};
+            const totalLeadership = Object.values(leadershipStyles).reduce((a, b) => a + b, 0) || 1;
+            
+            const leadershipLabels = {
+                visionary: '🎯 Visionary Leader',
+                architect: '🏗️ Architect Strategist',
+                facilitator: '🤝 Facilitator Coach',
+                executor: '⚡ Executor Driver'
+            };
+
+            let leadershipHTML = '';
+            Object.entries(leadershipStyles).forEach(([type, count]) => {
+                const percentage = Math.round((count / totalLeadership) * 100);
+                leadershipHTML += `
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>${leadershipLabels[type]}</span>
+                            <span>${count} (${percentage}%)</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: ${percentage}%">
+                                ${percentage}%
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('leadershipStyleStats').innerHTML = leadershipHTML;
+
+            // Team Scores
+            const teamScores = data.teamScores || {};
+            const scoreLabels = {
+                trust: '🤝 Trust',
+                conflict: '💬 Healthy Conflict',
+                commitment: '🎯 Commitment',
+                accountability: '✅ Accountability',
+                results: '🏆 Results Focus'
+            };
+
+            let teamHTML = '';
+            Object.entries(scoreLabels).forEach(([key, label]) => {
+                const score = teamScores[key] || 0;
+                const percentage = Math.round((score / 20) * 100);
+                teamHTML += `
+                    <div class="stat-item">
+                        <div class="stat-label">
+                            <span>${label}</span>
+                            <span>${score}/20</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-bar-fill" style="width: ${percentage}%">
+                                ${score}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('teamScoresStats').innerHTML = teamHTML;
+
+            // Last updated
+            if (data.lastUpdated) {
+                const date = new Date(data.lastUpdated);
+                document.getElementById('lastUpdated').textContent = 
+                    `Last updated: ${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+            }
+        }
+
+        function showError() {
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('error').style.display = 'block';
+        }
+
+        // Load on page load
+        loadStatistics();
+    </script>
+</body>
+</html>
