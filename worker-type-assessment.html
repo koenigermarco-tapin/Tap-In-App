@@ -335,7 +335,8 @@
 
     <script src="/i18n/i18n.js"></script>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-        const questions = [
+        // fallback English questions (used if translations missing)
+        const fallbackQuestions = [
             {
                 question: 'I prefer working on projects that have:',
                 options: [
@@ -434,6 +435,30 @@
             }
         ];
 
+        // build translated questions from runtime i18n if available
+        function getQuestionsFromI18n() {
+            const i18n = window.__i18n;
+            if (!i18n || !i18n.t) return fallbackQuestions;
+
+            const out = [];
+            for (let i = 0; i < fallbackQuestions.length; i++) {
+                const base = `worker.q${i}`;
+                const qText = i18n.t(`${base}.question`) || fallbackQuestions[i].question;
+                const opts = [];
+                for (let j = 0; j < 3; j++) {
+                    const optKey = `${base}.opt${j}`;
+                    const label = i18n.t(optKey) || fallbackQuestions[i].options[j].label;
+                    const value = fallbackQuestions[i].options[j].value;
+                    opts.push({ value, label });
+                }
+                out.push({ question: qText, options: opts });
+            }
+
+            return out;
+        }
+
+        const questions = getQuestionsFromI18n();
+
         let currentQuestion = 0;
         let answers = {};
 
@@ -485,15 +510,23 @@
         function updateProgress() {
             const progress = ((currentQuestion + 1) / questions.length) * 100;
             document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            // use i18n for the progress label and the word "Question" when available
+            const i18n = window.__i18n;
+            const questionLabel = (i18n && i18n.t) ? i18n.t('question_label') || 'Question' : 'Question';
+            document.getElementById('progressText').textContent = `${questionLabel} ${currentQuestion + 1} of ${questions.length}`;
         }
 
         function updateButtons() {
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
-            
+            const i18n = window.__i18n;
+            const prevText = (i18n && i18n.t) ? i18n.t('prev_btn') || '← Previous' : '← Previous';
+            const nextText = (i18n && i18n.t) ? i18n.t('next_btn') || 'Next →' : 'Next →';
+            const seeResultsText = (i18n && i18n.t) ? (i18n.t('see_results') || 'See Results →') : 'See Results →';
+
             prevBtn.style.display = currentQuestion > 0 ? 'block' : 'none';
-            nextBtn.textContent = currentQuestion === questions.length - 1 ? 'See Results →' : 'Next →';
+            prevBtn.textContent = prevText;
+            nextBtn.textContent = currentQuestion === questions.length - 1 ? seeResultsText : nextText;
             nextBtn.disabled = !answers.hasOwnProperty(currentQuestion);
         }
 
@@ -619,11 +652,22 @@
                 </div>
 
                 <div class="cta-box">
-                    <h3>Want to Optimize Your Team?</h3>
-                    <p>Discover how to build balanced teams with the right mix of Sprinters, Joggers, and Ultrarunners.</p>
-                    <a href="index.html" class="btn btn-secondary">← Back to Assessments</a>
+                    <h3 id="ctaHeading">Want to Optimize Your Team?</h3>
+                    <p id="ctaParagraph">Discover how to build balanced teams with the right mix of Sprinters, Joggers, and Ultrarunners.</p>
+                    <a id="ctaBackBtn" href="index.html" class="btn btn-secondary">← Back to Assessments</a>
                 </div>
             `;
+
+            // apply runtime i18n to small CTA strings (keep large result templates unchanged)
+            const i18n = window.__i18n;
+            if (i18n && i18n.t) {
+                const want = i18n.t('want_optimize_team') || document.getElementById('ctaHeading').textContent;
+                const para = i18n.t('cta_paragraph') || document.getElementById('ctaParagraph').textContent;
+                const back = i18n.t('back_to_assessments') || document.getElementById('ctaBackBtn').textContent;
+                document.getElementById('ctaHeading').textContent = want;
+                document.getElementById('ctaParagraph').textContent = para;
+                document.getElementById('ctaBackBtn').textContent = back;
+            }
 
             // scroll to top and focus results for accessibility
             window.scrollTo(0, 0);
