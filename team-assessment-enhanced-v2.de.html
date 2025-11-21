@@ -60,7 +60,36 @@
         .cta-box h3 { margin-bottom: 15px; font-size: 1.6em; }
         .cta-box p { margin-bottom: 20px; opacity: 0.95; }
         .hidden { display: none; }
-        @media (max-width: 768px) { .header, .assessment-card { padding: 25px 20px; } .scale-options { gap: 8px; } .scale-option { min-width: 60px; padding: 12px 8px; } .nav-buttons { flex-direction: column; } .btn { width: 100%; } .overall-score { padding: 30px 20px; } }
+        
+        /* Stats Banner */
+        .stats-banner { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; 
+            padding: 15px 20px; 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 30px; 
+            margin-bottom: 30px; 
+            flex-wrap: wrap;
+            font-size: 0.9em;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        .stats-banner .stat-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+        }
+        .stats-banner .stat-number { 
+            font-size: 1.4em; 
+            font-weight: bold; 
+        }
+        .stats-banner .stat-label { 
+            opacity: 0.9; 
+        }
+        
+        @media (max-width: 768px) { .header, .assessment-card { padding: 25px 20px; } .scale-options { gap: 8px; } .scale-option { min-width: 60px; padding: 12px 8px; } .nav-buttons { flex-direction: column; } .btn { width: 100%; } .overall-score { padding: 30px 20px; } .stats-banner { gap: 15px; font-size: 0.85em; } }
     </style>
 </head>
 <body>
@@ -84,6 +113,31 @@
         }
         </script>
     <div class="container">
+        <!-- Stats Banner -->
+        <div class="stats-banner">
+            <div class="stat-item">
+                <span>🌟</span>
+                <div>
+                    <div class="stat-number" id="totalUsers">1.247+</div>
+                    <div class="stat-label">Führungskräfte</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span>📊</span>
+                <div>
+                    <div class="stat-number" id="totalAssessments">2.340</div>
+                    <div class="stat-label">Assessments</div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <span>🌍</span>
+                <div>
+                    <div class="stat-number" id="countries">47</div>
+                    <div class="stat-label">Länder</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Header -->
         <div class="header">
             <h1 data-i18n="team_header">🤝 Team-Dynamik-Assessment</h1>
@@ -485,6 +539,21 @@
             });
             document.getElementById('resultContent').innerHTML = html;
         }
+        
+        // Load stats from stats.json
+        async function loadStats() {
+            try {
+                const response = await fetch('/stats.json');
+                const stats = await response.json();
+                document.getElementById('totalUsers').textContent = stats.totalUsers.toLocaleString('de-DE') + '+';
+                document.getElementById('totalAssessments').textContent = stats.totalAssessments.toLocaleString('de-DE');
+                document.getElementById('countries').textContent = stats.countries;
+            } catch (error) {
+                console.log('Stats not available yet');
+            }
+        }
+        
+        loadStats();
         renderQuestion();
     </script>
 </body>
