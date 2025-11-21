@@ -96,18 +96,87 @@
             margin-bottom: 8px;
         }
 
+        .progress-milestones {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 0.75em;
+            color: #999;
+        }
+
+        .milestone {
+            text-align: center;
+            flex: 1;
+            position: relative;
+        }
+
+        .milestone.reached {
+            color: #a93226;
+            font-weight: bold;
+        }
+
+        .milestone.reached::before {
+            content: '✓';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2em;
+            color: #4caf50;
+        }
+
         .progress-fill {
-            height: 8px;
+            height: 12px;
             background: #e0e0e0;
             border-radius: 10px;
             overflow: hidden;
+            position: relative;
         }
 
         .progress-fill-bar {
             height: 100%;
             background: linear-gradient(90deg, #a93226, #d64436);
             width: 0%;
-            transition: width 0.3s ease;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(169, 50, 38, 0.5);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .progress-fill-bar.milestone-reached {
+            animation: pulse 0.6s ease-in-out;
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            z-index: 10000;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .achievement-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .achievement-popup .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-popup h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
         }
 
         .question-section {
@@ -434,6 +503,19 @@
                 <div class="progress-fill">
                     <div class="progress-fill-bar" id="progressBar"></div>
                 </div>
+                <div class="progress-milestones">
+                    <div class="milestone" id="milestone1"><span>🏃</span><br>Arbeit</div>
+                    <div class="milestone" id="milestone2"><span>🎯</span><br>Führung</div>
+                    <div class="milestone" id="milestone3"><span>🤝</span><br>Team</div>
+                    <div class="milestone" id="milestone4"><span>🏆</span><br>Fertig!</div>
+                </div>
+            </div>
+
+            <!-- Achievement Popup -->
+            <div class="achievement-popup" id="achievementPopup">
+                <div class="icon">🎉</div>
+                <h3 id="achievementTitle">Abschnitt abgeschlossen!</h3>
+                <p id="achievementText">Toller Fortschritt!</p>
             </div>
 
             <form id="completeProfileForm">
@@ -1644,17 +1726,52 @@
             }, 3000);
         }
 
-        // Update progress bar
+        // Update progress bar with gamification
         function updateProgress() {
             const answered = answeredQuestions.size;
             const percentage = (answered / totalQuestions) * 100;
             document.getElementById('progressText').textContent = `${answered}/${totalQuestions}`;
-            document.getElementById('progressBar').style.width = `${percentage}%`;
+            
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = `${percentage}%`;
+            
+            // Milestone celebrations (German)
+            const milestones = [
+                { count: 12, id: 'milestone1', title: '🏃 Arbeitsstil abgeschlossen!', text: 'Toller Start! Weiter zur Führung...' },
+                { count: 26, id: 'milestone2', title: '🎯 Führung abgeschlossen!', text: 'Exzellenter Fortschritt! Letzter Abschnitt...' },
+                { count: 46, id: 'milestone3', title: '🤝 Team-Dynamik abgeschlossen!', text: 'Fast geschafft! Ergebnisse werden berechnet...' }
+            ];
+            
+            milestones.forEach(milestone => {
+                if (answered >= milestone.count) {
+                    document.getElementById(milestone.id).classList.add('reached');
+                }
+                
+                // Show achievement popup at milestones
+                if (answered === milestone.count && !sessionStorage.getItem(`milestone_${milestone.count}`)) {
+                    sessionStorage.setItem(`milestone_${milestone.count}`, 'true');
+                    showAchievement(milestone.title, milestone.text);
+                    progressBar.classList.add('milestone-reached');
+                    setTimeout(() => progressBar.classList.remove('milestone-reached'), 600);
+                }
+            });
             
             // Save progress automatically
             if (answered > 0) {
                 saveProgress();
             }
+        }
+
+        // Show achievement popup
+        function showAchievement(title, text) {
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementTitle').textContent = title;
+            document.getElementById('achievementText').textContent = text;
+            popup.classList.add('show');
+            
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 2500);
         }
 
         // Track all radio buttons
