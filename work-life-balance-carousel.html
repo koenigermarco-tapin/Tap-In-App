@@ -479,33 +479,132 @@
             const percentage = Math.round((totalScore / maxScore) * 100);
 
             let overallLabel = '';
-            if (percentage >= 80) overallLabel = '🌟 Excellent Balance - Sustainable Excellence';
-            else if (percentage >= 60) overallLabel = '✅ Good Balance - Room to Optimize';
-            else if (percentage >= 40) overallLabel = '⚠️ Moderate Risk - Action Needed';
-            else overallLabel = '🔴 High Risk - Immediate Changes Required';
+            let overallColor = '';
+            let overallGradient = '';
+            let analysis = '';
+            let priorities = [];
+            
+            if (percentage >= 80) {
+                overallLabel = '🌟 Excellent Balance - Sustainable Excellence';
+                overallColor = '#2a9d8f';
+                overallGradient = 'linear-gradient(135deg, #2a9d8f 0%, #1d7a6f 100%)';
+                analysis = 'You\'ve mastered the art of sustainable performance. Your strong work-life integration protects you from burnout while maintaining high effectiveness. <strong>You\'re in the top 15% of leaders.</strong>';
+                priorities = [
+                    '<strong>Maintain momentum:</strong> Your habits are working - protect them fiercely',
+                    '<strong>Mentor others:</strong> Share your strategies with team members struggling with balance',
+                    '<strong>Fine-tune edges:</strong> Even excellent systems have room for 1-2% optimization'
+                ];
+            } else if (percentage >= 60) {
+                overallLabel = '✅ Good Balance - Room to Optimize';
+                overallColor = '#457b9d';
+                overallGradient = 'linear-gradient(135deg, #457b9d 0%, #2d5a75 100%)';
+                analysis = 'You have solid foundations but some dimensions need strengthening. <strong>You\'re above average</strong> but operating below your potential. Small improvements will yield significant returns.';
+                priorities = [
+                    '<strong>Identify weak spots:</strong> Focus on your lowest-scoring category first',
+                    '<strong>Build one habit:</strong> Don\'t overhaul everything - pick ONE practice to master',
+                    '<strong>Track progress:</strong> Retake this assessment in 30 days to measure improvement'
+                ];
+            } else if (percentage >= 40) {
+                overallLabel = '⚠️ Moderate Risk - Action Needed';
+                overallColor = '#f4a261';
+                overallGradient = 'linear-gradient(135deg, #f4a261 0%, #e76f51 100%)';
+                analysis = 'Warning signs are flashing. You\'re likely feeling the strain - fatigue, irritability, reduced creativity. <strong>Without changes, burnout is probable within 6-12 months.</strong> The good news: catching it now means recovery is still manageable.';
+                priorities = [
+                    '<strong>Emergency boundaries:</strong> Immediately block 2-3 hours per week as non-negotiable recovery',
+                    '<strong>Sleep audit:</strong> Prioritize 7-8 hours nightly for the next 14 days - track energy changes',
+                    '<strong>Delegate or delete:</strong> Identify 3 commitments to eliminate or hand off within 7 days'
+                ];
+            } else {
+                overallLabel = '🔴 High Risk - Immediate Changes Required';
+                overallColor = '#e63946';
+                overallGradient = 'linear-gradient(135deg, #e63946 0%, #d62828 100%)';
+                analysis = '<strong>You\'re in burnout territory.</strong> Your current pace is unsustainable and likely impacting health, relationships, and performance. This isn\'t weakness - it\'s a crisis requiring urgent intervention.';
+                priorities = [
+                    '<strong>Take immediate time off:</strong> Even 2-3 days can begin recovery - this is medical necessity, not luxury',
+                    '<strong>Talk to leadership:</strong> Your manager needs to know your workload is unsustainable',
+                    '<strong>Professional support:</strong> Consider therapy or coaching - burnout recovery requires expert guidance'
+                ];
+            }
 
             document.getElementById('assessmentForm').style.display = 'none';
             document.getElementById('resultsContainer').classList.add('active');
-            document.getElementById('totalScore').textContent = totalScore + '/' + maxScore;
+            document.getElementById('totalScore').textContent = totalScore;
             document.getElementById('overallLabel').textContent = overallLabel;
 
             const categoryLabels = {
-                energy: '⚡ Energy Management',
-                boundaries: '🛡️ Boundary Setting',
-                recovery: '🔄 Recovery Practices',
-                integration: '🌟 Life Integration',
-                performance: '🏔️ Sustainable Performance'
+                energy: { icon: '⚡', name: 'Energy Management', color: '#f4a261' },
+                boundaries: { icon: '🛡️', name: 'Boundary Setting', color: '#457b9d' },
+                recovery: { icon: '🔄', name: 'Recovery Practices', color: '#2a9d8f' },
+                integration: { icon: '🌟', name: 'Life Integration', color: '#9b59b6' },
+                performance: { icon: '🏔️', name: 'Sustainable Performance', color: '#e63946' }
             };
 
-            const categoryHTML = Object.keys(scores).map(cat => `
-                <div class="category-score">
-                    <h4>${categoryLabels[cat]}</h4>
-                    <div class="score">${scores[cat]}/20</div>
-                    <div class="label">${scores[cat] >= 16 ? 'Excellent' : scores[cat] >= 12 ? 'Good' : scores[cat] >= 8 ? 'Moderate' : 'Needs Work'}</div>
+            // Find lowest and highest scoring categories
+            const sortedCategories = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const strongest = sortedCategories[0];
+            const weakest = sortedCategories[sortedCategories.length - 1];
+
+            const categoryHTML = Object.keys(scores).map(cat => {
+                const score = scores[cat];
+                const pct = Math.round((score / 20) * 100);
+                let label = '';
+                let bgColor = '';
+                
+                if (score >= 16) { label = 'Excellent'; bgColor = '#d4edda'; }
+                else if (score >= 12) { label = 'Good'; bgColor = '#d1ecf1'; }
+                else if (score >= 8) { label = 'Moderate'; bgColor = '#fff3cd'; }
+                else { label = 'Needs Work'; bgColor = '#f8d7da'; }
+                
+                return `
+                <div class="category-score" style="background: ${bgColor}; border-left: 4px solid ${categoryLabels[cat].color};">
+                    <h4 style="color: ${categoryLabels[cat].color};">${categoryLabels[cat].icon} ${categoryLabels[cat].name}</h4>
+                    <div style="display: flex; align-items: center; gap: 15px; margin: 15px 0;">
+                        <div class="score" style="color: ${categoryLabels[cat].color};">${score}/20</div>
+                        <div style="flex: 1;">
+                            <div style="background: #e0e0e0; height: 8px; border-radius: 10px; overflow: hidden;">
+                                <div style="background: ${categoryLabels[cat].color}; height: 100%; width: ${pct}%; transition: width 0.5s;"></div>
+                            </div>
+                        </div>
+                        <div class="label" style="font-weight: 600;">${label}</div>
+                    </div>
                 </div>
-            `).join('');
+            `}).join('');
 
             document.getElementById('categoryScores').innerHTML = categoryHTML;
+            
+            // Add analysis section before CTA
+            const ctaBox = document.querySelector('.cta-box');
+            if (ctaBox) {
+                const analysisHTML = `
+                    <div style="background: white; border-radius: 15px; padding: 30px; margin-bottom: 30px; border-left: 4px solid ${overallColor};">
+                        <h3 style="color: ${overallColor}; margin-bottom: 15px;">📊 What This Means</h3>
+                        <p style="color: #666; line-height: 1.8; margin-bottom: 20px;">${analysis}</p>
+                        <h4 style="color: #333; margin-bottom: 15px;">🎯 Your Top 3 Priorities:</h4>
+                        <ul style="list-style: none; padding-left: 0;">
+                            ${priorities.map(p => `<li style="margin-bottom: 12px; padding-left: 25px; position: relative; color: #555; line-height: 1.7;">
+                                <span style="position: absolute; left: 0; color: ${overallColor}; font-weight: bold;">→</span>
+                                ${p}
+                            </li>`).join('')}
+                        </ul>
+                    </div>
+                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; padding: 25px; margin-bottom: 30px; border-left: 4px solid ${categoryLabels[strongest[0]].color};">
+                        <h4 style="color: ${categoryLabels[strongest[0]].color}; margin-bottom: 10px;">💪 Your Strongest Area: ${categoryLabels[strongest[0]].name}</h4>
+                        <p style="color: #666; line-height: 1.7;">Score: ${strongest[1]}/20 - This is a foundation to build on. Your strength here can support improvements in weaker areas.</p>
+                    </div>
+                    <div style="background: #fff5f0; border-radius: 15px; padding: 25px; margin-bottom: 30px; border-left: 4px solid ${categoryLabels[weakest[0]].color};">
+                        <h4 style="color: ${categoryLabels[weakest[0]].color}; margin-bottom: 10px;">⚠️ Your Biggest Opportunity: ${categoryLabels[weakest[0]].name}</h4>
+                        <p style="color: #666; line-height: 1.7;">Score: ${weakest[1]}/20 - Focus here first. Even small improvements in this dimension will have outsized impact on your overall balance.</p>
+                    </div>
+                `;
+                ctaBox.insertAdjacentHTML('beforebegin', analysisHTML);
+            }
+            
+            // Update overall score card background
+            const overallScoreCard = document.querySelector('.overall-score');
+            if (overallScoreCard) {
+                overallScoreCard.style.background = overallGradient;
+            }
+            
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
