@@ -228,6 +228,16 @@
         </div>
     </div>
     <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+        // Wait for i18n to be ready before rendering questions
+        function onI18nReady(cb, timeoutMs = 2000) {
+            const start = Date.now();
+            (function check() {
+                if (window.__i18n && typeof window.__i18n.t === 'function') return cb();
+                if (Date.now() - start > timeoutMs) return cb();
+                setTimeout(check, 30);
+            })();
+        }
+        
         // fallbackQuestions holds the English/default question set. We will try to load questions
         // from the runtime translations (i18n) when available so pages can progressively translate.
         const fallbackQuestions = [
