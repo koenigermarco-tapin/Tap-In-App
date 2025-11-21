@@ -410,6 +410,28 @@
                 flex-direction: column;
             }
         }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            to {
+                opacity: 0;
+                transform: translate(-50%, -20px);
+            }
+        }
     </style>
 </head>
 <body>
@@ -1573,12 +1595,87 @@
         const totalQuestions = 46;
         let answeredQuestions = new Set();
 
+        // Load saved progress on page load
+        function loadSavedProgress() {
+            const saved = localStorage.getItem('tap-in-combined-progress');
+            if (saved) {
+                try {
+                    const progress = JSON.parse(saved);
+                    // Restore answers
+                    Object.entries(progress.answers || {}).forEach(([name, value]) => {
+                        const radio = document.querySelector(`input[name="${name}"][value="${value}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                            answeredQuestions.add(name);
+                        }
+                    });
+                    updateProgress();
+                    
+                    // Show restore notification
+                    if (answeredQuestions.size > 0) {
+                        showNotification(`Progress restored: ${answeredQuestions.size} of ${totalQuestions} questions answered`);
+                    }
+                } catch (e) {
+                    console.error('Error loading progress:', e);
+                }
+            }
+        }
+
+        // Save progress to localStorage
+        function saveProgress() {
+            const answers = {};
+            document.querySelectorAll('input[type="radio"]:checked').forEach(radio => {
+                answers[radio.name] = radio.value;
+            });
+            
+            const progress = {
+                answers,
+                timestamp: new Date().toISOString(),
+                answeredCount: answeredQuestions.size
+            };
+            
+            localStorage.setItem('tap-in-combined-progress', JSON.stringify(progress));
+        }
+
+        // Clear saved progress
+        function clearProgress() {
+            localStorage.removeItem('tap-in-combined-progress');
+        }
+
+        // Show notification
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+                color: white;
+                padding: 15px 30px;
+                border-radius: 10px;
+                box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+                z-index: 1000;
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
         // Update progress bar
         function updateProgress() {
             const answered = answeredQuestions.size;
             const percentage = (answered / totalQuestions) * 100;
             document.getElementById('progressText').textContent = `${answered}/${totalQuestions}`;
             document.getElementById('progressBar').style.width = `${percentage}%`;
+            
+            // Auto-save progress
+            saveProgress();
         }
 
         // Track all radio buttons
@@ -1597,6 +1694,9 @@
                 }
             });
         });
+
+        // Load saved progress when page loads
+        loadSavedProgress();
 
         // Form submission
         form.addEventListener('submit', function(e) {
@@ -1633,9 +1733,49 @@
             for (let i = 13; i <= 16; i++) teamScores.accountability += parseInt(document.querySelector(`input[name="t${i}"]:checked`).value);
             for (let i = 17; i <= 20; i++) teamScores.results += parseInt(document.querySelector(`input[name="t${i}"]:checked`).value);
 
+            // Clear saved progress (assessment completed)
+            clearProgress();
+
+            // Submit statistics
+            submitStatistics(workerType, leadershipStyle, teamScores);
+
             // Show results
             showResults(workerType, leadershipStyle, teamScores);
         });
+
+        // Submit statistics to backend
+        async function submitStatistics(workerType, leadershipStyle, teamScores) {
+            const data = {
+                assessmentType: 'combined-profile',
+                workerType,
+                leadershipStyle,
+                teamScores,
+                timestamp: new Date().toISOString()
+            };
+
+            try {
+                // Try to submit to Netlify Function
+                await fetch('/.netlify/functions/submit-results', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } catch (error) {
+                // Fallback: Store in localStorage for local stats
+                const localStats = JSON.parse(localStorage.getItem('tap-in-stats') || '{"workerType":{},"leadershipStyle":{},"teamScores":{"trust":[],"conflict":[],"commitment":[],"accountability":[],"results":[]},"totalSubmissions":0}');
+                
+                localStats.workerType[workerType] = (localStats.workerType[workerType] || 0) + 1;
+                localStats.leadershipStyle[leadershipStyle] = (localStats.leadershipStyle[leadershipStyle] || 0) + 1;
+                Object.keys(teamScores).forEach(key => {
+                    if (!localStats.teamScores[key]) localStats.teamScores[key] = [];
+                    localStats.teamScores[key].push(teamScores[key]);
+                });
+                localStats.totalSubmissions++;
+                localStats.lastUpdated = new Date().toISOString();
+                
+                localStorage.setItem('tap-in-stats', JSON.stringify(localStats));
+            }
+        }
 
         // Generate personalized wisdom and action steps
         function getPersonalizedInsights(workerType, leadershipStyle, teamScores) {
