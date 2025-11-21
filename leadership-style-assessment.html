@@ -1088,6 +1088,25 @@
                     <h2>Your Leadership Style Results</h2>
                 </div>
 
+                <!-- Social Sharing Section -->
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin: 2rem 0; text-align: center;">
+                    <h3 style="color: white; margin-bottom: 0.5rem;">📱 Share Your Leadership Style</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 1.5rem; opacity: 0.95;">Inspire others to discover their style</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            LinkedIn
+                        </button>
+                        <button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            Twitter
+                        </button>
+                        <button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                    <div id="shareCanvas" style="margin: 1.5rem auto; max-width: 600px;"></div>
+                    <p style="font-size: 0.85rem; opacity: 0.8;">💡 Your share helps others find their leadership path</p>
+                </div>
+
                 <div class="primary-type" style="background: linear-gradient(135deg, ${data.color} 0%, ${data.accentColor} 100%); color: white;">
                     <div class="icon">${data.icon}</div>
                     <h3>${data.name}</h3>
@@ -1181,6 +1200,133 @@
 
             // Scroll to top of results
             resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Initialize social sharing
+            setTimeout(() => initializeSocialSharing(primaryType, percentages[primaryType]), 500);
+        }
+
+        // Social Sharing Functions
+        let currentProfile = {};
+
+        function initializeSocialSharing(leadershipType, percentage) {
+            currentProfile = { leadershipType, percentage };
+            generateShareCard();
+        }
+
+        function generateShareCard() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1200;
+            canvas.height = 630;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#a93226');
+            gradient.addColorStop(1, '#7a241b');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            for (let i = 0; i < 20; i++) {
+                ctx.fillRect(i * 60, 0, 30, canvas.height);
+            }
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 64px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.textAlign = 'center';
+            
+            const typeData = {
+                visionary: { icon: '🎯', name: 'VISIONARY LEADER' },
+                architect: { icon: '🏗️', name: 'ARCHITECT STRATEGIST' },
+                facilitator: { icon: '🤝', name: 'FACILITATOR COACH' },
+                executor: { icon: '⚡', name: 'EXECUTOR DRIVER' }
+            };
+
+            ctx.fillText('My Leadership Style:', canvas.width / 2, 200);
+            
+            ctx.font = 'bold 90px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillText(typeData[currentProfile.leadershipType].icon + ' ' + typeData[currentProfile.leadershipType].name, canvas.width / 2, 340);
+            
+            ctx.font = 'bold 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillText(Math.round(currentProfile.percentage) + '% Match', canvas.width / 2, 430);
+
+            ctx.font = '32px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('What\'s YOUR Leadership Style?', canvas.width / 2, 550);
+
+            const shareCanvas = document.getElementById('shareCanvas');
+            if (shareCanvas) {
+                shareCanvas.innerHTML = `<img src="${canvas.toDataURL()}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card">`;
+            }
+        }
+
+        function getShareText() {
+            const typeNames = {
+                visionary: 'Visionary Leader',
+                architect: 'Architect Strategist',
+                facilitator: 'Facilitator Coach',
+                executor: 'Executor Driver'
+            };
+
+            return `I just discovered I'm a ${typeNames[currentProfile.leadershipType]} (${Math.round(currentProfile.percentage)}% match)!
+
+This free leadership assessment revealed:
+• How I naturally lead teams
+• My decision-making style under pressure
+• Where I create the most impact
+
+Simple. Accurate. Eye-opening.
+
+What's YOUR leadership style?`;
+        }
+
+        function shareToLinkedIn() {
+            const text = encodeURIComponent(getShareText());
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, '_blank');
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    'event_category': 'Social',
+                    'event_label': 'LinkedIn_Leadership',
+                    'value': 1
+                });
+            }
+        }
+
+        function shareToTwitter() {
+            const text = encodeURIComponent(getShareText());
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=Leadership,LeadershipStyle`, '_blank');
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    'event_category': 'Social',
+                    'event_label': 'Twitter_Leadership',
+                    'value': 1
+                });
+            }
+        }
+
+        function copyShareLink() {
+            const shareText = getShareText() + '\n\n' + window.location.href;
+            navigator.clipboard.writeText(shareText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(255,255,255,0.2)';
+                }, 2000);
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'share', {
+                        'event_category': 'Social',
+                        'event_label': 'Copy_Link_Leadership',
+                        'value': 1
+                    });
+                }
+            });
         }
     </script>
 </body>
