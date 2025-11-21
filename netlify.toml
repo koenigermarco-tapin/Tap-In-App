@@ -29,20 +29,21 @@
   status = 200
 
 # ========================================
-# SPA FALLBACK (MUST BE LAST)
-# ========================================
-# Note: This catches all unmatched routes
-# HTML files are served directly, only missing files redirect to index
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 404
-
-# ========================================
-# SECURITY HEADERS
+# SECURITY AND CACHE HEADERS
 # ========================================
 [[headers]]
-  # Security headers
+  # Cache-busting for HTML files (always fetch fresh)
+  for = "/*.html"
+    [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0"
+    Pragma = "no-cache"
+    Expires = "0"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[headers]]
+  # Security headers for other files
   for = "/*"
     [headers.values]
     X-Frame-Options = "DENY"
