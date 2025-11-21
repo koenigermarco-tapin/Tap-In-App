@@ -48,6 +48,12 @@
         .details-card p, .details-card ul { color: #666; line-height: 1.8; font-size: 1.05em; }
         .details-card ul { list-style-position: inside; padding-left: 0; }
         .details-card li { margin-bottom: 10px; }
+        .insight-card { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #a93226; padding: 20px; margin-top: 25px; border-radius: 10px; animation: slideIn 0.4s ease; }
+        .insight-icon { font-size: 2rem; margin-bottom: 10px; }
+        .insight-title { color: #a93226; font-size: 1.1em; font-weight: bold; margin-bottom: 12px; }
+        .insight-content { color: #555; line-height: 1.7; margin-bottom: 12px; }
+        .insight-quote { font-style: italic; color: #666; font-size: 0.95em; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 6px; border-left: 3px solid #a93226; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .cta-box { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
         .cta-box h3 { margin-bottom: 15px; font-size: 1.6em; }
         .cta-box p { margin-bottom: 20px; opacity: 0.95; }
@@ -143,6 +149,82 @@
 
 
     <script>
+        // Educational insights for each question
+        const insights = [
+            {
+                icon: '🎯',
+                title: 'Time Horizons Shape Decisions',
+                content: '<strong>Research from Harvard Business School</strong> shows that leaders naturally optimize for different time horizons. Sprinters excel at quarterly results (like Jack Welch at GE). Joggers master annual cycles (like Tim Cook at Apple). Ultrarunners think in decades (like Satya Nadella transforming Microsoft culture).',
+                quote: '"The future is already here – it\'s just not evenly distributed." - William Gibson'
+            },
+            {
+                icon: '⏰',
+                title: 'Your Chronotype Matters',
+                content: '<strong>Neuroscience research</strong> reveals that peak performance windows vary by person. Some are "morning larks" (30% of people), others "night owls" (20%), most are "third birds" (50%). But beyond daily rhythm, your optimal work <em>session length</em> is genetic. Sprinters need variety; Ultrarunners need immersion.',
+                quote: '"Give me six hours to chop down a tree and I will spend the first four sharpening the axe." - Abraham Lincoln'
+            },
+            {
+                icon: '🧗',
+                title: 'Challenge Response Patterns',
+                content: 'Stanford\'s Carol Dweck found that <strong>how you frame obstacles predicts persistence</strong>. Sprinters see challenges as problems to solve fast. Joggers see them as processes to optimize. Ultrarunners see them as character-building experiences. All three work—if aligned with your role.',
+                quote: '"The greater the obstacle, the more glory in overcoming it." - Molière'
+            },
+            {
+                icon: '⚡',
+                title: 'Energy vs. Time',
+                content: '<strong>Tony Schwartz (The Power of Full Engagement)</strong> proved energy management beats time management. Sprinters recover through variety. Joggers through routine. Ultrarunners through purpose. A Stanford study found that when work style matches energy pattern, productivity increases 40% without more hours.',
+                quote: '"Energy, not time, is the fundamental currency of high performance." - Tony Schwartz'
+            },
+            {
+                icon: '📚',
+                title: 'Learning Velocity Tradeoffs',
+                content: 'Malcolm Gladwell\'s "10,000 hours" applies differently. <strong>Sprinters learn breadth fast</strong> (Tim Ferriss\'s meta-learning). <strong>Joggers build depth systematically</strong> (Angela Duckworth\'s grit). <strong>Ultrarunners achieve mastery</strong> (Josh Waitzkin\'s "learning to learn"). MIT research: your learning style should match your career strategy.',
+                quote: '"I am always doing that which I cannot do, in order that I may learn how to do it." - Pablo Picasso'
+            },
+            {
+                icon: '😤',
+                title: 'Frustration as Signal',
+                content: 'Google\'s Project Aristotle discovered <strong>what frustrates you reveals your optimal tempo</strong>. Sprinters in slow environments burn out from boredom. Joggers in chaotic environments burn out from stress. Ultrarunners in short-term cultures burn out from meaninglessness. Match environment to tempo.',
+                quote: '"The only way to do great work is to love what you do." - Steve Jobs'
+            },
+            {
+                icon: '📊',
+                title: 'Productivity Architecture',
+                content: '<strong>Cal Newport (Deep Work)</strong> found that productivity patterns are consistent within individuals but vary wildly between them. Sprinters thrive on "bimodal" schedules (intense bursts). Joggers on "rhythmic" (same time daily). Ultrarunners on "journalistic" (opportunistic deep work). Force-fitting the wrong style kills output.',
+                quote: '"Productivity is never an accident. It is always the result of commitment to excellence, intelligent planning, and focused effort." - Paul J. Meyer'
+            },
+            {
+                icon: '🎪',
+                title: 'Goal Timeframes & Motivation',
+                content: 'Dan Pink\'s research on motivation: <strong>Sprinters need frequent "progress milestones"</strong> (dopamine hits). <strong>Joggers need predictable checkpoints</strong> (routine reinforcement). <strong>Ultrarunners need compelling "why"</strong> (purpose over progress). A BYU study: mismatched goal timeframes reduce motivation by 60%.',
+                quote: '"A goal without a plan is just a wish." - Antoine de Saint-Exupéry'
+            },
+            {
+                icon: '💪',
+                title: 'Stress as Performance Enhancer',
+                content: '<strong>Stanford psychologist Kelly McGonigal</strong> proved that viewing stress as enhancing (not debilitating) improves outcomes. Sprinters use acute stress as fuel. Joggers manage chronic stress through systems. Ultrarunners reframe stress as meaning. Your relationship with pressure should match your tempo.',
+                quote: '"The greatest weapon against stress is our ability to choose one thought over another." - William James'
+            },
+            {
+                icon: '💬',
+                title: 'Communication Cadence',
+                content: '<strong>Research from MIT\'s Human Dynamics Lab</strong>: communication frequency preferences correlate with work rhythm. Sprinters want real-time updates (Slack culture). Joggers want scheduled sync-ups (weekly 1-on-1s). Ultrarunners want strategic deep-dives (quarterly offsites). Mismatched communication = friction.',
+                quote: '"The single biggest problem in communication is the illusion that it has taken place." - George Bernard Shaw'
+            },
+            {
+                icon: '⏳',
+                title: 'Project Length Sweet Spot',
+                content: '<strong>Basecamp\'s Jason Fried</strong> discovered ideal project durations: <strong>Sprinters peak at 2-6 weeks</strong> (startup "sprints"). <strong>Joggers at 3-6 months</strong> (enterprise release cycles). <strong>Ultrarunners at 1-3 years</strong> (transformational initiatives). A PMI study: projects 2x longer than your sweet spot have 80% higher burnout.',
+                quote: '"Plans are worthless, but planning is everything." - Dwight D. Eisenhower'
+            },
+            {
+                icon: '🏢',
+                title: 'Cultural Fit Predicts Retention',
+                content: 'Organizational culture research by Edgar Schein: <strong>Speed-driven cultures</strong> (Amazon, Meta) attract Sprinters. <strong>Process-driven cultures</strong> (Toyota, Apple operations) attract Joggers. <strong>Mission-driven cultures</strong> (Patagonia, SpaceX) attract Ultrarunners. LinkedIn data: culture mismatch = #1 reason for voluntary departure.',
+                quote: '"Culture eats strategy for breakfast." - Peter Drucker'
+            }
+        ];
+
         // Hardcoded English questions for robust static behavior
         const questions = [
             {
@@ -269,11 +351,31 @@
             });
             html += `
                     </div>
+                    <div id="insightContainer"></div>
                 </div>
             `;
             card.innerHTML = html;
             updateProgress();
             updateButtons();
+            
+            // Show insight if already answered
+            if (answers[currentQuestion]) {
+                showInsight();
+            }
+        }
+
+        function showInsight() {
+            const insight = insights[currentQuestion];
+            const container = document.getElementById('insightContainer');
+            container.innerHTML = `
+                <div class="insight-card">
+                    <div class="insight-icon">${insight.icon}</div>
+                    <div class="insight-title">${insight.title}</div>
+                    <div class="insight-content">${insight.content}</div>
+                    <div class="insight-quote">${insight.quote}</div>
+                </div>
+            `;
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
         function selectOption(el, value) {
@@ -283,6 +385,7 @@
                 const input = el.querySelector('input[type="radio"]');
                 if (input) input.checked = true;
                 document.getElementById('nextBtn').disabled = false;
+                showInsight();
             }
 
             function updateProgress() {

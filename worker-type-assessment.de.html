@@ -48,6 +48,12 @@
         .details-card p, .details-card ul { color: #666; line-height: 1.8; font-size: 1.05em; }
         .details-card ul { list-style-position: inside; padding-left: 0; }
         .details-card li { margin-bottom: 10px; }
+        .insight-card { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #a93226; padding: 20px; margin-top: 25px; border-radius: 10px; animation: slideIn 0.4s ease; }
+        .insight-icon { font-size: 2rem; margin-bottom: 10px; }
+        .insight-title { color: #a93226; font-size: 1.1em; font-weight: bold; margin-bottom: 12px; }
+        .insight-content { color: #555; line-height: 1.7; margin-bottom: 12px; }
+        .insight-quote { font-style: italic; color: #666; font-size: 0.95em; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 6px; border-left: 3px solid #a93226; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .cta-box { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
         .cta-box h3 { margin-bottom: 15px; font-size: 1.6em; }
         .cta-box p { margin-bottom: 20px; opacity: 0.95; }
@@ -124,6 +130,82 @@
     </div>
     <script src="/i18n/i18n.js"></script>
     <script>
+        // Bildungseinblicke für jede Frage
+        const insights = [
+            {
+                icon: '🎯',
+                title: 'Zeithorizonte prägen Entscheidungen',
+                content: '<strong>Forschung der Harvard Business School</strong> zeigt, dass Führungskräfte natürlich für verschiedene Zeithorizonte optimieren. Sprinter glänzen bei Quartalsergebnissen (wie Jack Welch bei GE). Jogger meistern Jahreszyklen (wie Tim Cook bei Apple). Ultraläufer denken in Jahrzehnten (wie Satya Nadella bei der Transformation der Microsoft-Kultur).',
+                quote: '"Die Zukunft ist bereits hier – sie ist nur ungleich verteilt." - William Gibson'
+            },
+            {
+                icon: '⏰',
+                title: 'Dein Chronotyp ist wichtig',
+                content: '<strong>Neurowissenschaftliche Forschung</strong> zeigt, dass Spitzenleistungsfenster von Person zu Person variieren. Manche sind "Morgenlerchen" (30%), andere "Nachteulen" (20%), die meisten "dritte Vögel" (50%). Aber über den Tagesrhythmus hinaus ist deine optimale <em>Arbeitssitzungslänge</em> genetisch bedingt. Sprinter brauchen Vielfalt; Ultraläufer brauchen Vertiefung.',
+                quote: '"Gib mir sechs Stunden, einen Baum zu fällen, und ich werde die ersten vier damit verbringen, die Axt zu schärfen." - Abraham Lincoln'
+            },
+            {
+                icon: '🧗',
+                title: 'Herausforderungs-Reaktionsmuster',
+                content: 'Stanfords Carol Dweck fand heraus, dass <strong>wie du Hindernisse einrahmst, Ausdauer vorhersagt</strong>. Sprinter sehen Herausforderungen als schnell zu lösende Probleme. Jogger sehen sie als zu optimierende Prozesse. Ultraläufer sehen sie als charakterbildende Erfahrungen. Alle drei funktionieren – wenn sie mit deiner Rolle übereinstimmen.',
+                quote: '"Je größer das Hindernis, desto mehr Ruhm beim Überwinden." - Molière'
+            },
+            {
+                icon: '⚡',
+                title: 'Energie vs. Zeit',
+                content: '<strong>Tony Schwartz (The Power of Full Engagement)</strong> bewies, dass Energiemanagement Zeitmanagement schlägt. Sprinter erholen sich durch Vielfalt. Jogger durch Routine. Ultraläufer durch Sinn. Eine Stanford-Studie: Wenn Arbeitsstil zum Energiemuster passt, steigt Produktivität um 40% ohne mehr Stunden.',
+                quote: '"Energie, nicht Zeit, ist die fundamentale Währung hoher Leistung." - Tony Schwartz'
+            },
+            {
+                icon: '📚',
+                title: 'Lerngeschwindigkeit-Kompromisse',
+                content: 'Malcolm Gladwells "10.000 Stunden" gelten unterschiedlich. <strong>Sprinter lernen schnell in die Breite</strong> (Tim Ferriss\' Meta-Learning). <strong>Jogger bauen systematisch Tiefe auf</strong> (Angela Duckworths Grit). <strong>Ultraläufer erreichen Meisterschaft</strong> (Josh Waitzkins "lernen zu lernen"). MIT-Forschung: Dein Lernstil sollte zu deiner Karrierestrategie passen.',
+                quote: '"Ich mache immer das, was ich nicht kann, um es zu lernen." - Pablo Picasso'
+            },
+            {
+                icon: '😤',
+                title: 'Frustration als Signal',
+                content: 'Googles Project Aristotle entdeckte: <strong>Was dich frustriert, zeigt dein optimales Tempo</strong>. Sprinter in langsamen Umgebungen brennen aus vor Langeweile. Jogger in chaotischen Umgebungen aus Stress. Ultraläufer in kurzfristigen Kulturen aus Sinnlosigkeit. Passe Umgebung an Tempo an.',
+                quote: '"Der einzige Weg, großartige Arbeit zu leisten, ist zu lieben, was du tust." - Steve Jobs'
+            },
+            {
+                icon: '📊',
+                title: 'Produktivitäts-Architektur',
+                content: '<strong>Cal Newport (Deep Work)</strong> fand: Produktivitätsmuster sind innerhalb von Individuen konsistent, variieren aber stark zwischen ihnen. Sprinter gedeihen mit "bimodalen" Zeitplänen (intensive Schübe). Jogger mit "rhythmischen" (täglich zur selben Zeit). Ultraläufer mit "journalistischen" (opportunistische Tiefenarbeit). Falschen Stil aufzwingen tötet Output.',
+                quote: '"Produktivität ist nie ein Zufall. Sie ist immer das Ergebnis von Engagement für Exzellenz, intelligenter Planung und fokussierter Anstrengung." - Paul J. Meyer'
+            },
+            {
+                icon: '🎪',
+                title: 'Ziel-Zeitrahmen & Motivation',
+                content: 'Dan Pinks Motivationsforschung: <strong>Sprinter brauchen häufige "Fortschritts-Meilensteine"</strong> (Dopamin-Kicks). <strong>Jogger brauchen vorhersehbare Checkpoints</strong> (Routine-Verstärkung). <strong>Ultraläufer brauchen überzeugendes "Warum"</strong> (Sinn über Fortschritt). BYU-Studie: Falsche Ziel-Zeitrahmen reduzieren Motivation um 60%.',
+                quote: '"Ein Ziel ohne Plan ist nur ein Wunsch." - Antoine de Saint-Exupéry'
+            },
+            {
+                icon: '💪',
+                title: 'Stress als Leistungsverstärker',
+                content: '<strong>Stanford-Psychologin Kelly McGonigal</strong> bewies: Stress als förderlich (nicht schwächend) zu sehen, verbessert Ergebnisse. Sprinter nutzen akuten Stress als Treibstoff. Jogger managen chronischen Stress durch Systeme. Ultraläufer deuten Stress als Bedeutung um. Deine Beziehung zu Druck sollte zu deinem Tempo passen.',
+                quote: '"Die größte Waffe gegen Stress ist unsere Fähigkeit, einen Gedanken über einen anderen zu wählen." - William James'
+            },
+            {
+                icon: '💬',
+                title: 'Kommunikations-Kadenz',
+                content: '<strong>Forschung vom MIT Human Dynamics Lab</strong>: Kommunikationsfrequenz-Präferenzen korrelieren mit Arbeitsrhythmus. Sprinter wollen Echtzeit-Updates (Slack-Kultur). Jogger wollen geplante Sync-Ups (wöchentliche 1-on-1s). Ultraläufer wollen strategische Tiefengespräche (Quartals-Offsites). Falsche Kommunikation = Reibung.',
+                quote: '"Das größte Problem der Kommunikation ist die Illusion, dass sie stattgefunden hat." - George Bernard Shaw'
+            },
+            {
+                icon: '⏳',
+                title: 'Projekt-Längen Sweet Spot',
+                content: '<strong>Basecamps Jason Fried</strong> entdeckte ideale Projektdauern: <strong>Sprinter peaken bei 2-6 Wochen</strong> (Startup-"Sprints"). <strong>Jogger bei 3-6 Monaten</strong> (Enterprise Release-Zyklen). <strong>Ultraläufer bei 1-3 Jahren</strong> (transformative Initiativen). PMI-Studie: Projekte 2x länger als dein Sweet Spot haben 80% höheres Burnout.',
+                quote: '"Pläne sind wertlos, aber Planung ist alles." - Dwight D. Eisenhower'
+            },
+            {
+                icon: '🏢',
+                title: 'Cultural Fit sagt Verbleib voraus',
+                content: 'Organisations-Kulturforschung von Edgar Schein: <strong>Geschwindigkeits-getriebene Kulturen</strong> (Amazon, Meta) ziehen Sprinter an. <strong>Prozess-getriebene Kulturen</strong> (Toyota, Apple Operations) ziehen Jogger an. <strong>Missions-getriebene Kulturen</strong> (Patagonia, SpaceX) ziehen Ultraläufer an. LinkedIn-Daten: Kultur-Mismatch = Grund Nr. 1 für freiwilliges Ausscheiden.',
+                quote: '"Kultur frisst Strategie zum Frühstück." - Peter Drucker'
+            }
+        ];
+
         // Deutsche Fragen für das Arbeitstyp-Assessment
         const fallbackQuestions = [
             {
@@ -266,12 +348,33 @@
             });
             html += `
                     </div>
+                    <div id="insightContainer"></div>
                 </div>
             `;
             card.innerHTML = html;
             updateProgress();
             updateButtons();
+            
+            // Show insight if already answered
+            if (answers[currentQuestion]) {
+                showInsight();
+            }
         }
+        
+        function showInsight() {
+            const insight = insights[currentQuestion];
+            const container = document.getElementById('insightContainer');
+            container.innerHTML = `
+                <div class="insight-card">
+                    <div class="insight-icon">${insight.icon}</div>
+                    <div class="insight-title">${insight.title}</div>
+                    <div class="insight-content">${insight.content}</div>
+                    <div class="insight-quote">${insight.quote}</div>
+                </div>
+            `;
+            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        
         function selectOption(el, value) {
             answers[currentQuestion] = value;
             document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
@@ -279,6 +382,7 @@
             const input = el.querySelector('input[type="radio"]');
             if (input) input.checked = true;
             document.getElementById('nextBtn').disabled = false;
+            showInsight();
         }
         function updateProgress() {
             const progress = ((currentQuestion + 1) / questions.length) * 100;
