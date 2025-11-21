@@ -9,6 +9,8 @@
     <meta http-equiv="Expires" content="0">
     <meta name="version" content="3.0.0">
     <title>Team Dynamics Assessment - TAP-IN</title>
+    <!-- SheetJS for Excel/CSV export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); min-height: 100vh; padding: 20px; color: #333; }
@@ -673,6 +675,222 @@
                         
                         // Initialize social sharing
                         setTimeout(() => initializeSocialSharing(totalScore, overallLevel.text), 500);
+                        
+                        // Add export buttons after results
+                        addExportButtons(categories, totalScore, overallLevel);
+                        
+                        // Send data to backend (Google Sheets + Database)
+                        saveAssessmentData(categories, totalScore, overallLevel);
+                    }
+                    
+                    // Export Functions (Option 1: Client-side CSV/XLSX)
+                    function addExportButtons(categories, totalScore, overallLevel) {
+                        const exportHTML = `
+                            <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #e0e0e0;">
+                                <h3 style="color: #333; margin-bottom: 15px;">📊 Export Your Team Data</h3>
+                                <p style="color: #666; margin-bottom: 20px;">Download your complete assessment results for analysis, reporting, or sharing with stakeholders.</p>
+                                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                    <button onclick="exportToCSV()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                                        📥 Download CSV
+                                    </button>
+                                    <button onclick="exportToExcel()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
+                                        📊 Download Excel
+                                    </button>
+                                    <button onclick="exportToJSON()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
+                                        💾 Download JSON
+                                    </button>
+                                </div>
+                                <p style="color: #999; margin-top: 15px; font-size: 0.9em;">Your data stays private - all exports happen directly in your browser.</p>
+                            </div>
+                        `;
+                        document.getElementById('resultContent').insertAdjacentHTML('beforeend', exportHTML);
+                    }
+                    
+                    function exportToCSV() {
+                        const data = gatherExportData();
+                        const csv = convertToCSV(data);
+                        downloadFile(csv, 'team-assessment-results.csv', 'text/csv');
+                        trackExport('CSV');
+                    }
+                    
+                    function exportToExcel() {
+                        const data = gatherExportData();
+                        const ws = XLSX.utils.json_to_sheet(data.details);
+                        const wb = XLSX.utils.book_new();
+                        XLSX.utils.book_append_sheet(wb, ws, "Team Assessment");
+                        
+                        // Add summary sheet
+                        const summaryData = [{
+                            'Assessment Date': data.timestamp,
+                            'Overall Score': data.totalScore + '/100',
+                            'Team Health Level': data.levelText,
+                            'Trust Score': data.categories.find(c => c.name === 'Trust')?.score + '/20',
+                            'Conflict Score': data.categories.find(c => c.name === 'Healthy Conflict')?.score + '/20',
+                            'Commitment Score': data.categories.find(c => c.name === 'Commitment')?.score + '/20',
+                            'Accountability Score': data.categories.find(c => c.name === 'Accountability')?.score + '/20',
+                            'Results Score': data.categories.find(c => c.name === 'Results Focus')?.score + '/20'
+                        }];
+                        const summaryWs = XLSX.utils.json_to_sheet(summaryData);
+                        XLSX.utils.book_append_sheet(wb, summaryWs, "Summary");
+                        
+                        XLSX.writeFile(wb, 'team-assessment-results.xlsx');
+                        trackExport('Excel');
+                    }
+                    
+                    function exportToJSON() {
+                        const data = gatherExportData();
+                        const json = JSON.stringify(data, null, 2);
+                        downloadFile(json, 'team-assessment-results.json', 'application/json');
+                        trackExport('JSON');
+                    }
+                    
+                    function gatherExportData() {
+                        const categories = [];
+                        const details = [];
+                        
+                        for (let i = 0; i < questions.length; i++) {
+                            const q = questions[i];
+                            const answer = answers[i] || 0;
+                            details.push({
+                                'Question #': i + 1,
+                                'Category': q.cat,
+                                'Question': q.text,
+                                'Score': answer,
+                                'Max Score': 5
+                            });
+                        }
+                        
+                        // Calculate category scores
+                        ['Trust', 'Healthy Conflict', 'Commitment', 'Accountability', 'Results Focus'].forEach(cat => {
+                            const catQuestions = questions.filter(q => q.cat === cat);
+                            const catScore = catQuestions.reduce((sum, q, idx) => {
+                                const qIdx = questions.indexOf(q);
+                                return sum + (answers[qIdx] || 0);
+                            }, 0);
+                            categories.push({
+                                name: cat,
+                                score: catScore,
+                                maxScore: catQuestions.length * 5,
+                                percentage: Math.round((catScore / (catQuestions.length * 5)) * 100)
+                            });
+                        });
+                        
+                        const totalScore = answers.reduce((sum, score) => sum + (score || 0), 0);
+                        
+                        return {
+                            timestamp: new Date().toISOString(),
+                            totalScore: totalScore,
+                            maxScore: 100,
+                            percentage: totalScore,
+                            levelText: getOverallLevel(totalScore).text,
+                            categories: categories,
+                            details: details,
+                            assessmentType: 'Team Dynamics (5 Dysfunctions)',
+                            framework: 'Patrick Lencioni'
+                        };
+                    }
+                    
+                    function convertToCSV(data) {
+                        let csv = 'Team Dynamics Assessment Results\n';
+                        csv += `Date,${data.timestamp}\n`;
+                        csv += `Overall Score,${data.totalScore}/${data.maxScore}\n`;
+                        csv += `Team Health,${data.levelText}\n`;
+                        csv += '\n';
+                        
+                        csv += 'Category Scores\n';
+                        csv += 'Category,Score,Max,Percentage\n';
+                        data.categories.forEach(cat => {
+                            csv += `${cat.name},${cat.score},${cat.maxScore},${cat.percentage}%\n`;
+                        });
+                        
+                        csv += '\nDetailed Responses\n';
+                        csv += 'Question #,Category,Question,Score,Max\n';
+                        data.details.forEach(row => {
+                            const question = row.Question.replace(/"/g, '""');
+                            csv += `${row['Question #']},${row.Category},"${question}",${row.Score},${row['Max Score']}\n`;
+                        });
+                        
+                        return csv;
+                    }
+                    
+                    function downloadFile(content, filename, mimeType) {
+                        const blob = new Blob([content], { type: mimeType });
+                        const url = URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = filename;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    }
+                    
+                    function trackExport(format) {
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'export_data', {
+                                'event_category': 'Data Export',
+                                'event_label': format + '_Team',
+                                'value': 1
+                            });
+                        }
+                    }
+                    
+                    // Option 2: Google Sheets Integration
+                    async function saveAssessmentData(categories, totalScore, overallLevel) {
+                        const data = gatherExportData();
+                        
+                        // Send to Google Sheets (you'll need to set up the Apps Script endpoint)
+                        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+                        
+                        try {
+                            await fetch(GOOGLE_SCRIPT_URL, {
+                                method: 'POST',
+                                mode: 'no-cors',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    timestamp: new Date().toISOString(),
+                                    assessmentType: 'team-dynamics',
+                                    totalScore: totalScore,
+                                    levelText: overallLevel.text,
+                                    categories: categories.map(c => ({
+                                        name: c.name,
+                                        score: c.score
+                                    })),
+                                    answers: answers,
+                                    userAgent: navigator.userAgent,
+                                    language: navigator.language
+                                })
+                            });
+                            console.log('Data sent to Google Sheets');
+                        } catch (error) {
+                            console.log('Google Sheets integration not configured yet');
+                        }
+                        
+                        // Option 3: Send to Netlify Function
+                        try {
+                            await fetch('/.netlify/functions/save-assessment', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(data)
+                            });
+                            console.log('Data sent to database');
+                        } catch (error) {
+                            console.log('Database integration not configured yet');
+                        }
+                        
+                        // Store locally for user's own reference
+                        try {
+                            const existingData = JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
+                            existingData.push({
+                                ...data,
+                                id: Date.now()
+                            });
+                            // Keep last 10 assessments
+                            if (existingData.length > 10) existingData.shift();
+                            localStorage.setItem('tap-in-assessments', JSON.stringify(existingData));
+                        } catch (e) {
+                            console.log('LocalStorage not available');
+                        }
                     }
                     
                     // Social Sharing Functions
