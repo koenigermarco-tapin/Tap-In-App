@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2d2d2d">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="version" content="3.1.0">
+    <title>Complete Leadership Profile V2 - TAP-IN Assessment</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .header h1 {
+            color: #a93226;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+
+        .header .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .header .duration {
+            color: #999;
+            font-size: 0.95em;
+            font-style: italic;
+        }
+
+        /* Overall Progress Bar */
+        .overall-progress {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .overall-progress-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .overall-progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .overall-progress-fill {
+            background: linear-gradient(90deg, #a93226 0%, #c9513f 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        /* Section Accordion */
+        .section-accordion {
+            margin-bottom: 20px;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .section-header-btn {
+            width: 100%;
+            padding: 25px 30px;
+            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .section-header-btn:hover {
+            background: linear-gradient(135deg, #c9513f 0%, #a93226 100%);
+        }
+
+        .section-header-btn.completed {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .section-header-btn.locked {
+            background: #999;
+            cursor: not-allowed;
+        }
+
+        .section-header-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-icon {
+            font-size: 1.5em;
+        }
+
+        .section-progress-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.7em;
+            font-weight: normal;
+        }
+
+        .section-chevron {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+
+        .section-accordion.active .section-chevron {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+            background: #f8f9fa;
+        }
+
+        .section-accordion.active .section-content {
+            max-height: 10000px;
+        }
+
+        .section-inner {
+            padding: 30px;
+        }
+
+        /* Carousel Question Card */
+        .question-carousel {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .question-number {
+            color: #a93226;
+            font-weight: bold;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: #333;
+            font-size: 1.2em;
+            margin-bottom: 25px;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            flex-grow: 1;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 18px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #a93226;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(169, 50, 38, 0.15);
+        }
+
+        .option.selected {
+            border-color: #a93226;
+            background: #fff5f4;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .option-label {
+            font-size: 1.05em;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* Navigation Buttons */
+        .carousel-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+            color: white;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(169, 50, 38, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        /* Insight Cards */
+        .insight-card {
+            margin: 25px 0;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Results Section */
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px 20px;
+            }
+            
+            .section-header-btn {
+                padding: 20px;
+                font-size: 1.1em;
+            }
+            
+            .carousel-nav {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div id="lang-switch" style="position:fixed;top:16px;right:16px;z-index:1200;">
+        <div style="background:white;border-radius:999px;padding:8px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);font-size:0.95em;">
+            <a href="combined-leadership-profile-v2.html" style="color:#333;text-decoration:none;font-weight:700;margin-right:10px;">EN</a>
+            <a href="combined-leadership-profile-v2.de.html" style="color:#a93226;text-decoration:none;font-weight:700;border-left:1px solid #eee;padding-left:10px;margin-left:10px;">DE</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚡ Complete Leadership Profile V2</h1>
+            <p class="subtitle">Work Style + Leadership Approach + Team Dynamics</p>
+            <p class="duration">⏱️ 18 minutes • 46 Questions • 3 Sections</p>
+        </div>
+
+        <!-- Overall Progress -->
+        <div class="overall-progress">
+            <div class="overall-progress-text">
+                Overall Progress: <span id="overallProgressText">0/46 Questions</span>
+            </div>
+            <div class="overall-progress-bar">
+                <div class="overall-progress-fill" id="overallProgressFill"></div>
+            </div>
+        </div>
+
+        <!-- Assessment Container -->
+        <div id="assessmentContainer">
+            <!-- Section 1: Worker Type -->
+            <div class="section-accordion active" id="section1">
+                <button class="section-header-btn" onclick="toggleSection(1)">
+                    <div class="section-header-info">
+                        <span class="section-icon">🏃</span>
+                        <span>Part 1: Your Work Style</span>
+                        <span class="section-progress-badge" id="section1Progress">0/12</span>
+                    </div>
+                    <span class="section-chevron">▼</span>
+                </button>
+                <div class="section-content">
+                    <div class="section-inner" id="section1Content">
+                        <!-- Questions will be injected here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Leadership Style -->
+            <div class="section-accordion" id="section2">
+                <button class="section-header-btn locked" onclick="toggleSection(2)" id="section2Header">
+                    <div class="section-header-info">
+                        <span class="section-icon">🎯</span>
+                        <span>Part 2: Your Leadership Style</span>
+                        <span class="section-progress-badge" id="section2Progress">0/14</span>
+                    </div>
+                    <span class="section-chevron">▼</span>
+                </button>
+                <div class="section-content">
+                    <div class="section-inner" id="section2Content">
+                        <!-- Questions will be injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 3: Team Dynamics -->
+            <div class="section-accordion" id="section3">
+                <button class="section-header-btn locked" onclick="toggleSection(3)" id="section3Header">
+                    <div class="section-header-info">
+                        <span class="section-icon">🤝</span>
+                        <span>Part 3: Your Team Dynamics</span>
+                        <span class="section-progress-badge" id="section3Progress">0/20</span>
+                    </div>
+                    <span class="section-chevron">▼</span>
+                </button>
+                <div class="section-content">
+                    <div class="section-inner" id="section3Content">
+                        <!-- Questions will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="results">
+            <h2 style="color: #a93226; text-align: center; margin-bottom: 30px;">🎉 Assessment Abgeschlossen!</h2>
+            <p style="text-align: center; color: #666; font-size: 1.1em; margin-bottom: 40px;">
+                Deine Ergebnisse werden berechnet...
+            </p>
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="window.location.href='combined-leadership-profile.de.html'">
+                    Zurück zur Standard-Version
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Assessment data and state
+        const sections = {
+            1: { current: 0, total: 12, answers: {}, completed: false },
+            2: { current: 0, total: 14, answers: {}, completed: false },
+            3: { current: 0, total: 20, answers: {}, completed: false }
+        };
+
+        let currentSection = 1;
+
+        // Insight cards content - TAP-IN brand colors
+        const insightCards = {
+            w3: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; padding: 25px; border-radius: 12px; margin: 25px 0;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.3em;">💡 Did You Know?</h3>
+                    <p style="margin-bottom: 12px; line-height: 1.6;"><strong>Elon Musk</strong> schedules his day in 5-minute blocks (Sprinter), while <strong>Warren Buffett</strong> spends 80% of his time reading (Ultrarunner).</p>
+                    <p style="margin-bottom: 0; line-height: 1.6; opacity: 0.95;">Stanford Study: Teams that understand their work style are 40% more productive and experience 60% less burnout.</p>
+                </div>
+            `,
+            w6: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #c9513f 0%, #a93226 100%); color: white; padding: 25px; border-radius: 12px; margin: 25px 0;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.3em;">⚡ Energy Output</h3>
+                    <p style="margin-bottom: 12px; line-height: 1.6;"><strong>Jeff Bezos:</strong> "I make as few decisions as possible. Quality > Quantity."</p>
+                    <p style="margin-bottom: 0; line-height: 1.6; opacity: 0.95;"><strong>Gary Vaynerchuk:</strong> 15 meetings per day, constant energy — two completely different approaches, both successful.</p>
+                </div>
+            `,
+            w9: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #7a241b 0%, #5a1814 100%); color: white; padding: 25px; border-radius: 12px; margin: 25px 0;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.3em;">🔋 Recovery Patterns</h3>
+                    <p style="margin-bottom: 12px; line-height: 1.6;"><strong>Tony Schwartz Research:</strong> People work best in 90-minute cycles, followed by 20 minutes of recovery.</p>
+                    <p style="margin-bottom: 0; line-height: 1.6; opacity: 0.95;">But: Some need complete breaks (Sprinters), others recharge while working (Ultrarunners).</p>
+                </div>
+            `,
+            transition1: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #e8d5d1 0%, #f5e6e3 100%); color: #333; padding: 30px; border-radius: 12px; margin: 25px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 5px solid #a93226;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.4em; color: #a93226;">🎯 From Work Style to Leadership</h3>
+                    <p style="margin-bottom: 15px; line-height: 1.6;"><strong>Jocko Willink:</strong> "Leadership is the most important thing on the battlefield. And leadership is the most important thing in business."</p>
+                    <p style="margin-bottom: 15px; line-height: 1.6;"><strong>Simon Sinek:</strong> "Leaders eat last — your team's success is your success."</p>
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border: 2px solid #a93226;">
+                        <p style="font-weight: bold; margin-bottom: 10px; color: #a93226;">The 4 Leadership Archetypes:</p>
+                        <p style="margin: 0; line-height: 1.8;">🚀 Visionary | 🏗️ Architect | 🤝 Facilitator | ⚙️ Executor</p>
+                    </div>
+                </div>
+            `,
+            l4: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #f5e6e3 0%, #ffffff 100%); color: #333; padding: 30px; border-radius: 12px; margin: 25px 0; border: 2px solid #a93226;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.3em; color: #a93226;">🎯 The 4 Leadership Archetypes</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>🚀 Visionary</strong><br><span style="font-size: 0.9em; opacity: 0.9;">Steve Jobs, Elon Musk</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #c9513f 0%, #a93226 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>🏗️ Architect</strong><br><span style="font-size: 0.9em; opacity: 0.9;">Satya Nadella, Tim Cook</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #d67059 0%, #c9513f 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>🤝 Facilitator</strong><br><span style="font-size: 0.9em; opacity: 0.9;">Sheryl Sandberg, Indra Nooyi</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #7a241b 0%, #5a1814 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>⚙️ Executor</strong><br><span style="font-size: 0.9em; opacity: 0.9;">Jack Welch, Andy Grove</span>
+                        </div>
+                    </div>
+                </div>
+            `,
+            transition2: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #e8d5d1 0%, #f5e6e3 100%); color: #333; padding: 30px; border-radius: 12px; margin: 25px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-left: 5px solid #a93226;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.4em; color: #a93226;">🤝 From Leadership to Team Dynamics</h3>
+                    <p style="margin-bottom: 15px; line-height: 1.6;"><strong>Google's Project Aristotle:</strong> Psychological safety is the #1 factor for high-performing teams.</p>
+                    <p style="margin-bottom: 15px; line-height: 1.6;"><strong>Patrick Lencioni's 5 Dysfunctions:</strong> Trust → Conflict → Commitment → Accountability → Results</p>
+                    <div style="background: white; padding: 20px; border-radius: 8px; margin-top: 20px; border: 2px solid #a93226; display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px;">
+                        <div style="text-align: center;"><span style="font-size: 2em;">🛡️</span><br><small>Trust</small></div>
+                        <div style="text-align: center;"><span style="font-size: 2em;">⚔️</span><br><small>Conflict</small></div>
+                        <div style="text-align: center;"><span style="font-size: 2em;">🎯</span><br><small>Commitment</small></div>
+                        <div style="text-align: center;"><span style="font-size: 2em;">✓</span><br><small>Accountability</small></div>
+                        <div style="text-align: center;"><span style="font-size: 2em;">🏆</span><br><small>Results</small></div>
+                    </div>
+                </div>
+            `,
+            t4: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; padding: 25px; border-radius: 12px; margin: 25px 0;">
+                    <h3 style="margin-bottom: 15px; font-size: 1.3em;">🛡️ Trust: The Foundation</h3>
+                    <p style="margin-bottom: 12px; line-height: 1.6;"><strong>Patrick Lencioni:</strong> "Trust is the confidence among team members that their peers' intentions are good, and that there is no reason to be protective or careful around the group."</p>
+                    <p style="margin-bottom: 0; line-height: 1.6; opacity: 0.95;">Harvard Study: High-trust teams are 2.5x more productive and report 74% less stress.</p>
+                </div>
+            `,
+            t12: `
+                <div class="insight-card" style="background: linear-gradient(135deg, #f5e6e3 0%, #ffffff 100%); color: #333; padding: 30px; border-radius: 12px; margin: 25px 0; border: 2px solid #a93226;">
+                    <h3 style="margin-bottom: 20px; font-size: 1.3em; color: #a93226;">💬 SBIR: The Feedback Framework</h3>
+                    <p style="margin-bottom: 20px; line-height: 1.6; font-style: italic; font-weight: 500;">Feedback is best served hot – focus on the most recent situation</p>
+                    <div style="display: grid; gap: 12px;">
+                        <div style="background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>📍 S - Situation</strong><br>
+                            <span style="font-size: 0.9em; opacity: 0.9;">When & where exactly? "Yesterday in client meeting at 2pm..."</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #c9513f 0%, #a93226 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>👀 B - Behaviour</strong><br>
+                            <span style="font-size: 0.9em; opacity: 0.9;">What you observed (objective, not interpreted). "You interrupted 3 times..."</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #d67059 0%, #c9513f 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>💥 I - Impact</strong><br>
+                            <span style="font-size: 0.9em; opacity: 0.9;">Consequences of the behavior. "Client seemed frustrated, we lost the thread..."</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #7a241b 0%, #5a1814 100%); color: white; padding: 15px; border-radius: 8px;">
+                            <strong>🎯 R - Result</strong><br>
+                            <span style="font-size: 0.9em; opacity: 0.9;">Clear request for next time. "Next time, please let the client finish."</span>
+                        </div>
+                    </div>
+                    <div style="background: rgba(169, 50, 38, 0.1); border-left: 4px solid #a93226; padding: 15px; margin-top: 15px; border-radius: 4px;">
+                        <p style="margin-bottom: 8px; font-weight: 600; color: #a93226;">⚠️ When needed: Clarify risks or consequences</p>
+                        <p style="margin: 0; font-size: 0.95em; color: #333;">💡 Rule: Objective, concise, not insulting — address the behavior, not the person</p>
+                    </div>
+                </div>
+            `
+                    <div style="background: rgba(214, 51, 132, 0.1); border-left: 4px solid #d63384; padding: 15px; margin-top: 15px; border-radius: 4px;">
+                        <p style="margin-bottom: 8px; font-weight: 600;">⚠️ Bei Bedarf: Kläre Risiken oder Konsequenzen</p>
+                        <p style="margin: 0; font-size: 0.95em;">💡 Regel: Objektiv, präzise, nicht beleidigend — adressiere das Verhalten, nicht die Person</p>
+                    </div>
+                </div>
+            `
+        };
+
+        // Worker Type Questions (Section 1)
+        const workerQuestions = [
+            {
+                id: 'w1',
+                text: 'Wie gehst du am liebsten an deine Arbeit heran?',
+                options: [
+                    { value: 'sprinter', label: 'In intensiven Schüben mit Pausen dazwischen' },
+                    { value: 'jogger', label: 'In einem gleichmäßigen, konsistenten Tempo über den Tag' },
+                    { value: 'ultrarunner', label: 'Langsam und methodisch, nachhaltig über lange Zeiträume' }
+                ]
+            },
+            {
+                id: 'w2',
+                text: 'Wenn du einer Deadline gegenüberstehst:',
+                options: [
+                    { value: 'sprinter', label: 'Blühst du unter Druck auf und arbeitest am besten in letzter Minute' },
+                    { value: 'jogger', label: 'Behältst du stetigen Fortschritt bei, um pünktlich fertig zu werden' },
+                    { value: 'ultrarunner', label: 'Fängst du früh an und teilst dir die Zeit ein, um Stress zu vermeiden' }
+                ]
+            },
+            {
+                id: 'w3',
+                text: 'Deine Energielevel im Laufe des Tages sind:',
+                options: [
+                    { value: 'sprinter', label: 'Höhen und Tiefen - hohe Energie, dann Erholungsbedarf' },
+                    { value: 'jogger', label: 'Relativ stabil und vorhersagbar' },
+                    { value: 'ultrarunner', label: 'Gleichbleibend und ausdauernd, schwanken selten' }
+                ]
+            },
+            // Continue with all 12 worker questions...
+            { id: 'w4', text: 'Wie gehst du mit mehreren Projekten um?', options: [
+                { value: 'sprinter', label: 'Fokussiere dich intensiv auf eins, schließe es ab, dann das nächste' },
+                { value: 'jogger', label: 'Balanciere die Zeit über die Projekte in der Woche' },
+                { value: 'ultrarunner', label: 'Mache langsamen, konsistenten Fortschritt bei allen gleichzeitig' }
+            ]},
+            { id: 'w5', text: 'Deine ideale Arbeitsumgebung erlaubt dir:', options: [
+                { value: 'sprinter', label: 'In kurzen, fokussierten Sessions mit Flexibilität für Pausen zu arbeiten' },
+                { value: 'jogger', label: 'Eine regelmäßige Routine und konsistenten Zeitplan zu haben' },
+                { value: 'ultrarunner', label: 'In deinem eigenen Tempo ohne Zeitdruck zu arbeiten' }
+            ]},
+            { id: 'w6', text: 'Nach Abschluss eines großen Projekts:', options: [
+                { value: 'sprinter', label: 'Brauchst du signifikante Auszeit vor der nächsten Herausforderung' },
+                { value: 'jogger', label: 'Wechselst du nahtlos zum nächsten Projekt' },
+                { value: 'ultrarunner', label: 'Bist du bereits mitten in der nächsten Langzeitinitiative' }
+            ]},
+            { id: 'w7', text: 'Beim Lernen von etwas Neuem bevorzugst du:', options: [
+                { value: 'sprinter', label: 'Intensiv einzutauchen und es schnell zu meistern' },
+                { value: 'jogger', label: 'Regelmäßige Übung über Wochen aufzubauen' },
+                { value: 'ultrarunner', label: 'Langsam zu lernen und tief zu verstehen' }
+            ]},
+            { id: 'w8', text: 'Du bist am produktivsten, wenn:', options: [
+                { value: 'sprinter', label: 'Es eine klare Deadline gibt, die Dringlichkeit schafft' },
+                { value: 'jogger', label: 'Du eine strukturierte Routine zu befolgen hast' },
+                { value: 'ultrarunner', label: 'Du ausreichend Zeit für gründliche Arbeit hast' }
+            ]},
+            { id: 'w9', text: 'Wie lädst du auf?', options: [
+                { value: 'sprinter', label: 'Komplette Pausen von der Arbeit - klare Grenzen' },
+                { value: 'jogger', label: 'Regelmäßige kurze Pausen über den Tag verteilt' },
+                { value: 'ultrarunner', label: 'Fühlst dich selten erschöpft - Arbeit ist nachhaltig' }
+            ]},
+            { id: 'w10', text: 'In einer typischen Arbeitswoche bevorzugst du:', options: [
+                { value: 'sprinter', label: 'Vielfalt und Intensität - täglich verschiedene Herausforderungen' },
+                { value: 'jogger', label: 'Vorhersagbare Struktur mit etwas Abwechslung' },
+                { value: 'ultrarunner', label: 'Konsistenz - ähnliche Aufgaben und Rhythmen' }
+            ]},
+            { id: 'w11', text: 'Dein Ansatz zu Meetings ist:', options: [
+                { value: 'sprinter', label: 'Kurz und intensiv - rein, entscheiden, raus' },
+                { value: 'jogger', label: 'Regelmäßig geplant mit klaren Agenden' },
+                { value: 'ultrarunner', label: 'Gründliche Diskussionen - sich die benötigte Zeit nehmen' }
+            ]},
+            { id: 'w12', text: 'Wenn du gestresst bist, tendierst du dazu:', options: [
+                { value: 'sprinter', label: 'Ihn in schnelle, fokussierte Aktion kanalisierst' },
+                { value: 'jogger', label: 'Deine normale Routine und Tempo beibehältst' },
+                { value: 'ultrarunner', label: 'Ruhig und methodisch bleibst' }
+            ]}
+        ];
+
+        // Leadership Style Questions (Section 2)
+        const leadershipQuestions = [
+            { id: 'l1', text: 'Wenn dein Team vor einer großen Herausforderung steht:', options: [
+                { value: 'visionary', label: 'Präsentierst du eine inspirierende Vision, wohin wir gehen' },
+                { value: 'architect', label: 'Entwirfst du einen detaillierten Plan, wie wir dorthin kommen' },
+                { value: 'facilitator', label: 'Versammelst du das Team, um gemeinsam Lösungen zu finden' },
+                { value: 'executor', label: 'Weist Aufgaben zu und verfolgst den Fortschritt' }
+            ]},
+            { id: 'l2', text: 'Teammitglieder kommen typischerweise zu dir für:', options: [
+                { value: 'visionary', label: 'Inspiration und Richtung' },
+                { value: 'architect', label: 'Struktur und Prozesse' },
+                { value: 'facilitator', label: 'Support und Ermutigung' },
+                { value: 'executor', label: 'Klare Entscheidungen und Verantwortlichkeit' }
+            ]},
+            { id: 'l3', text: 'Dein Führungsstil betont:', options: [
+                { value: 'visionary', label: 'Zukunftsmöglichkeiten und große Ideen' },
+                { value: 'architect', label: 'Systeme, Prozesse und Effizienz' },
+                { value: 'facilitator', label: 'Menschen-Entwicklung und Zusammenarbeit' },
+                { value: 'executor', label: 'Ergebnisse, Resultate und Leistung' }
+            ]},
+            { id: 'l4', text: 'In Meetings tendierst du dazu:', options: [
+                { value: 'visionary', label: 'Über Möglichkeiten und zukünftige Chancen zu sprechen' },
+                { value: 'architect', label: 'Systeme und Verbesserungen zu diskutieren' },
+                { value: 'facilitator', label: 'Sicherzustellen, dass alle gehört werden' },
+                { value: 'executor', label: 'Auf Resultate und Aktionspunkte zu fokussieren' }
+            ]},
+            { id: 'l5', text: 'Bei Entscheidungen priorisierst du:', options: [
+                { value: 'visionary', label: 'Ob es mit unserer langfristigen Vision übereinstimmt' },
+                { value: 'architect', label: 'Ob es logisch und gut durchdacht ist' },
+                { value: 'facilitator', label: 'Wie es das Team beeinflusst' },
+                { value: 'executor', label: 'Ob es zu konkreten Ergebnissen führt' }
+            ]},
+            { id: 'l6', text: 'Du motivierst dein Team am besten, indem du:', options: [
+                { value: 'visionary', label: 'Die größere Mission und Impact teilts' },
+                { value: 'architect', label: 'Zeigts, wie ihre Arbeit ins größere System passt' },
+                { value: 'facilitator', label: 'Ihre Beiträge anerkennts und unterstützt' },
+                { value: 'executor', label: 'Erfolge feierst und Ziele setst' }
+            ]},
+            { id: 'l7', text: 'Wenn Probleme auftreten:', options: [
+                { value: 'visionary', label: 'Reframst du sie als Chancen' },
+                { value: 'architect', label: 'Analysierst du die Ursache und redesignst Prozesse' },
+                { value: 'facilitator', label: 'Versammelst du das Team zur Problemlösung' },
+                { value: 'executor', label: 'Handelst schnell, um sie zu beheben' }
+            ]},
+            { id: 'l8', text: 'Deine Team-Kommunikation tendiert dazu:', options: [
+                { value: 'visionary', label: 'Inspirierend und zukunftsorientiert zu sein' },
+                { value: 'architect', label: 'Detailliert und prozessorientiert zu sein' },
+                { value: 'facilitator', label: 'Unterstützend und inklusiv zu sein' },
+                { value: 'executor', label: 'Direkt und ergebnisorientiert zu sein' }
+            ]},
+            { id: 'l9', text: 'Du verbringst die meiste Zeit mit:', options: [
+                { value: 'visionary', label: 'Zukunftsstrategie und Möglichkeiten' },
+                { value: 'architect', label: 'Systeme und Prozesse verbessern' },
+                { value: 'facilitator', label: 'Team-Entwicklung und Beziehungen' },
+                { value: 'executor', label: 'Fortschritt überwachen und Resultate vorantreiben' }
+            ]},
+            { id: 'l10', text: 'Deine Hauptstärke als Leader ist:', options: [
+                { value: 'visionary', label: 'Andere inspirieren, das Größere zu sehen' },
+                { value: 'architect', label: 'Effiziente Systeme erschaffen' },
+                { value: 'facilitator', label: 'Menschen zusammenbringen und einbeziehen' },
+                { value: 'executor', label: 'Dinge erledigen und Ziele erreichen' }
+            ]},
+            { id: 'l11', text: 'Beim Delegieren von Aufgaben:', options: [
+                { value: 'visionary', label: 'Gibst du dem Team Autonomie, die Vision zu verfolgen' },
+                { value: 'architect', label: 'Stellst klare Prozesse und Erwartungen auf' },
+                { value: 'facilitator', label: 'Matchst Aufgaben mit Stärken und Interessen' },
+                { value: 'executor', label: 'Setzt Ziele, Deadlines und verfolgst Resultate' }
+            ]},
+            { id: 'l12', text: 'Erfolg für dein Team bedeutet:', options: [
+                { value: 'visionary', label: 'Eine größere Mission erreichen' },
+                { value: 'architect', label: 'Gut funktionierende Systeme und Prozesse' },
+                { value: 'facilitator', label: 'Ein glückliches, engagiertes Team' },
+                { value: 'executor', label: 'Messbare Ziele erreichen und übertreffen' }
+            ]},
+            { id: 'l13', text: 'Deine Herangehensweise an Innovation ist:', options: [
+                { value: 'visionary', label: 'Grenzen verschieben und neu denken' },
+                { value: 'architect', label: 'Bestehende Systeme methodisch verbessern' },
+                { value: 'facilitator', label: 'Team-Kreativität und Zusammenarbeit fördern' },
+                { value: 'executor', label: 'Ideen schnell in umsetzbare Resultate verwandeln' }
+            ]},
+            { id: 'l14', text: 'Wenn dein Team kämpft:', options: [
+                { value: 'visionary', label: 'Erinnerst du an das Warum und größere Ziel' },
+                { value: 'architect', label: 'Untersuchst du, was im System nicht funktioniert' },
+                { value: 'facilitator', label: 'Bietest emotionalen Support und Ressourcen an' },
+                { value: 'executor', label: 'Schaffst klare Prioritäten und entfernst Blockaden' }
+            ]}
+        ];
+
+        // Team Dynamics Questions (Section 3)
+        const teamQuestions = [
+            { id: 't1', text: 'Teammitglieder fühlen sich wohl, Verletzlichkeit zu zeigen:', options: [
+                { value: 5, label: 'Immer - wir teilen offen Fehler und Schwächen' },
+                { value: 4, label: 'Oft - es gibt ein hohes Maß an Vertrauen' },
+                { value: 3, label: 'Manchmal - abhängig von der Situation' },
+                { value: 2, label: 'Selten - die meisten bleiben geschützt' },
+                { value: 1, label: 'Nie - wir zeigen keine Schwäche' }
+            ]},
+            { id: 't2', text: 'Wir beteiligen uns an leidenschaftlichen Debatten über Ideen:', options: [
+                { value: 5, label: 'Regelmäßig - wir diskutieren verschiedene Sichtweisen' },
+                { value: 4, label: 'Häufig - lebhafte Diskussionen sind normal' },
+                { value: 3, label: 'Gelegentlich - wenn es wirklich wichtig ist' },
+                { value: 2, label: 'Selten - wir vermeiden Konflikte' },
+                { value: 1, label: 'Nie - wir halten Harmonie aufrecht' }
+            ]},
+            { id: 't3', text: 'Einmal gefällt, commited sich das Team voll zu Entscheidungen:', options: [
+                { value: 5, label: 'Immer - auch wenn wir anderer Meinung waren' },
+                { value: 4, label: 'Gewöhnlich - nach gründlicher Diskussion' },
+                { value: 3, label: 'Manchmal - abhängig von der Entscheidung' },
+                { value: 2, label: 'Selten - viele bleiben ambivalent' },
+                { value: 1, label: 'Nie - Leute machen ihr eigenes Ding' }
+            ]},
+            { id: 't4', text: 'Teammitglieder stellen sich gegenseitig zur Rechenschaft:', options: [
+                { value: 5, label: 'Regelmäßig - wir sprechen Performance-Probleme an' },
+                { value: 4, label: 'Häufig - die meisten fühlen sich wohl damit' },
+                { value: 3, label: 'Manchmal - wenn es offensichtlich ist' },
+                { value: 2, label: 'Selten - wir zögern, Kollegen anzusprechen' },
+                { value: 1, label: 'Nie - nur Leader adressieren Probleme' }
+            ]},
+            { id: 't5', text: 'Das Team priorisiert kollektive Ergebnisse über persönlichen Status:', options: [
+                { value: 5, label: 'Immer - Team-Erfolg kommt zuerst' },
+                { value: 4, label: 'Gewöhnlich - wir fokussieren auf gemeinsame Ziele' },
+                { value: 3, label: 'Manchmal - ausbalanciert mit individuellen Zielen' },
+                { value: 2, label: 'Selten - persönliche Agenden dominieren' },
+                { value: 1, label: 'Nie - individuelle Ziele kommen zuerst' }
+            ]},
+            { id: 't6', text: 'Wie oft hat dein Team produktive Konfliktgespräche?', options: [
+                { value: 5, label: 'Sehr häufig - es ist Teil unserer Kultur' },
+                { value: 4, label: 'Regelmäßig - wir arbeiten durch Themen' },
+                { value: 3, label: 'Gelegentlich - wenn notwendig' },
+                { value: 2, label: 'Selten - wir vermeiden schwierige Gespräche' },
+                { value: 1, label: 'Nie - wir halten den Frieden' }
+            ]},
+            { id: 't7', text: 'Meetings sind produktiv und fokussiert:', options: [
+                { value: 5, label: 'Immer - wir erreichen klare Ergebnisse' },
+                { value: 4, label: 'Meistens - wir bleiben on track' },
+                { value: 3, label: 'Manchmal - Qualität variiert' },
+                { value: 2, label: 'Selten - oft abgelenkt oder ineffizient' },
+                { value: 1, label: 'Nie - Meetings sind Zeitverschwendung' }
+            ]},
+            { id: 't8', text: 'Team-Mitglieder verstehen ihre Rollen und Verantwortlichkeiten:', options: [
+                { value: 5, label: 'Kristallklar - jeder kennt sein Verantwortungsgebiet' },
+                { value: 4, label: 'Sehr klar - minimale Überschneidungen' },
+                { value: 3, label: 'Einigermaßen klar - etwas Verwirrung' },
+                { value: 2, label: 'Unklar - häufige Überschneidungen' },
+                { value: 1, label: 'Sehr unklar - ständige Verwirrung' }
+            ]},
+            { id: 't9', text: 'Wir feiern Siege und lernen aus Niederlagen gemeinsam:', options: [
+                { value: 5, label: 'Immer - beide sind Lernchancen' },
+                { value: 4, label: 'Häufig - wir reflektieren als Team' },
+                { value: 3, label: 'Manchmal - abhängig von der Situation' },
+                { value: 2, label: 'Selten - wir machen schnell weiter' },
+                { value: 1, label: 'Nie - wir fokussieren nur auf das Nächste' }
+            ]},
+            { id: 't10', text: 'Information wird offen im Team geteilt:', options: [
+                { value: 5, label: 'Vollständig - volle Transparenz' },
+                { value: 4, label: 'Meistens - wichtige Infos werden geteilt' },
+                { value: 3, label: 'Teilweise - etwas wird zurückgehalten' },
+                { value: 2, label: 'Selten - Infos sind siloed' },
+                { value: 1, label: 'Nie - jeder hält Infos zurück' }
+            ]},
+            { id: 't11', text: 'Team-Mitglieder bringen proaktiv Lösungen, nicht nur Probleme:', options: [
+                { value: 5, label: 'Immer - Lösungsorientierte Denkweise' },
+                { value: 4, label: 'Meistens - mit Vorschlägen' },
+                { value: 3, label: 'Manchmal - Mix aus beidem' },
+                { value: 2, label: 'Selten - meist nur Probleme' },
+                { value: 1, label: 'Nie - konstantes Beschweren' }
+            ]},
+            { id: 't12', text: 'Feedback wird zeitnah und konstruktiv gegeben:', options: [
+                { value: 5, label: 'Immer - echte Feedback-Kultur' },
+                { value: 4, label: 'Häufig - regelmäßige Check-ins' },
+                { value: 3, label: 'Manchmal - bei formalen Reviews' },
+                { value: 2, label: 'Selten - vermeiden schwierige Gespräche' },
+                { value: 1, label: 'Nie - nur in Krisen' }
+            ]},
+            { id: 't13', text: 'Das Team adaptiert sich schnell an Veränderungen:', options: [
+                { value: 5, label: 'Sehr schnell - wir umarmen Veränderung' },
+                { value: 4, label: 'Ziemlich schnell - meist offen' },
+                { value: 3, label: 'Moderat - brauchen etwas Zeit' },
+                { value: 2, label: 'Langsam - Widerstand ist üblich' },
+                { value: 1, label: 'Sehr langsam - kämpfen mit Veränderung' }
+            ]},
+            { id: 't14', text: 'Wir haben eine klare Team-Vision und Ziele:', options: [
+                { value: 5, label: 'Kristallklar - jeder kennt sie' },
+                { value: 4, label: 'Sehr klar - gut kommuniziert' },
+                { value: 3, label: 'Einigermaßen klar - etwas vage' },
+                { value: 2, label: 'Unklar - inkonsistentes Verständnis' },
+                { value: 1, label: 'Nicht vorhanden - kein gemeinsames Ziel' }
+            ]},
+            { id: 't15', text: 'Team-Mitglieder unterstützen sich gegenseitig aktiv:', options: [
+                { value: 5, label: 'Immer - starke gegenseitige Unterstützung' },
+                { value: 4, label: 'Häufig - sehr kollaborativ' },
+                { value: 3, label: 'Manchmal - gelegentliche Hilfe' },
+                { value: 2, label: 'Selten - meist alleine arbeitend' },
+                { value: 1, label: 'Nie - jeder für sich' }
+            ]},
+            { id: 't16', text: 'Entscheidungen werden zeitnah getroffen:', options: [
+                { value: 5, label: 'Sehr schnell - klarer Prozess' },
+                { value: 4, label: 'Ziemlich schnell - angemessene Geschwindigkeit' },
+                { value: 3, label: 'Moderat - manchmal verzögert' },
+                { value: 2, label: 'Langsam - häufige Verzögerungen' },
+                { value: 1, label: 'Sehr langsam - Analyse-Paralyse' }
+            ]},
+            { id: 't17', text: 'Wir haben psychologische Sicherheit - können Risiken eingehen:', options: [
+                { value: 5, label: 'Voll - sichere Umgebung für Experimente' },
+                { value: 4, label: 'Meistens - ermutigt Innovation' },
+                { value: 3, label: 'Teilweise - abhängig vom Kontext' },
+                { value: 2, label: 'Wenig - Angst vor Fehlern' },
+                { value: 1, label: 'Keine - sehr risiko-avers' }
+            ]},
+            { id: 't18', text: 'Team-Meetings sind inklusiv - alle Stimmen werden gehört:', options: [
+                { value: 5, label: 'Immer - aktiv alle einbeziehen' },
+                { value: 4, label: 'Meistens - bemühen uns um Input' },
+                { value: 3, label: 'Manchmal - gleiche Stimmen dominieren' },
+                { value: 2, label: 'Selten - nur wenige sprechen' },
+                { value: 1, label: 'Nie - von Lautstärke dominiert' }
+            ]},
+            { id: 't19', text: 'Konflikte werden konstruktiv gelöst:', options: [
+                { value: 5, label: 'Immer - gesunder Konfliktprozess' },
+                { value: 4, label: 'Häufig - arbeiten durch Themen' },
+                { value: 3, label: 'Manchmal - abhängig vom Thema' },
+                { value: 2, label: 'Selten - bleiben oft ungelöst' },
+                { value: 1, label: 'Nie - werden ignoriert oder eskalieren' }
+            ]},
+            { id: 't20', text: 'Das Team balanciert Autonomie mit Collaboration:', options: [
+                { value: 5, label: 'Perfekt - beste Balance' },
+                { value: 4, label: 'Sehr gut - effektiver Mix' },
+                { value: 3, label: 'Angemessen - könnte besser sein' },
+                { value: 2, label: 'Unausgewogen - zu viel von einem' },
+                { value: 1, label: 'Schlecht - dysfunktional' }
+            ]}
+        ];
+
+        // Initialize first section
+        window.addEventListener('DOMContentLoaded', () => {
+            renderQuestion(1);
+        });
+
+        function renderQuestion(sectionNum) {
+            const section = sections[sectionNum];
+            const container = document.getElementById(`section${sectionNum}Content`);
+            const questionIndex = section.current;
+
+            // Get questions based on section
+            let questions, insightAfter;
+            if (sectionNum === 1) {
+                questions = workerQuestions;
+                insightAfter = {3: 'w3', 6: 'w6', 9: 'w9', 12: 'transition1'};
+            } else if (sectionNum === 2) {
+                questions = leadershipQuestions;
+                insightAfter = {4: 'l4', 14: 'transition2'};
+            } else {
+                questions = teamQuestions;
+                insightAfter = {4: 't4', 12: 't12'};
+            }
+
+            if (questionIndex >= questions.length) {
+                completeSection(sectionNum);
+                return;
+            }
+
+            const q = questions[questionIndex];
+            const questionNumber = sectionNum === 1 ? questionIndex + 1 :
+                                   sectionNum === 2 ? questionIndex + 13 :
+                                   questionIndex + 27;
+
+            let html = `
+                <div class="question-carousel">
+                    <div class="question-number">Frage ${questionNumber} von 46 - ${getSectionName(sectionNum)}</div>
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+            `;
+
+            q.options.forEach((opt, idx) => {
+                const checked = section.answers[q.id] === opt.value ? 'selected' : '';
+                html += `
+                    <label class="option ${checked}">
+                        <input type="radio" name="${q.id}" value="${opt.value}" 
+                               onchange="selectAnswer(${sectionNum}, '${q.id}', '${opt.value}')">
+                        <span class="option-label">${opt.label}</span>
+                    </label>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+                <div class="carousel-nav">
+                    <button class="btn btn-secondary" onclick="prevQuestion(${sectionNum})" 
+                            ${questionIndex === 0 ? 'style="visibility:hidden"' : ''}>
+                        ← Zurück
+                    </button>
+                    <button class="btn btn-primary" id="nextBtn${sectionNum}" 
+                            onclick="nextQuestion(${sectionNum})"
+                            ${!section.answers[q.id] ? 'disabled' : ''}>
+                        ${questionIndex < questions.length - 1 ? 'Weiter →' : 'Abschnitt abschließen'}
+                    </button>
+                </div>
+            `;
+
+            // Add insight card after specific questions
+            if (insightAfter[questionIndex + 1] && insightCards[insightAfter[questionIndex + 1]]) {
+                html += insightCards[insightAfter[questionIndex + 1]];
+            }
+
+            container.innerHTML = html;
+
+            // Add click handlers for options
+            container.querySelectorAll('.option').forEach(opt => {
+                opt.addEventListener('click', function() {
+                    this.querySelector('input').click();
+                });
+            });
+
+            updateProgress();
+        }
+
+        function selectAnswer(sectionNum, questionId, value) {
+            sections[sectionNum].answers[questionId] = value;
+            
+            // Update UI
+            const container = document.getElementById(`section${sectionNum}Content`);
+            container.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            event.target.closest('.option').classList.add('selected');
+            
+            // Enable next button
+            document.getElementById(`nextBtn${sectionNum}`).disabled = false;
+        }
+
+        function nextQuestion(sectionNum) {
+            sections[sectionNum].current++;
+            renderQuestion(sectionNum);
+        }
+
+        function prevQuestion(sectionNum) {
+            if (sections[sectionNum].current > 0) {
+                sections[sectionNum].current--;
+                renderQuestion(sectionNum);
+            }
+        }
+
+        function completeSection(sectionNum) {
+            sections[sectionNum].completed = true;
+            
+            // Update header
+            const header = document.getElementById(`section${sectionNum}Header`);
+            header.classList.add('completed');
+            header.classList.remove('locked');
+            
+            // Unlock next section
+            if (sectionNum < 3) {
+                const nextHeader = document.getElementById(`section${sectionNum + 1}Header`);
+                nextHeader.classList.remove('locked');
+                toggleSection(sectionNum + 1);
+            } else {
+                // All sections complete - show results
+                showResults();
+            }
+            
+            updateProgress();
+        }
+
+        function toggleSection(sectionNum) {
+            const section = document.getElementById(`section${sectionNum}`);
+            const header = document.getElementById(`section${sectionNum}Header`);
+            
+            if (header.classList.contains('locked')) return;
+            
+            // Close other sections
+            [1, 2, 3].forEach(num => {
+                if (num !== sectionNum) {
+                    document.getElementById(`section${num}`).classList.remove('active');
+                }
+            });
+            
+            section.classList.toggle('active');
+            currentSection = sectionNum;
+        }
+
+        function updateProgress() {
+            let totalAnswered = 0;
+            
+            [1, 2, 3].forEach(num => {
+                const answered = Object.keys(sections[num].answers).length;
+                const total = sections[num].total;
+                totalAnswered += answered;
+                
+                // Update section progress badge
+                document.getElementById(`section${num}Progress`).textContent = `${answered}/${total}`;
+            });
+            
+            // Update overall progress
+            document.getElementById('overallProgressText').textContent = `${totalAnswered}/46 Questions`;
+            document.getElementById('overallProgressFill').style.width = `${(totalAnswered / 46) * 100}%`;
+        }
+
+        function getSectionName(num) {
+            return num === 1 ? 'Arbeitsstil' : num === 2 ? 'Führung' : 'Team-Dynamik';
+        }
+
+        function showResults() {
+            document.getElementById('assessmentContainer').style.display = 'none';
+            document.getElementById('results').classList.add('active');
+        }
+    </script>
+</body>
+</html>
