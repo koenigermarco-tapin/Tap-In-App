@@ -422,6 +422,29 @@
             // Hide form, show results
             assessmentForm.style.display = 'none';
             resultsContainer.classList.add('active');
+            
+            // Add social sharing section at top
+            const socialSharingHTML = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+                    <h3 style="color: white; margin-bottom: 0.5rem;">📱 Share Your Wellness Score</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 1.5rem; opacity: 0.95;">Normalize mental health conversations</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            LinkedIn
+                        </button>
+                        <button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            Twitter
+                        </button>
+                        <button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                    <div id="shareCanvas" style="margin: 1.5rem auto; max-width: 600px;"></div>
+                    <p style="font-size: 0.85rem; opacity: 0.8;">💡 Talking about wellness reduces stigma</p>
+                </div>
+            `;
+            resultsContainer.insertAdjacentHTML('afterbegin', socialSharingHTML);
+            
             // Calculate total and section scores
             let total = 0;
             const sectionRanges = [ [0,3], [4,7], [8,11], [12,15], [16,19] ];
@@ -480,6 +503,123 @@
                 recHtml = `<h4>Critical: Seek Support</h4><p>Your well-being is at risk. Please consider talking to a professional or trusted person for help.</p>`;
             }
             recDiv.innerHTML = recHtml;
+            
+            // Initialize social sharing
+            setTimeout(() => initializeSocialSharing(total, cat), 500);
+        }
+
+        // Social Sharing Functions
+        let currentProfile = {};
+
+        function initializeSocialSharing(totalScore, category) {
+            currentProfile = { totalScore, category };
+            generateShareCard();
+        }
+
+        function generateShareCard() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1200;
+            canvas.height = 630;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#a93226');
+            gradient.addColorStop(1, '#7a241b');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            for (let i = 0; i < 20; i++) {
+                ctx.fillRect(i * 60, 0, 30, canvas.height);
+            }
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 56px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.textAlign = 'center';
+
+            ctx.fillText('My Mental Wellness Score:', canvas.width / 2, 180);
+            
+            ctx.font = 'bold 120px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillText(currentProfile.totalScore + '/100', canvas.width / 2, 330);
+            
+            ctx.font = 'bold 48px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillText(currentProfile.category, canvas.width / 2, 420);
+
+            ctx.font = '32px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('How\'s YOUR mental wellness?', canvas.width / 2, 550);
+
+            const shareCanvas = document.getElementById('shareCanvas');
+            if (shareCanvas) {
+                shareCanvas.innerHTML = `<img src="${canvas.toDataURL()}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card">`;
+            }
+        }
+
+        function getShareText() {
+            return `I scored ${currentProfile.totalScore}/100 on the Mental Wellness Assessment!
+
+Category: ${currentProfile.category}
+
+5 dimensions measured:
+• Emotional Well-being
+• Physical Vitality
+• Stress Resilience
+• Social Connection
+• Meaning & Purpose
+
+Taking care of mental health is taking care of everything.
+
+How's YOUR mental wellness?`;
+        }
+
+        function shareToLinkedIn() {
+            const text = encodeURIComponent(getShareText());
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, '_blank');
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    'event_category': 'Social',
+                    'event_label': 'LinkedIn_Mental',
+                    'value': 1
+                });
+            }
+        }
+
+        function shareToTwitter() {
+            const text = encodeURIComponent(getShareText());
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=MentalHealth,Wellness`, '_blank');
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    'event_category': 'Social',
+                    'event_label': 'Twitter_Mental',
+                    'value': 1
+                });
+            }
+        }
+
+        function copyShareLink() {
+            const shareText = getShareText() + '\n\n' + window.location.href;
+            navigator.clipboard.writeText(shareText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(255,255,255,0.2)';
+                }, 2000);
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'share', {
+                        'event_category': 'Social',
+                        'event_label': 'Copy_Link_Mental',
+                        'value': 1
+                    });
+                }
+            });
         }
     </script>
 </body>

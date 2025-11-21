@@ -531,6 +531,29 @@
             document.getElementById('totalScore').textContent = totalScore;
             document.getElementById('overallLabel').textContent = overallLabel;
 
+            // Add social sharing section at top of results
+            const resultsContainer = document.getElementById('resultsContainer');
+            const socialSharingHTML = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; text-align: center;">
+                    <h3 style="color: white; margin-bottom: 0.5rem;">📱 Share Your Balance Score</h3>
+                    <p style="font-size: 0.95rem; margin-bottom: 1.5rem; opacity: 0.95;">Help normalize work-life balance conversations</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            LinkedIn
+                        </button>
+                        <button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            Twitter
+                        </button>
+                        <button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                            📋 Copy Link
+                        </button>
+                    </div>
+                    <div id="shareCanvas" style="margin: 1.5rem auto; max-width: 600px;"></div>
+                    <p style="font-size: 0.85rem; opacity: 0.8;">💡 Sharing reduces stigma around burnout prevention</p>
+                </div>
+            `;
+            resultsContainer.insertAdjacentHTML('afterbegin', socialSharingHTML);
+
             const categoryLabels = {
                 energy: { icon: '⚡', name: 'Energy Management', color: '#f4a261' },
                 boundaries: { icon: '🛡️', name: 'Boundary Setting', color: '#457b9d' },
@@ -606,6 +629,125 @@
             }
             
             window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Initialize social sharing
+            setTimeout(() => initializeSocialSharing(totalScore, percentage, overallLabel), 500);
+        }
+
+        // Social Sharing Functions
+        let currentProfile = {};
+
+        function initializeSocialSharing(totalScore, percentage, levelText) {
+            currentProfile = { totalScore, percentage, levelText };
+            generateShareCard();
+        }
+
+        function generateShareCard() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1200;
+            canvas.height = 630;
+            const ctx = canvas.getContext('2d');
+
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            gradient.addColorStop(0, '#a93226');
+            gradient.addColorStop(1, '#7a241b');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.05)';
+            for (let i = 0; i < 20; i++) {
+                ctx.fillRect(i * 60, 0, 30, canvas.height);
+            }
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 56px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.textAlign = 'center';
+
+            ctx.fillText('My Work-Life Balance:', canvas.width / 2, 180);
+            
+            ctx.font = 'bold 120px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillText(currentProfile.percentage + '%', canvas.width / 2, 330);
+            
+            ctx.font = 'bold 40px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            // Remove emoji from level text for cleaner card
+            const cleanLabel = currentProfile.levelText.replace(/[^\w\s-]/g, '').trim();
+            ctx.fillText(cleanLabel, canvas.width / 2, 420);
+
+            ctx.font = '32px -apple-system, BlinkMacSystemFont, "Segoe UI", Arial';
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+            ctx.fillText('How sustainable is YOUR pace?', canvas.width / 2, 550);
+
+            const shareCanvas = document.getElementById('shareCanvas');
+            if (shareCanvas) {
+                shareCanvas.innerHTML = `<img src="${canvas.toDataURL()}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card">`;
+            }
+        }
+
+        function getShareText() {
+            return `I scored ${currentProfile.percentage}% on the Work-Life Balance Assessment!
+
+${currentProfile.levelText}
+
+5 dimensions measured:
+• Energy Management
+• Boundary Setting
+• Recovery Practices
+• Life Integration
+• Sustainable Performance
+
+Free assessment. Eye-opening results.
+
+How sustainable is YOUR pace?`;
+        }
+
+        function shareToLinkedIn() {
+            const text = encodeURIComponent(getShareText());
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, '_blank');
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    'event_category': 'Social',
+                    'event_label': 'LinkedIn_WorkLife',
+                    'value': 1
+                });
+            }
+        }
+
+        function shareToTwitter() {
+            const text = encodeURIComponent(getShareText());
+            const url = encodeURIComponent(window.location.href);
+            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=WorkLifeBalance,Burnout`, '_blank');
+            
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'share', {
+                    'event_category': 'Social',
+                    'event_label': 'Twitter_WorkLife',
+                    'value': 1
+                });
+            }
+        }
+
+        function copyShareLink() {
+            const shareText = getShareText() + '\n\n' + window.location.href;
+            navigator.clipboard.writeText(shareText).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.style.background = '#10b981';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = 'rgba(255,255,255,0.2)';
+                }, 2000);
+                
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'share', {
+                        'event_category': 'Social',
+                        'event_label': 'Copy_Link_WorkLife',
+                        'value': 1
+                    });
+                }
+            });
         }
 
         // Initialize
