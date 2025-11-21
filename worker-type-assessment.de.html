@@ -329,7 +329,23 @@
         function renderQuestion() {
             const q = questions[currentQuestion];
             const card = document.getElementById('questionCard');
-            let html = `
+            
+            let html = '';
+            
+            // Show insight at the TOP for questions 2-12 (index 1-11)
+            if (currentQuestion >= 1) {
+                const insight = insights[currentQuestion - 1]; // insights[0] shows before question 2
+                html += `
+                    <div class="insight-card" style="margin-bottom: 25px;">
+                        <div class="insight-icon">${insight.icon}</div>
+                        <div class="insight-title">${insight.title}</div>
+                        <div class="insight-content">${insight.content}</div>
+                        <div class="insight-quote">${insight.quote}</div>
+                    </div>
+                `;
+            }
+            
+            html += `
                 <div class="question">
                     <div class="question-text">
                         <span class="question-number">${currentQuestion + 1}.</span>
@@ -348,31 +364,11 @@
             });
             html += `
                     </div>
-                    <div id="insightContainer"></div>
                 </div>
             `;
             card.innerHTML = html;
             updateProgress();
             updateButtons();
-            
-            // Show insight if already answered
-            if (answers[currentQuestion]) {
-                showInsight();
-            }
-        }
-        
-        function showInsight() {
-            const insight = insights[currentQuestion];
-            const container = document.getElementById('insightContainer');
-            container.innerHTML = `
-                <div class="insight-card">
-                    <div class="insight-icon">${insight.icon}</div>
-                    <div class="insight-title">${insight.title}</div>
-                    <div class="insight-content">${insight.content}</div>
-                    <div class="insight-quote">${insight.quote}</div>
-                </div>
-            `;
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         
         function selectOption(el, value) {
@@ -382,7 +378,6 @@
             const input = el.querySelector('input[type="radio"]');
             if (input) input.checked = true;
             document.getElementById('nextBtn').disabled = false;
-            showInsight();
         }
         function updateProgress() {
             const progress = ((currentQuestion + 1) / questions.length) * 100;
