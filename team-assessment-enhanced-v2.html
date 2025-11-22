@@ -65,10 +65,34 @@
         .btn-secondary { background: #e0e0e0; color: #333; }
         .btn-secondary:hover { background: #d0d0d0; }
         .results { display: none; }
-        .results.active { display: block; }
-        .overall-score { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; }
+        .results.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .overall-score { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(169, 50, 38, 0.3); }
         .overall-score h2 { font-size: clamp(2em, 5vw, 3em); margin-bottom: 15px; }
         .overall-score .score { font-size: clamp(3em, 8vw, 5em); font-weight: bold; margin-bottom: 15px; }
+        
+        /* Flippable Score Cards */
+        .scores-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin: 30px 0; }
+        .flip-card { perspective: 1000px; height: 350px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .flip-card-front { background: white; border: 2px solid #e0e0e0; display: flex; flex-direction: column; justify-content: center; }
+        .flip-card-back { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); transform: rotateY(180deg); overflow-y: auto; }
+        .flip-card-front h3 { color: #a93226; margin-bottom: 20px; font-size: 1.4em; text-align: center; }
+        .flip-card-front .score-display { font-size: 3em; font-weight: bold; text-align: center; margin: 20px 0; }
+        .flip-card-front .score-bar { background: #e0e0e0; height: 12px; border-radius: 10px; overflow: hidden; margin: 20px 0; }
+        .flip-card-front .score-bar-fill { height: 100%; transition: width 1s ease; }
+        .flip-card-front .score-level { text-align: center; font-weight: 600; font-size: 1.1em; margin: 15px 0; }
+        .flip-card-front .flip-hint { color: #999; font-size: 0.85em; margin-top: auto; text-align: center; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        .flip-card-back h3 { color: #a93226; margin-bottom: 15px; font-size: 1.3em; border-bottom: 2px solid #a93226; padding-bottom: 10px; }
+        .flip-card-back .detail-section { margin-bottom: 20px; }
+        .flip-card-back .detail-section h4 { color: #333; font-size: 1em; margin-bottom: 10px; font-weight: 600; }
+        .flip-card-back .detail-section p { color: #666; font-size: 0.95em; line-height: 1.6; margin-bottom: 12px; }
+        .flip-card-back .action-items { list-style: none; padding-left: 0; }
+        .flip-card-back .action-items li { color: #666; font-size: 0.9em; line-height: 1.5; margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .flip-card-back .action-items li:before { content: "→"; position: absolute; left: 0; color: #a93226; font-weight: bold; }
+        
         .score-section { background: #f8f9fa; border-radius: 15px; padding: 25px; margin-bottom: 25px; border-left: 5px solid #a93226; }
         .score-section h3 { color: #a93226; margin-bottom: 15px; font-size: 1.4em; }
         .score-display { font-size: 2em; font-weight: bold; color: #a93226; margin-bottom: 10px; }
@@ -835,26 +859,55 @@
                                 </div>
                                 <p style="font-size: 0.85rem; opacity: 0.9; margin-top: 1.5rem;">💡 Share this achievement with your team to celebrate progress!</p>
                             </div>
+                            
+                            <!-- Flippable Category Cards -->
+                            <div class="scores-grid">
                         `;
+                        
                         categories.forEach(cat => {
                             const interp = getScoreInterpretation(cat.score, cat.cat);
                             const recommendation = getRecommendation(cat.score, cat.cat);
                             const percentage = (cat.score / 20) * 100;
+                            
                             html += `
-                                <div class="score-section">
-                                    <h3>${cat.icon} ${cat.name}: ${cat.score}/20</h3>
-                                    <div class="score-bar">
-                                        <div class="score-bar-fill" style="width: ${percentage}%; background: ${interp.color};"></div>
-                                    </div>
-                                    <div class="score-display" style="color: ${interp.color};">${interp.level}</div>
-                                    <p class="score-interpretation">${interp.desc}</p>
-                                    <div class="recommendation">
-                                        <h4>💡 Recommendation:</h4>
-                                        <p>${recommendation}</p>
+                                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front" style="border-left: 4px solid ${interp.color};">
+                                            <h3>${cat.icon} ${cat.name}</h3>
+                                            <div class="score-display" style="color: ${interp.color};">${cat.score}<span style="font-size: 0.5em; color: #999;">/20</span></div>
+                                            <div class="score-bar">
+                                                <div class="score-bar-fill" style="width: ${percentage}%; background: ${interp.color};"></div>
+                                            </div>
+                                            <div class="score-level" style="color: ${interp.color};">${interp.level}</div>
+                                            <div class="flip-hint">
+                                                <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                                    <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                                </svg>
+                                                Click for details & action plan
+                                            </div>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <h3>${cat.icon} ${cat.name}</h3>
+                                            <div class="detail-section">
+                                                <h4>Current State:</h4>
+                                                <p>${interp.desc}</p>
+                                            </div>
+                                            <div class="detail-section">
+                                                <h4>💡 Recommendation:</h4>
+                                                <p>${recommendation}</p>
+                                            </div>
+                                            <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.8em;">
+                                                Click to flip back
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             `;
                         });
+                        
+                        html += `</div>`;
+                        
                         document.getElementById('resultContent').innerHTML = html;
                         window.scrollTo(0, 0);
                         
