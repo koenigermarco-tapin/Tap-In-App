@@ -9,6 +9,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#a93226">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/pdf-export.js"></script>
     <style>
         * {
             margin: 0;
@@ -861,8 +863,31 @@
             a.click();
         }
 
-        function exportTeamPDF() {
-            alert('📄 PDF export coming soon! This will generate a comprehensive team report with charts and insights.');
+        async function exportTeamPDF() {
+            const team = getCurrentTeam();
+            if (!team) return;
+
+            const allAssessments = JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
+            
+            // Build member data with scores
+            const membersWithScores = team.members.map(member => {
+                const assessment = allAssessments[0]; // Demo: use first assessment
+                return {
+                    name: member.email.split('@')[0],
+                    email: member.email,
+                    score: assessment?.totalScore,
+                    workerType: assessment?.workerType,
+                    leadershipStyle: assessment?.leadershipStyle
+                };
+            });
+
+            try {
+                const doc = await window.TAPINPDFExport.generateTeamPDF(team, membersWithScores);
+                doc.save(`${team.name.replace(/\s+/g, '-')}-team-report.pdf`);
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
         }
 
         function shareTeamInsights() {

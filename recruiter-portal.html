@@ -7,6 +7,8 @@
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#a93226">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="/pdf-export.js"></script>
     <style>
         * {
             margin: 0;
@@ -868,16 +870,75 @@
             a.click();
         }
 
-        function exportSelectedPDF() {
-            alert('📄 PDF export coming soon! This will generate detailed reports for selected candidates.');
+        async function exportSelectedPDF() {
+            if (selectedCandidates.size === 0) {
+                alert('Please select candidates to export');
+                return;
+            }
+
+            const candidates = getCandidates()
+                .filter(c => selectedCandidates.has(c.id) && c.assessmentData)
+                .map(c => ({
+                    name: c.name,
+                    role: c.role,
+                    score: c.assessmentData.totalScore,
+                    workerType: c.assessmentData.workerType,
+                    leadershipStyle: c.assessmentData.leadershipStyle
+                }));
+
+            if (candidates.length === 0) {
+                alert('Selected candidates have no assessment data');
+                return;
+            }
+
+            try {
+                const doc = await window.TAPINPDFExport.generateRecruiterPDF(candidates);
+                doc.save(`candidate-comparison-${new Date().toISOString().split('T')[0]}.pdf`);
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
         }
 
-        function exportCandidatePDF(id) {
-            alert('📄 Individual PDF export coming soon!');
+        async function exportCandidatePDF(id) {
+            const candidate = getCandidates().find(c => c.id === id);
+            if (!candidate || !candidate.assessmentData) {
+                alert('No assessment data available');
+                return;
+            }
+
+            try {
+                const doc = await window.TAPINPDFExport.generateAssessmentPDF(candidate.assessmentData);
+                doc.save(`${candidate.name.replace(/\s+/g, '-')}-assessment.pdf`);
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
         }
 
-        function generateHiringReport() {
-            alert('📈 Comprehensive hiring report generation coming soon! This will include trends, insights, and recommendations.');
+        async function generateHiringReport() {
+            const candidates = getCandidates().filter(c => c.assessmentData);
+            
+            if (candidates.length === 0) {
+                alert('No candidates with assessment data');
+                return;
+            }
+
+            const reportData = candidates.map(c => ({
+                name: c.name,
+                role: c.role,
+                score: c.assessmentData.totalScore,
+                workerType: c.assessmentData.workerType,
+                leadershipStyle: c.assessmentData.leadershipStyle
+            }));
+
+            try {
+                const doc = await window.TAPINPDFExport.generateRecruiterPDF(reportData);
+                doc.save(`hiring-report-${new Date().toISOString().split('T')[0]}.pdf`);
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
         }
 
         function shareInsights() {
