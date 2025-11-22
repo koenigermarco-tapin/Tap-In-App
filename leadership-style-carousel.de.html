@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Führungsstil-Assessment - TAP-IN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #a93226;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+        }
+        
+        .header .subtitle {
+            color: #666;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .header .note {
+            background: #fff8f7;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #a93226;
+            color: #555;
+        }
+        
+        .intro-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .intro-section h2 {
+            color: #a93226;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .intro-section p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .archetypes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .archetype-badge {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+        
+        .archetype-badge .icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+        
+        .archetype-badge .name {
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #666;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #a93226, #d64436);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .question-card.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question-number {
+            color: #a93226;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .question-text {
+            color: #333;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .option-label {
+            display: block;
+            padding: 18px 20px 18px 50px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #333;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .option-label:before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid #e0e0e0;
+            border-radius: 50%;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .option input[type="radio"]:checked + .option-label {
+            border-color: #a93226;
+            background: #fff8f7;
+        }
+        
+        .option input[type="radio"]:checked + .option-label:before {
+            border-color: #a93226;
+            background: #a93226;
+            box-shadow: inset 0 0 0 4px white;
+        }
+        
+        .option-label:hover {
+            border-color: #a93226;
+            background: #fff8f7;
+        }
+        
+        .insight-card {
+            background: linear-gradient(135deg, #fff8f7 0%, #fef3f0 100%);
+            border-left: 4px solid #a93226;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .insight-card.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .insight-title {
+            color: #a93226;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .insight-content {
+            color: #555;
+            line-height: 1.7;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #666;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #d0d0d0;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(169, 50, 38, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .results-container {
+            display: none;
+        }
+        
+        .results-container.active {
+            display: block;
+        }
+        
+        .results-header {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .results-header h2 {
+            color: #a93226;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+        }
+        
+        .primary-type {
+            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .type-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .type-name {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .type-percentage {
+            font-size: 1.5em;
+            opacity: 0.95;
+        }
+        
+        .type-description {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .type-description h3 {
+            color: #a93226;
+            margin-bottom: 15px;
+        }
+        
+        .type-description p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .score-bars {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .score-bars h3 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        
+        .score-item {
+            margin-bottom: 20px;
+        }
+        
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .score-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .lang-switch a {
+            text-decoration: none;
+            font-weight: 600;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        
+        .lang-switch a.active {
+            color: #a93226;
+        }
+        
+        .lang-switch a:not(.active) {
+            color: #999;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .question-card { padding: 25px; }
+            .question-text { font-size: 1.15em; }
+            .archetypes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-switch">
+        <a href="leadership-style-carousel.html">EN</a>
+        <a href="leadership-style-carousel.de.html" class="active">DE</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Führungsstil-Assessment</h1>
+            <p class="subtitle">Entdecken Sie Ihren einzigartigen Führungsarchetyp</p>
+            <div class="note">
+                ⏱️ <strong>5 Minuten</strong> • 14 Fragen • Basierend auf Führungsforschung
+            </div>
+        </div>
+
+        <div class="intro-section" id="introSection">
+            <h2>Die 6 Führungsarchetypen</h2>
+            <p>Jeder große Leader vereint Elemente mehrerer Archetypen – aber einer dominiert. Ihre Stärken, blinden Flecken und optimalen Wirkungsfelder werden durch Ihren primären Archetyp geformt.</p>
+            
+            <div class="archetypes-grid">
+                <div class="archetype-badge">
+                    <div class="icon">🔮</div>
+                    <div class="name">Visionär</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon">🏗️</div>
+                    <div class="name">Architekt</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon">🤝</div>
+                    <div class="name">Facilitator</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon">⚡</div>
+                    <div class="name">Executor</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon">⚔️</div>
+                    <div class="name">Commander</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon">🎯</div>
+                    <div class="name">Coach</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-text">Frage <span id="currentQ">1</span> von 14</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <form id="assessmentForm">
+            <!-- Questions will be dynamically rendered here -->
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <h2>🎯 Ihr Führungsprofil</h2>
+            </div>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                number: 1,
+                text: 'Wenn Sie ein neues Projekt beginnen, beginnen Sie typischerweise mit:',
+                insight: {
+                    title: 'Erste Schritte offenbaren Ihre Führungs-DNA',
+                    content: 'Wie Sie starten, zeigt, wie Sie führen. Visionäre malen das Gesamtbild. Architekten bauen Frameworks. Facilitatoren bringen Menschen zusammen. Executors starten die Ausführung. Commanders treffen Entscheidungen. Coaches stellen Fragen. Jeder Ansatz ist für verschiedene Kontexte wertvoll.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Ein überzeugendes Zukunftsbild malen' },
+                    { value: 'architect', text: 'Ein detailliertes strategisches Framework entwerfen' },
+                    { value: 'facilitator', text: 'Stakeholder zusammenbringen für Input' },
+                    { value: 'executor', text: 'Sofort mit konkreten Schritten beginnen' },
+                    { value: 'commander', text: 'Klare Entscheidung treffen und vorangehen' },
+                    { value: 'coach', text: 'Dem Team Fragen stellen, um ihre Lösungen zu erschließen' }
+                ]
+            },
+            {
+                number: 2,
+                text: 'In einem Konflikt tendieren Sie dazu:',
+                insight: {
+                    title: 'Konfliktstil = Ihre Führungssignatur',
+                    content: 'Konfliktreaktionen zeigen Ihr Kern-Betriebssystem. Visionäre reframen zu größeren Zielen. Architekten analysieren Systeme. Facilitatoren streben Konsens an. Executors fordern Fortschritt. Commanders entscheiden schnell. Coaches fördern Selbstfindung. Elite-Leader kennen ihren Standard UND wann man wechseln muss.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Zu gemeinsamen Werten und Vision zurückkehren' },
+                    { value: 'architect', text: 'Systemische Ursachen und Lösungen analysieren' },
+                    { value: 'facilitator', text: 'Konsens durch alle Perspektiven finden' },
+                    { value: 'executor', text: 'Zu Ergebnissen umleiten, Debatte begrenzen' },
+                    { value: 'commander', text: 'Schnell entscheiden und weitermachen' },
+                    { value: 'coach', text: 'Reflexion fördern, bis Parteien ihre eigene Lösung finden' }
+                ]
+            },
+            {
+                number: 3,
+                text: 'Sie fühlen sich am energiegeladen, wenn Sie:',
+                insight: {
+                    title: 'Energie = Ihre Führungskraft',
+                    content: 'Nachhaltige Führung kommt von ausgerichteter Arbeit. Visionäre leben von Möglichkeiten. Architekten von Systemdesign. Facilitatoren von menschlicher Verbindung. Executors von messbarem Fortschritt. Commanders von entscheidender Aktion. Coaches von Durchbrüchen anderer. Gegen Ihren Energietyp zu kämpfen führt zu Burnout.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Neue Möglichkeiten erkunden' },
+                    { value: 'architect', text: 'Komplexe Systeme entwerfen' },
+                    { value: 'facilitator', text: 'Menschen verbinden und entwickeln' },
+                    { value: 'executor', text: 'Messbare Fortschritte erzielen' },
+                    { value: 'commander', text: 'Schnelle, folgenschwere Entscheidungen treffen' },
+                    { value: 'coach', text: 'Andere dabei beobachten, wie sie ihre eigenen Antworten entdecken' }
+                ]
+            },
+            {
+                number: 4,
+                text: 'Ihr natürlicher Kommunikationsstil ist:',
+                insight: {
+                    title: 'Kommunikation = Ihre Führungssprache',
+                    content: 'Elite-Leader kennen ihre Standard-Sprache. Visionäre erzählen inspirierende Geschichten. Architekten präsentieren Logik. Facilitatoren schaffen Dialoge. Executors sprechen in Aktionen. Commanders geben klare Direktiven. Coaches stellen kraftvolle Fragen. Der Schlüssel? Wissen Sie, wann Sie Ihre Standardeinstellung ändern müssen.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Geschichten und inspirierende Narrative' },
+                    { value: 'architect', text: 'Datengetriebene, logische Argumente' },
+                    { value: 'facilitator', text: 'Offener Dialog und Konsensfindung' },
+                    { value: 'executor', text: 'Klare, handlungsorientierte Direktiven' },
+                    { value: 'commander', text: 'Direkte, entscheidende Kommunikation' },
+                    { value: 'coach', text: 'Fragenstellende, forschende Konversation' }
+                ]
+            },
+            {
+                number: 5,
+                text: 'Wenn ein Hindernis auftritt, reagieren Sie:',
+                insight: {
+                    title: 'Hindernisse offenbaren Charakter',
+                    content: 'Druck offenbart, erschafft nicht Charakter. Visionäre reframen Hindernisse als Chancen. Architekten diagnostizieren und umgestalten. Facilitatoren mobilisieren kollektive Intelligenz. Executors finden sofortige Workarounds. Commanders treffen mutige Entscheidungen. Coaches helfen Teams, ihre eigenen Lösungen zu finden. Ihre Krisenstandardeinstellung zeigt Ihre wahre Führungsidentität.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Es als Gelegenheit zur Innovation reframen' },
+                    { value: 'architect', text: 'Ursachen analysieren, Systeme neu gestalten' },
+                    { value: 'facilitator', text: 'Team zusammenbringen für kollektive Problemlösung' },
+                    { value: 'executor', text: 'Schnell einen Workaround finden und vorankommen' },
+                    { value: 'commander', text: 'Mutige Entscheidung treffen, um durchzubrechen' },
+                    { value: 'coach', text: 'Team fragen, was sie sehen und wie sie es lösen würden' }
+                ]
+            },
+            {
+                number: 6,
+                text: 'In Meetings sind Sie meistens:',
+                insight: {
+                    title: 'Meeting-Verhalten = Führung in Aktion',
+                    content: 'Lencioni: Meetings schaffen oder zerstören Kultur. Visionäre heben Energie durch Inspiration. Architekten strukturieren für Effizienz. Facilitatoren stellen sicher, dass alle Stimmen gehört werden. Executors treiben zu Entscheidungen und Aktionen. Commanders leiten entscheidend. Coaches ziehen durch Fragen Weisheit heraus. Ihr Meeting-Standardverhalten zeigt Ihren Führungsstil.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Menschen zu größeren Möglichkeiten inspirieren' },
+                    { value: 'architect', text: 'Diskussionen für Klarheit strukturieren' },
+                    { value: 'facilitator', text: 'Sicherstellen, dass alle Stimmen einbezogen werden' },
+                    { value: 'executor', text: 'Zu klaren Entscheidungen und nächsten Schritten vorantreiben' },
+                    { value: 'commander', text: 'Entscheidungen treffen und Richtung setzen' },
+                    { value: 'coach', text: 'Fragen stellen, die tieferes Denken auslösen' }
+                ]
+            },
+            {
+                number: 7,
+                text: 'Andere würden Sie wahrscheinlich beschreiben als:',
+                insight: {
+                    title: 'Externe Wahrnehmung = Ihre Führungsmarke',
+                    content: 'Selbstbewusste Leader formen ihre Marke absichtlich. Visionäre werden als inspirierend gesehen. Architekten als brillant strategisch. Facilitatoren als inklusiv. Executors als ergebnisorientiert. Commanders als entschieden. Coaches als entwicklungsorientiert. Der Schlüssel: Stimmen Absicht und Reputation überein?'
+                },
+                options: [
+                    { value: 'visionary', text: 'Inspirierend und zukunftsorientiert' },
+                    { value: 'architect', text: 'Strategisch und systemisch' },
+                    { value: 'facilitator', text: 'Kollaborativ und inklusiv' },
+                    { value: 'executor', text: 'Ergebnisorientiert und effizient' },
+                    { value: 'commander', text: 'Entschieden und mutig' },
+                    { value: 'coach', text: 'Entwicklungsorientiert und fragend' }
+                ]
+            },
+            {
+                number: 8,
+                text: 'Was Sie am meisten frustriert, ist:',
+                insight: {
+                    title: 'Frustrationen offenbaren Werte',
+                    content: 'Was Sie frustriert = was Sie am meisten schätzen. Visionäre hassen Kleinkariertheit. Architekten verachten Ineffizienz. Facilitatoren verabscheuen Exklusion. Executors können Lähmung nicht ertragen. Commanders lehnen Unentschlossenheit ab. Coaches sind frustriert von Abhängigkeit. Ihre Frustrationen zeigen Ihre Kernwerte.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Kleinkariertheit und fehlende Vision' },
+                    { value: 'architect', text: 'Ineffiziente Prozesse und fehlende Struktur' },
+                    { value: 'facilitator', text: 'Exklusion und mangelndes Zuhören' },
+                    { value: 'executor', text: 'Lähmung durch Analyse und fehlende Aktion' },
+                    { value: 'commander', text: 'Unentschlossenheit und Zögern' },
+                    { value: 'coach', text: 'Abhängigkeit und fehlende Eigenverantwortung' }
+                ]
+            },
+            {
+                number: 9,
+                text: 'Beim Delegieren konzentrieren Sie sich auf:',
+                insight: {
+                    title: 'Delegation = Führungs-Leverage',
+                    content: 'Elite-Leader delegieren Arbeit, nicht Verantwortung. Visionäre delegieren Ziele. Architekten delegieren Systeme. Facilitatoren delegieren durch Empowerment. Executors delegieren Aufgaben. Commanders delegieren mit klaren Erwartungen. Coaches delegieren durch entwickelnde Fragen. Wie Sie delegieren zeigt, was Sie wirklich schätzen.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Gewünschte Auswirkung, breite Freiheit bei der Methode' },
+                    { value: 'architect', text: 'Klare Frameworks und Leistungskennzahlen' },
+                    { value: 'facilitator', text: 'Sicherstellen, dass sich Menschen unterstützt und einbezogen fühlen' },
+                    { value: 'executor', text: 'Klare Aufgaben mit spezifischen Fristen' },
+                    { value: 'commander', text: 'Klare Erwartungen, dann erwarten Sie Ausführung' },
+                    { value: 'coach', text: 'Fragen stellen, die anderen helfen, ihre eigenen Lösungen zu finden' }
+                ]
+            },
+            {
+                number: 10,
+                text: 'Unter Druck sind Sie am wahrscheinlichsten:',
+                insight: {
+                    title: 'Druck offenbart Ihren Standard-Modus',
+                    content: 'Krise entlarvt Leader, Bewusstsein ermöglicht Wahl. Visionäre greifen auf Inspiration zurück. Architekten analysieren tiefer. Facilitatoren suchen Input. Executors beschleunigen Aktion. Commanders treffen schnelle Entscheidungen. Coaches halten inne, um nachzudenken. Ihre Standard-Druckreaktion ist Ihr wahres Führungs-Zuhause.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Das Team zu größeren Zielen inspirieren' },
+                    { value: 'architect', text: 'Tiefer analysieren, um Systemlösungen zu finden' },
+                    { value: 'facilitator', text: 'Stakeholder für kollektive Weisheit zusammenbringen' },
+                    { value: 'executor', text: 'Entscheidungen beschleunigen und Aktion vorantreiben' },
+                    { value: 'commander', text: 'Schnelle, mutige Entscheidung treffen' },
+                    { value: 'coach', text: 'Innehalten, nachdenken, Fragen stellen' }
+                ]
+            },
+            {
+                number: 11,
+                text: 'Ihre ideale Arbeitsumgebung ist:',
+                insight: {
+                    title: 'Kultur isst Strategie',
+                    content: 'Drucker: "Kultur isst Strategie zum Frühstück." Ihre ideale Umgebung zeigt die Kultur, die Sie schaffen. Visionäre gedeihen in Innovation. Architekten in Struktur. Facilitatoren in Zusammenarbeit. Executors in Aktion. Commanders in Geschwindigkeit. Coaches in Entwicklung. Sie formen Umgebungen zu Ihrem Archetyp.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Innovativ, experimentierfreudig, zukunftsorientiert' },
+                    { value: 'architect', text: 'Strukturiert, effizient, datengetrieben' },
+                    { value: 'facilitator', text: 'Kollaborativ, inklusiv, menschenzentriert' },
+                    { value: 'executor', text: 'Schnelllebig, ergebnisorientiert, actionreich' },
+                    { value: 'commander', text: 'Entscheidungsschnell, klar in Richtung, hohe Autonomie' },
+                    { value: 'coach', text: 'Lernorientiert, fragenbasiert, entwicklungsfokussiert' }
+                ]
+            },
+            {
+                number: 12,
+                text: 'Wenn Sie Feedback geben:',
+                insight: {
+                    title: 'Feedback ist Führung in Echtzeit',
+                    content: 'Kim Scott: persönlich fürsorgen während direkt herausfordern. Visionäre geben Feedback durch Inspiration. Architekten durch Systeme. Facilitatoren durch Dialog. Executors durch Standards. Commanders direkt. Coaches durch Fragen. Wie Sie Feedback geben zeigt Ihre Führungsphilosophie.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Mit größeren Möglichkeiten und Potenzial verknüpfen' },
+                    { value: 'architect', text: 'Gegen klare Standards und Systeme benchmarken' },
+                    { value: 'facilitator', text: 'Dialog schaffen, mehrere Perspektiven einbeziehen' },
+                    { value: 'executor', text: 'Direkt auf konkrete Leistung fokussieren' },
+                    { value: 'commander', text: 'Klar, direkt, erwarte schnelle Anpassung' },
+                    { value: 'coach', text: 'Fragen stellen, die Selbstentdeckung fördern' }
+                ]
+            },
+            {
+                number: 13,
+                text: 'Erfolg messen Sie primär durch:',
+                insight: {
+                    title: 'Erfolgsmetriken definieren Sie',
+                    content: 'Ihre Scorecard formt Verhalten. Visionäre messen Auswirkung. Architekten messen Systemeffizienz. Facilitatoren messen Engagement. Executors messen Outputs. Commanders messen entscheidende Siege. Coaches messen Wachstum. Wählen Sie Metriken, die mit Ihrem Archetyp übereinstimmen, oder kämpfen Sie gegen sich selbst.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Transformative Auswirkung und Vision verwirklicht' },
+                    { value: 'architect', text: 'Systemeffizienz und nachhaltige Skalierung' },
+                    { value: 'facilitator', text: 'Team-Engagement und kollektive Ergebnisse' },
+                    { value: 'executor', text: 'Konkrete Ergebnisse und erreichte Ziele' },
+                    { value: 'commander', text: 'Entscheidende Siege und territoriale Gewinne' },
+                    { value: 'coach', text: 'Wachstum und Entwicklung von Menschen' }
+                ]
+            },
+            {
+                number: 14,
+                text: 'Ihre größte Führungsstärke ist:',
+                insight: {
+                    title: 'Superkraft = Konsistente Exzellenz',
+                    content: 'Was Sie unter Druck liefern (nicht gelegentlich) ist Ihre Superkraft. Visionäre inspirieren. Architekten bauen Systeme. Facilitatoren vereinen Menschen. Executors liefern. Commanders entscheiden. Coaches entwickeln. Elite-Performance kommt vom Verdoppeln Ihrer Stärke, nicht vom Reparieren aller Schwächen.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Menschen zu größeren Möglichkeiten inspirieren' },
+                    { value: 'architect', text: 'Nachhaltige Systeme und Strategien aufbauen' },
+                    { value: 'facilitator', text: 'Menschen zusammenbringen und Zusammenarbeit schaffen' },
+                    { value: 'executor', text: 'Ergebnisse konsequent liefern' },
+                    { value: 'commander', text: 'Mutige, entscheidende Entscheidungen treffen' },
+                    { value: 'coach', text: 'Andere entwickeln, um ihr Bestes zu entdecken' }
+                ]
+            }
+        ];
+
+        const typeData = {
+            visionary: {
+                name: 'Visionär-Leader',
+                icon: '🔮',
+                color: '#8b5cf6',
+                description: 'Sie führen durch Inspiration und große Ideen. Sie malen überzeugende Zukunftsbilder, die Handeln auslösen.',
+                strengths: 'Innovation, Inspiration, strategisches Denken, Change Management',
+                challenges: 'Details folgen, Ungeduld mit Ausführung, manchmal zu abstrakt',
+                examples: 'Martin Luther King Jr., Steve Jobs, Simon Sinek',
+                bestFor: 'Transformation, Turnarounds, neue Ventures, Kulturschiebung'
+            },
+            architect: {
+                name: 'Architekt-Stratege',
+                icon: '🏗️',
+                color: '#3b82f6',
+                description: 'Sie bauen nachhaltige Systeme und Strukturen. Strategie und Prozesse sind Ihre Werkzeuge für Skalierung.',
+                strengths: 'Systemisches Denken, Prozessdesign, Skalierung, Datenanalyse',
+                challenges: 'Over-engineering, Veränderungsgeschwindigkeit, menschliche Faktoren',
+                examples: 'Jeff Bezos, Ray Dalio, Andy Grove',
+                bestFor: 'Skalierung, Komplexitätsmanagement, Systemoptimierung'
+            },
+            facilitator: {
+                name: 'Facilitator-Coach',
+                icon: '🤝',
+                color: '#10b981',
+                description: 'Sie führen durch Verbindung und Zusammenarbeit. Ihr Fokus ist es, das Beste in Menschen und Teams hervorzubringen.',
+                strengths: 'Aufbau von Beziehungen, emotionale Intelligenz, Teamentwicklung',
+                challenges: 'Schwierige Entscheidungen, Konsens kann langsam sein, Konfliktvermeidung',
+                examples: 'Satya Nadella, Brené Brown, Mary Barra',
+                bestFor: 'Kulturwandel, Teambildung, stakeholder-intensive Situationen'
+            },
+            executor: {
+                name: 'Executor-Driver',
+                icon: '⚡',
+                color: '#f59e0b',
+                description: 'Sie liefern Ergebnisse durch Aktion und Rechenschaftspflicht. Geschwindigkeit und Ausführung sind Ihre Superkräfte.',
+                strengths: 'Bias für Aktion, Rechenschaftspflicht, ergebnisorientiert, Geschwindigkeit',
+                challenges: 'Ungeduld, kann strategischen Kontext übersehen, Burnout-Risiko',
+                examples: 'Jacinda Ardern, Tim Cook, Jocko Willink',
+                bestFor: 'Krise, Turnarounds, operative Exzellenz, schnelle Skalierung'
+            },
+            commander: {
+                name: 'Commander',
+                icon: '⚔️',
+                color: '#dc2626',
+                description: 'Sie führen durch entschiedene Autorität. Schnelle, mutige Entscheidungen sind Ihre Signatur.',
+                strengths: 'Entscheidende Aktion, Mut, Klarheit, Geschwindigkeit unter Druck',
+                challenges: 'Kann autokratisch wirken, Input-Sammlung, Teamdynamik',
+                examples: 'George Patton, Winston Churchill, Jack Welch',
+                bestFor: 'Krise, militärische/sportliche Kontexte, schnelle Entscheidungen erforderlich'
+            },
+            coach: {
+                name: 'Coach',
+                icon: '🎯',
+                color: '#059669',
+                description: 'Sie entwickeln andere durch kraftvolle Fragen. Ihr Vermächtnis sind Menschen, die ohne Sie führen können.',
+                strengths: 'Entwicklung anderer, fragendes Denken, nachhaltiger Einfluss',
+                challenges: 'Zeitintensiv, Ungeduld bei langsamen Lernern, Entscheidungsgeschwindigkeit',
+                examples: 'Bill Campbell, Phil Jackson, John Wooden',
+                bestFor: 'Talententwicklung, Leiterschaft-Pipelines, langfristiger Organisationsaufbau'
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = {};
+        let questionElements = [];
+
+        function initAssessment() {
+            const form = document.getElementById('assessmentForm');
+            
+            questions.forEach((q, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                if (index === 0) questionCard.classList.add('active');
+                
+                questionCard.innerHTML = `
+                    <div class="question-number">Frage ${q.number} von 14</div>
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+                        ${q.options.map((option, i) => `
+                            <div class="option">
+                                <input type="radio" name="q${index}" value="${option.value}" id="q${index}_${i}" onchange="handleAnswer(${index}, '${option.value}')">
+                                <label class="option-label" for="q${index}_${i}">${option.text}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="insight-card" id="insight${index}">
+                        <div class="insight-title">${q.insight.title}</div>
+                        <div class="insight-content">${q.insight.content}</div>
+                    </div>
+                    <div class="nav-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="prevQuestion()" ${index === 0 ? 'disabled' : ''}>← Zurück</button>
+                        <button type="button" class="btn btn-primary" onclick="nextQuestion()" ${index === questions.length - 1 ? '' : ''} id="nextBtn${index}" disabled>${index === questions.length - 1 ? 'Ergebnisse anzeigen →' : 'Weiter →'}</button>
+                    </div>
+                `;
+                
+                form.appendChild(questionCard);
+                questionElements.push(questionCard);
+            });
+        }
+
+        function handleAnswer(questionIndex, value) {
+            answers[questionIndex] = value;
+            
+            // Show insight
+            const insight = document.getElementById(`insight${questionIndex}`);
+            if (insight) {
+                insight.classList.add('active');
+            }
+            
+            // Enable next button
+            const nextBtn = document.getElementById(`nextBtn${questionIndex}`);
+            if (nextBtn) {
+                nextBtn.disabled = false;
+            }
+            
+            updateProgress();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                questionElements[currentQuestion].classList.remove('active');
+                currentQuestion++;
+                questionElements[currentQuestion].classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                questionElements[currentQuestion].classList.remove('active');
+                currentQuestion--;
+                questionElements[currentQuestion].classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(answers).length;
+            const progress = (answeredCount / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentQ').textContent = currentQuestion + 1;
+            
+            // Hide intro after first question
+            if (currentQuestion > 0) {
+                document.getElementById('introSection').style.display = 'none';
+            }
+        }
+
+        function showResults() {
+            // Calculate scores
+            const scores = {
+                visionary: 0,
+                architect: 0,
+                facilitator: 0,
+                executor: 0,
+                commander: 0,
+                coach: 0
+            };
+            
+            Object.values(answers).forEach(answer => {
+                scores[answer]++;
+            });
+            
+            // Find primary type
+            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const primaryPercentage = Math.round((scores[primaryType] / questions.length) * 100);
+            
+            // Sort scores for display
+            const sortedScores = Object.entries(scores)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, score]) => ({
+                    type,
+                    score,
+                    percentage: Math.round((score / questions.length) * 100),
+                    ...typeData[type]
+                }));
+            
+            // Hide form, show results
+            document.getElementById('assessmentForm').style.display = 'none';
+            document.getElementById('introSection').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.classList.add('active');
+            
+            const primaryData = typeData[primaryType];
+            
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="primary-type">
+                    <div class="type-icon">${primaryData.icon}</div>
+                    <div class="type-name">${primaryData.name}</div>
+                    <div class="type-percentage">${primaryPercentage}% Match</div>
+                </div>
+                
+                <div class="type-description">
+                    <h3>Ihr Primärer Führungsarchetyp</h3>
+                    <p><strong>${primaryData.description}</strong></p>
+                    <p><strong>Stärken:</strong> ${primaryData.strengths}</p>
+                    <p><strong>Herausforderungen:</strong> ${primaryData.challenges}</p>
+                    <p><strong>Beispiele:</strong> ${primaryData.examples}</p>
+                    <p><strong>Am besten geeignet für:</strong> ${primaryData.bestFor}</p>
+                </div>
+                
+                <div class="score-bars">
+                    <h3>Ihr komplettes Profil</h3>
+                    ${sortedScores.map(item => `
+                        <div class="score-item">
+                            <div class="score-label">
+                                <span>${item.icon} ${item.name}</span>
+                                <span>${item.percentage}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width: ${item.percentage}%; background: ${item.color};"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="type-description">
+                    <h3>Nächste Schritte</h3>
+                    <p>Möchten Sie Ihren Führungsstil vertiefen und verkörperte Führungspraktiken lernen?</p>
+                    <p><strong>Kontaktieren Sie TAP-IN für:</strong></p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Personalisiertes Führungs-Coaching basierend auf Ihrem Archetyp</li>
+                        <li>Team-Workshops zur Führungsstilausrichtung</li>
+                        <li>Verkörperte Führungspraktiken (Kampfkunst-Integration)</li>
+                    </ul>
+                    <p style="margin-top: 20px;">
+                        <a href="mailto:contact@tap-in-academy.com" style="display: inline-block; background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: 600;">Kontaktieren Sie uns</a>
+                    </p>
+                </div>
+            `;
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize on page load
+        initAssessment();
+    </script>
+</body>
+</html>
