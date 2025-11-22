@@ -40,10 +40,30 @@
         .btn-secondary { background: #e0e0e0; color: #333; }
         .btn-secondary:hover { background: #d0d0d0; }
         .results { display: none; }
-        .results.active { display: block; }
-        .result-card { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 20px; padding: 50px 40px; text-align: center; margin-bottom: 30px; }
+        .results.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .result-card { background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border-radius: 20px; padding: 50px 40px; text-align: center; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(169, 50, 38, 0.3); }
         .result-card h2 { font-size: clamp(2.5em, 6vw, 4em); margin-bottom: 20px; }
         .result-card .subtitle { font-size: clamp(1.2em, 3vw, 1.6em); opacity: 0.95; margin-bottom: 30px; }
+        
+        /* Flippable Detail Cards */
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin: 30px 0; }
+        .flip-card { perspective: 1000px; height: 350px; cursor: pointer; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 15px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .flip-card-front { background: white; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; }
+        .flip-card-back { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); transform: rotateY(180deg); overflow-y: auto; }
+        .flip-card-front h3 { color: #a93226; margin-bottom: 20px; font-size: 1.5em; display: flex; align-items: center; gap: 10px; }
+        .flip-card-front .summary { color: #666; line-height: 1.7; font-size: 1.05em; margin-bottom: 20px; }
+        .flip-card-front .flip-hint { color: #999; font-size: 0.85em; margin-top: auto; display: flex; align-items: center; gap: 5px; }
+        .flip-card-back h3 { color: #a93226; margin-bottom: 20px; font-size: 1.4em; border-bottom: 2px solid #a93226; padding-bottom: 10px; }
+        .flip-card-back .detail-section { margin-bottom: 20px; }
+        .flip-card-back .detail-section h4 { color: #333; font-size: 1em; margin-bottom: 10px; font-weight: 600; }
+        .flip-card-back ul { list-style: none; padding-left: 0; }
+        .flip-card-back li { color: #666; font-size: 0.95em; line-height: 1.6; margin-bottom: 10px; padding-left: 20px; position: relative; }
+        .flip-card-back li:before { content: "✓"; position: absolute; left: 0; color: #a93226; font-weight: bold; }
+        
         .details-card { background: white; border-radius: 15px; padding: 30px; margin-bottom: 20px; }
         .details-card h3 { color: #a93226; margin-bottom: 15px; font-size: 1.4em; }
         .details-card p, .details-card ul { color: #666; line-height: 1.8; font-size: 1.05em; }
@@ -650,32 +670,118 @@
                             </div>
                         </div>
                     </div>
-                    <div class="details-card" style="background: ${secondaryColor}; border-left: 4px solid ${primaryColor};">
-                        <h3 style="color: ${primaryColor};">💪 Your Strengths</h3>
-                        <ul style="list-style: none; padding-left: 0;">
-                            ${strengths.map(s => `<li style="margin-bottom: 12px; padding-left: 20px; position: relative;">
-                                <span style="position: absolute; left: 0; color: ${primaryColor};">✓</span>
-                                ${s}
-                            </li>`).join('')}
-                        </ul>
+                    
+                    <!-- Flippable Detail Cards -->
+                    <div class="details-grid">
+                        <!-- Strengths Card -->
+                        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-left: 4px solid ${primaryColor};">
+                                    <h3 style="color: ${primaryColor};">💪 Your Strengths</h3>
+                                    <div class="summary">Discover the unique advantages of being a ${type} and how to leverage them for peak performance.</div>
+                                    <div class="flip-hint">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                        </svg>
+                                        Click for full list
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <h3>💪 Your ${type} Strengths</h3>
+                                    <div class="detail-section">
+                                        <ul>
+                                            ${strengths.map(s => `<li>${s}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                    <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.8em;">
+                                        Click to flip back
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Challenges Card -->
+                        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-left: 4px solid #ff6b35;">
+                                    <h3 style="color: #ff6b35;">⚠️ Watch Out For</h3>
+                                    <div class="summary">Every work style has blind spots. Know yours to avoid common pitfalls and optimize your approach.</div>
+                                    <div class="flip-hint">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                        </svg>
+                                        Click for full list
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <h3>⚠️ ${type} Challenges</h3>
+                                    <div class="detail-section">
+                                        <ul>
+                                            ${challenges.map(c => `<li>${c}</li>`).join('')}
+                                        </ul>
+                                    </div>
+                                    <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.8em;">
+                                        Click to flip back
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Team Fit Card -->
+                        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-left: 4px solid ${primaryColor};">
+                                    <h3 style="color: ${primaryColor};">👥 Team Fit</h3>
+                                    <div class="summary">Understand where ${type}s thrive and how to complement other work styles for team success.</div>
+                                    <div class="flip-hint">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                        </svg>
+                                        Click for details
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <h3>👥 Team Dynamics</h3>
+                                    <div class="detail-section">
+                                        <p style="color: #666; line-height: 1.7;">${teamFit}</p>
+                                    </div>
+                                    <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.8em;">
+                                        Click to flip back
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Action Plan Card -->
+                        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                            <div class="flip-card-inner">
+                                <div class="flip-card-front" style="border-left: 4px solid ${accentColor};">
+                                    <h3 style="color: ${accentColor};">🎯 Action Plan</h3>
+                                    <div class="summary">Concrete strategies to optimize your ${type} work style and avoid burnout.</div>
+                                    <div class="flip-hint">
+                                        <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                            <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                                        </svg>
+                                        Click for details
+                                    </div>
+                                </div>
+                                <div class="flip-card-back">
+                                    <h3>🎯 Your Action Plan</h3>
+                                    <div class="detail-section">
+                                        <p style="color: #666; line-height: 1.7;">${recommendations}</p>
+                                    </div>
+                                    <div style="margin-top: 20px; text-align: center; color: #999; font-size: 0.8em;">
+                                        Click to flip back
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="details-card" style="background: #fff5f0; border-left: 4px solid #ff6b35;">
-                        <h3 style="color: #ff6b35;">⚠️ Watch Out For</h3>
-                        <ul style="list-style: none; padding-left: 0;">
-                            ${challenges.map(c => `<li style="margin-bottom: 12px; padding-left: 20px; position: relative;">
-                                <span style="position: absolute; left: 0; color: #ff6b35;">!</span>
-                                ${c}
-                            </li>`).join('')}
-                        </ul>
-                    </div>
-                    <div class="details-card" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid ${primaryColor};">
-                        <h3 style="color: ${primaryColor};">👥 Team Fit</h3>
-                        <p style="line-height: 1.8;">${teamFit}</p>
-                    </div>
-                    <div class="details-card" style="background: ${secondaryColor}; border-left: 4px solid ${accentColor};">
-                        <h3 style="color: ${accentColor};">🎯 Action Plan</h3>
-                        <p style="line-height: 1.8;">${recommendations}</p>
-                    </div>
+                    
                     <div class="cta-box">
                         <h3>Want to Optimize Your Team?</h3>
                         <p>Discover how to build balanced teams with the right mix of Sprinters, Joggers, and Ultrarunners.</p>
