@@ -2,16 +2,26 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complete Leadership Profile - TAP-IN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#1a365d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TAP-IN Complete">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>Complete Impact Profile - TAP-IN</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
+            -webkit-tap-highlight-color: rgba(26, 54, 93, 0.2);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .container { max-width: 800px; margin: 0 auto; }
         
@@ -340,10 +350,17 @@
             cursor: pointer;
             border: 2px solid #e2e8f0;
             transition: all 0.2s;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 44px;
         }
         .scale-option:hover {
             border-color: #1a365d;
             background: #f8fafc;
+        }
+        .scale-option:active {
+            transform: scale(0.98);
         }
         .scale-option.selected {
             border-color: #1a365d;
@@ -456,6 +473,76 @@
             margin: 20px 0;
         }
         
+        /* Insight Card Styles */
+        .insight-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 4px solid #1a365d;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.5s ease;
+        }
+        .insight-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .insight-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        .insight-content {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        .insight-quote {
+            font-style: italic;
+            color: #64748b;
+            padding: 15px 20px;
+            background: white;
+            border-left: 3px solid #1a365d;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.98em;
+            line-height: 1.7;
+        }
+        .insight-reflection {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .insight-reflection h4 {
+            color: #1a365d;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .insight-reflection ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .insight-reflection li {
+            color: #475569;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .insight-reflection li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #1a365d;
+            font-weight: bold;
+        }
+        
         @media (max-width: 768px) {
             body { padding: 10px; }
             .header { padding: 25px; border-radius: 15px; }
@@ -551,9 +638,9 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>Complete Leadership Profile</h1>
+            <h1>Complete Impact Profile</h1>
             <p class="subtitle">
-                Discover your complete leadership DNA through three powerful assessments: Worker Type, Leadership Style, and Team Dynamics.
+                Discover your complete professional DNA through three powerful assessments: Worker Type, Team Impact Style, and Team Dynamics.
             </p>
             <div class="note">
                 ⏱ <strong>Takes 18 minutes</strong> • 46 questions total • One question at a time
@@ -578,7 +665,7 @@
                 </div>
                 <div class="section-badge" id="section2Badge">
                     <div class="icon">○</div>
-                    <div class="title">Leadership Style</div>
+                    <div class="title">Team Impact Style</div>
                     <div class="status">0/14</div>
                 </div>
                 <div class="section-badge" id="section3Badge">
@@ -717,7 +804,7 @@
                 ]
             },
             section2: {
-                title: "Leadership Style Assessment",
+                title: "Team Impact Style Assessment",
                 icon: "🎯",
                 questions: [
                     {
@@ -1055,10 +1142,9 @@
             const sectionQuestionIndex = answers[sectionKey].length;
             
             if (sectionQuestionIndex >= section.questions.length) {
-                // Move to next section or show results
+                // Show insight before moving to next section
                 if (currentSection < 3) {
-                    currentSection++;
-                    renderCurrentQuestion();
+                    showSectionInsight(currentSection);
                     return;
                 } else {
                     showResults();
@@ -1490,6 +1576,76 @@
                 toggleMenu();
             }
         });
+        
+        function showSectionInsight(completedSection) {
+            const insights = {
+                1: {
+                    icon: '💡',
+                    title: 'Self-Reflection: Your Work Rhythm',
+                    content: 'You\'ve just explored your natural work dynamics. Whether you\'re a sprinter, a pacer, or a marathon runner, understand this: There is no "best" - only what\'s authentic to you.',
+                    quote: '"Productivity isn\'t about how much you do, but how you do what you do."',
+                    reflection: {
+                        title: 'Consider this:',
+                        points: [
+                            'Does your current environment work with your natural rhythm or against it?',
+                            'When do you feel most in your zone? What creates those conditions?',
+                            'How can you structure your work to respect your energy?'
+                        ]
+                    }
+                },
+                2: {
+                    icon: '🎯',
+                    title: 'Leadership as Service',
+                    content: 'Leadership isn\'t about power - it\'s about empowering people. Whether you lead through direction or support, both serve the team. The question isn\'t who\'s in charge, but who helps others grow.',
+                    quote: '"The greatest leaders are those who help others become leaders, not followers."',
+                    reflection: {
+                        title: 'Reflect on this:',
+                        points: [
+                            'How do you define leadership? Is it about positions or influence?',
+                            'When do you lead best - in crisis, in routine, or in building?',
+                            'How do you balance holding people accountable with giving space to grow?',
+                            'Think of a moment when you felt like a "servant" rather than a "boss" - what was different?'
+                        ]
+                    }
+                }
+            };
+            
+            const insight = insights[completedSection];
+            if (!insight) {
+                // No insight for this section, move to next
+                currentSection++;
+                renderCurrentQuestion();
+                return;
+            }
+            
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = `
+                <div class="insight-card">
+                    <span class="insight-icon">${insight.icon}</span>
+                    <h3 class="insight-title">${insight.title}</h3>
+                    <p class="insight-content">${insight.content}</p>
+                    <div class="insight-quote">${insight.quote}</div>
+                    <div class="insight-reflection">
+                        <h4>${insight.reflection.title}</h4>
+                        <ul>
+                            ${insight.reflection.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="nav-btn next" onclick="continueToNextSection()">
+                            Continue to Next Section →
+                        </button>
+                    </div>
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function continueToNextSection() {
+            currentSection++;
+            renderCurrentQuestion();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         // Initialize on load
         init();

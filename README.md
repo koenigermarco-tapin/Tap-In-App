@@ -2,18 +2,18 @@
 
 ## 🎯 What's Included
 
-A complete, ready-to-deploy assessment system with 4 powerful tools:
+A complete, ready-to-deploy assessment system with 4 powerful tools for everyone who works with others—ICs, managers, and executives:
 
 ### **1. Worker Type Assessment** (5 min, 12 questions)
 Identifies: **Sprinter**, **Jogger**, or **Ultrarunner**
 
-### **2. Leadership Style Assessment** (6 min, 14 questions)
-Identifies: **Visionary Leader**, **Architect Strategist**, **Facilitator Coach**, or **Executor Driver**
+### **2. Team Impact Profile** (6 min, 14 questions)
+Identifies: **Visionary**, **Architect**, **Connector**, **Driver**, **Director**, or **Developer**
 
 ### **3. Team Dynamics Assessment** (7 min, 20 questions)
 Based on Patrick Lencioni's 5 Dysfunctions framework
 
-### **4. Complete Leadership Profile** (18 min, 46 questions) ⭐ RECOMMENDED
+### **4. Complete Impact Profile** (18 min, 46 questions) ⭐ RECOMMENDED
 All three assessments combined for comprehensive insights
 
 ---

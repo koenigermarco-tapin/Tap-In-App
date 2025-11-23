@@ -2,16 +2,26 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vollständiges Führungsprofil - TAP-IN</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="theme-color" content="#1a365d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TAP-IN Vollständig">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <title>Vollständiges Impact-Profil - TAP-IN</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
             min-height: 100vh;
             padding: 20px;
             color: #333;
+            -webkit-tap-highlight-color: rgba(26, 54, 93, 0.2);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         .container { max-width: 800px; margin: 0 auto; }
         
@@ -272,11 +282,18 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            touch-action: manipulation;
+            -webkit-user-select: none;
+            user-select: none;
+            min-height: 44px;
         }
         .scale-option:hover {
             background: #f1f5f9;
             border-color: #cbd5e1;
             transform: translateY(-2px);
+        }
+        .scale-option:active {
+            transform: scale(0.98);
         }
         .scale-option.selected {
             background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
@@ -422,6 +439,76 @@
             margin-bottom: 20px;
         }
         
+        /* Insight Card Styles */
+        .insight-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 4px solid #1a365d;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            animation: fadeIn 0.5s ease;
+        }
+        .insight-icon {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .insight-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        .insight-content {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1.05em;
+        }
+        .insight-quote {
+            font-style: italic;
+            color: #64748b;
+            padding: 15px 20px;
+            background: white;
+            border-left: 3px solid #1a365d;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.98em;
+            line-height: 1.7;
+        }
+        .insight-reflection {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .insight-reflection h4 {
+            color: #1a365d;
+            font-size: 1.1em;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+        .insight-reflection ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .insight-reflection li {
+            color: #475569;
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+            line-height: 1.6;
+        }
+        .insight-reflection li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #1a365d;
+            font-weight: bold;
+        }
+        
         @media (max-width: 768px) {
             body { padding: 10px; }
             .header { padding: 25px; border-radius: 15px; }
@@ -490,8 +577,8 @@
 
     <div class="container">
         <div class="header">
-            <h1>Vollständiges Führungsprofil</h1>
-            <p>Vervollständigen Sie alle drei Bewertungen für Ihr umfassendes Führungsprofil</p>
+            <h1>Vollständiges Impact-Profil</h1>
+            <p>Vervollständige alle drei Bewertungen für dein umfassendes Profil</p>
         </div>
 
         <div class="section-progress">
@@ -501,7 +588,7 @@
             </div>
             <div class="section-indicator-item" data-section="2">
                 <div class="section-icon">👔</div>
-                <div class="section-name">Führungsstil</div>
+                <div class="section-name">Team-Impact-Stil</div>
             </div>
             <div class="section-indicator-item" data-section="3">
                 <div class="section-icon">🎯</div>
@@ -520,7 +607,7 @@
 
         <div class="results-section" id="resultsSection">
             <div class="results-header">
-                <h2>🎉 Ihr Vollständiges Profil</h2>
+                <h2>🎉 Dein Vollständiges Profil</h2>
             </div>
             <div class="result-section">
                 <h3>⚡ Arbeitstyp</h3>
@@ -528,7 +615,7 @@
                 <p id="workerDescription"></p>
             </div>
             <div class="result-section">
-                <h3>👔 Führungsstil</h3>
+                <h3>👔 Team-Impact-Stil</h3>
                 <div class="result-badge" id="leadershipResult"></div>
                 <p id="leadershipDescription"></p>
             </div>
@@ -548,7 +635,7 @@
                 name: "Arbeitstyp",
                 questions: [
                     {
-                        text: "Wann sind Sie am produktivsten?",
+                        text: "Wann bist du am produktivsten?",
                         options: [
                             { value: 1, label: "Kurze Sprints" },
                             { value: 2, label: "Schnelle Bursts" },
@@ -560,7 +647,7 @@
                         rightLabel: "Lange Marathon-Sessions"
                     },
                     {
-                        text: "Was ist Ihr idealer Arbeitsplan?",
+                        text: "Was ist dein idealer Arbeitsplan?",
                         options: [
                             { value: 1, label: "Sehr flexibel" },
                             { value: 2, label: "Meist flexibel" },
@@ -572,7 +659,7 @@
                         rightLabel: "Fest strukturiert"
                     },
                     {
-                        text: "Wie gehen Sie mit mehreren Projekten um?",
+                        text: "Wie gehst du mit mehreren Projekten um?",
                         options: [
                             { value: 1, label: "Eins nach dem anderen" },
                             { value: 2, label: "Meist fokussiert" },
@@ -584,7 +671,7 @@
                         rightLabel: "Viele gleichzeitig"
                     },
                     {
-                        text: "Wann fühlen Sie sich am meisten in Ihrer Zone?",
+                        text: "Wann fühlst du dich am meisten in deiner Zone?",
                         options: [
                             { value: 1, label: "Früher Morgen" },
                             { value: 2, label: "Vormittag" },
@@ -596,7 +683,7 @@
                         rightLabel: "Abend/Nacht"
                     },
                     {
-                        text: "Wie nehmen Sie sich Auszeiten?",
+                        text: "Wie nimmst du dir Auszeiten?",
                         options: [
                             { value: 1, label: "Sehr häufig" },
                             { value: 2, label: "Regelmäßig" },
@@ -608,7 +695,7 @@
                         rightLabel: "Sehr seltene Pausen"
                     },
                     {
-                        text: "Welche Art von Aufgaben bevorzugen Sie?",
+                        text: "Welche Art von Aufgaben bevorzugst du?",
                         options: [
                             { value: 1, label: "Sehr kurz" },
                             { value: 2, label: "Kurz" },
@@ -620,7 +707,7 @@
                         rightLabel: "Langfristige Projekte"
                     },
                     {
-                        text: "Wie planen Sie Ihre Woche?",
+                        text: "Wie planst du deine Woche?",
                         options: [
                             { value: 1, label: "Spontan" },
                             { value: 2, label: "Lose" },
@@ -632,7 +719,7 @@
                         rightLabel: "Sehr detailliert geplant"
                     },
                     {
-                        text: "Wie wichtig sind Ihnen Deadlines?",
+                        text: "Wie wichtig sind dir Deadlines?",
                         options: [
                             { value: 1, label: "Flexibel" },
                             { value: 2, label: "Etwas wichtig" },
@@ -644,7 +731,7 @@
                         rightLabel: "Absolut kritisch"
                     },
                     {
-                        text: "Wie reagieren Sie auf Unterbrechungen?",
+                        text: "Wie reagierst du auf Unterbrechungen?",
                         options: [
                             { value: 1, label: "Sehr gestört" },
                             { value: 2, label: "Gestört" },
@@ -656,7 +743,7 @@
                         rightLabel: "Sehr anpassbar"
                     },
                     {
-                        text: "Wie arbeiten Sie am liebsten?",
+                        text: "Wie arbeitest du am liebsten?",
                         options: [
                             { value: 1, label: "Solo" },
                             { value: 2, label: "Meist solo" },
@@ -668,7 +755,7 @@
                         rightLabel: "Im Team"
                     },
                     {
-                        text: "Wann brauchen Sie Ergebnisse?",
+                        text: "Wann brauchst du Ergebnisse?",
                         options: [
                             { value: 1, label: "Sofort" },
                             { value: 2, label: "Sehr schnell" },
@@ -680,7 +767,7 @@
                         rightLabel: "Langfristige Ergebnisse"
                     },
                     {
-                        text: "Wie ist Ihr Energielevel?",
+                        text: "Wie ist dein Energielevel?",
                         options: [
                             { value: 1, label: "Konstant niedrig" },
                             { value: 2, label: "Meist konstant" },
@@ -694,12 +781,12 @@
                 ]
             },
             section2: {
-                title: "👔 FÜHRUNGSSTIL",
+                title: "👔 TEAM-IMPACT-STIL",
                 icon: "👔",
-                name: "Führungsstil",
+                name: "Team-Impact-Stil",
                 questions: [
                     {
-                        text: "Wie treffen Sie Entscheidungen als Führungskraft?",
+                        text: "Wie triffst du Entscheidungen in deinem Wirkungsfeld?",
                         options: [
                             { value: 1, label: "Sehr schnell" },
                             { value: 2, label: "Schnell" },
@@ -711,7 +798,7 @@
                         rightLabel: "Durchdacht & beratend"
                     },
                     {
-                        text: "Wie gehen Sie mit Teamkonflikten um?",
+                        text: "Wie gehst du mit Teamkonflikten um?",
                         options: [
                             { value: 1, label: "Direkt" },
                             { value: 2, label: "Meist direkt" },
@@ -723,7 +810,7 @@
                         rightLabel: "Diplomatisch vermitteln"
                     },
                     {
-                        text: "Wie kommunizieren Sie Erwartungen?",
+                        text: "Wie kommunizierst du Erwartungen?",
                         options: [
                             { value: 1, label: "Sehr klar" },
                             { value: 2, label: "Klar" },
@@ -735,7 +822,7 @@
                         rightLabel: "Flexibel & offen"
                     },
                     {
-                        text: "Wie geben Sie Feedback?",
+                        text: "Wie gibst du Feedback?",
                         options: [
                             { value: 1, label: "Sehr direkt" },
                             { value: 2, label: "Direkt" },
@@ -747,7 +834,7 @@
                         rightLabel: "Sanft & unterstützend"
                     },
                     {
-                        text: "Wie delegieren Sie Aufgaben?",
+                        text: "Wie delegierst du Aufgaben?",
                         options: [
                             { value: 1, label: "Eng kontrolliert" },
                             { value: 2, label: "Strukturiert" },
@@ -759,7 +846,7 @@
                         rightLabel: "Voll autonom"
                     },
                     {
-                        text: "Wie motivieren Sie Ihr Team?",
+                        text: "Wie motivierst du dein Team?",
                         options: [
                             { value: 1, label: "Herausforderungen" },
                             { value: 2, label: "Ziele" },
@@ -771,7 +858,7 @@
                         rightLabel: "Durch Unterstützung"
                     },
                     {
-                        text: "Wie gehen Sie mit Fehlern um?",
+                        text: "Wie gehst du mit Fehlern um?",
                         options: [
                             { value: 1, label: "Rechenschaft" },
                             { value: 2, label: "Korrektur" },
@@ -783,7 +870,7 @@
                         rightLabel: "Als Lernchance nutzen"
                     },
                     {
-                        text: "Wie setzen Sie Prioritäten für Ihr Team?",
+                        text: "Wie setzt du Prioritäten für dein Team?",
                         options: [
                             { value: 1, label: "Top-down" },
                             { value: 2, label: "Meist top-down" },
@@ -795,7 +882,7 @@
                         rightLabel: "Kollaborativ"
                     },
                     {
-                        text: "Wie bauen Sie Vertrauen auf?",
+                        text: "Wie baust du Vertrauen auf?",
                         options: [
                             { value: 1, label: "Ergebnisse" },
                             { value: 2, label: "Leistung" },
@@ -807,7 +894,7 @@
                         rightLabel: "Durch Beziehungen"
                     },
                     {
-                        text: "Wie gehen Sie mit Veränderungen um?",
+                        text: "Wie gehst du mit Veränderungen um?",
                         options: [
                             { value: 1, label: "Schnell umsetzen" },
                             { value: 2, label: "Zügig" },
@@ -819,7 +906,7 @@
                         rightLabel: "Schrittweise einführen"
                     },
                     {
-                        text: "Wie fördern Sie Innovation?",
+                        text: "Wie förderst du Innovation?",
                         options: [
                             { value: 1, label: "Risiken fordern" },
                             { value: 2, label: "Ermutigen" },
@@ -831,7 +918,7 @@
                         rightLabel: "Sicheren Raum bieten"
                     },
                     {
-                        text: "Wie messen Sie Erfolg?",
+                        text: "Wie misst du Erfolg?",
                         options: [
                             { value: 1, label: "Ergebnisse" },
                             { value: 2, label: "KPIs" },
@@ -843,7 +930,7 @@
                         rightLabel: "Durch Team-Wachstum"
                     },
                     {
-                        text: "Wie führen Sie in Krisen?",
+                        text: "Wie führst du in Krisen?",
                         options: [
                             { value: 1, label: "Sehr direkt" },
                             { value: 2, label: "Entschlossen" },
@@ -855,7 +942,7 @@
                         rightLabel: "Ruhig & unterstützend"
                     },
                     {
-                        text: "Wie entwickeln Sie Ihr Team?",
+                        text: "Wie entwickelst du dein Team?",
                         options: [
                             { value: 1, label: "Durch Taten" },
                             { value: 2, label: "Durch Ziele" },
@@ -874,7 +961,7 @@
                 name: "Team-Dynamik",
                 questions: [
                     {
-                        text: "Wie tragen Sie zu Team-Meetings bei?",
+                        text: "Wie trägst du zu Team-Meetings bei?",
                         options: [
                             { value: 1, label: "Führe" },
                             { value: 2, label: "Lenke" },
@@ -886,7 +973,7 @@
                         rightLabel: "Höre & unterstütze"
                     },
                     {
-                        text: "Wie gehen Sie mit Meinungsverschiedenheiten im Team um?",
+                        text: "Wie gehst du mit Meinungsverschiedenheiten im Team um?",
                         options: [
                             { value: 1, label: "Sehr direkt" },
                             { value: 2, label: "Direkt" },
@@ -898,7 +985,7 @@
                         rightLabel: "Vermitteln"
                     },
                     {
-                        text: "Wie teilen Sie Ideen?",
+                        text: "Wie teilst du Ideen?",
                         options: [
                             { value: 1, label: "Sehr enthusiastisch" },
                             { value: 2, label: "Enthusiastisch" },
@@ -910,7 +997,7 @@
                         rightLabel: "Durchdacht & selten"
                     },
                     {
-                        text: "Wie bauen Sie Beziehungen zu Kollegen auf?",
+                        text: "Wie baust du Beziehungen zu Kollegen auf?",
                         options: [
                             { value: 1, label: "Sehr aktiv" },
                             { value: 2, label: "Aktiv" },
@@ -922,7 +1009,7 @@
                         rightLabel: "Langsam & selektiv"
                     },
                     {
-                        text: "Wie reagieren Sie auf Feedback von Kollegen?",
+                        text: "Wie reagierst du auf Feedback von Kollegen?",
                         options: [
                             { value: 1, label: "Sehr offen" },
                             { value: 2, label: "Offen" },
@@ -934,7 +1021,7 @@
                         rightLabel: "Defensiv"
                     },
                     {
-                        text: "Wie gehen Sie mit Teamstress um?",
+                        text: "Wie gehst du mit Teamstress um?",
                         options: [
                             { value: 1, label: "Übernehme Führung" },
                             { value: 2, label: "Handle" },
@@ -946,7 +1033,7 @@
                         rightLabel: "Gebe Raum"
                     },
                     {
-                        text: "Wie bevorzugen Sie Zusammenarbeit?",
+                        text: "Wie bevorzugst du Zusammenarbeit?",
                         options: [
                             { value: 1, label: "Führend" },
                             { value: 2, label: "Lenkend" },
@@ -958,7 +1045,7 @@
                         rightLabel: "Unterstütze andere"
                     },
                     {
-                        text: "Wie kommunizieren Sie im Team?",
+                        text: "Wie kommunizierst du im Team?",
                         options: [
                             { value: 1, label: "Sehr häufig" },
                             { value: 2, label: "Häufig" },
@@ -970,7 +1057,7 @@
                         rightLabel: "Nur wenn nötig"
                     },
                     {
-                        text: "Wie gehen Sie mit Teamerfolg um?",
+                        text: "Wie gehst du mit Teamerfolg um?",
                         options: [
                             { value: 1, label: "Sehr sichtbar" },
                             { value: 2, label: "Sichtbar" },
@@ -978,11 +1065,11 @@
                             { value: 4, label: "Teilen" },
                             { value: 5, label: "Anderen zuschreiben" }
                         ],
-                        leftLabel: "Feiern Sie laut",
+                        leftLabel: "Feiere laut",
                         rightLabel: "Anderen zuschreiben"
                     },
                     {
-                        text: "Wie unterstützen Sie kämpfende Teammitglieder?",
+                        text: "Wie unterstützt du kämpfende Teammitglieder?",
                         options: [
                             { value: 1, label: "Übernehmen" },
                             { value: 2, label: "Anleiten" },
@@ -994,7 +1081,7 @@
                         rightLabel: "Raum geben"
                     },
                     {
-                        text: "Wie gehen Sie mit Team-Veränderungen um?",
+                        text: "Wie gehst du mit Team-Veränderungen um?",
                         options: [
                             { value: 1, label: "Vorantreiben" },
                             { value: 2, label: "Unterstützen" },
@@ -1006,7 +1093,7 @@
                         rightLabel: "Stabilität bewahren"
                     },
                     {
-                        text: "Wie teilen Sie Ihre Expertise?",
+                        text: "Wie teilst du deine Expertise?",
                         options: [
                             { value: 1, label: "Sehr proaktiv" },
                             { value: 2, label: "Proaktiv" },
@@ -1018,7 +1105,7 @@
                         rightLabel: "Auf Anfrage"
                     },
                     {
-                        text: "Wie gehen Sie mit stillen Teammitgliedern um?",
+                        text: "Wie gehst du mit stillen Teammitgliedern um?",
                         options: [
                             { value: 1, label: "Direkt einbeziehen" },
                             { value: 2, label: "Ermutigen" },
@@ -1030,7 +1117,7 @@
                         rightLabel: "Raum geben"
                     },
                     {
-                        text: "Wie lösen Sie Team-Probleme?",
+                        text: "Wie löst du Team-Probleme?",
                         options: [
                             { value: 1, label: "Schnell & direkt" },
                             { value: 2, label: "Analytisch" },
@@ -1042,7 +1129,7 @@
                         rightLabel: "Langsam & inklusiv"
                     },
                     {
-                        text: "Wie beeinflusst Ihre Präsenz das Team?",
+                        text: "Wie beeinflusst deine Präsenz das Team?",
                         options: [
                             { value: 1, label: "Sehr energisierend" },
                             { value: 2, label: "Energisierend" },
@@ -1054,7 +1141,7 @@
                         rightLabel: "Beruhigend"
                     },
                     {
-                        text: "Wie gehen Sie mit Team-Deadlines um?",
+                        text: "Wie gehst du mit Team-Deadlines um?",
                         options: [
                             { value: 1, label: "Sehr dringend" },
                             { value: 2, label: "Proaktiv" },
@@ -1066,7 +1153,7 @@
                         rightLabel: "Bleibe flexibel"
                     },
                     {
-                        text: "Wie balancieren Sie Team vs. individuelle Bedürfnisse?",
+                        text: "Wie balancierst du Team vs. individuelle Bedürfnisse?",
                         options: [
                             { value: 1, label: "Team zuerst" },
                             { value: 2, label: "Meist Team" },
@@ -1078,7 +1165,7 @@
                         rightLabel: "Individuelle Bedürfnisse"
                     },
                     {
-                        text: "Wie gehen Sie mit dominanten Persönlichkeiten um?",
+                        text: "Wie gehst du mit dominanten Persönlichkeiten um?",
                         options: [
                             { value: 1, label: "Direkt herausfordern" },
                             { value: 2, label: "Ansprechen" },
@@ -1090,7 +1177,7 @@
                         rightLabel: "Sich anpassen"
                     },
                     {
-                        text: "Wie fördern Sie Team-Kreativität?",
+                        text: "Wie förderst du Team-Kreativität?",
                         options: [
                             { value: 1, label: "Fordern" },
                             { value: 2, label: "Anregen" },
@@ -1102,7 +1189,7 @@
                         rightLabel: "Raum & Freiheit geben"
                     },
                     {
-                        text: "Wie verhalten Sie sich bei Team-Entscheidungen?",
+                        text: "Wie verhältst du dich bei Team-Entscheidungen?",
                         options: [
                             { value: 1, label: "Führe" },
                             { value: 2, label: "Beeinflussen" },
@@ -1215,10 +1302,85 @@
             if (currentQuestion < section.questions.length - 1) {
                 currentQuestion++;
             } else {
-                currentSection++;
-                currentQuestion = 0;
+                // Show insight before moving to next section
+                showSectionInsight(currentSection);
+                return;
             }
             
+            renderCurrentQuestion();
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function showSectionInsight(completedSection) {
+            const insights = {
+                1: {
+                    icon: '💡',
+                    title: 'Selbstreflexion: Dein Arbeitsrhythmus',
+                    content: 'Du hast gerade deine natürliche Arbeitsdynamik erkundet. Ob du ein Sprinter, ein gemächlicher Läufer oder ein Marathonläufer bist, verstehe: Es gibt kein "Bestes" - nur was authentisch zu dir passt.',
+                    quote: '"Produktivität ist nicht, wie viel du tust, sondern wie du tust, was du tust."',
+                    reflection: {
+                        title: 'Denke darüber nach:',
+                        points: [
+                            'Arbeitet dein aktuelles Umfeld mit deinem natürlichen Rhythmus oder dagegen?',
+                            'Wann fühlst du dich am meisten in deiner Zone? Was schafft diese Bedingungen?',
+                            'Wie kannst du deine Arbeit strukturieren, um deine Energie zu respektieren?'
+                        ]
+                    }
+                },
+                2: {
+                    icon: '🎯',
+                    title: 'Führung als Dienst',
+                    content: 'Führung ist nicht über Macht - es geht darum, Menschen zu befähigen. Ob du direkt führst oder durch Unterstützung, beide dienen dem Team. Die Frage ist nicht, wer das Sagen hat, sondern wer hilft anderen, zu wachsen.',
+                    quote: '"Die größten Führungskräfte sind diejenigen, die anderen dabei helfen, Führungskräfte zu werden, nicht Anhänger."',
+                    reflection: {
+                        title: 'Betrachte dies:',
+                        points: [
+                            'Wie definierst du Führung? Ist es über Positionen oder über Einfluss?',
+                            'Wann führst du am besten - in Krisen, im Alltag oder beim Aufbau?',
+                            'Wie balancierst du zwischen Rechenschaft fordern und Raum für Wachstum geben?',
+                            'Denke an einen Moment, in dem du dich als "Diener" statt als "Chef" gefühlt hast - was war anders?'
+                        ]
+                    }
+                }
+            };
+            
+            const insight = insights[completedSection];
+            if (!insight) {
+                // No insight for this section, move to next
+                currentSection++;
+                currentQuestion = 0;
+                renderCurrentQuestion();
+                updateProgress();
+                return;
+            }
+            
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = `
+                <div class="insight-card">
+                    <span class="insight-icon">${insight.icon}</span>
+                    <h3 class="insight-title">${insight.title}</h3>
+                    <p class="insight-content">${insight.content}</p>
+                    <div class="insight-quote">${insight.quote}</div>
+                    <div class="insight-reflection">
+                        <h4>${insight.reflection.title}</h4>
+                        <ul>
+                            ${insight.reflection.points.map(point => `<li>${point}</li>`).join('')}
+                        </ul>
+                    </div>
+                    <div style="text-align: center; margin-top: 30px;">
+                        <button class="nav-btn next" onclick="continueToNextSection()">
+                            Weiter zum nächsten Abschnitt →
+                        </button>
+                    </div>
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function continueToNextSection() {
+            currentSection++;
+            currentQuestion = 0;
             renderCurrentQuestion();
             updateProgress();
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1302,7 +1464,7 @@
             document.getElementById('questionsContainer').innerHTML = `
                 <div class="celebration-card">
                     <h2>🎉 Herzlichen Glückwunsch!</h2>
-                    <p>Sie haben Ihr vollständiges Führungsprofil abgeschlossen</p>
+                    <p>Du hast dein vollständiges Führungsprofil abgeschlossen</p>
                     <button class="view-results-btn" onclick="displayDetailedResults()">
                         Ergebnisse ansehen
                     </button>
@@ -1356,9 +1518,9 @@
         }
 
         function getWorkerDescription(score) {
-            if (score <= 2) return 'Sie gedeihen bei schnellen, intensiven Arbeitsperioden mit häufigen Pausen. Ihre Energie kommt in Schüben, und Sie arbeiten am besten mit klaren, kurzfristigen Zielen.';
-            if (score <= 3.5) return 'Sie balancieren zwischen Sprint- und Marathon-Arbeitsstilen. Sie können sich sowohl an schnelle als auch an langfristige Projekte anpassen.';
-            return 'Sie zeichnen sich durch konstante, langfristige Anstrengung aus. Sie bevorzugen tiefe Fokussierung über längere Zeiträume und bauen Momentum im Laufe der Zeit auf.';
+            if (score <= 2) return 'Du gedeihst bei schnellen, intensiven Arbeitsperioden mit häufigen Pausen. Deine Energie kommt in Schüben, und du arbeitest am besten mit klaren, kurzfristigen Zielen.';
+            if (score <= 3.5) return 'Du balancierst zwischen Sprint- und Marathon-Arbeitsstilen. Du kannst dich sowohl an schnelle als auch an langfristige Projekte anpassen.';
+            return 'Du zeichnest dich durch konstante, langfristige Anstrengung aus. Du bevorzugst tiefe Fokussierung über längere Zeiträume und baust Momentum im Laufe der Zeit auf.';
         }
 
         function getLeadershipType(score) {
@@ -1368,9 +1530,9 @@
         }
 
         function getLeadershipDescription(score) {
-            if (score <= 2) return 'Sie führen mit klarer Richtung und entschlossener Entscheidungsfindung. Sie setzen hohe Standards und erwarten Ergebnisse.';
-            if (score <= 3.5) return 'Sie balancieren zwischen direktiver und unterstützender Führung und passen Ihren Stil an die Situation an.';
-            return 'Sie führen mit Empathie und kollaborativem Geist. Sie bauen Ihr Team durch Unterstützung und Mentoring auf.';
+            if (score <= 2) return 'Du führst mit klarer Richtung und entschlossener Entscheidungsfindung. Du setzt hohe Standards und erwartest Ergebnisse.';
+            if (score <= 3.5) return 'Du balancierst zwischen direktiver und unterstützender Führung und passt deinen Stil an die Situation an.';
+            return 'Du führst mit Empathie und kollaborativem Geist. Du baust dein Team durch Unterstützung und Mentoring auf.';
         }
 
         function getTeamType(score) {
@@ -1380,9 +1542,9 @@
         }
 
         function getTeamDescription(score) {
-            if (score <= 2) return 'Sie bringen Energie und Führung ins Team. Sie sind komfortabel damit, Diskussionen zu leiten und Entscheidungen voranzutreiben.';
-            if (score <= 3.5) return 'Sie balancieren zwischen Führung und Unterstützung und passen Ihre Rolle an die Bedürfnisse des Teams an.';
-            return 'Sie zeichnen sich dadurch aus, andere zu unterstützen und einen sicheren Raum für Teamarbeit zu schaffen. Sie sind ein großartiger Zuhörer und Vermittler.';
+            if (score <= 2) return 'Du bringst Energie und Führung ins Team. Du bist komfortabel damit, Diskussionen zu leiten und Entscheidungen voranzutreiben.';
+            if (score <= 3.5) return 'Du balancierst zwischen Führung und Unterstützung und passt deine Rolle an die Bedürfnisse des Teams an.';
+            return 'Du zeichnest dich dadurch aus, andere zu unterstützen und einen sicheren Raum für Teamarbeit zu schaffen. Du bist ein großartiger Zuhörer und Vermittler.';
         }
 
         // Menu toggle functionality
