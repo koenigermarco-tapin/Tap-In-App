@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 White-Label Customization - TAP-IN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #a93226 0%, #7a2419 100%);
+            border-radius: 15px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #a93226;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="text"],
+        input[type="color"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+        }
+        textarea {
+            min-height: 100px;
+            font-family: inherit;
+        }
+        .color-picker-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .color-picker {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            cursor: pointer;
+        }
+        .btn {
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #a93226 0%, #7a2419 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            margin: 10px 10px 10px 0;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(169, 50, 38, 0.4);
+        }
+        .btn.secondary {
+            background: linear-gradient(135deg, #555 0%, #333 100%);
+        }
+        .preview-section {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .preview-header {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-preview {
+            max-width: 200px;
+            max-height: 100px;
+            margin: 20px auto;
+            display: block;
+        }
+        .upload-area {
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #a93226;
+            background: rgba(169, 50, 38, 0.1);
+        }
+        .file-input {
+            display: none;
+        }
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+        }
+        .preset-colors {
+            display: flex;
+            gap: 10px;
+            margin: 10px 0;
+            flex-wrap: wrap;
+        }
+        .preset-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .preset-color:hover {
+            transform: scale(1.1);
+            border-color: white;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 White-Label Customization</h1>
+            <p>Customize TAP-IN with your branding</p>
+        </div>
+
+        <div id="successMessage" class="message success"></div>
+
+        <!-- Logo Upload -->
+        <div class="section">
+            <h2>🖼️ Logo & Branding</h2>
+            
+            <div class="form-group">
+                <label>Company/Organization Name</label>
+                <input type="text" id="companyName" placeholder="TAP-IN" value="TAP-IN">
+            </div>
+
+            <div class="form-group">
+                <label>Upload Logo (PNG, JPG, SVG)</label>
+                <div class="upload-area" onclick="document.getElementById('logoInput').click()">
+                    <div style="font-size: 2em; margin-bottom: 10px;">🖼️</div>
+                    <div id="uploadText">Click to upload logo</div>
+                    <div style="opacity: 0.7; font-size: 0.9em; margin-top: 5px;">Recommended: 400x200px, max 1MB</div>
+                </div>
+                <input type="file" id="logoInput" class="file-input" accept="image/*" onchange="handleLogoUpload(event)">
+            </div>
+
+            <div id="logoPreviewContainer" style="display: none;">
+                <img id="logoPreview" class="logo-preview">
+                <button class="btn secondary" onclick="removeLogo()">Remove Logo</button>
+            </div>
+        </div>
+
+        <!-- Color Scheme -->
+        <div class="section">
+            <h2>🎨 Color Scheme</h2>
+            
+            <div class="form-group">
+                <label>Quick Presets</label>
+                <div class="preset-colors">
+                    <div class="preset-color" style="background: linear-gradient(135deg, #a93226, #7a2419);" onclick="applyPreset('#a93226', '#7a2419', 'TAP-IN Red')" title="TAP-IN Red"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #3b82f6, #1e40af);" onclick="applyPreset('#3b82f6', '#1e40af', 'Professional Blue')" title="Professional Blue"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #10b981, #047857);" onclick="applyPreset('#10b981', '#047857', 'Growth Green')" title="Growth Green"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);" onclick="applyPreset('#8b5cf6', '#6d28d9', 'Executive Purple')" title="Executive Purple"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #f59e0b, #d97706);" onclick="applyPreset('#f59e0b', '#d97706', 'Energetic Orange')" title="Energetic Orange"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #ec4899, #be185d);" onclick="applyPreset('#ec4899', '#be185d', 'Creative Pink')" title="Creative Pink"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #6366f1, #4338ca);" onclick="applyPreset('#6366f1', '#4338ca', 'Corporate Indigo')" title="Corporate Indigo"></div>
+                    <div class="preset-color" style="background: linear-gradient(135deg, #14b8a6, #0f766e);" onclick="applyPreset('#14b8a6', '#0f766e', 'Teal Trust')" title="Teal Trust"></div>
+                </div>
+            </div>
+
+            <div class="color-picker-group">
+                <div class="form-group">
+                    <label>Primary Color</label>
+                    <div class="color-picker">
+                        <input type="color" id="primaryColor" value="#a93226">
+                        <span id="primaryColorValue">#a93226</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Secondary Color</label>
+                    <div class="color-picker">
+                        <input type="color" id="secondaryColor" value="#7a2419">
+                        <span id="secondaryColorValue">#7a2419</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-section">
+                <h3 style="margin-bottom: 15px;">Preview</h3>
+                <div class="preview-header" id="previewHeader">
+                    <h2 id="previewCompanyName">TAP-IN</h2>
+                    <p>Leadership Assessments</p>
+                    <button class="btn" id="previewButton" style="margin-top: 15px;">Sample Button</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Messages -->
+        <div class="section">
+            <h2>📝 Custom Messages</h2>
+            
+            <div class="form-group">
+                <label>Welcome Message</label>
+                <textarea id="welcomeMessage" placeholder="Welcome to our leadership development platform...">Discover Your Complete Leadership Profile & Transform Your Team</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Assessment Completion Message</label>
+                <textarea id="completionMessage" placeholder="Thank you for completing the assessment...">Thank you for completing your assessment! Your results provide valuable insights into your leadership style and team dynamics.</textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Footer Text</label>
+                <input type="text" id="footerText" placeholder="© 2025 Your Company" value="© 2025 TAP-IN Leadership Assessments">
+            </div>
+        </div>
+
+        <!-- PDF Customization -->
+        <div class="section">
+            <h2>📄 PDF Report Customization</h2>
+            
+            <div class="form-group">
+                <label>Report Header Text</label>
+                <input type="text" id="pdfHeader" placeholder="Leadership Assessment Report" value="TAP-IN Leadership Assessment">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="includeLogo" checked>
+                    Include logo in PDF reports
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="includeFooter" checked>
+                    Include company footer in PDFs
+                </label>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="section">
+            <button class="btn" onclick="saveCustomization()">💾 Save Customization</button>
+            <button class="btn secondary" onclick="previewCustomization()">👁️ Preview Changes</button>
+            <button class="btn secondary" onclick="resetToDefaults()">🔄 Reset to Defaults</button>
+            <button class="btn secondary" onclick="exportTheme()">📥 Export Theme</button>
+            <button class="btn secondary" onclick="importTheme()">📤 Import Theme</button>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/dashboard.html" class="back-link">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <input type="file" id="themeImportInput" class="file-input" accept=".json" onchange="handleThemeImport(event)">
+
+    <script>
+        let customLogo = null;
+
+        // Load saved customization
+        function loadSavedCustomization() {
+            const branding = JSON.parse(localStorage.getItem('tap-in-branding') || '{}');
+            
+            if (branding.companyName) document.getElementById('companyName').value = branding.companyName;
+            if (branding.primaryColor) {
+                document.getElementById('primaryColor').value = branding.primaryColor;
+                document.getElementById('primaryColorValue').textContent = branding.primaryColor;
+            }
+            if (branding.secondaryColor) {
+                document.getElementById('secondaryColor').value = branding.secondaryColor;
+                document.getElementById('secondaryColorValue').textContent = branding.secondaryColor;
+            }
+            if (branding.welcomeMessage) document.getElementById('welcomeMessage').value = branding.welcomeMessage;
+            if (branding.completionMessage) document.getElementById('completionMessage').value = branding.completionMessage;
+            if (branding.footerText) document.getElementById('footerText').value = branding.footerText;
+            if (branding.pdfHeader) document.getElementById('pdfHeader').value = branding.pdfHeader;
+            if (branding.logo) {
+                customLogo = branding.logo;
+                showLogoPreview(branding.logo);
+            }
+            
+            updatePreview();
+        }
+
+        function handleLogoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 1048576) {
+                alert('Logo file too large. Please use a file under 1MB.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                customLogo = e.target.result;
+                showLogoPreview(customLogo);
+                updatePreview();
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function showLogoPreview(logoData) {
+            document.getElementById('logoPreview').src = logoData;
+            document.getElementById('logoPreviewContainer').style.display = 'block';
+            document.getElementById('uploadText').textContent = 'Logo uploaded! Click to change';
+        }
+
+        function removeLogo() {
+            customLogo = null;
+            document.getElementById('logoPreviewContainer').style.display = 'none';
+            document.getElementById('uploadText').textContent = 'Click to upload logo';
+            document.getElementById('logoInput').value = '';
+            updatePreview();
+        }
+
+        function applyPreset(primary, secondary, name) {
+            document.getElementById('primaryColor').value = primary;
+            document.getElementById('secondaryColor').value = secondary;
+            document.getElementById('primaryColorValue').textContent = primary;
+            document.getElementById('secondaryColorValue').textContent = secondary;
+            updatePreview();
+            showMessage(`${name} preset applied!`);
+        }
+
+        function updatePreview() {
+            const primary = document.getElementById('primaryColor').value;
+            const secondary = document.getElementById('secondaryColor').value;
+            const companyName = document.getElementById('companyName').value;
+
+            const previewHeader = document.getElementById('previewHeader');
+            previewHeader.style.background = `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`;
+            
+            const previewButton = document.getElementById('previewButton');
+            previewButton.style.background = `linear-gradient(135deg, ${primary} 0%, ${secondary} 100%)`;
+
+            document.getElementById('previewCompanyName').textContent = companyName || 'TAP-IN';
+        }
+
+        function saveCustomization() {
+            const branding = {
+                companyName: document.getElementById('companyName').value,
+                primaryColor: document.getElementById('primaryColor').value,
+                secondaryColor: document.getElementById('secondaryColor').value,
+                welcomeMessage: document.getElementById('welcomeMessage').value,
+                completionMessage: document.getElementById('completionMessage').value,
+                footerText: document.getElementById('footerText').value,
+                pdfHeader: document.getElementById('pdfHeader').value,
+                includeLogo: document.getElementById('includeLogo').checked,
+                includeFooter: document.getElementById('includeFooter').checked,
+                logo: customLogo,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('tap-in-branding', JSON.stringify(branding));
+            showMessage('✅ Customization saved! Changes will appear across the app.');
+        }
+
+        function previewCustomization() {
+            saveCustomization();
+            window.open('/index.html', '_blank');
+        }
+
+        function resetToDefaults() {
+            if (confirm('Reset all customization to defaults?')) {
+                localStorage.removeItem('tap-in-branding');
+                location.reload();
+            }
+        }
+
+        function exportTheme() {
+            const branding = JSON.parse(localStorage.getItem('tap-in-branding') || '{}');
+            const blob = new Blob([JSON.stringify(branding, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tap-in-theme-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            showMessage('✅ Theme exported!');
+        }
+
+        function importTheme() {
+            document.getElementById('themeImportInput').click();
+        }
+
+        function handleThemeImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const branding = JSON.parse(e.target.result);
+                    localStorage.setItem('tap-in-branding', JSON.stringify(branding));
+                    location.reload();
+                } catch (error) {
+                    alert('Invalid theme file');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function showMessage(text) {
+            const messageEl = document.getElementById('successMessage');
+            messageEl.textContent = text;
+            messageEl.style.display = 'block';
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Color picker updates
+        document.getElementById('primaryColor').addEventListener('input', (e) => {
+            document.getElementById('primaryColorValue').textContent = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('secondaryColor').addEventListener('input', (e) => {
+            document.getElementById('secondaryColorValue').textContent = e.target.value;
+            updatePreview();
+        });
+
+        document.getElementById('companyName').addEventListener('input', updatePreview);
+
+        // Initialize
+        loadSavedCustomization();
+    </script>
+</body>
+</html>

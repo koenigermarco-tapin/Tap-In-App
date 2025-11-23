@@ -1,5 +1,5 @@
 // TAP-IN Service Worker - Offline Support & Caching
-const CACHE_NAME = 'tap-in-v1';
+const CACHE_NAME = 'tap-in-v4';
 const urlsToCache = [
   '/',
   '/index.html',
@@ -9,8 +9,18 @@ const urlsToCache = [
   '/mental-health-assessment.html',
   '/worker-type-assessment.html',
   '/team-assessment-enhanced-v2.html',
-  '/leadership-style-assessment.html',
+  '/leadership-style-carousel.html',
   '/combined-profile-carousel.html',
+  '/team-dashboard.html',
+  '/recruiter-portal.html',
+  '/advanced-analytics.html',
+  '/achievement-badges.html',
+  '/goals.html',
+  '/data-manager.html',
+  '/notifications.html',
+  '/calendar-integration.html',
+  '/white-label-customization.html',
+  '/QUICK-ADD-DEMO-DATA.html',
   '/manifest.json'
 ];
 

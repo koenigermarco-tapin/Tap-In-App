@@ -1,0 +1,332 @@
+<!-- TAP-IN Data Migration Utility -->
+<!-- Include this on dashboard or settings page -->
+
+<style>
+.migration-banner {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin: 20px 0;
+    display: none;
+}
+
+.migration-banner.visible {
+    display: block;
+}
+
+.migration-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.migration-info {
+    flex: 1;
+    min-width: 250px;
+}
+
+.migration-info h3 {
+    margin: 0 0 8px;
+    font-size: 20px;
+}
+
+.migration-info p {
+    margin: 0;
+    opacity: 0.9;
+    font-size: 14px;
+}
+
+.migration-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.migration-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.migration-btn-primary {
+    background: white;
+    color: #667eea;
+}
+
+.migration-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.migration-btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.migration-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.migration-progress {
+    margin-top: 15px;
+    display: none;
+}
+
+.migration-progress.active {
+    display: block;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: white;
+    transition: width 0.3s;
+}
+
+.progress-text {
+    margin-top: 8px;
+    font-size: 13px;
+    opacity: 0.9;
+}
+
+.migration-complete {
+    background: #4CAF50;
+}
+
+.migration-error {
+    background: #f44336;
+}
+</style>
+
+<!-- Migration Banner HTML -->
+<div id="migrationBanner" class="migration-banner">
+    <div class="migration-content">
+        <div class="migration-info">
+            <h3>📦 <span id="migrationCount">0</span> Assessments Found on This Device</h3>
+            <p id="migrationDescription">Upload to your account for backup, multi-device access, and team sharing</p>
+        </div>
+        <div class="migration-actions">
+            <button class="migration-btn migration-btn-primary" onclick="DataMigration.migrate()">
+                Upload Now
+            </button>
+            <button class="migration-btn migration-btn-secondary" onclick="DataMigration.dismiss()">
+                Maybe Later
+            </button>
+        </div>
+    </div>
+    
+    <div id="migrationProgress" class="migration-progress">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">Preparing migration...</div>
+    </div>
+</div>
+
+<script>
+window.DataMigration = {
+    banner: null,
+    progressContainer: null,
+    progressFill: null,
+    progressText: null,
+    
+    init() {
+        this.banner = document.getElementById('migrationBanner');
+        this.progressContainer = document.getElementById('migrationProgress');
+        this.progressFill = document.getElementById('progressFill');
+        this.progressText = document.getElementById('progressText');
+        
+        this.checkForLocalData();
+    },
+
+    async checkForLocalData() {
+        // Check if already migrated
+        if (localStorage.getItem('tap-in-data-migrated') === 'true') {
+            console.log('✅ Data already migrated');
+            return;
+        }
+
+        // Check if user is authenticated
+        if (typeof TapInAuth === 'undefined') {
+            console.warn('TapInAuth not loaded');
+            return;
+        }
+
+        const authenticated = await TapInAuth.isAuthenticated();
+        if (!authenticated) {
+            return; // Don't show banner if not logged in
+        }
+
+        // Count local data
+        const assessments = this.getLocalAssessments();
+        const teams = this.getLocalTeams();
+        const totalItems = assessments.length + teams.length;
+
+        if (totalItems === 0) {
+            console.log('No local data to migrate');
+            return;
+        }
+
+        // Show banner
+        document.getElementById('migrationCount').textContent = totalItems;
+        
+        let description = [];
+        if (assessments.length > 0) description.push(`${assessments.length} assessment${assessments.length > 1 ? 's' : ''}`);
+        if (teams.length > 0) description.push(`${teams.length} team${teams.length > 1 ? 's' : ''}`);
+        
+        document.getElementById('migrationDescription').textContent = 
+            `Upload ${description.join(' and ')} to your account for backup and multi-device access`;
+        
+        this.banner.classList.add('visible');
+    },
+
+    getLocalAssessments() {
+        try {
+            const data = localStorage.getItem('tap-in-assessments');
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error('Error reading local assessments:', e);
+            return [];
+        }
+    },
+
+    getLocalTeams() {
+        try {
+            const data = localStorage.getItem('tap-in-teams');
+            return data ? JSON.parse(data) : [];
+        } catch (e) {
+            console.error('Error reading local teams:', e);
+            return [];
+        }
+    },
+
+    async migrate() {
+        if (typeof TapInAuth === 'undefined') {
+            alert('Migration system not loaded. Please refresh the page.');
+            return;
+        }
+
+        const authenticated = await TapInAuth.isAuthenticated();
+        if (!authenticated) {
+            alert('Please log in to migrate your data');
+            TapInAuthUI.openModal();
+            return;
+        }
+
+        // Show progress
+        this.progressContainer.classList.add('active');
+        document.querySelector('.migration-actions').style.display = 'none';
+
+        try {
+            const assessments = this.getLocalAssessments();
+            const teams = this.getLocalTeams();
+            const totalItems = assessments.length + teams.length;
+            let completed = 0;
+
+            // Migrate assessments
+            for (const assessment of assessments) {
+                this.updateProgress(completed, totalItems, 'Migrating assessments...');
+                
+                try {
+                    await TapInAuth.migrateLocalAssessment(assessment);
+                    completed++;
+                } catch (error) {
+                    console.error('Failed to migrate assessment:', error);
+                }
+            }
+
+            // Migrate teams (create them if user was admin)
+            for (const team of teams) {
+                this.updateProgress(completed, totalItems, 'Migrating teams...');
+                
+                try {
+                    // Only migrate if user created the team
+                    if (team.createdBy === 'local-user') {
+                        await TapInAuth.createTeam(team.name, team.description || '');
+                    }
+                    completed++;
+                } catch (error) {
+                    console.error('Failed to migrate team:', error);
+                }
+            }
+
+            // Mark as migrated
+            localStorage.setItem('tap-in-data-migrated', 'true');
+            
+            // Show success
+            this.showSuccess(totalItems);
+
+        } catch (error) {
+            console.error('Migration error:', error);
+            this.showError();
+        }
+    },
+
+    updateProgress(completed, total, message) {
+        const percentage = Math.round((completed / total) * 100);
+        this.progressFill.style.width = `${percentage}%`;
+        this.progressText.textContent = `${message} (${completed}/${total})`;
+    },
+
+    showSuccess(count) {
+        this.banner.classList.remove('migration-banner');
+        this.banner.classList.add('migration-complete');
+        
+        const infoEl = this.banner.querySelector('.migration-info');
+        infoEl.innerHTML = `
+            <h3>✅ Migration Complete!</h3>
+            <p>Successfully uploaded ${count} item${count > 1 ? 's' : ''} to your account. 
+               Your data is now backed up and available on all devices.</p>
+        `;
+        
+        this.progressContainer.style.display = 'none';
+        
+        // Auto-hide after 5 seconds
+        setTimeout(() => {
+            this.banner.style.display = 'none';
+        }, 5000);
+    },
+
+    showError() {
+        this.banner.classList.remove('migration-banner');
+        this.banner.classList.add('migration-error');
+        
+        const infoEl = this.banner.querySelector('.migration-info');
+        infoEl.innerHTML = `
+            <h3>⚠️ Migration Failed</h3>
+            <p>Something went wrong. Please try again or contact support.</p>
+        `;
+        
+        this.progressContainer.style.display = 'none';
+        document.querySelector('.migration-actions').style.display = 'flex';
+    },
+
+    dismiss() {
+        this.banner.classList.remove('visible');
+        
+        // Ask again in 24 hours
+        const dismissedUntil = Date.now() + (24 * 60 * 60 * 1000);
+        localStorage.setItem('tap-in-migration-dismissed', dismissedUntil.toString());
+    }
+};
+
+// Initialize on page load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => DataMigration.init());
+} else {
+    DataMigration.init();
+}
+</script>
