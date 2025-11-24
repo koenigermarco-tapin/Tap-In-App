@@ -379,6 +379,84 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Results styles */
+        .result-box {
+            background: rgba(17, 24, 39, 0.6);
+            border: 2px solid rgba(107, 114, 128, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+        }
+
+        .result-box.pass {
+            border-color: rgba(16, 185, 129, 0.5);
+        }
+
+        .result-box.fail {
+            border-color: rgba(239, 68, 68, 0.5);
+        }
+
+        .score-display {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ffffff;
+            margin: 20px 0;
+        }
+
+        .score-display.pass {
+            color: #10b981;
+        }
+
+        .score-display.fail {
+            color: #ef4444;
+        }
+
+        .result-message {
+            font-size: 1.2em;
+            color: #d1d5db;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        .xp-earned {
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .xp-earned .xp-amount {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .action-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -926,7 +1004,14 @@
 
         <!-- Results screen will be added in final batch -->
         <div id="resultsScreen" class="hidden">
-            <!-- Results will be shown here -->
+            <div class="header">
+                <div class="belt-icon">🥋⬛</div>
+                <h1>Assessment Results</h1>
+            </div>
+
+            <div id="resultContent">
+                <!-- Results will be inserted here -->
+            </div>
         </div>
 
         <!-- Reflections screen -->
@@ -973,6 +1058,25 @@
         let currentScenario = 1;
         let answers = {};
         const totalScenarios = 15;
+
+        // Correct answers
+        const correctAnswers = {
+            1: 'B',  // Absence of Trust
+            2: 'C',  // Fear of Conflict
+            3: 'C',  // Lack of Commitment
+            4: 'C',  // Avoidance of Accountability
+            5: 'C',  // Inattention to Results
+            6: 'B',  // Integration - Trust & Conflict
+            7: 'C',  // Integration - Commitment & Accountability
+            8: 'B',  // Trust - Vulnerability
+            9: 'B',  // Conflict - Mining
+            10: 'B', // Commitment - Disagree and Commit
+            11: 'C', // Accountability - Peer Standards
+            12: 'C', // Results - Scoreboard
+            13: 'A', // Integration - All 5 (Trust is foundation)
+            14: 'A', // Integration - Cascade Effect
+            15: 'A'  // Black Belt Mastery (lean into conflict)
+        };
 
         // Check if already completed
         window.addEventListener('DOMContentLoaded', function() {
