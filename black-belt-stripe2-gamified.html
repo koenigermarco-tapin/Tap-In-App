@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Belt Stripe 2 - Measuring and Tracking Results | Tap In Leadership</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #e5e7eb;
+            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 2px solid #374151;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #f3f4f6 0%, #9ca3af 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stripe-indicator {
+            font-size: 1.2em;
+            color: #9ca3af;
+            margin-bottom: 20px;
+        }
+
+        .progress-summary {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #374151;
+        }
+
+        .progress-bar {
+            background: #1f2937;
+            border-radius: 10px;
+            height: 30px;
+            margin: 15px 0;
+            overflow: hidden;
+            border: 2px solid #374151;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #6b7280 0%, #9ca3af 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #111827;
+            font-weight: bold;
+        }
+
+        .module-grid {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border: 2px solid #374151;
+            transition: all 0.3s ease;
+        }
+
+        .module-card:hover {
+            transform: translateY(-2px);
+            border-color: #6b7280;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .module-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .module-card.completed {
+            border-color: #9ca3af;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        }
+
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .module-title {
+            font-size: 1.3em;
+            color: #f3f4f6;
+        }
+
+        .module-status {
+            font-size: 1.5em;
+        }
+
+        .module-description {
+            color: #d1d5db;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #4b5563 0%, #374151 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            border: 2px solid #6b7280;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6b7280 0%, #9ca3af 100%);
+            border-color: #9ca3af;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            border-color: #4b5563;
+        }
+
+        .lesson {
+            display: none;
+        }
+
+        .lesson.active {
+            display: block;
+        }
+
+        .lesson-content {
+            background: #0f172a;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #374151;
+        }
+
+        .lesson-header h2 {
+            color: #f3f4f6;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .content-section {
+            margin: 25px 0;
+        }
+
+        .content-section h3 {
+            color: #f3f4f6;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+
+        .content-section h4 {
+            color: #d1d5db;
+            margin: 15px 0 10px 0;
+        }
+
+        .content-section p {
+            margin-bottom: 12px;
+            color: #e5e7eb;
+        }
+
+        .content-section ul, .content-section ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+            color: #e5e7eb;
+        }
+
+        .content-section li {
+            margin-bottom: 8px;
+        }
+
+        .highlight-box {
+            background: rgba(107, 114, 128, 0.2);
+            border-left: 4px solid #9ca3af;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+
+        .example-box {
+            background: rgba(75, 85, 99, 0.3);
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #4b5563;
+        }
+
+        .research-box {
+            background: rgba(31, 41, 55, 0.5);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #374151;
+        }
+
+        .research-box h4 {
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .bjj-connection {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border: 2px solid #6b7280;
+        }
+
+        .bjj-connection h4 {
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #1e293b;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #374151;
+        }
+
+        th {
+            background: #0f172a;
+            color: #9ca3af;
+            font-weight: bold;
+        }
+
+        td {
+            color: #e5e7eb;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .completion-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            padding: 40px;
+            border-radius: 20px;
+            border: 3px solid #9ca3af;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .completion-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .completion-popup h3 {
+            color: #f3f4f6;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+
+        .completion-popup p {
+            color: #d1d5db;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            z-index: 999;
+        }
+
+        .overlay.show {
+            display: block;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #9ca3af;
+            text-decoration: none;
+            margin-bottom: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .back-link:hover {
+            color: #f3f4f6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="learning-hub-enhanced.html" class="back-link">← Back to Learning Hub</a>
+        
+        <div class="header">
+            <div class="stripe-indicator">⬛ BLACK BELT</div>
+            <h1>Stripe 2: Measuring and Tracking Results</h1>
+            <p style="color: #9ca3af; margin-top: 10px;">Master the systems and metrics that drive results focus</p>
+        </div>
+
+        <div class="progress-summary">
+            <h3 style="color: #f3f4f6; margin-bottom: 10px;">Your Progress</h3>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar">0%</div>
+            </div>
+            <p style="color: #d1d5db; text-align: center; margin-top: 10px;">
+                <span id="completedCount">0</span>/3 Lessons Complete • 
+                <span id="xpEarned">0</span>/75 XP Earned
+            </p>
+        </div>
+
+        <div class="module-grid">
+            <!-- Module Cards -->
+            <div class="module-card" id="card1">
+                <div class="module-header">
+                    <div class="module-title">Lesson 1: Choosing the Right Metrics</div>
+                    <div class="module-status" id="status1">○</div>
+                </div>
+                <div class="module-description">
+                    What to measure, what to ignore, and how to avoid vanity metrics that drive the wrong behavior.
+                </div>
+                <button class="btn btn-primary" onclick="toggleLesson(1)">Start Lesson</button>
+            </div>
+
+            <div class="module-card locked" id="card2">
+                <div class="module-header">
+                    <div class="module-title">Lesson 2: Building Results Dashboards</div>
+                    <div class="module-status" id="status2">🔒</div>
+                </div>
+                <div class="module-description">
+                    Creating visibility systems that keep the team focused on what matters most.
+                </div>
+                <button class="btn" onclick="toggleLesson(2)" disabled id="btn2">Complete Lesson 1 to Unlock</button>
+            </div>
+
+            <div class="module-card locked" id="card3">
+                <div class="module-header">
+                    <div class="module-title">Lesson 3: Results Review Rhythms</div>
+                    <div class="module-status" id="status3">🔒</div>
+                </div>
+                <div class="module-description">
+                    Establishing cadences and rituals that maintain constant focus on outcomes.
+                </div>
+                <button class="btn" onclick="toggleLesson(3)" disabled id="btn3">Complete Lesson 2 to Unlock</button>
+            </div>
+        </div>
+
+        <!-- Lesson 1: Choosing the Right Metrics -->
+        <div class="module-card lesson" id="lesson1">
+            <div class="lesson-content">
+                <div class="lesson-header">
+                    <h2>Lesson 1: Choosing the Right Metrics</h2>
+                </div>
+                
+                <div class="highlight-box">
+                    <strong>The Metric Trap:</strong> Not all metrics are created equal. Teams often measure what's easy to track instead of what actually drives results, leading to misaligned effort and false progress.
+                </div>
+
+                <div class="content-section">
+                    <h3>The Vanity Metric Problem</h3>
+                    <p><strong>Vanity metrics</strong> make you feel good but don't predict success or drive decisions. They're easy to measure, trend upward naturally, but don't correlate with business outcomes.</p>
+                    
+                    <div class="example-box">
+                        <strong>Classic Vanity Metrics:</strong>
+                        <ul>
+                            <li><strong>Page views</strong> - Users might visit once and never return (retention matters more)</li>
+                            <li><strong>Total users</strong> - Including inactive users inflates success (active users matter)</li>
+                            <li><strong>Social media followers</strong> - Large audience with no engagement = no impact</li>
+                            <li><strong>Features shipped</strong> - More features ≠ better product (customer value matters)</li>
+                            <li><strong>Email list size</strong> - 100K subscribers with 2% open rate < 5K with 40% open rate</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Why teams love vanity metrics:</strong> They always go up (feels like progress), they're easy to report (no context needed), and they rarely force hard conversations about what's actually working.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>Actionable Metrics: The Alternative</h3>
+                    <p><strong>Actionable metrics</strong> change how you make decisions. They're tied to specific levers you can pull, predict future outcomes, and segment meaningfully.</p>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Vanity Metric</th>
+                                <th>Actionable Alternative</th>
+                                <th>Why It's Better</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total users</td>
+                                <td>Daily Active Users (DAU) / Monthly Active Users (MAU)</td>
+                                <td>Shows engagement, not just acquisition</td>
+                            </tr>
+                            <tr>
+                                <td>Page views</td>
+                                <td>Time to value (how fast users get benefit)</td>
+                                <td>Predicts retention better than traffic</td>
+                            </tr>
+                            <tr>
+                                <td>Features shipped</td>
+                                <td>Feature adoption rate (% of users using new features)</td>
+                                <td>Measures value delivered, not activity</td>
+                            </tr>
+                            <tr>
+                                <td>Revenue</td>
+                                <td>Customer Lifetime Value (LTV) / Customer Acquisition Cost (CAC)</td>
+                                <td>Shows efficiency and sustainability</td>
+                            </tr>
+                            <tr>
+                                <td>Support tickets closed</td>
+                                <td>First contact resolution rate + CSAT</td>
+                                <td>Measures quality, not just volume</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="content-section">
+                    <h3>The One Metric That Matters (OMTM)</h3>
+                    <p>At any given time, there's <strong>one metric</strong> that best represents success for your current stage. It's not the only metric you track, but it's the North Star that aligns everyone.</p>
+
+                    <div class="example-box">
+                        <strong>Startup Stage Examples:</strong>
+                        <ul>
+                            <li><strong>Pre-Product/Market Fit:</strong> Weekly Active Users (are people using it consistently?)</li>
+                            <li><strong>Early Growth:</strong> Activation rate (% of signups who get to "aha moment")</li>
+                            <li><strong>Scaling:</strong> Net Revenue Retention (are customers staying and expanding?)</li>
+                            <li><strong>Mature:</strong> Customer Lifetime Value / CAC ratio (is growth profitable?)</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>How to identify your OMTM:</strong></p>
+                    <ol>
+                        <li>What's the biggest constraint to growth right now?</li>
+                        <li>If you could only improve one thing this quarter, what would unlock the most value?</li>
+                        <li>What metric, if it doubled, would transform the business?</li>
+                    </ol>
+                </div>
+
+                <div class="content-section">
+                    <h3>The Metrics Selection Framework</h3>
+                    <p>Use these filters to evaluate whether a metric deserves focus:</p>
+
+                    <div class="highlight-box">
+                        <strong>5 Questions to Validate a Metric:</strong>
+                        <ol>
+                            <li><strong>Actionable:</strong> Can you change this metric through specific actions?</li>
+                            <li><strong>Comparable:</strong> Can you compare it across time periods, segments, or benchmarks?</li>
+                            <li><strong>Understandable:</strong> Can everyone on the team explain what it means and why it matters?</li>
+                            <li><strong>Ratio or Rate:</strong> Is it a ratio/rate (more insight) vs. absolute number (less context)?</li>
+                            <li><strong>Behavior-Changing:</strong> Does tracking it influence how people work?</li>
+                        </ol>
+                        <p><strong>Rule:</strong> If a metric fails 3+ of these, it's probably not worth tracking.</p>
+                    </div>
+                </div>
+
+                <div class="content-section">
+                    <h3>Avoiding Metric Gaming</h3>
+                    <p><strong>Goodhart's Law:</strong> "When a measure becomes a target, it ceases to be a good measure."</p>
+                    
+                    <div class="example-box">
+                        <strong>Classic Gaming Examples:</strong>
+                        <ul>
+                            <li><strong>Call center time-per-call targets:</strong> Reps rush customers off phone, satisfaction drops</li>
+                            <li><strong>Sales team quota pressure:</strong> Reps close bad-fit customers who churn immediately</li>
+                            <li><strong>Code commit counts:</strong> Developers make trivial commits to inflate numbers</li>
+                            <li><strong>Ticket resolution time:</strong> Support closes tickets prematurely to hit SLA</li>
+                        </ul>
+                    </div>
+
+                    <p><strong>Prevention strategies:</strong></p>
+                    <ul>
+                        <li><strong>Pair metrics:</strong> Speed + quality (e.g., resolution time + CSAT)</li>
+                        <li><strong>Add guardrails:</strong> "Increase signups without NPS dropping below 40"</li>
+                        <li><strong>Spot-check quality:</strong> Random audit samples to catch gaming</li>
+                        <li><strong>Ask "how could this be gamed?"</strong> before rolling out incentives</li>
+                    </ul>
+                </div>
+
+                <div class="research-box">
+                    <h4>📚 Research: Metrics and Performance</h4>
+                    <p><strong>MIT Sloan study:</strong> Teams that focused on 1-3 key metrics outperformed teams tracking 10+ metrics by 35% in goal achievement. More metrics = diluted focus.</p>
+                    <p><strong>Harvard Business Review:</strong> 87% of companies track metrics that don't correlate with their stated strategic priorities. Common disconnect: activity metrics vs. outcome goals.</p>
+                    <p><strong>Key insight:</strong> The best teams ruthlessly cut metrics that don't drive decisions.</p>
+                </div>
+
+                <div class="bjj-connection">
+                    <h4>🥋 The BJJ Parallel: Competition Stats</h4>
+                    <p>You could track vanity metrics in BJJ: total mat time, number of techniques learned, drilling reps completed. These feel productive.</p>
+                    <p>Or you could track actionable metrics: submission success rate in sparring, takedown percentage in live rounds, escape rate from bad positions, competition win/loss record.</p>
+                    <p>The difference? Vanity metrics make you feel busy. Actionable metrics show you where you're actually improving and where you're still vulnerable. One drives ego, the other drives growth.</p>
+                </div>
+
+                <div class="content-section">
+                    <h3>💪 Practice: Audit Your Metrics</h3>
+                    <p><strong>Step 1:</strong> List the top 5 metrics your team currently tracks.</p>
+                    <p><strong>Step 2:</strong> For each metric, answer:</p>
+                    <ul>
+                        <li>Is this a vanity metric or actionable metric?</li>
+                        <li>Does improving this metric directly lead to success? Or is it a proxy?</li>
+                        <li>Have you made a decision based on this metric in the last 30 days?</li>
+                        <li>Could this metric be gamed? How?</li>
+                    </ul>
+                    <p><strong>Step 3:</strong> Identify your OMTM - the one metric that best represents success right now.</p>
+                    <p><strong>Step 4:</strong> Cut at least 2 metrics that don't pass the validation framework.</p>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="toggleLesson(1)">Close Lesson</button>
+                    <button class="btn btn-primary" onclick="completeLesson(1)">Complete Lesson (+25 XP)</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 2 will be added here -->
+        <!-- Lesson 3 will be added here -->
+
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="completion-popup" id="completionPopup">
+        <h3>🎉 Lesson Complete!</h3>
+        <p>+25 XP Earned</p>
+        <button class="btn btn-primary" onclick="closePopup()">Continue</button>
+    </div>
+
+    <script>
+        // Load progress from localStorage
+        let completedLessons = JSON.parse(localStorage.getItem('blackbeltStripe2Completed') || '[]');
+        let moduleXP = parseInt(localStorage.getItem('blackbeltStripe2ModuleXP') || '0');
+
+        function updateProgress() {
+            const completed = completedLessons.length;
+            const progress = (completed / 3) * 100;
+            
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressBar').textContent = Math.round(progress) + '%';
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('xpEarned').textContent = moduleXP;
+
+            // Update cards
+            completedLessons.forEach(lessonNum => {
+                const card = document.getElementById('card' + lessonNum);
+                const status = document.getElementById('status' + lessonNum);
+                if (card && status) {
+                    card.classList.remove('locked');
+                    card.classList.add('completed');
+                    status.textContent = '✓';
+                }
+            });
+
+            // Unlock next lesson
+            if (completed > 0 && completed < 3) {
+                const nextLesson = completed + 1;
+                const nextCard = document.getElementById('card' + nextLesson);
+                const nextBtn = document.getElementById('btn' + nextLesson);
+                const nextStatus = document.getElementById('status' + nextLesson);
+                
+                if (nextCard && nextBtn && nextStatus) {
+                    nextCard.classList.remove('locked');
+                    nextBtn.disabled = false;
+                    nextBtn.textContent = 'Start Lesson';
+                    nextBtn.classList.add('btn-primary');
+                    nextStatus.textContent = '○';
+                }
+            }
+
+            // Award stripe bonus if all complete
+            if (completed === 3 && !localStorage.getItem('blackbeltStripe2Bonus')) {
+                awardStripeBonus();
+            }
+        }
+
+        function toggleLesson(lessonNum) {
+            const lesson = document.getElementById('lesson' + lessonNum);
+            const allLessons = document.querySelectorAll('.lesson');
+            
+            allLessons.forEach(l => l.classList.remove('active'));
+            
+            if (lesson) {
+                lesson.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function completeLesson(lessonNum) {
+            if (!completedLessons.includes(lessonNum)) {
+                completedLessons.push(lessonNum);
+                moduleXP += 25;
+                
+                localStorage.setItem('blackbeltStripe2Completed', JSON.stringify(completedLessons));
+                localStorage.setItem('blackbeltStripe2ModuleXP', moduleXP.toString());
+                
+                // Update total XP
+                let totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+                totalXP += 25;
+                localStorage.setItem('totalXP', totalXP.toString());
+                
+                showCompletionPopup();
+                updateProgress();
+                
+                // Close lesson after short delay
+                setTimeout(() => {
+                    toggleLesson(lessonNum);
+                }, 1500);
+            }
+        }
+
+        function awardStripeBonus() {
+            const bonusXP = 100;
+            moduleXP += bonusXP;
+            localStorage.setItem('blackbeltStripe2ModuleXP', moduleXP.toString());
+            localStorage.setItem('blackbeltStripe2Bonus', 'true');
+            
+            // Update total XP
+            let totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+            totalXP += bonusXP;
+            localStorage.setItem('totalXP', totalXP.toString());
+
+            // Add to stripes earned
+            let blackStripes = JSON.parse(localStorage.getItem('blackStripesEarned') || '[]');
+            if (!blackStripes.includes(2)) {
+                blackStripes.push(2);
+                localStorage.setItem('blackStripesEarned', JSON.stringify(blackStripes));
+            }
+            
+            alert('🎉 Black Belt Stripe 2 Complete!\n\n+100 Bonus XP Awarded!\nTotal Stripe XP: 175');
+        }
+
+        function showCompletionPopup() {
+            document.getElementById('overlay').classList.add('show');
+            document.getElementById('completionPopup').classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('overlay').classList.remove('show');
+            document.getElementById('completionPopup').classList.remove('show');
+        }
+
+        // Initialize on load
+        updateProgress();
+    </script>
+</body>
+</html>
