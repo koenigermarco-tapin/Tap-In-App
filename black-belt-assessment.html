@@ -303,6 +303,82 @@
             font-size: 0.9em;
             margin-top: 8px;
         }
+
+        /* Reflection styles */
+        .reflection-section {
+            background: rgba(17, 24, 39, 0.4);
+            border-left: 4px solid #6b7280;
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 8px;
+        }
+
+        .reflection-section h3 {
+            color: #ffffff;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .reflection-prompt {
+            color: #d1d5db;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 15px;
+            background: rgba(31, 41, 55, 0.6);
+            border: 2px solid rgba(107, 114, 128, 0.3);
+            border-radius: 8px;
+            color: #e5e7eb;
+            font-family: inherit;
+            font-size: 1em;
+            line-height: 1.6;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #6b7280;
+        }
+
+        .char-count {
+            text-align: right;
+            color: #9ca3af;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 18px 36px;
+            background: linear-gradient(135deg, #374151 0%, #1f2937 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+        }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .submit-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -852,6 +928,44 @@
         <div id="resultsScreen" class="hidden">
             <!-- Results will be shown here -->
         </div>
+
+        <!-- Reflections screen -->
+        <div id="reflectionsScreen" class="hidden">
+            <div class="header">
+                <div class="belt-icon">🥋⬛</div>
+                <h1>Black Belt Reflections</h1>
+                <div class="subtitle">Demonstrate Your Mastery Through Deep Reflection</div>
+            </div>
+
+            <div class="reflection-section">
+                <h3>Reflection 1: Your Greatest Dysfunction Challenge</h3>
+                <p class="reflection-prompt">
+                    Of the five dysfunctions (Trust, Conflict, Commitment, Accountability, Results), which has been the most challenging for you personally as a leader? Describe a specific situation where this dysfunction showed up on your team, what you learned from it, and how you would handle it differently now. (Minimum 100 words)
+                </p>
+                <textarea id="reflection1" onkeyup="updateCharCount(1)"></textarea>
+                <div class="char-count" id="count1">0 / 100 words minimum</div>
+            </div>
+
+            <div class="reflection-section">
+                <h3>Reflection 2: The Cascade Effect</h3>
+                <p class="reflection-prompt">
+                    Explain in your own words why the dysfunctions build on each other (absence of trust leads to fear of conflict, which leads to lack of commitment, etc.). Give a real or hypothetical example of how fixing one dysfunction unlocked progress on others. What does this teach you about where to focus your energy as a leader? (Minimum 100 words)
+                </p>
+                <textarea id="reflection2" onkeyup="updateCharCount(2)"></textarea>
+                <div class="char-count" id="count2">0 / 100 words minimum</div>
+            </div>
+
+            <div class="reflection-section">
+                <h3>Reflection 3: Your Black Belt Commitment</h3>
+                <p class="reflection-prompt">
+                    Black Belt represents mastery—not just knowledge, but the ability to teach and develop other leaders. How will you use what you've learned to build a more functional team? What specific behaviors will you model? How will you teach these concepts to others? What legacy do you want to leave as a leader? (Minimum 100 words)
+                </p>
+                <textarea id="reflection3" onkeyup="updateCharCount(3)"></textarea>
+                <div class="char-count" id="count3">0 / 100 words minimum</div>
+            </div>
+
+            <button class="submit-button" id="submitReflections" onclick="submitReflections()">Submit Assessment ⬛</button>
+        </div>
     </div>
 
     <script>
@@ -913,8 +1027,8 @@
                 updateProgress();
                 updateNavButtons();
             } else {
-                // Show results - will be implemented in later batch
-                showResults();
+                // All scenarios complete - show reflections
+                showReflections();
             }
         }
 
@@ -937,9 +1051,44 @@
             document.getElementById('nextButton').disabled = !answers[currentScenario];
         }
 
+        function showReflections() {
+            document.getElementById('assessmentScreen').classList.add('hidden');
+            document.getElementById('reflectionsScreen').classList.remove('hidden');
+        }
+
+        function updateCharCount(reflectionNum) {
+            const textarea = document.getElementById(`reflection${reflectionNum}`);
+            const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const countEl = document.getElementById(`count${reflectionNum}`);
+            countEl.textContent = `${words} / 100 words minimum`;
+            countEl.style.color = words >= 100 ? '#10b981' : '#9ca3af';
+            
+            // Update submit button state
+            updateSubmitButton();
+        }
+
+        function updateSubmitButton() {
+            const r1Words = document.getElementById('reflection1').value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const r2Words = document.getElementById('reflection2').value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const r3Words = document.getElementById('reflection3').value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            
+            const submitBtn = document.getElementById('submitReflections');
+            submitBtn.disabled = !(r1Words >= 100 && r2Words >= 100 && r3Words >= 100);
+        }
+
+        function submitReflections() {
+            // Save reflections
+            localStorage.setItem('blackBeltReflection1', document.getElementById('reflection1').value);
+            localStorage.setItem('blackBeltReflection2', document.getElementById('reflection2').value);
+            localStorage.setItem('blackBeltReflection3', document.getElementById('reflection3').value);
+            
+            // Show results - will be implemented in final batch
+            showResults();
+        }
+
         function showResults() {
-            // Will be implemented in final batch
-            alert('Assessment complete! Results screen coming in next batch.');
+            // Will be implemented in final batch with scoring logic
+            alert('Reflections saved! Results screen coming in next batch.');
         }
 
         // Scenario logic will be added in next batches
