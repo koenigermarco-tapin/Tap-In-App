@@ -1087,7 +1087,31 @@
         });
 
         function showAlreadyCompleted() {
-            // Will be implemented in final batch
+            const xp = localStorage.getItem('blackBeltAssessmentXP') || '2500';
+            const totalXP = localStorage.getItem('totalXP') || '0';
+            
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            document.getElementById('resultContent').innerHTML = `
+                <div class="result-box pass">
+                    <div class="score-display pass">⬛ Black Belt</div>
+                    <div class="xp-earned">
+                        <div class="xp-amount">${xp} XP</div>
+                        <div>Already Earned</div>
+                    </div>
+                    <div class="result-message">
+                        <strong>You've already completed the Black Belt Assessment!</strong><br><br>
+                        You are a certified Black Belt in The Five Dysfunctions of a Functional Team.<br><br>
+                        Total System XP: ${parseInt(totalXP).toLocaleString()}<br>
+                        🏆 Complete 5 Dysfunctions Belt System
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-button" onclick="window.location.href='index.html'">Return Home</button>
+                        <button class="action-button" onclick="viewReflections()">View My Reflections</button>
+                    </div>
+                </div>
+            `;
         }
 
         function startAssessment() {
@@ -1186,13 +1210,105 @@
             localStorage.setItem('blackBeltReflection2', document.getElementById('reflection2').value);
             localStorage.setItem('blackBeltReflection3', document.getElementById('reflection3').value);
             
-            // Show results - will be implemented in final batch
+            // Calculate and show results
             showResults();
         }
 
         function showResults() {
-            // Will be implemented in final batch with scoring logic
-            alert('Reflections saved! Results screen coming in next batch.');
+            // Calculate score
+            let correctCount = 0;
+            for (let i = 1; i <= totalScenarios; i++) {
+                if (answers[i] === correctAnswers[i]) {
+                    correctCount++;
+                }
+            }
+
+            const percentage = Math.round((correctCount / totalScenarios) * 100);
+            const passed = correctCount >= 12; // 80% = 12/15
+
+            // Show results screen
+            document.getElementById('reflectionsScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+
+            // Build results HTML
+            let resultsHTML = `
+                <div class="result-box ${passed ? 'pass' : 'fail'}">
+                    <div class="score-display ${passed ? 'pass' : 'fail'}">${correctCount} / ${totalScenarios}</div>
+                    <div class="result-message">${percentage}% Correct</div>
+            `;
+
+            if (passed) {
+                // Award XP
+                const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+                const newXP = currentXP + 2500;
+                localStorage.setItem('totalXP', newXP.toString());
+                localStorage.setItem('blackBeltAssessmentXP', '2500');
+                localStorage.setItem('blackBeltAssessmentCompleted', 'true');
+                
+                // Add to belts earned
+                let beltsEarned = JSON.parse(localStorage.getItem('beltsEarned') || '[]');
+                if (!beltsEarned.includes('black')) {
+                    beltsEarned.push('black');
+                    localStorage.setItem('beltsEarned', JSON.stringify(beltsEarned));
+                }
+
+                // Mark system complete
+                localStorage.setItem('fiveDysfunctionsComplete', 'true');
+
+                resultsHTML += `
+                    <div class="xp-earned">
+                        <div class="xp-amount">+2,500 XP</div>
+                        <div>Black Belt Certification Earned!</div>
+                    </div>
+                    <div class="result-message">
+                        <strong>🎉 Congratulations, Black Belt!</strong><br><br>
+                        You've demonstrated mastery of The Five Dysfunctions of a Functional Team. You understand not just the individual dysfunctions, but how they cascade and integrate. You're ready to build highly functional teams and teach others.<br><br>
+                        <strong>Total System XP: ${newXP.toLocaleString()}</strong><br>
+                        🏆 Complete 5 Dysfunctions Belt System Achieved
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-button" onclick="window.location.href='index.html'">Return Home</button>
+                        <button class="action-button" onclick="viewReflections()">View My Reflections</button>
+                    </div>
+                `;
+            } else {
+                resultsHTML += `
+                    <div class="result-message">
+                        <strong>Not Yet - Keep Learning</strong><br><br>
+                        Black Belt requires 80% mastery (12/15 correct). You scored ${correctCount}/15.<br><br>
+                        This assessment tests deep integration of all five dysfunctions. Review the material, reflect on the scenarios where you struggled, and try again when ready.<br><br>
+                        Your reflections have been saved.
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-button" onclick="retakeAssessment()">Try Again</button>
+                        <button class="action-button" onclick="window.location.href='index.html'">Return Home</button>
+                    </div>
+                `;
+            }
+
+            resultsHTML += `</div>`;
+            document.getElementById('resultContent').innerHTML = resultsHTML;
+        }
+
+        function retakeAssessment() {
+            // Reset state
+            currentScenario = 1;
+            answers = {};
+            
+            // Clear selections
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            
+            // Hide results, show intro
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('introScreen').classList.remove('hidden');
+        }
+
+        function viewReflections() {
+            const r1 = localStorage.getItem('blackBeltReflection1') || '';
+            const r2 = localStorage.getItem('blackBeltReflection2') || '';
+            const r3 = localStorage.getItem('blackBeltReflection3') || '';
+            
+            alert('Reflection 1: ' + r1.substring(0, 100) + '...\n\nReflection 2: ' + r2.substring(0, 100) + '...\n\nReflection 3: ' + r3.substring(0, 100) + '...\n\n(Full reflections saved in localStorage)');
         }
 
         // Scenario logic will be added in next batches
