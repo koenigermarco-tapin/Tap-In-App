@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>⚪ White Belt - Stripe 2: Practicing Vulnerability | Tap-In Leadership</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 3px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .belt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 15px;
+            border: 2px solid #cbd5e1;
+        }
+
+        .stripe-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stripe-dot {
+            width: 12px;
+            height: 40px;
+            background: #1f2937;
+            border-radius: 3px;
+        }
+
+        .stripe-dot.inactive {
+            background: #cbd5e1;
+        }
+
+        h1 {
+            color: #1a365d;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .module-description {
+            color: #475569;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar-container {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .lesson-header:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        }
+
+        .lesson-title-section {
+            flex: 1;
+        }
+
+        .lesson-number {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            color: #1a365d;
+            font-weight: 700;
+        }
+
+        .lesson-status {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            background: #3b82f6;
+            color: white;
+        }
+
+        .lesson-body {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .lesson-body.active {
+            padding: 30px;
+            max-height: 5000px;
+        }
+
+        .lesson-section {
+            margin-bottom: 30px;
+        }
+
+        .lesson-section h3 {
+            color: #1a365d;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson-section p {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .lesson-section ul, .lesson-section ol {
+            color: #475569;
+            line-height: 1.8;
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .lesson-section li {
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .research-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .research-box h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .practice-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .practice-box h4 {
+            color: #065f46;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .xp-badge {
+            background: #fbbf24;
+            color: #78350f;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .lesson-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+        }
+
+        .lesson-badge.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            transition: right 0.5s ease;
+            z-index: 1000;
+            border-left: 5px solid #10b981;
+        }
+
+        .achievement-popup.show {
+            right: 20px;
+        }
+
+        .achievement-header {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-icon {
+            font-size: 40px;
+        }
+
+        .achievement-text h4 {
+            color: #1a365d;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-text p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .achievement-xp {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .lesson-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Module Header -->
+        <div class="module-header">
+            <div class="belt-badge">
+                ⚪ WHITE BELT - STRIPE 2 of 4
+            </div>
+            
+            <div class="stripe-indicator">
+                <div class="stripe-dot"></div>
+                <div class="stripe-dot"></div>
+                <div class="stripe-dot inactive"></div>
+                <div class="stripe-dot inactive"></div>
+            </div>
+
+            <h1>🥋 Practicing Vulnerability</h1>
+            <p class="module-description">
+                Move from theory to practice with personal exercises to develop your vulnerability capacity. Learn the vulnerability first move, practice the Personal History exercise, experience the Grip-Switch drill, and build your muscle memory through scenario practice.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="xpDisplay">0</span>
+                    <span class="stat-label">XP Earned</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="streakDisplay">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="badgesDisplay">0</span>
+                    <span class="stat-label">Stripe</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <h3 style="color: #1a365d; margin-bottom: 10px;">📊 Your Progress</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <p class="progress-text" id="progressText">0 of 4 lessons completed</p>
+        </div>
+
+        <!-- Lesson 1: The Vulnerability First Move -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge1">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson1')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 1</div>
+                    <div class="lesson-title">The Vulnerability First Move</div>
+                </div>
+                <div class="lesson-status" id="status1">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson1">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>Why leaders must demonstrate vulnerability before expecting it from others</li>
+                        <li>The specific types of vulnerability that build trust fastest</li>
+                        <li>How to be vulnerable without undermining your authority</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Core Concept</h3>
+                    <p>
+                        In BJJ, there's a concept called "giving your back." It's one of the worst positions—your opponent can choke you, and you can't see what's coming. No one voluntarily gives their back in competition.
+                    </p>
+                    <p>
+                        Except in training with trusted partners. When you give your back intentionally, you're saying: "I trust you not to destroy me. Let's work on escape techniques."
+                    </p>
+                    <p>
+                        This is the <strong>vulnerability first move</strong>. Someone has to go first, and in teams, it must be the leader.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Paul J. Zak's Research</h4>
+                    <p>
+                        Leaders asking for help increases trust and cooperation throughout the organization. "Showing vulnerability" is one of eight key management behaviors that stimulate oxytocin production and generate trust.
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🎯 Strategic Vulnerability Examples</h3>
+                    <ul>
+                        <li><strong>Admit knowledge gaps:</strong> "I don't understand the technical details here—can someone walk me through it?"</li>
+                        <li><strong>Share past failures:</strong> "I made this exact mistake before. Here's what I learned."</li>
+                        <li><strong>Ask for feedback:</strong> "What's one thing I could do better in these meetings?"</li>
+                        <li><strong>Acknowledge emotions:</strong> "I'm frustrated by this situation, and I'm working through it."</li>
+                    </ul>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>⚠️ Key Distinction</h4>
+                    <p>
+                        Strategic vulnerability means exposing real limitations, not curated weaknesses. People can smell performative vulnerability instantly. It destroys trust faster than silence.
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Leaders must go first—waiting for your team to be vulnerable is a losing strategy</li>
+                        <li>Strategic vulnerability means exposing real limitations, not curated weaknesses</li>
+                        <li>Performative vulnerability (fake admissions) destroys trust faster than silence</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Make one vulnerability first move in a team setting. Choose something real:
+                    </p>
+                    <ul>
+                        <li>Admit you don't know something</li>
+                        <li>Share a genuine mistake from your past</li>
+                        <li>Ask for specific feedback on your leadership</li>
+                    </ul>
+                    <p>Document the response. Did anyone reciprocate?</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(1)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 2: The Personal History Exercise -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge2">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson2')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 2</div>
+                    <div class="lesson-title">The Personal History Exercise</div>
+                </div>
+                <div class="lesson-status" id="status2">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson2">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>A structured exercise from Lencioni to rapidly build team trust</li>
+                        <li>How sharing personal context humanizes colleagues</li>
+                        <li>The difference between disclosure and vulnerability</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Lencioni's Personal Histories Exercise</h3>
+                    <p>
+                        This is one of the fastest trust-building interventions available, adapted for Tap-In's embodied approach.
+                    </p>
+                    <p>
+                        <strong>The exercise is simple:</strong> Each team member answers 3-5 questions about their background. Not work history—personal history.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>💬 Recommended Questions</h4>
+                    <ul>
+                        <li>Where did you grow up? How many siblings?</li>
+                        <li>What was your biggest challenge in childhood?</li>
+                        <li>What was your first job (ever, not career-related)?</li>
+                        <li>What's a unique or interesting fact about you that others might not know?</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🧠 Why This Works</h3>
+                    <p>
+                        Most professionals know their colleagues only as functional roles. "Sarah the engineer." "Mike from finance." When you learn someone's context—their background, struggles, and formative experiences—you see them as a full human being. Judgment decreases. Empathy increases. Trust follows.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Disclosure vs. Vulnerability</h4>
+                    <p>
+                        Sharing that you grew up in a small town is <strong>disclosure</strong>. Sharing that you felt out of place when you arrived at university because everyone seemed more prepared—that's <strong>vulnerability</strong>. The exercise works best when people share context that felt emotionally significant.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🥋 Tap-In Enhancement</h4>
+                    <p>
+                        In Tap-In workshops, we combine this with physical warm-ups—light partner exercises before the conversation. Research shows that 70-90% of communication is non-verbal, and physical contact (even just pushing hands palm-to-palm) accelerates trust because it bypasses the verbal brain.
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Knowing personal context transforms colleagues from roles into humans</li>
+                        <li>Emotional significance matters more than dramatic stories</li>
+                        <li>Combining verbal sharing with physical exercises accelerates trust</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Run a mini Personal History exercise with your team (or even just 2-3 colleagues). Use these questions:
+                    </p>
+                    <ol>
+                        <li>Where did you grow up?</li>
+                        <li>What was a defining challenge from your early life?</li>
+                        <li>What's something about your background that affects how you work today?</li>
+                    </ol>
+                    <p>Keep it to 5 minutes per person. Notice how the room feels afterward.</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(2)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 3: The "Grip-Switch" Vulnerability Drill -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge3">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson3')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 3</div>
+                    <div class="lesson-title">The "Grip-Switch" Vulnerability Drill</div>
+                </div>
+                <div class="lesson-status" id="status3">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson3">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>Tap-In's signature physical exercise for building instant trust</li>
+                        <li>How physical vulnerability translates to psychological safety</li>
+                        <li>Adapting embodied exercises for non-martial artists</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 The Grip-Switch Drill</h3>
+                    <p>
+                        This is Tap-In's signature trust-building drill, adapted from BJJ hand-fighting techniques for business teams.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🥋 How to Perform the Drill</h4>
+                    <ol>
+                        <li><strong>Pair up.</strong> Face your partner, standing about arm's length apart.</li>
+                        <li><strong>Connect.</strong> Both people extend their arms and touch palms, chest-high.</li>
+                        <li><strong>Round 1 (30 seconds):</strong> Partner A tries to gently switch grip—sliding to grab Partner B's wrist. Partner B "gives way" (moves with the pressure instead of resisting), then mirrors the grip attempt.</li>
+                        <li><strong>Switch roles</strong> and repeat.</li>
+                        <li><strong>Round 2:</strong> Both partners try simultaneously, giving and taking in flow.</li>
+                        <li><strong>Debrief (2 minutes):</strong> How did it feel to give way? To take? To flow?</li>
+                    </ol>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🧠 Why This Works</h3>
+                    <p>
+                        The drill creates controlled physical vulnerability without fighting or competition. You're touching someone, trying to control them, and also surrendering control. It's uncomfortable—which is exactly the point.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Embodied Learning Research</h4>
+                    <p>
+                        Studies confirm that embodied learning outperforms cognitive-only approaches. The Strozzi Institute research shows that "reshaping of the brain (new synapses, myelination of neurons, neurogenesis) requires struggle" and embodied practice.
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💭 Common Insights</h3>
+                    <p>
+                        When people reflect afterward, they often connect the physical experience to psychological patterns:
+                    </p>
+                    <ul>
+                        <li>"I realized I always try to control instead of flowing."</li>
+                        <li>"Giving way felt weak at first, then felt strategic."</li>
+                        <li>"I don't trust easily—I kept resisting even when I should have moved."</li>
+                    </ul>
+                    <p>These insights translate directly to team dynamics.</p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Physical exercises create vulnerability faster than words alone</li>
+                        <li>The Grip-Switch drill builds trust in 5-10 minutes with lasting effects</li>
+                        <li>Physical experiences reveal psychological patterns (control, resistance, flow)</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Run the Grip-Switch drill with at least one person—a colleague, partner, or friend. It feels strange at first. Do it anyway.
+                    </p>
+                    <p>
+                        Afterward, ask: "What did you notice about yourself during that exercise?" Listen to their answer before sharing yours.
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(3)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 4: Scenario Practice -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge4">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson4')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 4</div>
+                    <div class="lesson-title">Scenario Practice: Admitting You Don't Know</div>
+                </div>
+                <div class="lesson-status" id="status4">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson4">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>How to practice vulnerability in realistic scenarios</li>
+                        <li>Phrases and approaches that build trust without undermining credibility</li>
+                        <li>Building the muscle memory for honest communication</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Core Concept</h3>
+                    <p>
+                        Vulnerability is a skill. Like any skill, it improves with deliberate practice.
+                    </p>
+                    <p>
+                        Here are three scenarios to practice—ideally with a trusted colleague or coach who can roleplay the other side:
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🎭 Scenario 1: You don't understand something in a meeting</h3>
+                    <table>
+                        <tr>
+                            <th>Typical Response</th>
+                            <th>Vulnerability Practice</th>
+                        </tr>
+                        <tr>
+                            <td>Nod along, Google it later, hope no one noticed</td>
+                            <td>"I want to make sure I'm following—can you explain what [term] means in this context?"</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🎭 Scenario 2: You made a mistake that others might discover</h3>
+                    <table>
+                        <tr>
+                            <th>Typical Response</th>
+                            <th>Vulnerability Practice</th>
+                        </tr>
+                        <tr>
+                            <td>Minimize it, deflect blame, or hope it stays hidden</td>
+                            <td>"I want to flag something. I made a decision last week that didn't work out. Here's what happened and what I learned."</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🎭 Scenario 3: You're struggling with a task</h3>
+                    <table>
+                        <tr>
+                            <th>Typical Response</th>
+                            <th>Vulnerability Practice</th>
+                        </tr>
+                        <tr>
+                            <td>Push through alone, work late, pretend everything's fine</td>
+                            <td>"I'm stuck on this and could use a thought partner. Can I walk you through where I am?"</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🎯 The Key Insight</h4>
+                    <p>
+                        Vulnerability isn't about exposing yourself randomly. It's about choosing to share what's real in moments when hiding would be easier. Each time you choose transparency over protection, you strengthen the trust muscle.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Amy Edmondson's Research</h4>
+                    <p>
+                        Google's Project Aristotle, which built on Edmondson's work, identifies three key practices for cultivating psychological safety:
+                    </p>
+                    <ul>
+                        <li><strong>Frame work as a learning problem</strong> - Creates belief that everyone's input is needed</li>
+                        <li><strong>Acknowledge fallibility</strong> - Leaders say "I might miss something, I need to hear from you"</li>
+                        <li><strong>Model curiosity</strong> - Ask lots of questions to create need for voice and participation</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Vulnerability improves with deliberate scenario practice</li>
+                        <li>Having practiced phrases reduces the cognitive load of being vulnerable in real moments</li>
+                        <li>Each small act of transparency makes the next one easier</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Choose one scenario above and roleplay it with a trusted person. Practice until the phrases feel natural, not scripted.
+                    </p>
+                    <p>
+                        Then look for one real opportunity to apply what you practiced.
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(4)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Dashboard -->
+        <div class="progress-section" style="margin-top: 40px;">
+            <h2 style="color: #1a365d; margin-bottom: 10px;">📊 Stripe 2 Summary</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryComplete">0/4</span>
+                    <span class="stat-label">Lessons Completed</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryStatus">0%</span>
+                    <span class="stat-label">Progress</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryXP">0</span>
+                    <span class="stat-label">Total XP</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryBadges">0</span>
+                    <span class="stat-label">Stripe Earned</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="learning-hub.html" style="color: white; text-decoration: none; font-weight: 600; background: rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 10px; display: inline-block;">
+                ← Back to Learning Hub
+            </a>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-header">
+            <div class="achievement-icon">🏆</div>
+            <div class="achievement-text">
+                <h4 id="achievementTitle">Lesson Complete!</h4>
+                <p id="achievementDesc">You're building vulnerability mastery</p>
+            </div>
+        </div>
+        <div class="achievement-xp" id="achievementXP">+25 XP</div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'whitebeltStripe2Completed';
+        const XP_KEY = 'whitebeltStripe2ModuleXP';
+        const TOTAL_LESSONS = 4;
+        const XP_PER_LESSON = 25;
+        const MODULE_BONUS_XP = 100;
+
+        function initModule() {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            completed.forEach(lessonNum => {
+                markLessonAsComplete(lessonNum, false);
+            });
+            updateAllStats();
+        }
+
+        function toggleLesson(lessonId) {
+            const body = document.getElementById(lessonId);
+            body.classList.toggle('active');
+        }
+
+        function completeLesson(lessonNum) {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            if (completed.includes(lessonNum)) {
+                showAchievement('Already Complete!', 'You completed this lesson already');
+                return;
+            }
+
+            completed.push(lessonNum);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+
+            let moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+            moduleXP += XP_PER_LESSON;
+            
+            if (completed.length === TOTAL_LESSONS) {
+                moduleXP += MODULE_BONUS_XP;
+                localStorage.setItem(XP_KEY, moduleXP);
+                
+                const stripesEarned = JSON.parse(localStorage.getItem('whiteStripesEarned') || '[]');
+                if (!stripesEarned.includes(2)) {
+                    stripesEarned.push(2);
+                    localStorage.setItem('whiteStripesEarned', JSON.stringify(stripesEarned));
+                }
+                
+                markLessonAsComplete(lessonNum, true);
+                updateAllStats();
+                showAchievement('Stripe 2 Complete! 🥋', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
+            } else {
+                localStorage.setItem(XP_KEY, moduleXP);
+                markLessonAsComplete(lessonNum, true);
+                updateAllStats();
+                showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
+            }
+        }
+
+        function markLessonAsComplete(lessonNum, showBadge) {
+            const status = document.getElementById(`status${lessonNum}`);
+            const badge = document.getElementById(`badge${lessonNum}`);
+            const lessonBody = document.getElementById(`lesson${lessonNum}`);
+            
+            lessonBody.classList.add('active');
+            status.textContent = '✓ Done';
+            status.style.background = '#10b981';
+            
+            if (showBadge) {
+                badge.classList.add('show');
+            }
+        }
+
+        function updateAllStats() {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+            const percentage = (completed.length / TOTAL_LESSONS) * 100;
+            const stripeEarned = completed.length >= TOTAL_LESSONS ? 1 : 0;
+
+            document.getElementById('xpDisplay').textContent = moduleXP;
+            document.getElementById('streakDisplay').textContent = completed.length;
+            document.getElementById('badgesDisplay').textContent = stripeEarned + '/1';
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed.length} of ${TOTAL_LESSONS} lessons completed`;
+            document.getElementById('summaryComplete').textContent = `${completed.length}/${TOTAL_LESSONS}`;
+            document.getElementById('summaryStatus').textContent = Math.round(percentage) + '%';
+            document.getElementById('summaryXP').textContent = moduleXP;
+            document.getElementById('summaryBadges').textContent = stripeEarned ? '✓ Earned' : 'In Progress';
+        }
+
+        function showAchievement(title, desc) {
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementTitle').textContent = title;
+            document.getElementById('achievementDesc').textContent = desc;
+            
+            if (title.includes('Stripe')) {
+                document.getElementById('achievementXP').textContent = `+${XP_PER_LESSON + MODULE_BONUS_XP} XP!`;
+            } else if (title.includes('Already')) {
+                document.getElementById('achievementXP').textContent = 'No XP';
+            } else {
+                document.getElementById('achievementXP').textContent = `+${XP_PER_LESSON} XP`;
+            }
+
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 4000);
+        }
+
+        const APP_VERSION = '2024-11-24-v2';
+        function checkVersion() {
+            const cachedVersion = localStorage.getItem('appVersion');
+            if (cachedVersion && cachedVersion !== APP_VERSION) {
+                localStorage.setItem('appVersion', APP_VERSION);
+                if (!sessionStorage.getItem('hasReloaded')) {
+                    sessionStorage.setItem('hasReloaded', 'true');
+                    window.location.reload(true);
+                }
+            } else {
+                localStorage.setItem('appVersion', APP_VERSION);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkVersion();
+            initModule();
+        });
+    </script>
+</body>
+</html>
