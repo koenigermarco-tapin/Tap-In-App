@@ -822,6 +822,9 @@
         const STORAGE_KEY = 'energyLessonsCompleted';
         const XP_KEY = 'energyModuleXP';
         const STREAK_KEY = 'energyDayStreak';
+        const TOTAL_LESSONS = 4;
+        const XP_PER_LESSON = 25;
+        const MODULE_BONUS_XP = 100;
 
         function initModule() {
             const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
@@ -838,17 +841,31 @@
 
         function completeLesson(lessonNum) {
             const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            if (!completed.includes(lessonNum)) {
-                completed.push(lessonNum);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-                
-                // Add XP
-                const currentXP = parseInt(localStorage.getItem(XP_KEY) || '0');
-                localStorage.setItem(XP_KEY, currentXP + 25);
-                
+            
+            if (completed.includes(lessonNum)) {
+                alert('You already completed this lesson!');
+                return;
+            }
+            
+            completed.push(lessonNum);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+            
+            // Add XP
+            let currentXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+            currentXP += XP_PER_LESSON;
+            
+            // Bonus if all lessons complete
+            if (completed.length === TOTAL_LESSONS) {
+                currentXP += MODULE_BONUS_XP;
+                localStorage.setItem(XP_KEY, currentXP);
                 markLessonAsComplete(lessonNum, true);
                 updateStats();
-                showAchievement(lessonNum);
+                showAchievement('Module Complete! 🎊', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
+            } else {
+                localStorage.setItem(XP_KEY, currentXP);
+                markLessonAsComplete(lessonNum, true);
+                updateStats();
+                showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
             }
         }
 
@@ -866,47 +883,34 @@
         function updateStats() {
             const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').length;
             const xp = parseInt(localStorage.getItem(XP_KEY) || '0');
-            const percentage = (completed / 4) * 100;
-            const badges = completed >= 4 ? 1 : 0;
+            const percentage = (completed / TOTAL_LESSONS) * 100;
+            const badges = completed >= TOTAL_LESSONS ? 1 : 0;
 
             document.getElementById('xpDisplay').textContent = xp;
             document.getElementById('streakDisplay').textContent = completed;
             document.getElementById('badgesDisplay').textContent = badges;
             document.getElementById('progressPercent').textContent = Math.round(percentage) + '%';
             document.getElementById('progressFill').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = `${completed} of 4 lessons completed`;
+            document.getElementById('progressText').textContent = `${completed} of ${TOTAL_LESSONS} lessons completed`;
             document.getElementById('moduleXP').textContent = xp;
-            document.getElementById('summaryComplete').textContent = `${completed}/4`;
+            document.getElementById('summaryComplete').textContent = `${completed}/${TOTAL_LESSONS}`;
             document.getElementById('summaryStatus').textContent = Math.round(percentage) + '%';
             document.getElementById('summaryXP').textContent = xp;
             document.getElementById('summaryBadges').textContent = badges;
 
-            if (completed >= 4) {
+            if (completed >= TOTAL_LESSONS) {
                 document.getElementById('moduleStreak').textContent = '👑';
             }
         }
 
-        function showAchievement(lessonNum) {
-            const titles = [
-                '📊 Fundamentals Mastered',
-                '💪 Recovery Expert',
-                '🔄 Rhythm Master',
-                '🛡️ Protector Supreme'
-            ];
-            const descs = [
-                'You understand the 80/20 principle',
-                'You know the 4 recovery dimensions',
-                'You\'re ready for ultradian rhythms',
-                'You can protect your energy'
-            ];
-
+        function showAchievement(title, xpText) {
             const popup = document.getElementById('achievementPopup');
-            document.getElementById('achievementTitle').textContent = titles[lessonNum - 1];
-            document.getElementById('achievementDesc').textContent = descs[lessonNum - 1];
-            document.getElementById('achievementXP').textContent = '+25 XP';
+            document.getElementById('achievementTitle').textContent = title;
+            document.getElementById('achievementDesc').textContent = title === 'Module Complete! 🎊' ? 'All lessons completed!' : 'Keep learning!';
+            document.getElementById('achievementXP').textContent = xpText;
 
             popup.classList.add('show');
-            setTimeout(() => popup.classList.remove('show'), 3000);
+            setTimeout(() => popup.classList.remove('show'), 4000);
         }
 
         
