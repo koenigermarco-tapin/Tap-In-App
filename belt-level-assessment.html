@@ -317,17 +317,96 @@
             updateProgress();
         }
 
+        const questions = [
+            {
+                num: 1,
+                text: "When team members share their mistakes or weaknesses, what typically happens?",
+                dysfunction: "trust",
+                options: [
+                    { label: "A", text: "People are vulnerable and share openly without fear - it builds stronger connections", value: 4 },
+                    { label: "B", text: "There's some sharing, but people still hold back on really personal stuff", value: 3 },
+                    { label: "C", text: "People share surface-level things but avoid deeper vulnerabilities", value: 2 },
+                    { label: "D", text: "Most people keep their mistakes to themselves - it's not safe to be vulnerable", value: 1 }
+                ]
+            },
+            {
+                num: 2,
+                text: "When your team disagrees about an important decision, what happens?",
+                dysfunction: "conflict",
+                options: [
+                    { label: "A", text: "We debate passionately and everyone speaks their mind - it's energizing", value: 4 },
+                    { label: "B", text: "We discuss different viewpoints, but some people stay quiet to keep the peace", value: 3 },
+                    { label: "C", text: "We have polite discussions but avoid real confrontation", value: 2 },
+                    { label: "D", text: "We nod along to avoid conflict - disagreements feel dangerous", value: 1 }
+                ]
+            },
+            {
+                num: 3,
+                text: "After your team makes a decision in a meeting, what typically follows?",
+                dysfunction: "commitment",
+                options: [
+                    { label: "A", text: "Everyone commits fully even if they initially disagreed - we're all-in", value: 4 },
+                    { label: "B", text: "Most people commit, but a few seem to drag their feet", value: 3 },
+                    { label: "C", text: "People say 'yes' in the meeting but do their own thing afterward", value: 2 },
+                    { label: "D", text: "It's unclear what we actually decided - people leave with different interpretations", value: 1 }
+                ]
+            },
+            {
+                num: 4,
+                text: "When someone on your team isn't pulling their weight, what happens?",
+                dysfunction: "accountability",
+                options: [
+                    { label: "A", text: "Team members call it out directly and constructively - peer pressure is strong", value: 4 },
+                    { label: "B", text: "Someone eventually addresses it, but it takes longer than it should", value: 3 },
+                    { label: "C", text: "People complain privately but rarely confront the person directly", value: 2 },
+                    { label: "D", text: "Nothing happens until the leader steps in - peers never hold each other accountable", value: 1 }
+                ]
+            },
+            {
+                num: 5,
+                text: "What does your team celebrate and focus on most?",
+                dysfunction: "results",
+                options: [
+                    { label: "A", text: "Collective team outcomes and shared goals - individual wins matter less", value: 4 },
+                    { label: "B", text: "Team results mostly, but people also care about their personal success", value: 3 },
+                    { label: "C", text: "Individual achievements and departmental wins over team success", value: 2 },
+                    { label: "D", text: "Everyone focuses on their own goals - team results are secondary", value: 1 }
+                ]
+            }
+        ];
+
         function loadQuestions() {
-            // Questions will be added in next batch
+            const container = document.getElementById('questionsContainer');
+            questions.forEach(q => {
+                const questionCard = document.createElement('div');
+                questionCard.id = `question${q.num}`;
+                questionCard.className = 'question-card';
+                questionCard.style.display = q.num === 1 ? 'block' : 'none';
+                
+                questionCard.innerHTML = `
+                    <div class="question-number">Question ${q.num} of ${totalQuestions}</div>
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+                        ${q.options.map(opt => `
+                            <div class="option" onclick="selectOption(${q.num}, ${opt.value}, '${q.dysfunction}')">
+                                <span class="option-label">${opt.label}.</span>
+                                <span class="option-text">${opt.text}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                
+                container.appendChild(questionCard);
+            });
         }
 
-        function selectOption(questionNum, option) {
+        function selectOption(questionNum, value, dysfunction) {
             // Mark selected
             const options = document.querySelectorAll(`#question${questionNum} .option`);
             options.forEach(opt => opt.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
             
-            answers[questionNum] = option;
+            answers[questionNum] = { value, dysfunction };
             document.getElementById('nextButton').disabled = false;
         }
 
@@ -337,8 +416,13 @@
                 return;
             }
 
+            // Hide current question
+            document.getElementById(`question${currentQuestion}`).style.display = 'none';
+
             if (currentQuestion < totalQuestions) {
                 currentQuestion++;
+                // Show next question
+                document.getElementById(`question${currentQuestion}`).style.display = 'block';
                 updateProgress();
                 updateNavButtons();
             } else {
@@ -348,7 +432,11 @@
 
         function previousQuestion() {
             if (currentQuestion > 1) {
+                // Hide current question
+                document.getElementById(`question${currentQuestion}`).style.display = 'none';
                 currentQuestion--;
+                // Show previous question
+                document.getElementById(`question${currentQuestion}`).style.display = 'block';
                 updateProgress();
                 updateNavButtons();
             }
