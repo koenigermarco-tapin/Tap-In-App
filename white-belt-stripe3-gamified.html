@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>⚪ White Belt - Stripe 3: Building Team Trust | Tap-In Leadership</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .module-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 3px solid #cbd5e1;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .belt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 15px;
+            border: 2px solid #cbd5e1;
+        }
+
+        .stripe-indicator {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .stripe-dot {
+            width: 12px;
+            height: 40px;
+            background: #1f2937;
+            border-radius: 3px;
+        }
+
+        .stripe-dot.inactive {
+            background: #cbd5e1;
+        }
+
+        h1 {
+            color: #1a365d;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .module-description {
+            color: #475569;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar-container {
+            background: #e2e8f0;
+            height: 12px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #cbd5e1;
+        }
+
+        .lesson-header:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        }
+
+        .lesson-title-section {
+            flex: 1;
+        }
+
+        .lesson-number {
+            font-size: 14px;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .lesson-title {
+            font-size: 20px;
+            color: #1a365d;
+            font-weight: 700;
+        }
+
+        .lesson-status {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            background: #3b82f6;
+            color: white;
+        }
+
+        .lesson-body {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+
+        .lesson-body.active {
+            padding: 30px;
+            max-height: 5000px;
+        }
+
+        .lesson-section {
+            margin-bottom: 30px;
+        }
+
+        .lesson-section h3 {
+            color: #1a365d;
+            font-size: 20px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .lesson-section p {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .lesson-section ul, .lesson-section ol {
+            color: #475569;
+            line-height: 1.8;
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        .lesson-section li {
+            margin-bottom: 10px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .highlight-box h4 {
+            color: #92400e;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .research-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .research-box h4 {
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .practice-box {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-left: 4px solid #10b981;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .practice-box h4 {
+            color: #065f46;
+            margin-bottom: 10px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f8fafc;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .xp-badge {
+            background: #fbbf24;
+            color: #78350f;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .lesson-badge {
+            position: absolute;
+            top: -10px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.3s ease;
+        }
+
+        .lesson-badge.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .achievement-popup {
+            position: fixed;
+            top: 20px;
+            right: -400px;
+            background: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            transition: right 0.5s ease;
+            z-index: 1000;
+            border-left: 5px solid #10b981;
+        }
+
+        .achievement-popup.show {
+            right: 20px;
+        }
+
+        .achievement-header {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-icon {
+            font-size: 40px;
+        }
+
+        .achievement-text h4 {
+            color: #1a365d;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .achievement-text p {
+            color: #64748b;
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .achievement-xp {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            color: #78350f;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .lesson-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Module Header -->
+        <div class="module-header">
+            <div class="belt-badge">
+                ⚪ WHITE BELT - STRIPE 3 of 4
+            </div>
+            
+            <div class="stripe-indicator">
+                <div class="stripe-dot"></div>
+                <div class="stripe-dot"></div>
+                <div class="stripe-dot"></div>
+                <div class="stripe-dot inactive"></div>
+            </div>
+
+            <h1>🥋 Building Team Trust</h1>
+            <p class="module-description">
+                Scale individual vulnerability into team-level trust systems. Master the 360° Trust Grid, implement the Team Vulnerability Stack, create psychological safety rituals, and learn to handle trust breakdowns effectively.
+            </p>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="xpDisplay">0</span>
+                    <span class="stat-label">XP Earned</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="streakDisplay">0</span>
+                    <span class="stat-label">Completed</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="badgesDisplay">0</span>
+                    <span class="stat-label">Stripe</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <h3 style="color: #1a365d; margin-bottom: 10px;">📊 Your Progress</h3>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progressFill"></div>
+            </div>
+            <p class="progress-text" id="progressText">0 of 4 lessons completed</p>
+        </div>
+
+        <!-- Lesson 1: The 360° Trust Grid -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge1">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson1')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 1</div>
+                    <div class="lesson-title">The 360° Trust Grid</div>
+                </div>
+                <div class="lesson-status" id="status1">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson1">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>Tap-In's diagnostic tool for mapping trust levels across a team</li>
+                        <li>How to identify trust asymmetries (who trusts whom)</li>
+                        <li>Using the Grid to prioritize trust-building interventions</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Core Concept</h3>
+                    <p>
+                        Most teams assume trust is binary—either present or absent. In reality, trust is a network. Some people trust each other deeply. Others are cordial but guarded. And some relationships are actively hostile.
+                    </p>
+                    <p>
+                        The 360° Trust Grid makes this visible.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🛠️ How to Create a 360° Trust Grid</h4>
+                    <ol>
+                        <li><strong>Create a matrix:</strong> List all team members on both axes (rows and columns)</li>
+                        <li><strong>Self-assessment:</strong> Each person rates their trust level with every other team member on a 1-5 scale:
+                            <ul>
+                                <li>1 = Low trust (guarded, minimal vulnerability)</li>
+                                <li>3 = Moderate trust (professional but not personal)</li>
+                                <li>5 = High trust (would share vulnerabilities openly)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Aggregate anonymously:</strong> Create a heat map showing average trust scores for each relationship pair</li>
+                        <li><strong>Identify patterns:</strong> Where are the trust gaps? Who is isolated? Which relationships are asymmetric (A trusts B, but B doesn't trust A)?</li>
+                    </ol>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🧠 What the Grid Reveals</h3>
+                    <table>
+                        <tr>
+                            <th>Pattern</th>
+                            <th>What It Means</th>
+                            <th>Intervention</th>
+                        </tr>
+                        <tr>
+                            <td><strong>Islands</strong></td>
+                            <td>One person consistently scores low with everyone</td>
+                            <td>1-on-1 check-ins, Personal History exercise</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Asymmetries</strong></td>
+                            <td>A trusts B (5), but B doesn't trust A (2)</td>
+                            <td>Facilitated conversation to surface hidden tensions</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clusters</strong></td>
+                            <td>Subgroups with high internal trust but low inter-group trust</td>
+                            <td>Cross-cluster pairing exercises, shared vulnerability drills</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Universal low scores</strong></td>
+                            <td>Everyone rates most relationships as 1-2</td>
+                            <td>Full team reset—Personal History, Grip-Switch, structured vulnerability exercises</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Network Science of Trust</h4>
+                    <p>
+                        Research in organizational networks shows that trust density (the percentage of possible trust connections that actually exist) predicts team performance better than average trust levels. A team where 80% of members trust each other moderately outperforms a team where 40% trust deeply and 60% don't trust at all.
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Trust is a network, not a binary state—map it to see the full picture</li>
+                        <li>Trust asymmetries are common and require targeted conversations</li>
+                        <li>Trust density matters more than peak trust levels</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Create a simplified Trust Grid for your team (or a subset of 4-6 people).
+                    </p>
+                    <p>
+                        Use an anonymous survey tool. Ask: "On a scale of 1-5, how much do you trust [each person] to have your back in difficult situations?"
+                    </p>
+                    <p>
+                        Share the aggregated results (no individual scores) in your next team meeting. Discuss: "What patterns do we notice? Where should we focus?"
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(1)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 2: The Team Vulnerability Stack -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge2">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson2')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 2</div>
+                    <div class="lesson-title">The Team Vulnerability Stack</div>
+                </div>
+                <div class="lesson-status" id="status2">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson2">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>How to facilitate team-wide vulnerability in a structured, safe way</li>
+                        <li>The "vulnerability stack" exercise—Tap-In's signature team trust drill</li>
+                        <li>Managing the emotional risk when vulnerability goes public</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Core Concept</h3>
+                    <p>
+                        The Personal History Exercise builds 1-on-1 trust. But teams need shared vulnerability—moments where everyone sees everyone else being real at the same time.
+                    </p>
+                    <p>
+                        The <strong>Team Vulnerability Stack</strong> is a facilitated exercise where team members publicly share progressively deeper vulnerabilities in rounds.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🛠️ How to Run the Team Vulnerability Stack</h4>
+                    <p><strong>Setup (5 min):</strong></p>
+                    <ul>
+                        <li>Gather the team in a circle (physical or virtual)</li>
+                        <li>Explain: "We're going to do three rounds. Each round, everyone shares something. The questions get progressively more personal. You can pass, but we encourage you to lean in."</li>
+                    </ul>
+                    
+                    <p><strong>Round 1 (10 min) - Low Risk:</strong></p>
+                    <p>"Share one skill you don't have that you wish you did."</p>
+                    
+                    <p><strong>Round 2 (15 min) - Medium Risk:</strong></p>
+                    <p>"Share a time when you felt like an imposter at work."</p>
+                    
+                    <p><strong>Round 3 (20 min) - Higher Risk:</strong></p>
+                    <p>"Share something you're struggling with right now—work or personal."</p>
+                    
+                    <p><strong>Debrief (10 min):</strong></p>
+                    <p>"What did you notice? How does the room feel different now?"</p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🧠 Why Progression Matters</h3>
+                    <p>
+                        Starting with low-risk questions builds safety before asking for deeper vulnerability. By Round 3, people have already seen others be vulnerable (and survive it), which makes their own sharing easier.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Brené Brown on Vulnerability Spirals</h4>
+                    <p>
+                        Brown's research identifies "vulnerability spirals"—when one person's disclosure prompts reciprocal disclosure, creating momentum. The Team Vulnerability Stack intentionally triggers this spiral in a structured way, preventing the common pitfall where one person over-shares and others withdraw.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>⚠️ Facilitation Tips</h4>
+                    <ul>
+                        <li><strong>Leader goes first:</strong> Model the level of vulnerability you want to see</li>
+                        <li><strong>No fixing or advice:</strong> Responses should be "Thank you for sharing" only</li>
+                        <li><strong>Hold space for silence:</strong> Don't rush. Let people think</li>
+                        <li><strong>Honor passes:</strong> If someone passes, move on without pressure</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Shared public vulnerability accelerates team trust faster than 1-on-1 conversations alone</li>
+                        <li>Progression from low to high risk makes deeper sharing safer</li>
+                        <li>Leader vulnerability in Round 1 sets the tone for everyone else</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Run a mini Vulnerability Stack with your team (or a small subset).
+                    </p>
+                    <p>
+                        Use the three questions above. If 60 minutes feels too long, do just Rounds 1 and 2 (25 minutes total).
+                    </p>
+                    <p>
+                        Notice: Who shares easily? Who struggles? How does the energy shift between rounds?
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(2)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 3: Creating Psychological Safety Rituals -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge3">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson3')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 3</div>
+                    <div class="lesson-title">Creating Psychological Safety Rituals</div>
+                </div>
+                <div class="lesson-status" id="status3">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson3">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>Why one-time trust exercises aren't enough</li>
+                        <li>How to design recurring rituals that maintain psychological safety</li>
+                        <li>Examples of low-effort, high-impact trust rituals</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Core Concept</h3>
+                    <p>
+                        Trust isn't built once and done. It requires maintenance—small, repeated behaviors that signal "this is a safe space."
+                    </p>
+                    <p>
+                        <strong>Rituals</strong> are the answer. They're predictable, low-stakes practices that reinforce psychological safety without requiring constant leadership intervention.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🔄 Trust Ritual Examples</h4>
+                    
+                    <p><strong>1. Weekly Check-In Round (5 min at start of team meetings)</strong></p>
+                    <p>Everyone answers: "What's your energy level today (1-10) and why?"</p>
+                    <p><em>Impact:</em> Normalizes sharing emotional state; surfaces hidden stress</p>
+                    
+                    <p><strong>2. Failure Friday (Monthly, 15 min)</strong></p>
+                    <p>One person shares a mistake from the past month. Team discusses: "What would we do differently?"</p>
+                    <p><em>Impact:</em> De-stigmatizes failure; creates learning culture</p>
+                    
+                    <p><strong>3. Gratitude Close (Last 3 min of every meeting)</strong></p>
+                    <p>Each person thanks one other person for something specific this week.</p>
+                    <p><em>Impact:</em> Builds positive relational bank accounts; ends meetings on connection</p>
+                    
+                    <p><strong>4. The "Stupid Question" Rule</strong></p>
+                    <p>Any meeting can be paused with "Stupid question..." and no one is allowed to say "That's not stupid."</p>
+                    <p><em>Impact:</em> Lowers barrier to asking clarifying questions; prevents false consensus</p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🧠 The Science of Rituals</h3>
+                    <p>
+                        Research shows that rituals work not because they're profound, but because they're <strong>predictable</strong> and <strong>repeated</strong>. The brain learns: "In this context, vulnerability is safe."
+                    </p>
+                    <p>
+                        Over time, the ritual becomes the container. People don't need to psyche themselves up to be vulnerable—the structure does it for them.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Google's Re:Work Research</h4>
+                    <p>
+                        Google's Manager Research found that high-performing teams had ritualized vulnerability. Example: One team started every meeting with "roses and thorns" (one good thing, one challenge). Teams that maintained this ritual for 6+ months showed measurably higher psychological safety scores than teams that did it sporadically.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>⚠️ Common Ritual Mistakes</h4>
+                    <ul>
+                        <li><strong>Inconsistency:</strong> Doing the ritual only when you "have time" destroys its power</li>
+                        <li><strong>Performative execution:</strong> Rushing through it or clearly not caring signals it doesn't matter</li>
+                        <li><strong>No leader participation:</strong> If the leader skips the check-in, everyone else will too</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Trust requires maintenance—rituals provide consistent, low-effort upkeep</li>
+                        <li>Rituals work because they're predictable, not because they're profound</li>
+                        <li>Consistency matters more than intensity—small weekly rituals > big quarterly events</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Choose one ritual from the list above (or design your own). Introduce it to your team and commit to doing it for 4 consecutive weeks.
+                    </p>
+                    <p>
+                        After week 4, ask the team: "Should we keep this? Modify it? Drop it?"
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(3)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lesson 4: Handling Trust Breakdowns -->
+        <div class="lesson-card">
+            <div class="lesson-badge" id="badge4">+25 XP</div>
+            <div class="lesson-header" onclick="toggleLesson('lesson4')">
+                <div class="lesson-title-section">
+                    <div class="lesson-number">Lesson 4</div>
+                    <div class="lesson-title">Handling Trust Breakdowns</div>
+                </div>
+                <div class="lesson-status" id="status4">Start</div>
+            </div>
+            <div class="lesson-body" id="lesson4">
+                <div class="lesson-section">
+                    <h3>🎯 What You'll Learn</h3>
+                    <ul>
+                        <li>Why trust breakdowns are inevitable (and not always bad)</li>
+                        <li>The "rupture and repair" framework from psychology</li>
+                        <li>Specific techniques for rebuilding trust after it's damaged</li>
+                    </ul>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>📖 Core Concept</h3>
+                    <p>
+                        Trust will break. Someone will betray a confidence, miss a commitment, or say something hurtful. The question isn't if—it's how you respond when it happens.
+                    </p>
+                    <p>
+                        The good news: Research shows that <strong>trust repaired after a breakdown can be stronger than trust that was never tested</strong>.
+                    </p>
+                </div>
+
+                <div class="research-box">
+                    <h4>📊 Rupture and Repair (Attachment Theory)</h4>
+                    <p>
+                        From developmental psychology: Healthy relationships aren't defined by never fighting. They're defined by repairing well after conflict.
+                    </p>
+                    <p>
+                        The same applies to teams. A team that has successfully repaired trust after a breakdown often has deeper trust than a team that's never been tested.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>🛠️ The Trust Repair Process</h4>
+                    
+                    <p><strong>Step 1: Acknowledge the rupture quickly</strong></p>
+                    <p>Don't let it fester. Name it: "I think there's tension between us after yesterday's meeting. Can we talk?"</p>
+                    
+                    <p><strong>Step 2: Listen without defending</strong></p>
+                    <p>Let the other person fully express their experience. Your job is to understand, not justify.</p>
+                    
+                    <p><strong>Step 3: Take responsibility for your part</strong></p>
+                    <p>Even if you don't think you did anything wrong, own your impact: "I can see how my comment landed badly. I didn't mean it that way, but I should have been clearer."</p>
+                    
+                    <p><strong>Step 4: Make a specific amend</strong></p>
+                    <p>Not just "I'm sorry." Offer something concrete: "Going forward, I'll check with you before making decisions that affect your work."</p>
+                    
+                    <p><strong>Step 5: Repair in public if the rupture was public</strong></p>
+                    <p>If trust broke in a team meeting, repair it in a team meeting. Private apologies for public harm don't rebuild collective trust.</p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>🥋 The BJJ Analogy</h3>
+                    <p>
+                        In BJJ, you tap when you're caught in a submission. Tapping isn't failure—it's survival. You reset and keep rolling.
+                    </p>
+                    <p>
+                        Trust breakdowns are the same. When trust "submits," acknowledge it, reset, and keep building. The team that can tap out and keep going is more resilient than the team that pretends nothing happened.
+                    </p>
+                </div>
+
+                <div class="highlight-box">
+                    <h4>⚠️ When Trust Can't Be Repaired</h4>
+                    <p>
+                        Sometimes repair isn't possible. If someone:
+                    </p>
+                    <ul>
+                        <li>Refuses to acknowledge the harm</li>
+                        <li>Repeats the same betrayal despite amends</li>
+                        <li>Uses vulnerability as a weapon (sharing others' private information)</li>
+                    </ul>
+                    <p>
+                        ...then the relationship may need boundaries or, in severe cases, removal from the team. Forcing trust with someone who won't repair is worse than acknowledging incompatibility.
+                    </p>
+                </div>
+
+                <div class="lesson-section">
+                    <h3>💡 Key Takeaways</h3>
+                    <ul>
+                        <li>Trust breakdowns are inevitable—repair skill matters more than perfection</li>
+                        <li>Trust repaired well can be stronger than untested trust</li>
+                        <li>Public ruptures require public repair to restore collective safety</li>
+                    </ul>
+                </div>
+
+                <div class="practice-box">
+                    <h4>✨ Practice Exercise</h4>
+                    <p>
+                        <strong>This week:</strong> Identify one small trust rupture you've been avoiding. It doesn't have to be dramatic—maybe you snapped at someone, missed a deadline, or forgot to follow up.
+                    </p>
+                    <p>
+                        Use the 5-step repair process. Start with: "I think I owe you an acknowledgment about [thing]. Can we talk for 5 minutes?"
+                    </p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="completeLesson(4)">
+                        Mark Complete <span class="xp-badge">+25 XP</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Dashboard -->
+        <div class="progress-section" style="margin-top: 40px;">
+            <h2 style="color: #1a365d; margin-bottom: 10px;">📊 Stripe 3 Summary</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryComplete">0/4</span>
+                    <span class="stat-label">Lessons Completed</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryStatus">0%</span>
+                    <span class="stat-label">Progress</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryXP">0</span>
+                    <span class="stat-label">Total XP</span>
+                </div>
+                <div class="stat-card">
+                    <span class="stat-value" id="summaryBadges">0</span>
+                    <span class="stat-label">Stripe Earned</span>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin: 40px 0;">
+            <a href="learning-hub.html" style="color: white; text-decoration: none; font-weight: 600; background: rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 10px; display: inline-block;">
+                ← Back to Learning Hub
+            </a>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-header">
+            <div class="achievement-icon">🏆</div>
+            <div class="achievement-text">
+                <h4 id="achievementTitle">Lesson Complete!</h4>
+                <p id="achievementDesc">You're building team trust mastery</p>
+            </div>
+        </div>
+        <div class="achievement-xp" id="achievementXP">+25 XP</div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'whitebeltStripe3Completed';
+        const XP_KEY = 'whitebeltStripe3ModuleXP';
+        const TOTAL_LESSONS = 4;
+        const XP_PER_LESSON = 25;
+        const MODULE_BONUS_XP = 100;
+
+        function initModule() {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            completed.forEach(lessonNum => {
+                markLessonAsComplete(lessonNum, false);
+            });
+            updateAllStats();
+        }
+
+        function toggleLesson(lessonId) {
+            const body = document.getElementById(lessonId);
+            body.classList.toggle('active');
+        }
+
+        function completeLesson(lessonNum) {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            
+            if (completed.includes(lessonNum)) {
+                showAchievement('Already Complete!', 'You completed this lesson already');
+                return;
+            }
+
+            completed.push(lessonNum);
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+
+            let moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+            moduleXP += XP_PER_LESSON;
+            
+            if (completed.length === TOTAL_LESSONS) {
+                moduleXP += MODULE_BONUS_XP;
+                localStorage.setItem(XP_KEY, moduleXP);
+                
+                const stripesEarned = JSON.parse(localStorage.getItem('whiteStripesEarned') || '[]');
+                if (!stripesEarned.includes(3)) {
+                    stripesEarned.push(3);
+                    localStorage.setItem('whiteStripesEarned', JSON.stringify(stripesEarned));
+                }
+                
+                markLessonAsComplete(lessonNum, true);
+                updateAllStats();
+                showAchievement('Stripe 3 Complete! 🥋', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
+            } else {
+                localStorage.setItem(XP_KEY, moduleXP);
+                markLessonAsComplete(lessonNum, true);
+                updateAllStats();
+                showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
+            }
+        }
+
+        function markLessonAsComplete(lessonNum, showBadge) {
+            const status = document.getElementById(`status${lessonNum}`);
+            const badge = document.getElementById(`badge${lessonNum}`);
+            const lessonBody = document.getElementById(`lesson${lessonNum}`);
+            
+            lessonBody.classList.add('active');
+            status.textContent = '✓ Done';
+            status.style.background = '#10b981';
+            
+            if (showBadge) {
+                badge.classList.add('show');
+            }
+        }
+
+        function updateAllStats() {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            const moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+            const percentage = (completed.length / TOTAL_LESSONS) * 100;
+            const stripeEarned = completed.length >= TOTAL_LESSONS ? 1 : 0;
+
+            document.getElementById('xpDisplay').textContent = moduleXP;
+            document.getElementById('streakDisplay').textContent = completed.length;
+            document.getElementById('badgesDisplay').textContent = stripeEarned + '/1';
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed.length} of ${TOTAL_LESSONS} lessons completed`;
+            document.getElementById('summaryComplete').textContent = `${completed.length}/${TOTAL_LESSONS}`;
+            document.getElementById('summaryStatus').textContent = Math.round(percentage) + '%';
+            document.getElementById('summaryXP').textContent = moduleXP;
+            document.getElementById('summaryBadges').textContent = stripeEarned ? '✓ Earned' : 'In Progress';
+        }
+
+        function showAchievement(title, desc) {
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementTitle').textContent = title;
+            document.getElementById('achievementDesc').textContent = desc;
+            
+            if (title.includes('Stripe')) {
+                document.getElementById('achievementXP').textContent = `+${XP_PER_LESSON + MODULE_BONUS_XP} XP!`;
+            } else if (title.includes('Already')) {
+                document.getElementById('achievementXP').textContent = 'No XP';
+            } else {
+                document.getElementById('achievementXP').textContent = `+${XP_PER_LESSON} XP`;
+            }
+
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 4000);
+        }
+
+        const APP_VERSION = '2024-11-24-v2';
+        function checkVersion() {
+            const cachedVersion = localStorage.getItem('appVersion');
+            if (cachedVersion && cachedVersion !== APP_VERSION) {
+                localStorage.setItem('appVersion', APP_VERSION);
+                if (!sessionStorage.getItem('hasReloaded')) {
+                    sessionStorage.setItem('hasReloaded', 'true');
+                    window.location.reload(true);
+                }
+            } else {
+                localStorage.setItem('appVersion', APP_VERSION);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkVersion();
+            initModule();
+        });
+    </script>
+</body>
+</html>
