@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expectation Management - Gamified Learning</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        /* ============= HEADER WITH XP & STREAK ============= */
+        .module-header {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5aa0 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .module-title-group h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .module-title-group p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        /* ============= GAMIFICATION DASHBOARD ============= */
+        .gamification-dash {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dash-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .dash-item.xp { border-left-color: #10b981; }
+        .dash-item.streak { border-left-color: #f59e0b; }
+        .dash-item.badges { border-left-color: #db2777; }
+
+        .dash-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #3b82f6;
+            margin-bottom: 5px;
+        }
+
+        .dash-item.xp .dash-value { color: #10b981; }
+        .dash-item.streak .dash-value { color: #f59e0b; }
+        .dash-item.badges .dash-value { color: #db2777; }
+
+        .dash-label {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============= PROGRESS BAR ============= */
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #1e40af 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        /* ============= DAILY CHALLENGE BANNER ============= */
+        .challenge-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .challenge-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .challenge-text h3 {
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .challenge-text p {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+
+        .challenge-reward {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* ============= LESSON CARDS ============= */
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .lesson-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            z-index: 10;
+            display: none;
+        }
+
+        .lesson-badge.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            padding: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .lesson-header.lesson-2 {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 100%);
+        }
+
+        .lesson-header.lesson-3 {
+            background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 100%);
+        }
+
+        .lesson-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .lesson-title {
+            flex: 1;
+        }
+
+        .lesson-title h3 {
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .lesson-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .lesson-status {
+            font-size: 0.75em;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .lesson-content {
+            padding: 25px;
+        }
+
+        .lesson-header-text {
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .lesson-body {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .lesson-body.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 1500px;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-intro {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .lesson-section {
+            margin-bottom: 25px;
+        }
+
+        .lesson-section h5 {
+            color: #1a365d;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .strategy-item {
+            background: #f0f4f8;
+            padding: 15px;
+            border-left: 4px solid #3b82f6;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .strategy-item.strategy-2 { border-left-color: #60a5fa; }
+        .strategy-item.strategy-3 { border-left-color: #93c5fd; }
+
+        .strategy-name {
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+
+        .strategy-desc {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .interactive-tool {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .practical-exercises {
+            background: #dbeafe;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .exercise-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .exercise-list li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .exercise-list li:before {
+            content: "✓";
+            color: #3b82f6;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .lesson-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #3b82f6;
+            border: 2px solid #3b82f6;
+        }
+
+        .btn-secondary:hover {
+            background: #eff6ff;
+        }
+
+        .xp-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* ============= ACHIEVEMENT POPUP ============= */
+        .achievement-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            z-index: 2000;
+            animation: slideInRight 0.5s ease;
+            display: none;
+        }
+
+        .achievement-popup.show {
+            display: block;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .achievement-text h4 {
+            color: #1a365d;
+            margin-bottom: 3px;
+        }
+
+        .achievement-text p {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .achievement-xp {
+            background: #f0fdf4;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        /* ============= SUMMARY DASHBOARD ============= */
+        .summary-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3b82f6;
+            text-align: center;
+        }
+
+        .summary-item.summary-2 { border-left-color: #60a5fa; }
+        .summary-item.summary-3 { border-left-color: #93c5fd; }
+
+        .summary-label {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #3b82f6;
+        }
+
+        .summary-item.summary-2 .summary-value { color: #60a5fa; }
+        .summary-item.summary-3 .summary-value { color: #93c5fd; }
+
+        @media (max-width: 768px) {
+            .module-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-stats {
+                margin-top: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .lesson-card:hover {
+                transform: translateY(-4px);
+            }
+
+            .achievement-popup {
+                max-width: 90vw;
+                right: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Module Header with Stats -->
+        <div class="module-header">
+            <div class="module-title-group">
+                <h1>👥 Expectation Management</h1>
+                <p>Master relationships upwards, downwards, and lateral for collaborative success</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="moduleXP">0</div>
+                    <div class="stat-label">Module XP</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="moduleStreak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gamification Dashboard -->
+        <div class="gamification-dash">
+            <div class="dash-grid">
+                <div class="dash-item xp">
+                    <div class="dash-value" id="xpDisplay">0</div>
+                    <div class="dash-label">Total XP</div>
+                </div>
+                <div class="dash-item streak">
+                    <div class="dash-value" id="streakDisplay">0</div>
+                    <div class="dash-label">Lessons This Week</div>
+                </div>
+                <div class="dash-item badges">
+                    <div class="dash-value" id="badgesDisplay">0</div>
+                    <div class="dash-label">Badges Earned</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Module Mastery</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 of 3 lessons completed</div>
+            </div>
+        </div>
+
+        <!-- Daily Challenge Banner -->
+        <div class="challenge-banner">
+            <div class="challenge-content">
+                <div class="challenge-text">
+                    <h3>🎯 Daily Challenge</h3>
+                    <p>Complete 2 lessons today to earn bonus XP</p>
+                </div>
+                <div class="challenge-reward">+50 XP</div>
+            </div>
+        </div>
+
+        <!-- Lessons Grid -->
+        <div class="lessons-grid">
+            <!-- Lesson 1: Managing Upwards -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge1">+25 XP</div>
+                <div class="lesson-header">
+                    <div class="lesson-icon">⬆️</div>
+                    <div class="lesson-title">
+                        <h3>Managing Upwards</h3>
+                        <p class="lesson-subtitle">Influencing leadership effectively</p>
+                    </div>
+                    <div class="lesson-status" id="status1">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Managing Upwards</h4>
+                    <div class="lesson-body" id="lesson1">
+                        <p class="lesson-intro">Managing upwards isn't politics—it's making your leader's job easier while advancing your goals. It's about alignment.</p>
+
+                        <div class="lesson-section">
+                            <h5>Understand Your Leader's Context</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name">🎯 Their Pressures</div>
+                                <div class="strategy-desc">What keeps your boss awake? Revenues? Retention? Board deadlines? When you understand their constraints, you speak their language.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">📊 Their Metrics</div>
+                                <div class="strategy-desc">How is your leader measured? Frame your work in those terms. "This reduces churn by 3%" lands better than "I optimized the process."</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">🗓️ Their Calendar</div>
+                                <div class="strategy-desc">Know their rhythm. When do they have space? What format do they prefer (1-pager? Verbal? Data)? Respect their time constraints.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>The Framework: PREP</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name">1️⃣ Problem</div>
+                                <div class="strategy-desc">Start with the issue. Be crisp and clear. "We're losing 15% of new hires in month 2 due to unclear onboarding."</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">2️⃣ Recommendation</div>
+                                <div class="strategy-desc">Propose a solution with upside. "If we restructure weeks 1-3, I estimate we could improve retention to 92%."</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">3️⃣ Evidence</div>
+                                <div class="strategy-desc">Show why. Use data, peer examples, or trials. "We ran a 2-week pilot with 3 cohorts and saw 89% retention."</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">4️⃣ Path Forward</div>
+                                <div class="strategy-desc">End with what you need from them. Clear ask. "I need 3 hours budget and one HR partner. Timeline: 2 weeks to implement."</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>What Kills Upward Relationships</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name">🚫 Surprises</div>
+                                <div class="strategy-desc">Never let your leader hear bad news from someone else first. Give early warning.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">🚫 Excuses</div>
+                                <div class="strategy-desc">Own your mistakes. "I misestimated the timeline" builds trust. Blaming others erodes it.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">🚫 Assumptions</div>
+                                <div class="strategy-desc">Ask before proposing. "Is retention a priority?" beats assuming you know what matters.</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong>💡 This Week: Upward Conversation</strong>
+                            <ul class="exercise-list">
+                                <li>Identify one issue your leader cares about (ask if unsure)</li>
+                                <li>Research their key metric around that issue</li>
+                                <li>Prepare using PREP framework (Problem, Recommendation, Evidence, Path)</li>
+                                <li>Schedule 15 min to discuss your proposal</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson1')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(1)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 2: Managing Downwards -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge2">+25 XP</div>
+                <div class="lesson-header lesson-2">
+                    <div class="lesson-icon">⬇️</div>
+                    <div class="lesson-title">
+                        <h3>Managing Downwards</h3>
+                        <p class="lesson-subtitle">Setting people up for success</p>
+                    </div>
+                    <div class="lesson-status" id="status2">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Managing Downwards</h4>
+                    <div class="lesson-body" id="lesson2">
+                        <p class="lesson-intro">Managing downwards isn't control—it's clarity and trust. Give people what they need to succeed, then step back.</p>
+
+                        <div class="lesson-section">
+                            <h5>Set Expectations Clearly</h5>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">🎯 What Done Looks Like</div>
+                                <div class="strategy-desc">"Improve customer response time" is vague. "Response within 4 hours, 95% of tickets" is clear. Be specific.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">⏰ When It's Needed</div>
+                                <div class="strategy-desc">Deadlines matter. "This week" is ambiguous. "Friday EOD" is not.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">📏 Quality Bar</div>
+                                <div class="strategy-desc">What does good mean to you? For a proposal: "3 pages, executive summary, 3 alternatives." Now they know.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">🔗 Why It Matters</div>
+                                <div class="strategy-desc">Context motivates. "This report drives the board discussion on Q4 strategy" matters more than "I need this."</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Manage Through Trust, Not Control</h5>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">🤝 Assume Competence</div>
+                                <div class="strategy-desc">Micromanaging signals you don't trust them. Delegating signals you do. People rise to trust.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">🎓 Coach, Don't Direct</div>
+                                <div class="strategy-desc">Instead of "Do X," try "What approach are you thinking?" Then guide if they're off track.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">✅ Check-ins, Not Surveillance</div>
+                                <div class="strategy-desc">Regular 1-on-1s catch issues early. Constant status updates feel like surveillance.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Performance Conversations</h5>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">💬 Feedback Early</div>
+                                <div class="strategy-desc">Don't wait for annual reviews. Weekly feedback prevents surprises.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">🎯 Specific Observations</div>
+                                <div class="strategy-desc">"You dominated the meeting" is vague. "You interrupted 5 times and didn't ask questions" is actionable.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name">🚀 Growth Path</div>
+                                <div class="strategy-desc">Connect feedback to development. "This matters for the lead role you're targeting."</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong>💡 This Week: Clarity Conversation</strong>
+                            <ul class="exercise-list">
+                                <li>Take one project/task your team is working on</li>
+                                <li>Write down: what done looks like, deadline, quality bar, why it matters</li>
+                                <li>Share this in your next 1-on-1 or team check-in</li>
+                                <li>Notice how clarity reduces back-and-forth</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson2')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(2)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 3: Lateral Relationships -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge3">+25 XP</div>
+                <div class="lesson-header lesson-3">
+                    <div class="lesson-icon">↔️</div>
+                    <div class="lesson-title">
+                        <h3>Lateral Relationships</h3>
+                        <p class="lesson-subtitle">Collaborating without authority</p>
+                    </div>
+                    <div class="lesson-status" id="status3">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Lateral Relationships</h4>
+                    <div class="lesson-body" id="lesson3">
+                        <p class="lesson-intro">Lateral work is harder than hierarchy—you have no authority. Your currency is credibility, reliability, and mutual benefit.</p>
+
+                        <div class="lesson-section">
+                            <h5>Build Credibility First</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">⭐ Do What You Say</div>
+                                <div class="strategy-desc">Small commitments kept build trust more than big promises. Consistent reliability beats charisma.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">🎯 Be Easy to Work With</div>
+                                <div class="strategy-desc">Respond to messages. Show up on time. Follow through. No drama. These aren't glamorous, but they're everything.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">🤲 Give Value First</div>
+                                <div class="strategy-desc">Help without expecting return. Introduce people. Share knowledge. When you give, people want to reciprocate.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Frame for Their Win</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">🎯 Their Goal, Not Yours</div>
+                                <div class="strategy-desc">Lead with what they care about. "This marketing data will help your OKR on customer insights" matters more than your need.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">💪 Make Them Look Good</div>
+                                <div class="strategy-desc">When you collaborate, share credit generously. "Sarah's marketing input was crucial here." They'll want to work with you again.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">🤝 Understand Constraints</div>
+                                <div class="strategy-desc">They have priorities, deadlines, limits. Ask "What's your bandwidth?" before asking for help.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Handle Misalignment</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">1️⃣ Assume Good Intent</div>
+                                <div class="strategy-desc">They're not against you—they just have different priorities. Understand theirs before judging.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">2️⃣ Find the Real Gap</div>
+                                <div class="strategy-desc">"They won't help" usually means "They don't understand why this matters to them." Ask clarifying questions.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name">3️⃣ Escalate Carefully</div>
+                                <div class="strategy-desc">Loop in your leader only if direct conversation fails. But always try direct first.</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong>💡 This Week: Lateral Outreach</strong>
+                            <ul class="exercise-list">
+                                <li>Identify one peer collaboration you need</li>
+                                <li>Research their current priorities/OKRs</li>
+                                <li>Frame your request in terms of their goals</li>
+                                <li>Coffee meeting to build the relationship first</li>
+                                <li>Offer help before asking for it</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson3')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(3)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Dashboard -->
+        <div class="summary-container">
+            <h3 style="color: #1a365d; margin-bottom: 20px;">📊 Expectation Management Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Lessons Completed</div>
+                    <div class="summary-value" id="summaryComplete">0/3</div>
+                </div>
+                <div class="summary-item summary-2">
+                    <div class="summary-label">Module Progress</div>
+                    <div class="summary-value" id="summaryStatus">0%</div>
+                </div>
+                <div class="summary-item summary-3">
+                    <div class="summary-label">XP Earned</div>
+                    <div class="summary-value" id="summaryXP">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement Popup -->
+        <div class="achievement-popup" id="achievementPopup">
+            <div class="achievement-header">
+                <div class="achievement-icon">🎉</div>
+                <div class="achievement-text">
+                    <h4>Lesson Complete!</h4>
+                    <p id="achievementDesc">Great work on completing this lesson</p>
+                </div>
+            </div>
+            <div class="achievement-xp" id="achievementXP">+25 XP Earned</div>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_LESSONS = 3;
+        const XP_PER_LESSON = 25;
+        const MODULE_BONUS_XP = 100;
+
+        function initModule() {
+            const completed = JSON.parse(localStorage.getItem('expectationLessonsCompleted') || '[]');
+            completed.forEach(lessonNum => {
+                markLessonAsComplete(lessonNum, false);
+            });
+            updateAllStats();
+        }
+
+        function toggleLesson(lessonId) {
+            const body = document.getElementById(lessonId);
+            body.classList.toggle('active');
+        }
+
+        function completeLesson(lessonNum) {
+            const completed = JSON.parse(localStorage.getItem('expectationLessonsCompleted') || '[]');
+            
+            if (completed.includes(lessonNum)) {
+                alert('You already completed this lesson!');
+                return;
+            }
+
+            completed.push(lessonNum);
+            localStorage.setItem('expectationLessonsCompleted', JSON.stringify(completed));
+
+            let moduleXP = parseInt(localStorage.getItem('expectationModuleXP') || '0');
+            moduleXP += XP_PER_LESSON;
+            
+            if (completed.length === TOTAL_LESSONS) {
+                moduleXP += MODULE_BONUS_XP;
+                showAchievement('Module Complete! 🎊', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
+            } else {
+                showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
+            }
+
+            localStorage.setItem('expectationModuleXP', moduleXP.toString());
+            markLessonAsComplete(lessonNum, true);
+            updateAllStats();
+        }
+
+        function markLessonAsComplete(lessonNum, showBadge) {
+            const status = document.getElementById(`status${lessonNum}`);
+            const badge = document.getElementById(`badge${lessonNum}`);
+            const lessonBody = document.getElementById(`lesson${lessonNum}`);
+            
+            lessonBody.classList.add('active');
+            status.textContent = '✓ Done';
+            status.style.background = '#10b981';
+            status.style.color = 'white';
+            
+            if (showBadge) {
+                badge.classList.add('show');
+            }
+        }
+
+        function updateAllStats() {
+            const completed = JSON.parse(localStorage.getItem('expectationLessonsCompleted') || '[]');
+            const moduleXP = parseInt(localStorage.getItem('expectationModuleXP') || '0');
+            const percentage = Math.round((completed.length / TOTAL_LESSONS) * 100);
+
+            document.getElementById('moduleXP').textContent = moduleXP;
+            document.getElementById('moduleStreak').textContent = completed.length;
+
+            document.getElementById('xpDisplay').textContent = moduleXP;
+            document.getElementById('streakDisplay').textContent = completed.length;
+            document.getElementById('badgesDisplay').textContent = completed.length === TOTAL_LESSONS ? '1' : '0';
+
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressPercent').textContent = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed.length} of ${TOTAL_LESSONS} lessons completed`;
+
+            document.getElementById('summaryComplete').textContent = `${completed.length}/${TOTAL_LESSONS}`;
+            document.getElementById('summaryStatus').textContent = percentage + '%';
+            document.getElementById('summaryXP').textContent = moduleXP;
+        }
+
+        function showAchievement(title, xp) {
+            const popup = document.getElementById('achievementPopup');
+            document.querySelector('#achievementPopup h4').textContent = title;
+            document.getElementById('achievementXP').textContent = xp;
+            
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 4000);
+        }
+
+        window.addEventListener('DOMContentLoaded', initModule);
+    </script>
+</body>
+</html>

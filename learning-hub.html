@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub - Leadership Development</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ============= HEADER & HERO ============= */
+        .hero {
+            background: linear-gradient(135deg, #7c3aed 0%, #db2777 50%, #ea580c 100%);
+            color: white;
+            padding: 50px 40px;
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.3);
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+
+        /* ============= GAMIFICATION HEADER ============= */
+        .gamification-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-box {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border-left: 4px solid #7c3aed;
+        }
+
+        .stat-box.xp { border-left-color: #10b981; }
+        .stat-box.streak { border-left-color: #f59e0b; }
+        .stat-box.badges { border-left-color: #db2777; }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: #7c3aed;
+        }
+
+        .stat-box.xp .stat-value { color: #10b981; }
+        .stat-box.streak .stat-value { color: #f59e0b; }
+        .stat-box.badges .stat-value { color: #db2777; }
+
+        /* ============= MODULES GRID ============= */
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .module-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+            box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+        }
+
+        .module-header {
+            padding: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-header.energy { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .module-header.boundaries { background: linear-gradient(135deg, #d946ef 0%, #a855f7 100%); }
+        .module-header.deepwork { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+        .module-header.feedback { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .module-header.expectations { background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); }
+        .module-header.stoic { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); }
+        .module-header.beliefs { background: linear-gradient(135deg, #ec4899 0%, #be185d 100%); }
+
+        .module-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .module-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .module-subtitle {
+            font-size: 0.85em;
+            opacity: 0.9;
+            color: white;
+        }
+
+        .module-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+        }
+
+        .module-content {
+            padding: 20px;
+        }
+
+        .progress-mini {
+            margin-bottom: 15px;
+        }
+
+        .progress-mini-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-mini-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            transition: width 0.3s ease;
+        }
+
+        .progress-mini-text {
+            font-size: 0.8em;
+            color: #a0aec0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .module-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-mini {
+            text-align: center;
+            font-size: 0.85em;
+        }
+
+        .stat-mini-value {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+
+        .stat-mini-label {
+            font-size: 0.75em;
+            color: #a0aec0;
+            text-transform: uppercase;
+            margin-top: 3px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #7c3aed 0%, #db2777 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+            font-size: 0.95em;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(124, 58, 237, 0.3);
+        }
+
+        /* ============= CHALLENGES SECTION ============= */
+        .challenges-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 1.8em;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .challenges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .challenge-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .challenge-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(124, 58, 237, 0.5);
+        }
+
+        .challenge-icon {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .challenge-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: white;
+        }
+
+        .challenge-desc {
+            font-size: 0.9em;
+            color: #a0aec0;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .challenge-reward {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 2px solid #10b981;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            color: #86efac;
+            font-weight: 600;
+        }
+
+        /* ============= BADGES SHOWCASE ============= */
+        .badges-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .badge.unlocked {
+            opacity: 1;
+            background: rgba(16, 185, 129, 0.1);
+            border-color: rgba(16, 185, 129, 0.3);
+            transform: scale(1.05);
+        }
+
+        .badge-emoji {
+            font-size: 2.5em;
+            margin-bottom: 8px;
+        }
+
+        .badge-name {
+            font-size: 0.75em;
+            font-weight: 600;
+            color: #a0aec0;
+            word-break: break-word;
+        }
+
+        .badge.unlocked .badge-name {
+            color: #86efac;
+        }
+
+        /* ============= MODALS ============= */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .celebration-animation {
+            animation: celebrate 0.6s ease;
+        }
+
+        @keyframes celebrate {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ============= BATCH SYSTEM ============= */
+        .batches-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .batch-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .batch-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(124, 58, 237, 0.5);
+        }
+
+        .batch-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .batch-title {
+            font-weight: 600;
+            color: white;
+            font-size: 1.1em;
+        }
+
+        .batch-duration {
+            background: rgba(124, 58, 237, 0.2);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            color: #c4b5fd;
+        }
+
+        .batch-description {
+            color: #a0aec0;
+            font-size: 0.9em;
+            margin-bottom: 12px;
+            line-height: 1.5;
+        }
+
+        .batch-progress {
+            margin-bottom: 12px;
+        }
+
+        .batch-progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .batch-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #7c3aed 0%, #db2777 100%);
+            transition: width 0.3s ease;
+        }
+
+        .batch-progress-text {
+            font-size: 0.8em;
+            color: #a0aec0;
+            margin-top: 6px;
+        }
+
+        .batch-join-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid #7c3aed;
+            color: #c4b5fd;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .batch-join-btn:hover {
+            background: rgba(124, 58, 237, 0.3);
+            color: white;
+        }
+
+        .batch-join-btn.joined {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #86efac;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .modules-grid { grid-template-columns: 1fr; }
+            .challenges-grid { grid-template-columns: 1fr; }
+            .badges-grid { grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <div class="hero">
+        <h1>🚀 Leadership Development Hub</h1>
+        <p>Master energy, boundaries, deep work, and resilience through interactive learning modules</p>
+    </div>
+
+    <!-- Gamification Stats Bar -->
+    <div class="gamification-bar">
+        <div class="stat-box xp">
+            <div class="stat-label">Total XP</div>
+            <div class="stat-value" id="totalXP">0</div>
+        </div>
+        <div class="stat-box streak">
+            <div class="stat-label">Current Streak</div>
+            <div class="stat-value" id="currentStreak">0</div>
+        </div>
+        <div class="stat-box badges">
+            <div class="stat-label">Badges Unlocked</div>
+            <div class="stat-value" id="badgesUnlocked">0</div>
+        </div>
+    </div>
+
+    <!-- Modules Grid -->
+    <div style="margin-bottom: 40px;">
+        <h2 class="section-title">📚 Learning Modules</h2>
+        <div class="modules-grid">
+            <!-- Energy Management -->
+            <div class="module-card" onclick="openModule('energy-management-module.html')">
+                <div class="module-header energy">
+                    <div class="module-badge">4/4 Lessons</div>
+                    <div class="module-icon">⚡</div>
+                    <div class="module-title">Energy Management</div>
+                    <div class="module-subtitle">Sustain peak performance</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="energy-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="energy-lessons">0 of 4</span>
+                            <span id="energy-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="energy-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="energy-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+
+            <!-- Boundaries -->
+            <div class="module-card" onclick="openModule('boundaries-module.html')">
+                <div class="module-header boundaries">
+                    <div class="module-badge">4/4 Lessons</div>
+                    <div class="module-icon">🛡️</div>
+                    <div class="module-title">Boundaries</div>
+                    <div class="module-subtitle">Protect your space</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="boundaries-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="boundaries-lessons">0 of 4</span>
+                            <span id="boundaries-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="boundaries-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="boundaries-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+
+            <!-- Deep Work -->
+            <div class="module-card" onclick="openModule('deep-work-module.html')">
+                <div class="module-header deepwork">
+                    <div class="module-badge">4/4 Lessons</div>
+                    <div class="module-icon">🎯</div>
+                    <div class="module-title">Deep Work</div>
+                    <div class="module-subtitle">Master focus & flow</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="deepwork-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="deepwork-lessons">0 of 4</span>
+                            <span id="deepwork-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="deepwork-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="deepwork-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+
+            <!-- Feedback -->
+            <div class="module-card" onclick="openModule('feedback-module.html')">
+                <div class="module-header feedback">
+                    <div class="module-badge">4/4 Lessons</div>
+                    <div class="module-icon">💬</div>
+                    <div class="module-title">Feedback Culture</div>
+                    <div class="module-subtitle">Give & receive growth</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="feedback-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="feedback-lessons">0 of 4</span>
+                            <span id="feedback-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="feedback-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="feedback-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+
+            <!-- Expectation Management -->
+            <div class="module-card" onclick="openModule('expectation-management-module.html')">
+                <div class="module-header expectations">
+                    <div class="module-badge">3/3 Lessons</div>
+                    <div class="module-icon">🤝</div>
+                    <div class="module-title">Expectation Management</div>
+                    <div class="module-subtitle">Master relationships</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="expectations-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="expectations-lessons">0 of 3</span>
+                            <span id="expectations-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="expectations-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="expectations-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+
+            <!-- Stoic Tools -->
+            <div class="module-card" onclick="openModule('stoic-tools-module.html')">
+                <div class="module-header stoic">
+                    <div class="module-badge">3/3 Parts</div>
+                    <div class="module-icon">🏛️</div>
+                    <div class="module-title">Stoic Tools</div>
+                    <div class="module-subtitle">Ancient wisdom applied</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="stoic-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="stoic-lessons">0 of 3</span>
+                            <span id="stoic-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="stoic-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="stoic-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+
+            <!-- Limiting Beliefs -->
+            <div class="module-card" onclick="openModule('limiting-beliefs-module.html')">
+                <div class="module-header beliefs">
+                    <div class="module-badge">4/4 Lessons</div>
+                    <div class="module-icon">🧸</div>
+                    <div class="module-title">Limiting Beliefs</div>
+                    <div class="module-subtitle">Heal your inner world</div>
+                </div>
+                <div class="module-content">
+                    <div class="progress-mini">
+                        <div class="progress-mini-bar">
+                            <div class="progress-mini-fill" id="beliefs-progress" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-mini-text">
+                            <span id="beliefs-lessons">0 of 4</span>
+                            <span id="beliefs-xp">0 XP</span>
+                        </div>
+                    </div>
+                    <div class="module-stats">
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="beliefs-streak">0</div>
+                            <div class="stat-mini-label">Day Streak</div>
+                        </div>
+                        <div class="stat-mini">
+                            <div class="stat-mini-value" id="beliefs-badges">0</div>
+                            <div class="stat-mini-label">Badges</div>
+                        </div>
+                    </div>
+                    <button class="action-btn">Open Module →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batches Section -->
+    <div class="batches-section">
+        <h2 class="section-title">🏆 Learning Batches (Cohort-Based)</h2>
+        <p style="color: #a0aec0; margin-bottom: 20px;">Join learning cohorts and progress together. Extended batches combine multiple modules for deep integration.</p>
+        
+        <div class="batch-card">
+            <div class="batch-header">
+                <div>
+                    <div class="batch-title">🚀 Foundations Batch</div>
+                    <div class="batch-description">Energy Management + Boundaries - Master your fundamentals</div>
+                </div>
+                <div class="batch-duration">30 Days</div>
+            </div>
+            <div class="batch-progress">
+                <div class="batch-progress-bar">
+                    <div class="batch-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="batch-progress-text">0% Complete • 0/8 Lessons</div>
+            </div>
+            <button class="batch-join-btn" onclick="toggleBatch(this, 'foundations')">Join Batch</button>
+        </div>
+
+        <div class="batch-card">
+            <div class="batch-header">
+                <div>
+                    <div class="batch-title">🎯 Deep Impact Batch</div>
+                    <div class="batch-description">Deep Work + Feedback + Expectation Mgmt - Maximize influence</div>
+                </div>
+                <div class="batch-duration">45 Days</div>
+            </div>
+            <div class="batch-progress">
+                <div class="batch-progress-bar">
+                    <div class="batch-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="batch-progress-text">0% Complete • 0/11 Lessons</div>
+            </div>
+            <button class="batch-join-btn" onclick="toggleBatch(this, 'deepimpact')">Join Batch</button>
+        </div>
+
+        <div class="batch-card">
+            <div class="batch-header">
+                <div>
+                    <div class="batch-title">🧠 Resilience & Inner Work Batch</div>
+                    <div class="batch-description">Stoic Tools + Limiting Beliefs - Build unshakeable resilience</div>
+                </div>
+                <div class="batch-duration">60 Days</div>
+            </div>
+            <div class="batch-progress">
+                <div class="batch-progress-bar">
+                    <div class="batch-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="batch-progress-text">0% Complete • 0/7 Lessons</div>
+            </div>
+            <button class="batch-join-btn" onclick="toggleBatch(this, 'resilience')">Join Batch</button>
+        </div>
+
+        <div class="batch-card">
+            <div class="batch-header">
+                <div>
+                    <div class="batch-title">👑 Complete Mastery Batch</div>
+                    <div class="batch-description">All 7 modules - Comprehensive leadership transformation</div>
+                </div>
+                <div class="batch-duration">120 Days</div>
+            </div>
+            <div class="batch-progress">
+                <div class="batch-progress-bar">
+                    <div class="batch-progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="batch-progress-text">0% Complete • 0/27 Lessons</div>
+            </div>
+            <button class="batch-join-btn" onclick="toggleBatch(this, 'mastery')">Join Batch</button>
+        </div>
+    </div>
+
+    <!-- Challenges Section -->
+    <div class="challenges-section">
+        <h2 class="section-title">⚡ Weekly Challenges</h2>
+        <div class="challenges-grid">
+            <div class="challenge-card">
+                <div class="challenge-icon">🔥</div>
+                <div class="challenge-title">5-Day Streak</div>
+                <div class="challenge-desc">Complete lessons 5 days in a row</div>
+                <div class="challenge-reward">+50 XP • 🔥 Streak Badge</div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-icon">⚡</div>
+                <div class="challenge-title">Speed Learner</div>
+                <div class="challenge-desc">Complete 3 lessons in one day</div>
+                <div class="challenge-reward">+75 XP • ⚡ Speedster Badge</div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-icon">🏆</div>
+                <div class="challenge-title">Module Master</div>
+                <div class="challenge-desc">Complete an entire module (4 lessons)</div>
+                <div class="challenge-reward">+100 XP • 🏆 Master Badge</div>
+            </div>
+            <div class="challenge-card">
+                <div class="challenge-icon">💯</div>
+                <div class="challenge-title">Perfect Batch</div>
+                <div class="challenge-desc">Complete all lessons in a batch on time</div>
+                <div class="challenge-reward">+250 XP • 💯 Perfect Badge</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="badges-section">
+        <h2 class="section-title">🎖️ Achievements</h2>
+        <div class="badges-grid">
+            <div class="badge" title="Unlock by completing Energy Management">
+                <div class="badge-emoji">⚡</div>
+                <div class="badge-name">Energy Master</div>
+            </div>
+            <div class="badge" title="Unlock by completing Boundaries">
+                <div class="badge-emoji">🛡️</div>
+                <div class="badge-name">Boundary Setter</div>
+            </div>
+            <div class="badge" title="Unlock by completing Deep Work">
+                <div class="badge-emoji">🎯</div>
+                <div class="badge-name">Deep Focus</div>
+            </div>
+            <div class="badge" title="Unlock by completing Feedback">
+                <div class="badge-emoji">💬</div>
+                <div class="badge-name">Feedback Pro</div>
+            </div>
+            <div class="badge" title="Unlock by completing Expectation Mgmt">
+                <div class="badge-emoji">🤝</div>
+                <div class="badge-name">Relationship Sage</div>
+            </div>
+            <div class="badge" title="Unlock by completing Stoic Tools">
+                <div class="badge-emoji">🏛️</div>
+                <div class="badge-name">Stoic Wisdom</div>
+            </div>
+            <div class="badge" title="Unlock by completing Limiting Beliefs">
+                <div class="badge-emoji">🧸</div>
+                <div class="badge-name">Inner Healer</div>
+            </div>
+            <div class="badge" title="Unlock by completing all modules">
+                <div class="badge-emoji">👑</div>
+                <div class="badge-name">Leadership Master</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============= GAMIFICATION SYSTEM =============
+        const MODULES = {
+            energy: { name: 'Energy Management', lessons: 4, key: 'energyLessonsCompleted' },
+            boundaries: { name: 'Boundaries', lessons: 4, key: 'boundariesLessonsCompleted' },
+            deepwork: { name: 'Deep Work', lessons: 4, key: 'deepworkLessonsCompleted' },
+            feedback: { name: 'Feedback', lessons: 4, key: 'feedbackLessonsCompleted' },
+            expectations: { name: 'Expectation Management', lessons: 3, key: 'expectationLessonsCompleted' },
+            stoic: { name: 'Stoic Tools', lessons: 3, key: 'stoicToolsCompleted' },
+            beliefs: { name: 'Limiting Beliefs', lessons: 4, key: 'limitingBeliefsCompleted' }
+        };
+
+        const XP_VALUES = {
+            lessonComplete: 25,
+            streak: 10,
+            moduleComplete: 100,
+            batchComplete: 250
+        };
+
+        function initGamification() {
+            updateGlobalStats();
+            updateModuleStats();
+            initBatchSystem();
+        }
+
+        function updateGlobalStats() {
+            const totalXP = getTotalXP();
+            const currentStreak = getCurrentStreak();
+            const badgesUnlocked = countUnlockedBadges();
+
+            document.getElementById('totalXP').textContent = totalXP;
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('badgesUnlocked').textContent = badgesUnlocked;
+        }
+
+        function updateModuleStats() {
+            Object.entries(MODULES).forEach(([key, module]) => {
+                const completed = JSON.parse(localStorage.getItem(module.key) || '[]').length;
+                const total = module.lessons;
+                const percentage = (completed / total) * 100;
+                const xp = completed * XP_VALUES.lessonComplete;
+
+                document.getElementById(`${key}-progress`).style.width = percentage + '%';
+                document.getElementById(`${key}-lessons`).textContent = `${completed} of ${total}`;
+                document.getElementById(`${key}-xp`).textContent = `${xp} XP`;
+                document.getElementById(`${key}-streak`).textContent = calculateStreak(key);
+                document.getElementById(`${key}-badges`).textContent = getModuleBadges(key);
+            });
+        }
+
+        function getTotalXP() {
+            let total = 0;
+            Object.values(MODULES).forEach(module => {
+                const completed = JSON.parse(localStorage.getItem(module.key) || '[]').length;
+                total += completed * XP_VALUES.lessonComplete;
+            });
+            return total;
+        }
+
+        function getCurrentStreak() {
+            const lastActive = localStorage.getItem('lastActiveDay');
+            const today = new Date().toDateString();
+            if (lastActive === today) {
+                return parseInt(localStorage.getItem('currentStreak') || '0');
+            }
+            return 0;
+        }
+
+        function countUnlockedBadges() {
+            let count = 0;
+            Object.values(MODULES).forEach(module => {
+                const completed = JSON.parse(localStorage.getItem(module.key) || '[]').length;
+                if (completed === module.lessons) count++;
+            });
+            return count;
+        }
+
+        function calculateStreak(moduleKey) {
+            // Simplified streak calculation
+            const completed = JSON.parse(localStorage.getItem(MODULES[moduleKey].key) || '[]').length;
+            return completed > 0 ? Math.ceil(completed / 2) : 0;
+        }
+
+        function getModuleBadges(moduleKey) {
+            const completed = JSON.parse(localStorage.getItem(MODULES[moduleKey].key) || '[]').length;
+            const total = MODULES[moduleKey].lessons;
+            return completed === total ? 1 : 0;
+        }
+
+        function initBatchSystem() {
+            const joinedBatches = JSON.parse(localStorage.getItem('joinedBatches') || '[]');
+            joinedBatches.forEach(batchId => {
+                const btn = document.querySelector(`[onclick*="toggleBatch"][onclick*="'${batchId}'"]`);
+                if (btn) {
+                    btn.classList.add('joined');
+                    btn.textContent = '✓ Joined';
+                }
+            });
+        }
+
+        function toggleBatch(button, batchId) {
+            const joinedBatches = JSON.parse(localStorage.getItem('joinedBatches') || '[]');
+            const isJoined = joinedBatches.includes(batchId);
+
+            if (isJoined) {
+                const idx = joinedBatches.indexOf(batchId);
+                joinedBatches.splice(idx, 1);
+                button.classList.remove('joined');
+                button.textContent = 'Join Batch';
+            } else {
+                joinedBatches.push(batchId);
+                button.classList.add('joined');
+                button.textContent = '✓ Joined';
+            }
+
+            localStorage.setItem('joinedBatches', JSON.stringify(joinedBatches));
+        }
+
+        function openModule(moduleFile) {
+            window.location.href = moduleFile;
+        }
+
+        // Track daily activity
+        function trackDailyActivity() {
+            const today = new Date().toDateString();
+            const lastActive = localStorage.getItem('lastActiveDay');
+            
+            if (lastActive !== today) {
+                let streak = parseInt(localStorage.getItem('currentStreak') || '0');
+                if (lastActive && new Date(lastActive).getTime() === new Date().getTime() - 86400000) {
+                    streak++;
+                } else {
+                    streak = 1;
+                }
+                localStorage.setItem('currentStreak', streak.toString());
+                localStorage.setItem('lastActiveDay', today);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            trackDailyActivity();
+            initGamification();
+            setInterval(updateGlobalStats, 1000);
+        });
+    </script>
+</body>
+</html>

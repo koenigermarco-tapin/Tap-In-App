@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Management - Gamified Learning</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        /* ============= HEADER WITH XP & STREAK ============= */
+        .module-header {
+            background: linear-gradient(135deg, #1a365d 0%, #2c5aa0 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .module-title-group h1 {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+
+        .module-title-group p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 30px;
+            text-align: center;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 800;
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+
+        /* ============= GAMIFICATION DASHBOARD ============= */
+        .gamification-dash {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dash-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .dash-item.xp { border-left-color: #10b981; }
+        .dash-item.streak { border-left-color: #f59e0b; }
+        .dash-item.badges { border-left-color: #db2777; }
+
+        .dash-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .dash-item.xp .dash-value { color: #10b981; }
+        .dash-item.streak .dash-value { color: #f59e0b; }
+        .dash-item.badges .dash-value { color: #db2777; }
+
+        .dash-label {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* ============= PROGRESS BAR ============= */
+        .progress-container {
+            margin-top: 20px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        /* ============= DAILY CHALLENGE BANNER ============= */
+        .challenge-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .challenge-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .challenge-text h3 {
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+
+        .challenge-text p {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+
+        .challenge-reward {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        /* ============= LESSON CARDS ============= */
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+        }
+
+        .lesson-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            z-index: 10;
+            display: none;
+        }
+
+        .lesson-badge.show {
+            display: block;
+            animation: popIn 0.5s ease;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .lesson-header.lesson-2 {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .lesson-header.lesson-3 {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .lesson-header.lesson-4 {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .lesson-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .lesson-title {
+            flex: 1;
+        }
+
+        .lesson-title h3 {
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .lesson-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .lesson-status {
+            font-size: 0.75em;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            white-space: nowrap;
+        }
+
+        .lesson-content {
+            padding: 25px;
+        }
+
+        .lesson-header-text {
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .lesson-body {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .lesson-body.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 1500px;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-intro {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .lesson-section {
+            margin-bottom: 25px;
+        }
+
+        .lesson-section h5 {
+            color: #1a365d;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+        }
+
+        .technique-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .technique-item.technique-2 {
+            border-left-color: #f5576c;
+        }
+
+        .technique-item.technique-3 {
+            border-left-color: #00f2fe;
+        }
+
+        .technique-item.technique-4 {
+            border-left-color: #38f9d7;
+        }
+
+        .technique-name {
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+
+        .technique-desc {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .lesson-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-secondary:hover {
+            background: #f8f9fa;
+        }
+
+        .xp-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* ============= ACHIEVEMENT POPUP ============= */
+        .achievement-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            z-index: 2000;
+            animation: slideInRight 0.5s ease;
+            display: none;
+        }
+
+        .achievement-popup.show {
+            display: block;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .achievement-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .achievement-text h4 {
+            color: #1a365d;
+            margin-bottom: 3px;
+        }
+
+        .achievement-text p {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .achievement-xp {
+            background: #f0fdf4;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            margin-top: 10px;
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        /* ============= SUMMARY DASHBOARD ============= */
+        .summary-container {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            text-align: center;
+        }
+
+        .summary-item.summary-2 { border-left-color: #f5576c; }
+        .summary-item.summary-3 { border-left-color: #00f2fe; }
+        .summary-item.summary-4 { border-left-color: #38f9d7; }
+
+        .summary-label {
+            font-size: 0.8em;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .summary-value {
+            font-size: 2em;
+            font-weight: 800;
+            color: #667eea;
+        }
+
+        .summary-item.summary-2 .summary-value { color: #f5576c; }
+        .summary-item.summary-3 .summary-value { color: #00f2fe; }
+        .summary-item.summary-4 .summary-value { color: #38f9d7; }
+
+        @media (max-width: 768px) {
+            .module-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .header-stats {
+                margin-top: 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .lesson-card:hover {
+                transform: translateY(-4px);
+            }
+
+            .achievement-popup {
+                max-width: 90vw;
+                right: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Module Header with Stats -->
+        <div class="module-header">
+            <div class="module-title-group">
+                <h1>⚡ Energy Management</h1>
+                <p>Master your energy to unlock peak performance</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="moduleXP">0</div>
+                    <div class="stat-label">Module XP</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-value" id="moduleStreak">0</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gamification Dashboard -->
+        <div class="gamification-dash">
+            <div class="dash-grid">
+                <div class="dash-item xp">
+                    <div class="dash-value" id="xpDisplay">0</div>
+                    <div class="dash-label">Total XP</div>
+                </div>
+                <div class="dash-item streak">
+                    <div class="dash-value" id="streakDisplay">0</div>
+                    <div class="dash-label">Lessons This Week</div>
+                </div>
+                <div class="dash-item badges">
+                    <div class="dash-value" id="badgesDisplay">0</div>
+                    <div class="dash-label">Badges Earned</div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Module Mastery</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 of 4 lessons completed</div>
+            </div>
+        </div>
+
+        <!-- Daily Challenge Banner -->
+        <div class="challenge-banner">
+            <div class="challenge-content">
+                <div class="challenge-text">
+                    <h3>🎯 Daily Challenge</h3>
+                    <p>Complete 2 lessons today to earn bonus XP</p>
+                </div>
+                <div class="challenge-reward">+50 XP</div>
+            </div>
+        </div>
+
+        <!-- Lessons Grid -->
+        <div class="lessons-grid">
+            <!-- Lesson 1 -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge1">+25 XP</div>
+                <div class="lesson-header">
+                    <div class="lesson-icon">📊</div>
+                    <div class="lesson-title">
+                        <h3>Energy Fundamentals</h3>
+                        <p class="lesson-subtitle">Understand the 80/20 principle</p>
+                    </div>
+                    <div class="lesson-status" id="status1">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Energy Fundamentals</h4>
+                    <div class="lesson-body" id="lesson1">
+                        <p class="lesson-intro">Energy is your most precious resource. Not time. Energy. You can have all the time but no energy to use it. This lesson covers the fundamental principle: 80% of your peak performance comes from operating in your optimal energy window.</p>
+
+                        <div class="lesson-section">
+                            <h5>The Energy Spectrum</h5>
+                            <div class="technique-item">
+                                <div class="technique-name">✨ Peak Energy (80-100%)</div>
+                                <div class="technique-desc">Optimal for deep work, strategic thinking, important decisions. Protect these hours. This is where breakthroughs happen.</div>
+                            </div>
+                            <div class="technique-item">
+                                <div class="technique-name">⚡ Good Energy (60-80%)</div>
+                                <div class="technique-desc">Solid for meetings, collaboration, tactical work. Still productive but not for your highest-value tasks.</div>
+                            </div>
+                            <div class="technique-item">
+                                <div class="technique-name">😴 Low Energy (40-60%)</div>
+                                <div class="technique-desc">For routine tasks, administrative work, planning tomorrow. Protect yourself from decisions here.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Your Energy Map</h5>
+                            <p style="color: #555; margin-bottom: 15px;">Track your energy over 3 days. When are you naturally at peak? Morning? Afternoon? After exercise? This is your optimization baseline.</p>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson1')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(1)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 2 -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge2">+25 XP</div>
+                <div class="lesson-header lesson-2">
+                    <div class="lesson-icon">💪</div>
+                    <div class="lesson-title">
+                        <h3>Recovery Techniques</h3>
+                        <p class="lesson-subtitle">Restore multiple dimensions</p>
+                    </div>
+                    <div class="lesson-status" id="status2">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Recovery Techniques</h4>
+                    <div class="lesson-body" id="lesson2">
+                        <p class="lesson-intro">Energy without recovery is depletion. Recovery isn't laziness. It's essential maintenance. There are 4 recovery dimensions: physical, mental, emotional, spiritual. Most people only address physical.</p>
+
+                        <div class="lesson-section">
+                            <h5>The 4 Recovery Dimensions</h5>
+                            <div class="technique-item technique-2">
+                                <div class="technique-name">🏋️ Physical Recovery</div>
+                                <div class="technique-desc">Sleep (non-negotiable), movement, nutrition. Poor sleep cascades into poor mental/emotional capacity. Prioritize sleep.</div>
+                            </div>
+                            <div class="technique-item technique-2">
+                                <div class="technique-name">🧠 Mental Recovery</div>
+                                <div class="technique-desc">Switching contexts. Taking breaks. Walking. Getting outside. Your brain needs interrupts. Every 90 minutes, take a 15-min break.</div>
+                            </div>
+                            <div class="technique-item technique-2">
+                                <div class="technique-name">❤️ Emotional Recovery</div>
+                                <div class="technique-desc">Time with people you love. Meaningful conversations. Being witnessed. Vulnerability. Laughter.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson2')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(2)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 3 -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge3">+25 XP</div>
+                <div class="lesson-header lesson-3">
+                    <div class="lesson-icon">🔄</div>
+                    <div class="lesson-title">
+                        <h3>Energy Rhythm</h3>
+                        <p class="lesson-subtitle">Align with ultradian cycles</p>
+                    </div>
+                    <div class="lesson-status" id="status3">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Energy Rhythm</h4>
+                    <div class="lesson-body" id="lesson3">
+                        <p class="lesson-intro">You're not designed to work in a flat line. Your body operates on ultradian rhythms—90-120 minute cycles of energy. Science shows peak performance within these windows, then natural decline. Working against this drains energy.</p>
+
+                        <div class="lesson-section">
+                            <h5>The Ultradian Rhythm Protocol</h5>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">⏱️ 90-Minute Sprints</div>
+                                <div class="technique-desc">Work deeply for 90 minutes. Your focus and energy are peak. No distractions. This is your deep work window.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">🛑 15-Minute Recovery</div>
+                                <div class="technique-desc">After 90 min, take 15 min off. Actually off. Walk, meditate, eat, rest. Don't answer emails. Reset.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">🔁 4 Cycles = 6-7 Hour Peak</div>
+                                <div class="technique-desc">4 cycles of 90min work + 15min recovery = ~7 hours of high-performance output. That's your day. Everything after is bonus and lower quality.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson3')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(3)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 4 -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge4">+25 XP</div>
+                <div class="lesson-header lesson-4">
+                    <div class="lesson-icon">🛡️</div>
+                    <div class="lesson-title">
+                        <h3>Energy Protection</h3>
+                        <p class="lesson-subtitle">Guard your peak windows</p>
+                    </div>
+                    <div class="lesson-status" id="status4">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Energy Protection</h4>
+                    <div class="lesson-body" id="lesson4">
+                        <p class="lesson-intro">Energy has enemies: notifications, context switching, other people's emergencies, meetings back-to-back. Your job is to protect your energy, especially your peak windows. Say no.</p>
+
+                        <div class="lesson-section">
+                            <h5>Energy Drains to Eliminate</h5>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">📱 Notification Cascades</div>
+                                <div class="technique-desc">Every notification fragments attention. Your brain takes 23 minutes to refocus. Turn off ALL notifications during peak windows. Batch communication.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">📅 Meeting Overload</div>
+                                <div class="technique-desc">Back-to-back meetings destroy energy. Block your peak windows as \"focus time.\" Learn to say no to meetings. Default to async when possible.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🔄 Context Switching</div>
+                                <div class="technique-desc">Jumping between tasks kills energy and focus. Protect deep work blocks. Do one thing. Completely. Then switch.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson4')">Collapse</button>
+                            <button class="btn btn-primary" onclick="completeLesson(4)">Mark Complete <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Dashboard -->
+        <div class="summary-container">
+            <h2 style="color: #1a365d; margin-bottom: 10px;">📊 Module Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Lessons Completed</div>
+                    <div class="summary-value" id="summaryComplete">0/4</div>
+                </div>
+                <div class="summary-item summary-2">
+                    <div class="summary-label">Module Status</div>
+                    <div class="summary-value" id="summaryStatus">0%</div>
+                </div>
+                <div class="summary-item summary-3">
+                    <div class="summary-label">Total XP Earned</div>
+                    <div class="summary-value" id="summaryXP">0</div>
+                </div>
+                <div class="summary-item summary-4">
+                    <div class="summary-label">Badges Unlocked</div>
+                    <div class="summary-value" id="summaryBadges">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; margin-bottom: 50px;">
+            <a href="learning-hub.html" style="color: #667eea; text-decoration: none; font-weight: 600;">← Back to Learning Hub</a>
+        </div>
+    </div>
+
+    <!-- Achievement Popup -->
+    <div class="achievement-popup" id="achievementPopup">
+        <div class="achievement-header">
+            <div class="achievement-icon" id="achievementEmoji">🏆</div>
+            <div class="achievement-text">
+                <h4 id="achievementTitle">Achievement Unlocked!</h4>
+                <p id="achievementDesc">You completed a lesson</p>
+            </div>
+        </div>
+        <div class="achievement-xp" id="achievementXP">+25 XP</div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'energyLessonsCompleted';
+        const XP_KEY = 'energyModuleXP';
+        const STREAK_KEY = 'energyDayStreak';
+
+        function initModule() {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            completed.forEach(lessonNum => {
+                markLessonAsComplete(lessonNum, false);
+            });
+            updateStats();
+        }
+
+        function toggleLesson(lessonId) {
+            const body = document.getElementById(lessonId);
+            body.classList.toggle('active');
+        }
+
+        function completeLesson(lessonNum) {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            if (!completed.includes(lessonNum)) {
+                completed.push(lessonNum);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+                
+                // Add XP
+                const currentXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+                localStorage.setItem(XP_KEY, currentXP + 25);
+                
+                markLessonAsComplete(lessonNum, true);
+                updateStats();
+                showAchievement(lessonNum);
+            }
+        }
+
+        function markLessonAsComplete(lessonNum, animate = true) {
+            const status = document.getElementById(`status${lessonNum}`);
+            const body = document.getElementById(`lesson${lessonNum}`);
+            const badge = document.getElementById(`badge${lessonNum}`);
+            
+            status.textContent = '✓ Complete';
+            status.style.background = '#10b981';
+            body.classList.add('active');
+            if (animate) badge.classList.add('show');
+        }
+
+        function updateStats() {
+            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').length;
+            const xp = parseInt(localStorage.getItem(XP_KEY) || '0');
+            const percentage = (completed / 4) * 100;
+            const badges = completed >= 4 ? 1 : 0;
+
+            document.getElementById('xpDisplay').textContent = xp;
+            document.getElementById('streakDisplay').textContent = completed;
+            document.getElementById('badgesDisplay').textContent = badges;
+            document.getElementById('progressPercent').textContent = Math.round(percentage) + '%';
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed} of 4 lessons completed`;
+            document.getElementById('moduleXP').textContent = xp;
+            document.getElementById('summaryComplete').textContent = `${completed}/4`;
+            document.getElementById('summaryStatus').textContent = Math.round(percentage) + '%';
+            document.getElementById('summaryXP').textContent = xp;
+            document.getElementById('summaryBadges').textContent = badges;
+
+            if (completed >= 4) {
+                document.getElementById('moduleStreak').textContent = '👑';
+            }
+        }
+
+        function showAchievement(lessonNum) {
+            const titles = [
+                '📊 Fundamentals Mastered',
+                '💪 Recovery Expert',
+                '🔄 Rhythm Master',
+                '🛡️ Protector Supreme'
+            ];
+            const descs = [
+                'You understand the 80/20 principle',
+                'You know the 4 recovery dimensions',
+                'You\'re ready for ultradian rhythms',
+                'You can protect your energy'
+            ];
+
+            const popup = document.getElementById('achievementPopup');
+            document.getElementById('achievementTitle').textContent = titles[lessonNum - 1];
+            document.getElementById('achievementDesc').textContent = descs[lessonNum - 1];
+            document.getElementById('achievementXP').textContent = '+25 XP';
+
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 3000);
+        }
+
+        window.addEventListener('DOMContentLoaded', initModule);
+    </script>
+</body>
+</html>
