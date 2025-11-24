@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belt Level Assessment - Find Your Starting Point</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #e5e7eb;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .belt-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            color: #1a365d;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 1.2em;
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        .intro-section {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border-left: 4px solid #1a365d;
+        }
+
+        .intro-section h2 {
+            color: #1e293b;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+
+        .intro-section p {
+            color: #475569;
+            line-height: 1.8;
+            margin-bottom: 12px;
+        }
+
+        .stats-box {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+
+        .start-button {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+            padding: 18px 36px;
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(26, 54, 93, 0.3);
+        }
+
+        .start-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.4);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Question styles */
+        .question-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 4px solid #1a365d;
+        }
+
+        .question-number {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            color: #1e293b;
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: #1a365d;
+            background: #f8fafc;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: #1a365d;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            box-shadow: 0 2px 8px rgba(26, 54, 93, 0.2);
+        }
+
+        .option-label {
+            font-weight: 600;
+            color: #1a365d;
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+
+        .option-text {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .nav-button {
+            padding: 12px 30px;
+            background: #1a365d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-button:hover {
+            background: #0f1f3d;
+            transform: translateY(-2px);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #1a365d 0%, #0f1f3d 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            color: #64748b;
+            font-size: 0.9em;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <div class="belt-icon">🥋</div>
+                <h1>Find Your Belt Level</h1>
+                <div class="subtitle">Discover where you stand on the 5 Dysfunctions</div>
+            </div>
+
+            <div class="intro-section">
+                <h2>What's Your Starting Point?</h2>
+                <p>Not sure which belt training to start with? This quick assessment will help you find out.</p>
+                <p>We'll ask you <strong>10 quick questions</strong> about your team's dynamics. Based on your answers, we'll tell you which belt level you're at and recommend where to begin your training.</p>
+                <p><strong>No right or wrong answers</strong> - just honest reflection about your current team reality.</p>
+            </div>
+
+            <div class="stats-box">
+                <div class="stat-item">
+                    <div class="stat-number">2-3</div>
+                    <div class="stat-label">Minutes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">Questions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Dysfunctions</div>
+                </div>
+            </div>
+
+            <button class="start-button" onclick="startAssessment()">Start Belt Assessment 🥋</button>
+        </div>
+
+        <div id="assessmentScreen" class="hidden">
+            <div class="header">
+                <div class="belt-icon">🥋</div>
+                <h1>Belt Level Assessment</h1>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Question 1 of 10</div>
+
+            <!-- Questions will be added in next batch -->
+            <div id="questionsContainer"></div>
+
+            <div class="nav-buttons">
+                <button class="nav-button" id="prevButton" onclick="previousQuestion()" disabled>← Previous</button>
+                <button class="nav-button" id="nextButton" onclick="nextQuestion()">Next →</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" class="hidden">
+            <div class="header">
+                <div class="belt-icon">🥋</div>
+                <h1>Your Belt Level</h1>
+            </div>
+
+            <div id="resultsContent">
+                <!-- Results will be inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let answers = {};
+        const totalQuestions = 10;
+
+        function startAssessment() {
+            document.getElementById('introScreen').classList.add('hidden');
+            document.getElementById('assessmentScreen').classList.remove('hidden');
+            loadQuestions();
+            updateProgress();
+        }
+
+        function loadQuestions() {
+            // Questions will be added in next batch
+        }
+
+        function selectOption(questionNum, option) {
+            // Mark selected
+            const options = document.querySelectorAll(`#question${questionNum} .option`);
+            options.forEach(opt => opt.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            
+            answers[questionNum] = option;
+            document.getElementById('nextButton').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (!answers[currentQuestion]) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+
+            if (currentQuestion < totalQuestions) {
+                currentQuestion++;
+                updateProgress();
+                updateNavButtons();
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                updateProgress();
+                updateNavButtons();
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Question ${currentQuestion} of ${totalQuestions}`;
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prevButton').disabled = currentQuestion === 1;
+            document.getElementById('nextButton').disabled = !answers[currentQuestion];
+        }
+
+        function showResults() {
+            // Results logic will be added in final batch
+            document.getElementById('assessmentScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
