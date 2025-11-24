@@ -1140,12 +1140,168 @@
         }
 
         function submitAssessment() {
-            console.log('Assessment submitted - scoring logic will be added next');
+            // Check if already passed
+            const alreadyPassed = localStorage.getItem('blueBeltPassed') === 'true';
+            if (alreadyPassed) {
+                showResult('already-passed');
+                return;
+            }
+            
+            // Check retry cooldown
+            const lastAttempt = localStorage.getItem('blueBeltLastAttempt');
+            if (lastAttempt) {
+                const daysSince = (Date.now() - parseInt(lastAttempt)) / (1000 * 60 * 60 * 24);
+                if (daysSince < 7) {
+                    const daysLeft = Math.ceil(7 - daysSince);
+                    alert(`You need to wait ${daysLeft} more day(s) before retrying the assessment.`);
+                    return;
+                }
+            }
+            
+            // Calculate scores
+            const scenarioScore = calculateScenarioScore();
+            const reflectionScore = calculateReflectionScore();
+            const practicalScore = calculatePracticalScore();
+            
+            // Weighted total (40% scenarios, 30% reflections, 30% practical)
+            const totalScore = (scenarioScore * 0.4) + (reflectionScore * 0.3) + (practicalScore * 0.3);
+            
+            // Store attempt
+            localStorage.setItem('blueBeltLastAttempt', Date.now().toString());
+            
+            // Check if passed
+            if (totalScore >= PASSING_SCORE) {
+                // Mark as passed
+                localStorage.setItem('blueBeltPassed', 'true');
+                
+                // Award XP
+                let totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+                totalXP += ASSESSMENT_XP;
+                localStorage.setItem('totalXP', totalXP.toString());
+                
+                // Add Blue Belt to earned belts
+                const beltsEarned = JSON.parse(localStorage.getItem('beltsEarned') || '[]');
+                if (!beltsEarned.includes('blue')) {
+                    beltsEarned.push('blue');
+                    localStorage.setItem('beltsEarned', JSON.stringify(beltsEarned));
+                }
+                
+                showResult('passed', totalScore);
+            } else {
+                showResult('failed', totalScore);
+            }
+        }
+        
+        function calculateScenarioScore() {
+            let correct = 0;
+            for (let i = 1; i <= TOTAL_SCENARIOS; i++) {
+                if (scenarioAnswers[i] === correctAnswers[i]) {
+                    correct++;
+                }
+            }
+            return correct / TOTAL_SCENARIOS;
+        }
+        
+        function calculateReflectionScore() {
+            // Score reflections based on word count (basic rubric)
+            let totalScore = 0;
+            
+            for (let i = 1; i <= TOTAL_REFLECTIONS; i++) {
+                const text = reflectionAnswers[i] || '';
+                const words = text.trim().split(/\s+/).length;
+                
+                if (words >= 200 && words <= 350) {
+                    // Good length, assume quality (in real assessment, would need human review)
+                    totalScore += 0.9; // 90% for hitting word count
+                } else if (words >= 150 && words < 200) {
+                    totalScore += 0.7; // 70% for slightly short
+                } else if (words > 350 && words <= 400) {
+                    totalScore += 0.8; // 80% for slightly long
+                } else if (words > 0) {
+                    totalScore += 0.5; // 50% for effort but too short/long
+                }
+            }
+            
+            return totalScore / TOTAL_REFLECTIONS;
+        }
+        
+        function calculatePracticalScore() {
+            const text = practicalAnswer || '';
+            const words = text.trim().split(/\s+/).length;
+            
+            // Check for key concepts (simple keyword matching - in real assessment would need human review)
+            const hasPreparation = /prepare|pre-work|stakeholder|align/i.test(text);
+            const hasFraming = /frame|conversation|meeting|facilitate/i.test(text);
+            const hasTechniques = /mining|7-step|conflict norm|disagree|commit/i.test(text);
+            const hasCommitment = /commit|follow.?up|accountab/i.test(text);
+            const hasMeasurement = /measure|metric|outcome|success|know if/i.test(text);
+            
+            let score = 0;
+            
+            // Word count (30%)
+            if (words >= 300 && words <= 450) {
+                score += 0.3;
+            } else if (words >= 250 && words < 300) {
+                score += 0.2;
+            } else if (words > 450 && words <= 500) {
+                score += 0.25;
+            } else if (words > 0) {
+                score += 0.1;
+            }
+            
+            // Key concepts (70% - 14% each)
+            if (hasPreparation) score += 0.14;
+            if (hasFraming) score += 0.14;
+            if (hasTechniques) score += 0.14;
+            if (hasCommitment) score += 0.14;
+            if (hasMeasurement) score += 0.14;
+            
+            return Math.min(score, 1.0); // Cap at 100%
+        }
+        
+        function showResult(type, score = 0) {
+            const popup = document.getElementById('resultPopup');
+            const overlay = document.getElementById('overlay');
+            const icon = document.getElementById('resultIcon');
+            const title = document.getElementById('resultTitle');
+            const message = document.getElementById('resultMessage');
+            const xp = document.getElementById('resultXP');
+            
+            if (type === 'passed') {
+                icon.textContent = '🎉';
+                title.textContent = 'Blue Belt Earned!';
+                message.innerHTML = `Congratulations! You scored ${Math.round(score * 100)}% and have mastered Fear of Conflict.<br><br>
+                    Purple Belt (Lack of Commitment) is now unlocked. Continue your journey through the 5 Dysfunctions!`;
+                xp.textContent = `+${ASSESSMENT_XP} XP`;
+                xp.style.display = 'inline-block';
+            } else if (type === 'failed') {
+                icon.textContent = '📚';
+                title.textContent = 'Keep Learning';
+                message.innerHTML = `You scored ${Math.round(score * 100)}%. You need 80% to pass.<br><br>
+                    Review the Blue Belt modules and try again in 7 days. Focus on the concepts you missed.`;
+                xp.style.display = 'none';
+            } else if (type === 'already-passed') {
+                icon.textContent = '✅';
+                title.textContent = 'Already Completed';
+                message.textContent = 'You\'ve already earned your Blue Belt! Continue to Purple Belt.';
+                xp.textContent = 'No Additional XP';
+                xp.style.display = 'inline-block';
+            }
+            
+            popup.classList.add('show');
+            overlay.classList.add('show');
         }
 
         function closeResult() {
+            const passed = localStorage.getItem('blueBeltPassed') === 'true';
+            
             document.getElementById('resultPopup').classList.remove('show');
             document.getElementById('overlay').classList.remove('show');
+            
+            if (passed) {
+                // Redirect to learning hub to see Purple Belt unlocked
+                window.location.href = 'learning-hub.html';
+            }
         }
 
         // Initialize
