@@ -509,7 +509,95 @@
         }
 
         function showResults() {
-            // Results logic will be added in final batch
+            // Calculate scores by dysfunction
+            const scores = {
+                trust: [],
+                conflict: [],
+                commitment: [],
+                accountability: [],
+                results: []
+            };
+
+            // Group answers by dysfunction
+            Object.values(answers).forEach(answer => {
+                if (scores[answer.dysfunction]) {
+                    scores[answer.dysfunction].push(answer.value);
+                }
+            });
+
+            // Calculate averages for each dysfunction
+            const averages = {
+                trust: calculateAverage(scores.trust),
+                conflict: calculateAverage(scores.conflict),
+                commitment: calculateAverage(scores.commitment),
+                accountability: calculateAverage(scores.accountability),
+                results: calculateAverage(scores.results)
+            };
+
+            // Determine overall average
+            const overallAverage = (averages.trust + averages.conflict + averages.commitment + 
+                                   averages.accountability + averages.results) / 5;
+
+            // Determine belt level
+            let beltLevel, beltIcon, beltColor, nextBelt;
+            if (overallAverage >= 3.5) {
+                beltLevel = "Black Belt";
+                beltIcon = "⬛";
+                beltColor = "#1a1a1a";
+                nextBelt = null;
+            } else if (overallAverage >= 2.8) {
+                beltLevel = "Brown Belt";
+                beltIcon = "🟤";
+                beltColor = "#8b4513";
+                nextBelt = { name: "Black Belt", file: "black-belt-stripe1-gamified.html" };
+            } else if (overallAverage >= 2.1) {
+                beltLevel = "Purple Belt";
+                beltIcon = "🟣";
+                beltColor = "#800080";
+                nextBelt = { name: "Brown Belt", file: "brown-belt-gamified.html" };
+            } else if (overallAverage >= 1.5) {
+                beltLevel = "Blue Belt";
+                beltIcon = "🔵";
+                beltColor = "#1e40af";
+                nextBelt = { name: "Purple Belt", file: "purple-belt-gamified.html" };
+            } else {
+                beltLevel = "White Belt";
+                beltIcon = "⚪";
+                beltColor = "#e5e7eb";
+                nextBelt = { name: "Blue Belt", file: "blue-belt-gamified.html" };
+            }
+
+            // Identify strengths and weaknesses
+            const strengths = [];
+            const weaknesses = [];
+
+            const dysfunctionNames = {
+                trust: "Absence of Trust",
+                conflict: "Fear of Conflict",
+                commitment: "Lack of Commitment",
+                accountability: "Avoidance of Accountability",
+                results: "Inattention to Results"
+            };
+
+            Object.keys(averages).forEach(dysfunction => {
+                if (averages[dysfunction] >= 3.0) {
+                    strengths.push(dysfunctionNames[dysfunction]);
+                } else if (averages[dysfunction] < 2.5) {
+                    weaknesses.push(dysfunctionNames[dysfunction]);
+                }
+            });
+
+            displayResults(beltLevel, beltIcon, beltColor, strengths, weaknesses, nextBelt);
+        }
+
+        function calculateAverage(scores) {
+            if (scores.length === 0) return 0;
+            const sum = scores.reduce((a, b) => a + b, 0);
+            return sum / scores.length;
+        }
+
+        function displayResults(beltLevel, beltIcon, beltColor, strengths, weaknesses, nextBelt) {
+            // Results display will be added in next batch
             document.getElementById('assessmentScreen').classList.add('hidden');
             document.getElementById('resultsScreen').classList.remove('hidden');
         }
