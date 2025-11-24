@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Cache Control Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Empathy - Gamified Learning</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1031,7 +1035,31 @@
             }, 4000);
         }
 
-        window.addEventListener('DOMContentLoaded', initModule);
+        
+        // ============= CACHE BUSTER =============
+        // Update VERSION whenever you deploy changes to force client refresh
+        const APP_VERSION = '2024-11-24-v1';
+        
+        function checkVersion() {
+            const cachedVersion = localStorage.getItem('appVersion');
+            if (cachedVersion && cachedVersion !== APP_VERSION) {
+                console.log(`Version update detected: ${cachedVersion} → ${APP_VERSION}`);
+                // Keep module-specific data, only clear version
+                localStorage.setItem('appVersion', APP_VERSION);
+                // Force a single hard reload
+                if (!sessionStorage.getItem('hasReloaded')) {
+                    sessionStorage.setItem('hasReloaded', 'true');
+                    window.location.reload(true);
+                }
+            } else {
+                localStorage.setItem('appVersion', APP_VERSION);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            checkVersion();
+            initModule();
+        });
     </script>
 </body>
 </html>
