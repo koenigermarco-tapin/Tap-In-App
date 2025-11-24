@@ -714,7 +714,182 @@
     </div>
 
     <script>
-        // Assessment will be scored here
+        // Track selected answers
+        const selectedAnswers = {};
+        
+        // Correct answers
+        const correctAnswers = {
+            1: 'B',  // Address missed commitment within 48 hours directly
+            2: 'C',  // Permission + modeling is key to peer accountability
+            3: 'B',  // Move to performance management after coaching fails
+            4: 'B',  // Direct conversation + escalation path for cross-team
+            5: 'B',  // Talk to boss privately about alignment
+            6: 'C',  // Name trade-offs under pressure, offer alternatives
+            7: 'B',  // Early culture erosion signals
+            8: 'A',  // Single accountable owner missing
+            9: 'B',  // Renegotiate early when context changes
+            10: 'B', // Model first - most effective
+            11: 'C', // Acknowledge effort AND address outcome
+            12: 'B', // Pattern = system problem
+            13: 'B', // Direct meeting to manage up
+            14: 'C', // Celebrate early communication
+            15: 'B'  // 6-step accountability conversation framework
+        };
+
+        // Select an option
+        function selectOption(questionNum, option) {
+            // Remove previous selection
+            const question = document.querySelector(`[data-question="${questionNum}"]`);
+            question.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Add selection
+            const selected = question.querySelector(`[data-option="${option}"]`);
+            selected.classList.add('selected');
+            
+            // Store answer
+            selectedAnswers[questionNum] = option;
+            
+            // Check if all questions answered and reflections filled
+            checkSubmitReady();
+        }
+
+        // Update word count
+        function updateWordCount(reflectionNum) {
+            const textarea = document.getElementById(`reflection${reflectionNum}`) || 
+                           document.getElementById(`commitment${reflectionNum}`);
+            const words = textarea.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const countElement = document.getElementById(`count${reflectionNum}`);
+            countElement.textContent = `${words} words`;
+            
+            checkSubmitReady();
+        }
+
+        // Check if ready to submit
+        function checkSubmitReady() {
+            const allQuestionsAnswered = Object.keys(selectedAnswers).length === 15;
+            
+            const reflection1Words = (document.getElementById('reflection1').value.trim().split(/\s+/).filter(w => w.length > 0).length);
+            const reflection2Words = (document.getElementById('reflection2').value.trim().split(/\s+/).filter(w => w.length > 0).length);
+            const reflection3Words = (document.getElementById('reflection3').value.trim().split(/\s+/).filter(w => w.length > 0).length);
+            
+            const commitment1 = document.getElementById('commitment1').value.trim().length;
+            const commitment2 = document.getElementById('commitment2').value.trim().length;
+            const commitment3 = document.getElementById('commitment3').value.trim().length;
+            
+            const reflectionsFilled = reflection1Words >= 100 && reflection2Words >= 100 && reflection3Words >= 100;
+            const commitmentsFilled = commitment1 > 20 && commitment2 > 20 && commitment3 > 20;
+            
+            document.getElementById('submitBtn').disabled = !(allQuestionsAnswered && reflectionsFilled && commitmentsFilled);
+        }
+
+        // Submit assessment
+        function submitAssessment() {
+            // Check if already completed
+            const alreadyCompleted = localStorage.getItem('brownBeltAssessmentCompleted') === 'true';
+            
+            if (alreadyCompleted) {
+                showResults(true, 15, true);
+                return;
+            }
+            
+            // Calculate score
+            let correct = 0;
+            for (let i = 1; i <= 15; i++) {
+                if (selectedAnswers[i] === correctAnswers[i]) {
+                    correct++;
+                }
+            }
+            
+            const passed = correct >= 12; // 80% passing
+            
+            // Save reflections and commitments
+            localStorage.setItem('brownBeltReflection1', document.getElementById('reflection1').value);
+            localStorage.setItem('brownBeltReflection2', document.getElementById('reflection2').value);
+            localStorage.setItem('brownBeltReflection3', document.getElementById('reflection3').value);
+            localStorage.setItem('brownBeltCommitment1', document.getElementById('commitment1').value);
+            localStorage.setItem('brownBeltCommitment2', document.getElementById('commitment2').value);
+            localStorage.setItem('brownBeltCommitment3', document.getElementById('commitment3').value);
+            
+            if (passed) {
+                // Award XP
+                let totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+                totalXP += 1500;
+                localStorage.setItem('totalXP', totalXP.toString());
+                localStorage.setItem('brownBeltAssessmentXP', '1500');
+                
+                // Mark completed
+                localStorage.setItem('brownBeltAssessmentCompleted', 'true');
+                
+                // Add to belts earned
+                let beltsEarned = JSON.parse(localStorage.getItem('beltsEarned') || '[]');
+                if (!beltsEarned.includes('brown')) {
+                    beltsEarned.push('brown');
+                    localStorage.setItem('beltsEarned', JSON.stringify(beltsEarned));
+                }
+                
+                // Unlock Black Belt
+                localStorage.setItem('blackBeltUnlocked', 'true');
+            }
+            
+            showResults(passed, correct, false);
+        }
+
+        // Show results
+        function showResults(passed, score, alreadyPassed) {
+            const resultContainer = document.getElementById('resultContainer');
+            
+            if (alreadyPassed) {
+                resultContainer.innerHTML = `
+                    <div class="result-icon">✅</div>
+                    <div class="result-title">Already Completed!</div>
+                    <div class="result-message">
+                        You've already passed the Brown Belt Assessment.<br>
+                        Your score: 12+ out of 15 (80%+)<br>
+                        XP Earned: 1,500 XP<br><br>
+                        Black Belt is unlocked!
+                    </div>
+                    <a href="learning-hub.html" class="next-button">Return to Learning Hub</a>
+                `;
+            } else if (passed) {
+                resultContainer.innerHTML = `
+                    <div class="result-icon">🎉</div>
+                    <div class="result-title">Brown Belt Earned!</div>
+                    <div class="result-score">Score: ${score} out of 15 (${Math.round(score/15*100)}%)</div>
+                    <div class="result-xp">+1,500 XP</div>
+                    <div class="result-message">
+                        Outstanding work! You've demonstrated mastery of accountability principles.<br><br>
+                        <strong>What you've proven:</strong><br>
+                        ✅ You understand how to build accountability systems<br>
+                        ✅ You know how to have hard conversations with direct reports, peers, and bosses<br>
+                        ✅ You can scale accountability beyond yourself to create culture<br>
+                        ✅ You recognize when accountability breaks and how to repair it<br><br>
+                        Your reflections and commitments have been saved for your reference.<br><br>
+                        <strong>Black Belt Unlocked:</strong> The final dysfunction awaits—Inattention to Results.
+                    </div>
+                    <a href="learning-hub.html" class="next-button">Continue to Black Belt →</a>
+                `;
+            } else {
+                resultContainer.innerHTML = `
+                    <div class="result-icon">📚</div>
+                    <div class="result-title">Not Yet - Keep Learning</div>
+                    <div class="result-score">Score: ${score} out of 15 (${Math.round(score/15*100)}%)</div>
+                    <div class="result-message">
+                        You need 12 out of 15 (80%) to pass.<br><br>
+                        <strong>What to do:</strong><br>
+                        • Review the Brown Belt stripe lessons<br>
+                        • Focus on: accountability conversations, scaling culture, managing up<br>
+                        • Retake the assessment when you're ready<br><br>
+                        The scenarios require applying principles, not just knowing them. Think about what builds sustainable accountability vs. what avoids it.
+                    </div>
+                    <a href="learning-hub.html" class="next-button">Return to Learning Hub</a>
+                `;
+            }
+            
+            resultContainer.classList.add('show');
+            resultContainer.scrollIntoView({ behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
