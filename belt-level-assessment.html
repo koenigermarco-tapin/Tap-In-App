@@ -237,6 +237,131 @@
             font-size: 0.9em;
             margin-top: 8px;
         }
+
+        /* Results styles */
+        .belt-result {
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .result-belt-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .result-belt-name {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .result-message {
+            font-size: 1.2em;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+
+        .analysis-section {
+            margin: 30px 0;
+        }
+
+        .analysis-title {
+            font-size: 1.5em;
+            color: #1e293b;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .strength-list, .weakness-list {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .strength-list {
+            border-left: 4px solid #10b981;
+        }
+
+        .weakness-list {
+            border-left: 4px solid #f59e0b;
+        }
+
+        .list-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .list-icon {
+            font-size: 1.5em;
+        }
+
+        .list-text {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .cta-section {
+            margin-top: 40px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 1.8em;
+            color: #1e293b;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .cta-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .cta-button {
+            padding: 18px 36px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cta-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+            box-shadow: 0 4px 16px rgba(26, 54, 93, 0.3);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 54, 93, 0.4);
+        }
+
+        .cta-secondary {
+            background: white;
+            color: #1a365d;
+            border: 2px solid #1a365d;
+        }
+
+        .cta-secondary:hover {
+            background: #f8fafc;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -597,7 +722,83 @@
         }
 
         function displayResults(beltLevel, beltIcon, beltColor, strengths, weaknesses, nextBelt) {
-            // Results display will be added in next batch
+            const resultsContent = document.getElementById('resultsContent');
+            
+            let resultsHTML = `
+                <div class="belt-result">
+                    <div class="result-belt-icon">${beltIcon}</div>
+                    <div class="result-belt-name">${beltLevel}</div>
+                    <div class="result-message">
+                        ${beltLevel === "Black Belt" 
+                            ? "You're already operating at the highest level! Your team demonstrates strong cohesion across all dysfunctions."
+                            : `Based on your responses, you're currently at the ${beltLevel} level. You have clear strengths and specific areas where focused training will help you level up.`
+                        }
+                    </div>
+                </div>
+            `;
+
+            if (strengths.length > 0) {
+                resultsHTML += `
+                    <div class="analysis-section">
+                        <div class="analysis-title">✅ Your Strengths</div>
+                        <div class="strength-list">
+                            ${strengths.map(strength => `
+                                <div class="list-item">
+                                    <span class="list-icon">✅</span>
+                                    <span class="list-text">${strength}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (weaknesses.length > 0) {
+                resultsHTML += `
+                    <div class="analysis-section">
+                        <div class="analysis-title">⚠️ Growth Areas</div>
+                        <div class="weakness-list">
+                            ${weaknesses.map(weakness => `
+                                <div class="list-item">
+                                    <span class="list-icon">⚠️</span>
+                                    <span class="list-text">${weakness}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            resultsHTML += `
+                <div class="cta-section">
+                    <div class="cta-title">Ready to Level Up?</div>
+                    <div class="cta-buttons">
+            `;
+
+            if (nextBelt) {
+                resultsHTML += `
+                    <a href="${nextBelt.file}" class="cta-button cta-primary">
+                        Start ${nextBelt.name} Training →
+                    </a>
+                `;
+            } else {
+                resultsHTML += `
+                    <a href="black-belt-assessment.html" class="cta-button cta-primary">
+                        Take Black Belt Assessment →
+                    </a>
+                `;
+            }
+
+            resultsHTML += `
+                        <a href="index.html" class="cta-button cta-secondary">
+                            Explore All Assessments
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            resultsContent.innerHTML = resultsHTML;
+            
             document.getElementById('assessmentScreen').classList.add('hidden');
             document.getElementById('resultsScreen').classList.remove('hidden');
         }
