@@ -575,6 +575,83 @@
             gap: 25px; 
             margin: 30px 0; 
         }
+
+        /* Belt Readiness Cards */
+        #beltReadinessCards {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .belt-readiness-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            border-left: 6px solid;
+        }
+
+        .belt-readiness-card.locked { border-left-color: #ef4444; }
+        .belt-readiness-card.conditional { border-left-color: #f59e0b; }
+        .belt-readiness-card.ready { border-left-color: #10b981; }
+        .belt-readiness-card.mastery { border-left-color: #6366f1; }
+
+        .belt-readiness-card .belt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .belt-readiness-card .belt-name {
+            font-size: 1.4em;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .belt-readiness-card .readiness-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .readiness-badge.locked { background: #fee2e2; color: #991b1b; }
+        .readiness-badge.conditional { background: #fef3c7; color: #92400e; }
+        .readiness-badge.ready { background: #d1fae5; color: #065f46; }
+        .readiness-badge.mastery { background: #e0e7ff; color: #3730a3; }
+
+        .belt-readiness-card .score-display {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .belt-readiness-card .feedback {
+            color: #475569;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .belt-readiness-card .gaps {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .belt-readiness-card .gaps-title {
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .belt-readiness-card .gaps ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #64748b;
+        }
         
         /* Flip Cards for Dysfunction Scores */
         .dysfunction-card { 
@@ -919,28 +996,29 @@
         <div class="screen" id="screen-results">
             <div class="results-content">
                 <div class="belt-result">
-                    <div class="belt-icon" id="resultBeltIcon">⚪</div>
-                    <h2 id="resultBeltName">White Belt</h2>
-                    <div class="subtitle" id="resultSubtitle">Start Here</div>
-                    <div class="description" id="resultDescription"></div>
+                    <h2 style="color: #1a365d; font-size: 2.5em; margin-bottom: 10px;">⚡ Your Belt Readiness Report</h2>
+                    <div class="subtitle" style="color: #64748b; font-size: 1.3em; margin-bottom: 30px;">Rigorous Standards. Real Gaps. Clear Path Forward.</div>
                 </div>
 
                 <div class="xp-earned">
                     <div>🎯 Assessment Complete!</div>
                     <div class="xp-amount">+500 XP</div>
-                    <div>First belts unlocked</div>
+                    <div>All belts evaluated</div>
                 </div>
 
-                <h3 style="color: #1a365d; margin: 40px 0 20px; font-size: 1.8em;">Your Dysfunction Scores</h3>
+                <h3 style="color: #1a365d; margin: 40px 0 20px; font-size: 1.8em;">🥋 Your Belt-by-Belt Readiness</h3>
+                <div id="beltReadinessCards"></div>
+
+                <h3 style="color: #1a365d; margin: 40px 0 20px; font-size: 1.8em;">📊 Your 5 Dysfunctions Breakdown</h3>
                 <div class="dysfunction-scores" id="dysfunctionScores"></div>
 
                 <div class="next-steps">
-                    <h3>🎯 Your Training Path</h3>
-                    <div id="trainingPath"></div>
+                    <h3>🎯 Your 90-Day Training Roadmap</h3>
+                    <div id="trainingRoadmap"></div>
                 </div>
 
                 <div class="nav-buttons">
-                    <a href="index.html" class="btn-primary">Start Training →</a>
+                    <a href="index.html" class="btn-primary">Start Your Training →</a>
                 </div>
             </div>
         </div>
@@ -1907,83 +1985,174 @@
         }
 
         function calculateResults() {
-            // Calculate section scores (average of answers in each section)
-            const sections = ['trust', 'conflict', 'commitment', 'accountability', 'results'];
-            
-            sections.forEach(section => {
-                const sectionQuestions = questions.filter(q => q.section === section);
-                const sectionAnswers = sectionQuestions.map(q => answers[q.id]);
-                const average = sectionAnswers.reduce((a, b) => a + b, 0) / sectionAnswers.length;
-                sectionScores[section] = average;
+            // Calculate section scores for each belt (10 questions each)
+            const beltSections = {
+                white: questions.filter(q => q.section === 'white' && q.type !== 'enhancement'),
+                blue: questions.filter(q => q.section === 'blue' && q.type !== 'enhancement'),
+                purple: questions.filter(q => q.section === 'purple' && q.type !== 'enhancement'),
+                brown: questions.filter(q => q.section === 'brown' && q.type !== 'enhancement'),
+                black: questions.filter(q => q.section === 'black' && q.type !== 'enhancement')
+            };
+
+            const beltScores = {};
+            Object.entries(beltSections).forEach(([belt, beltQuestions]) => {
+                const beltAnswers = beltQuestions.map(q => answers[q.id]);
+                const average = beltAnswers.reduce((a, b) => a + b, 0) / beltAnswers.length;
+                const percentage = (average / 5) * 100;
+                beltScores[belt] = { average, percentage };
             });
-            
-            // Determine starting belt (lowest dysfunction score)
-            const lowestScore = Math.min(...Object.values(sectionScores));
-            let startingBelt = 'white';
-            
-            if (lowestScore >= 4.5) {
-                startingBelt = 'black';
-            } else if (lowestScore >= 4.0) {
-                startingBelt = 'brown';
-            } else if (lowestScore >= 3.5) {
-                startingBelt = 'purple';
-            } else if (lowestScore >= 3.0) {
-                startingBelt = 'blue';
-            } else {
-                startingBelt = 'white';
-            }
-            
-            // Display results
-            displayResults(startingBelt);
+
+            // Also calculate the 5 dysfunctions (same as belts for now)
+            sectionScores = {
+                trust: beltScores.white.average,
+                conflict: beltScores.blue.average,
+                commitment: beltScores.purple.average,
+                accountability: beltScores.brown.average,
+                results: beltScores.black.average
+            };
+
+            displayResults(beltScores);
         }
 
-        function displayResults(belt) {
+        function displayResults(beltScores) {
+            // Display belt readiness cards
+            const beltReadinessContainer = document.getElementById('beltReadinessCards');
+            beltReadinessContainer.innerHTML = '';
+
             const beltData = {
                 white: {
                     icon: '⚪',
-                    name: 'White Belt - Trust',
-                    subtitle: 'Foundation: Building Vulnerability-Based Trust',
-                    description: 'Your journey begins with trust. Without it, nothing else works. You\'ll learn to be vulnerable, admit mistakes, and build genuine connection with your team. This is where mastery starts.',
+                    name: 'White Belt',
+                    theme: 'Vulnerability-Based Trust',
                     link: 'white-belt.html'
                 },
                 blue: {
                     icon: '🔵',
-                    name: 'Blue Belt - Conflict',
-                    subtitle: 'Engaging in Productive Conflict',
-                    description: 'You have decent trust but struggle with healthy conflict. You\'ll learn to debate ideas passionately, challenge assumptions, and embrace disagreement as a path to better decisions.',
+                    name: 'Blue Belt',
+                    theme: 'Productive Conflict & Debate',
                     link: 'blue-belt.html'
                 },
                 purple: {
                     icon: '🟣',
-                    name: 'Purple Belt - Commitment',
-                    subtitle: 'Achieving Real Buy-In and Clarity',
-                    description: 'You can handle conflict but lack clear commitment. You\'ll learn to make crisp decisions, achieve genuine buy-in, and move forward with speed and alignment.',
+                    name: 'Purple Belt',
+                    theme: 'Commitment & Clarity',
                     link: 'purple-belt.html'
                 },
                 brown: {
                     icon: '🟤',
-                    name: 'Brown Belt - Accountability',
-                    subtitle: 'Holding Each Other to High Standards',
-                    description: 'You commit well but avoid accountability. You\'ll learn to call out gaps, give direct feedback, and hold yourself and others to the team\'s standards without apology.',
+                    name: 'Brown Belt',
+                    theme: 'Accountability & Standards',
                     link: 'brown-belt.html'
                 },
                 black: {
                     icon: '⚫',
-                    name: 'Black Belt - Results',
-                    subtitle: 'Collective Results Over Individual Ego',
-                    description: 'You\'re strong across the board but need to refine your focus on collective results. You\'ll master putting team outcomes above personal recognition and driving true team performance.',
+                    name: 'Black Belt',
+                    theme: 'Results Over Ego',
                     link: 'black-belt.html'
                 }
             };
+
+            Object.entries(beltScores).forEach(([belt, score]) => {
+                const data = beltData[belt];
+                const percentage = score.percentage;
+                const average = score.average;
+
+                // Determine readiness level
+                let readiness, badge, feedback, gaps;
+                
+                if (percentage < 60) {
+                    readiness = 'locked';
+                    badge = '🔒 Locked';
+                    feedback = `You scored ${percentage.toFixed(0)}%. This belt is locked until you complete foundational work. Your current understanding of ${data.theme.toLowerCase()} needs significant development before you can train effectively here.`;
+                    gaps = [
+                        'Complete White Belt exercises if this is White Belt',
+                        'Review fundamental concepts before attempting this training',
+                        'Build baseline skills through prerequisite work'
+                    ];
+                } else if (percentage >= 60 && percentage < 75) {
+                    readiness = 'conditional';
+                    badge = '⚠️ Conditional Access';
+                    feedback = `You scored ${percentage.toFixed(0)}%. You can START this belt, but significant gaps exist. Expect to struggle—this training will expose blind spots in ${data.theme.toLowerCase()}.`;
+                    gaps = [
+                        'Pay extra attention to scenarios that challenge you',
+                        'Complete ALL exercises (don\'t skip)',
+                        'Revisit questions where you scored 1-2 out of 5'
+                    ];
+                } else if (percentage >= 75 && percentage < 85) {
+                    readiness = 'ready';
+                    badge = '✅ Ready';
+                    feedback = `You scored ${percentage.toFixed(0)}%. You're prepared for this belt. You have a solid foundation in ${data.theme.toLowerCase()}, and this training will deepen your mastery.`;
+                    gaps = [
+                        'Focus on nuance and advanced applications',
+                        'Use this belt to refine your existing skills',
+                        'Challenge yourself with the harder scenarios'
+                    ];
+                } else {
+                    readiness = 'mastery';
+                    badge = '🏆 Mastery Level';
+                    feedback = `You scored ${percentage.toFixed(0)}%. You could skip this belt, but DON'T. Even masters need reminders. This training will sharpen what you already know about ${data.theme.toLowerCase()}.`;
+                    gaps = [
+                        'Look for 1-2 insights you\'ve missed',
+                        'Use this belt to reinforce good habits',
+                        'Consider: could you teach this to others?'
+                    ];
+                }
+
+                const cardHTML = `
+                    <div class="belt-readiness-card ${readiness}">
+                        <div class="belt-header">
+                            <div class="belt-name">${data.icon} ${data.name}</div>
+                            <div class="readiness-badge ${readiness}">${badge}</div>
+                        </div>
+                        <div class="score-display" style="color: ${readiness === 'locked' ? '#ef4444' : readiness === 'conditional' ? '#f59e0b' : readiness === 'ready' ? '#10b981' : '#6366f1'}">
+                            ${average.toFixed(2)}/5.0 (${percentage.toFixed(0)}%)
+                        </div>
+                        <div class="feedback">${feedback}</div>
+                        <div class="gaps">
+                            <div class="gaps-title">${readiness === 'mastery' ? '💡 How to Approach:' : readiness === 'ready' ? '🎯 Training Focus:' : '⚠️ What You Need:'}</div>
+                            <ul>
+                                ${gaps.map(gap => `<li>${gap}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                
+                beltReadinessContainer.innerHTML += cardHTML;
+            });
+
+            // Display dysfunction flip cards (existing logic)
+            displayDysfunctionCards();
+
+            // Display 90-day roadmap
+            display90DayRoadmap(beltScores);
+
+            // Save results
+            const resultsData = {
+                timestamp: new Date().toISOString(),
+                beltScores: beltScores,
+                sectionScores: sectionScores,
+                answers: answers
+            };
+            localStorage.setItem('beltAssessment', JSON.stringify(resultsData));
             
-            const result = beltData[belt];
+            // Save to global gamification and UNLOCK ALL BELTS
+            const gamification = JSON.parse(localStorage.getItem('gamification') || '{"xp": 0, "level": 1, "achievements": []}');
+            gamification.xp = (gamification.xp || 0) + 500;
+            gamification.completedBeltAssessment = true;
             
-            document.getElementById('resultBeltIcon').textContent = result.icon;
-            document.getElementById('resultBeltName').textContent = result.name;
-            document.getElementById('resultSubtitle').textContent = result.subtitle;
-            document.getElementById('resultDescription').textContent = result.description;
+            // Unlock ALL belts when assessment is complete
+            gamification.unlockedBelts = ['white', 'blue', 'purple', 'brown', 'black'];
+            localStorage.setItem('gamification', JSON.stringify(gamification));
             
-            // Display dysfunction scores with flip cards
+            // Mark belts as unlocked globally
+            localStorage.setItem('beltsUnlocked', 'true');
+            
+            // Show results screen
+            document.getElementById('screen-questions').classList.remove('active');
+            document.getElementById('screen-results').classList.add('active');
+        }
+
+        function displayDysfunctionCards() {
             const scoresContainer = document.getElementById('dysfunctionScores');
             scoresContainer.innerHTML = '';
             
@@ -1992,24 +2161,24 @@
                     icon: '⚪',
                     name: 'Trust',
                     context: 'Vulnerability-based trust is the foundation. Without it, teams play politics instead of pursuing results.',
-                    highInsight: 'You openly admit mistakes, ask for help, and assume positive intent. Keep modeling this - your team watches.',
-                    lowInsight: 'You tend to hide weaknesses and avoid vulnerability. Start small: admit one mistake per week in team meetings.',
+                    highInsight: 'You openly admit mistakes, ask for help, and assume positive intent. Keep modeling this.',
+                    lowInsight: 'You tend to hide weaknesses and avoid vulnerability. Start small: admit one mistake per week.',
                     research: 'Google\'s Project Aristotle found psychological safety (trust) was the #1 predictor of team performance.'
                 },
                 conflict: {
                     icon: '🔵',
                     name: 'Conflict',
                     context: 'Productive conflict mines for the best ideas. Artificial harmony leads to bad decisions.',
-                    highInsight: 'You engage in passionate debate about ideas without taking it personally. This is rare - use it to make better decisions.',
-                    lowInsight: 'You avoid disagreement to keep the peace. Remember: short-term discomfort leads to long-term clarity.',
-                    research: 'Research shows teams that engage in task conflict (not relationship conflict) make better decisions and innovate more.'
+                    highInsight: 'You engage in passionate debate about ideas without taking it personally. Rare and valuable.',
+                    lowInsight: 'You avoid disagreement to keep the peace. Short-term discomfort leads to long-term clarity.',
+                    research: 'Teams that engage in task conflict (not relationship conflict) make better decisions and innovate more.'
                 },
                 commitment: {
                     icon: '🟣',
                     name: 'Commitment',
-                    context: 'Clarity and buy-in. Teams need to know what\'s decided and commit fully - even when they disagreed.',
+                    context: 'Clarity and buy-in. Teams need to know what\'s decided and commit fully—even when they disagreed.',
                     highInsight: 'You commit to decisions quickly and publicly support them. This speed is a competitive advantage.',
-                    lowInsight: 'You leave meetings without clarity or second-guess decisions. Practice: end every meeting with "what did we decide?"',
+                    lowInsight: 'You leave meetings without clarity or second-guess decisions. End every meeting with "what did we decide?"',
                     research: 'Eisenhower: "Plans are useless, but planning is everything." The act of deciding together creates commitment.'
                 },
                 accountability: {
@@ -2017,15 +2186,15 @@
                     name: 'Accountability',
                     context: 'Peer-to-peer accountability. The best teams call each other out on performance and behavior.',
                     highInsight: 'You address performance gaps directly and quickly. This creates a culture of high standards.',
-                    lowInsight: 'You let small issues slide or wait for managers to handle it. Start calling out small things within 48 hours.',
+                    lowInsight: 'You let small issues slide or wait for others to handle it. Call out small things within 48 hours.',
                     research: 'Kim Scott (Radical Candor): "Care personally, challenge directly." Both are required for accountability.'
                 },
                 results: {
                     icon: '⚫',
                     name: 'Results',
                     context: 'Collective results over individual ego. Great teams subjugate personal goals to team outcomes.',
-                    highInsight: 'You prioritize team wins over personal recognition. This selflessness is what makes black belts rare.',
-                    lowInsight: 'You focus on individual metrics over team outcomes. Ask: "Did my work make the TEAM better today?"',
+                    highInsight: 'You prioritize collective wins over personal recognition. This selflessness is what makes black belts rare.',
+                    lowInsight: 'You focus on individual metrics over collective outcomes. Ask: "Did my work make us better today?"',
                     research: 'Lencioni: "If you could get all the people in an organization rowing in the same direction, you could dominate any industry."'
                 }
             };
@@ -2069,49 +2238,81 @@
                 
                 scoresContainer.innerHTML += cardHTML;
             });
+        }
+
+        function display90DayRoadmap(beltScores) {
+            const roadmapContainer = document.getElementById('trainingRoadmap');
             
-            // Training path with direct link
-            const trainingPath = document.getElementById('trainingPath');
-            trainingPath.innerHTML = `
-                <p style="color: #475569; line-height: 1.8; margin-bottom: 20px; font-size: 1.1em;">Based on your assessment, here's your recommended training sequence:</p>
-                <ul style="color: #64748b; line-height: 2; font-size: 1.05em;">
-                    <li><strong>Start with ${result.name}</strong> - Your foundation needs the most work here</li>
-                    <li>Complete all assessments and modules in this belt</li>
-                    <li>Earn your stripe progressions (4 stripes per belt)</li>
-                    <li>Only after mastery, advance to the next belt</li>
-                    <li>Remember: The goal is mastery, not speed</li>
-                </ul>
+            // Find weakest belt
+            let weakestBelt = 'white';
+            let lowestScore = 5;
+            Object.entries(beltScores).forEach(([belt, score]) => {
+                if (score.average < lowestScore) {
+                    lowestScore = score.average;
+                    weakestBelt = belt;
+                }
+            });
+
+            const beltNames = {
+                white: '⚪ White Belt (Trust)',
+                blue: '🔵 Blue Belt (Conflict)',
+                purple: '🟣 Purple Belt (Commitment)',
+                brown: '🟤 Brown Belt (Accountability)',
+                black: '⚫ Black Belt (Results)'
+            };
+
+            const beltOrder = ['white', 'blue', 'purple', 'brown', 'black'];
+            const startIndex = beltOrder.indexOf(weakestBelt);
+
+            roadmapContainer.innerHTML = `
+                <p style="color: #475569; line-height: 1.8; margin-bottom: 25px; font-size: 1.1em;">
+                    Based on your scores, here's your personalized 90-day training roadmap. <strong>Start with your weakest area (${beltNames[weakestBelt]})</strong>, then progress sequentially.
+                </p>
+                
+                <div style="background: #f8fafc; border-radius: 12px; padding: 25px; margin-bottom: 20px;">
+                    <h4 style="color: #1a365d; margin: 0 0 20px 0;">📅 Month 1 (Days 1-30)</h4>
+                    <ul style="color: #64748b; line-height: 2; font-size: 1.05em; margin: 0; padding-left: 25px;">
+                        <li><strong>${beltNames[beltOrder[startIndex]]}</strong> - Complete all 4 stripes</li>
+                        <li>Focus on exercises and scenarios that challenge you</li>
+                        <li>Track: What's your biggest "aha moment"?</li>
+                        <li>Goal: Earn ${beltNames[beltOrder[startIndex]]} mastery</li>
+                    </ul>
+                </div>
+
+                <div style="background: #f8fafc; border-radius: 12px; padding: 25px; margin-bottom: 20px;">
+                    <h4 style="color: #1a365d; margin: 0 0 20px 0;">📅 Month 2 (Days 31-60)</h4>
+                    <ul style="color: #64748b; line-height: 2; font-size: 1.05em; margin: 0; padding-left: 25px;">
+                        <li><strong>${beltNames[beltOrder[(startIndex + 1) % 5]]}</strong> - Complete all 4 stripes</li>
+                        <li>Apply learning from ${beltNames[beltOrder[startIndex]]} here</li>
+                        <li>Notice: How do these dysfunctions connect?</li>
+                        <li>Goal: Build on Month 1 momentum</li>
+                    </ul>
+                </div>
+
+                <div style="background: #f8fafc; border-radius: 12px; padding: 25px; margin-bottom: 20px;">
+                    <h4 style="color: #1a365d; margin: 0 0 20px 0;">📅 Month 3 (Days 61-90)</h4>
+                    <ul style="color: #64748b; line-height: 2; font-size: 1.05em; margin: 0; padding-left: 25px;">
+                        <li><strong>${beltNames[beltOrder[(startIndex + 2) % 5]]}</strong> - Begin training</li>
+                        <li>Revisit ${beltNames[beltOrder[startIndex]]} - what changed?</li>
+                        <li>Reflect: How have you grown in 90 days?</li>
+                        <li>Goal: Sustained practice = lasting change</li>
+                    </ul>
+                </div>
+
+                <div style="background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border-radius: 12px; padding: 25px; margin-top: 30px;">
+                    <h4 style="margin: 0 0 15px 0;">💡 Remember:</h4>
+                    <p style="margin: 0; line-height: 1.8; opacity: 0.95;">
+                        Mastery isn't about speed—it's about depth. Take your time. Do the exercises. Reflect on the scenarios. 
+                        The goal isn't to finish all 5 belts in 90 days. The goal is to <strong>genuinely change</strong> how you operate in the world.
+                    </p>
+                </div>
+
                 <div style="margin-top: 30px; text-align: center;">
-                    <a href="${result.link}" class="btn btn-primary" style="font-size: 1.3em; padding: 20px 50px; text-decoration: none; display: inline-block;">
-                        Begin ${result.name} Training →
+                    <a href="white-belt.html" class="btn-primary" style="font-size: 1.3em; padding: 20px 50px; text-decoration: none; display: inline-block; background: linear-gradient(135deg, #1a365d 0%, #2563eb 100%); color: white; border-radius: 10px; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
+                        Begin Training Now →
                     </a>
                 </div>
             `;
-            
-            // Save results
-            const resultsData = {
-                timestamp: new Date().toISOString(),
-                startingBelt: belt,
-                sectionScores: sectionScores,
-                answers: answers
-            };
-            localStorage.setItem('beltAssessment', JSON.stringify(resultsData));
-            
-            // Save to global gamification and UNLOCK ALL BELTS
-            const gamification = JSON.parse(localStorage.getItem('gamification') || '{"xp": 0, "level": 1, "achievements": []}');
-            gamification.xp = (gamification.xp || 0) + 500;
-            gamification.completedBeltAssessment = true;
-            
-            // Unlock ALL belts when assessment is complete
-            gamification.unlockedBelts = ['white', 'blue', 'purple', 'brown', 'black'];
-            localStorage.setItem('gamification', JSON.stringify(gamification));
-            
-            // Mark belts as unlocked globally
-            localStorage.setItem('beltsUnlocked', 'true');
-            
-            // Show results screen
-            document.getElementById('screen-questions').classList.remove('active');
-            document.getElementById('screen-results').classList.add('active');
         }
     </script>
 </body>
