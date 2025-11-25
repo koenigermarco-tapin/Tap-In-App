@@ -3,1189 +3,584 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>🔵 Blue Belt - Stripe 3: Facilitating Team Conflict | Tap-In Leadership</title>
+    <title>Blue Belt Stripe 3: Feedback Systems | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-navy: #1a365d;
+            --secondary-navy: #334155;
+            --accent-red: #b91c1c;
+            --accent-purple: #a78bfa;
+            --purple-gradient: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+            --light-bg: #f8fafc;
+            --success-green: #38a169;
+            --warning-orange: #dd6b20;
+            --card-bg: #ffffff;
+            --border-light: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
         }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
             min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .module-header {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            border: 3px solid #1e40af;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
-
-        .belt-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            font-weight: 700;
-            color: #1e40af;
-            margin-bottom: 15px;
-            border: 2px solid #60a5fa;
-        }
-
-        .stripe-indicator {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .stripe-dot {
-            width: 12px;
-            height: 40px;
-            background: #1e3a8a;
-            border-radius: 3px;
-        }
-
-        .stripe-dot.inactive {
-            background: #93c5fd;
-        }
-
-        h1 {
-            color: white;
-            font-size: 32px;
-            margin-bottom: 10px;
-        }
-
-        .module-description {
-            color: #dbeafe;
-            font-size: 16px;
+            padding: 2rem 1rem;
             line-height: 1.6;
-            margin-bottom: 20px;
         }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: white; }
+        .stripe-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
         }
-
-        .stat-card {
-            background: rgba(255,255,255,0.95);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            border: 2px solid #bfdbfe;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #3b82f6;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #64748b;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-top: 5px;
-        }
-
-        .progress-section {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .progress-bar-container {
-            background: #e2e8f0;
-            height: 12px;
+        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .progress-container {
+            background: rgba(255,255,255,0.2);
             border-radius: 10px;
-            overflow: hidden;
-            margin: 15px 0;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
         }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #3b82f6 0%, #1d4ed8 100%);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .progress-text {
-            text-align: center;
-            color: #64748b;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .lesson-card {
-            background: white;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .lesson-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12);
-        }
-
-        .lesson-header {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            padding: 20px 25px;
-            cursor: pointer;
+        .progress-header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #93c5fd;
-        }
-
-        .lesson-header:hover {
-            background: linear-gradient(135deg, #bfdbfe 0%, #93c5fd 100%);
-        }
-
-        .lesson-title-section {
-            flex: 1;
-        }
-
-        .lesson-number {
-            font-size: 14px;
-            color: #1e40af;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .lesson-title {
-            font-size: 20px;
-            color: #1e3a8a;
-            font-weight: 700;
-        }
-
-        .lesson-status {
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 14px;
-            background: #3b82f6;
             color: white;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
         }
-
-        .lesson-body {
-            padding: 0;
-            max-height: 0;
+        .progress-bar {
+            background: rgba(255,255,255,0.3);
+            height: 8px;
+            border-radius: 4px;
             overflow: hidden;
-            transition: max-height 0.3s ease, padding 0.3s ease;
         }
-
-        .lesson-body.active {
-            padding: 30px;
-            max-height: 5000px;
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
         }
-
-        .lesson-section {
-            margin-bottom: 30px;
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            margin-bottom: 2rem;
         }
-
-        .lesson-section h3 {
-            color: #1a365d;
-            font-size: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-
-        .lesson-section p {
-            color: #475569;
-            line-height: 1.8;
-            margin-bottom: 15px;
-            font-size: 16px;
+        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+        .section-subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
+        .intro-box {
+            background: #f7fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
         }
-
-        .lesson-section ul, .lesson-section ol {
-            color: #475569;
-            line-height: 1.8;
-            margin-left: 25px;
-            margin-bottom: 15px;
+        .intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: var(--primary-navy); }
+        .intro-box.philosophy {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 6px solid var(--primary-navy);
+            border-left: 6px solid var(--primary-navy);
         }
-
-        .lesson-section li {
-            margin-bottom: 10px;
+        .intro-box.philosophy h3 { color: var(--primary-navy); }
+        .intro-box.philosophy p { color: var(--text-dark); }
+        .intro-box.philosophy strong { color: var(--primary-navy); }
+        .intro-box.philosophy em { color: var(--accent-purple); }
+        .intro-box.research {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+            border-left: 6px solid var(--primary-navy);
         }
-
-        .highlight-box {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-left: 4px solid #f59e0b;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+        .intro-box.research h3 { color: #ffffff; }
+        .intro-box.research p { color: #e2e8f0; }
+        .intro-box.research strong { color: var(--accent-purple); }
+        .insight-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #93c5fd;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
         }
-
-        .highlight-box h4 {
-            color: #92400e;
-            margin-bottom: 10px;
-            font-size: 16px;
+        .insight-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+        .insight-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.75rem; }
+        .insight-content { color: var(--text-dark); font-size: 0.95rem; line-height: 1.7; }
+        /* Quadrant Grid */
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.5rem 0;
         }
-
-        .research-box {
-            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
-            border-left: 4px solid #3b82f6;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
+        .quadrant {
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
         }
-
-        .research-box h4 {
-            color: #1e40af;
-            margin-bottom: 10px;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .practice-box {
-            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-            border-left: 4px solid #10b981;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-
-        .practice-box h4 {
-            color: #065f46;
-            margin-bottom: 10px;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th {
-            background: #f8fafc;
-            font-weight: 700;
-            color: #1a365d;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border-radius: 10px;
-            border: none;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        .quadrant.radical-candor {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
         }
-
+        .quadrant.obnoxious-aggression {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        .quadrant.ruinous-empathy {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        .quadrant.manipulative-insincerity {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+            color: white;
+        }
+        .quadrant h4 { font-size: 1rem; margin-bottom: 0.5rem; }
+        .quadrant p { font-size: 0.85rem; opacity: 0.95; }
+        .quadrant-labels {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+        .quadrant-label-left { text-align: left; }
+        .quadrant-label-right { text-align: right; }
+        /* Scenario */
+        .scenario-card {
+            background: #fffbeb;
+            border: 2px solid #fcd34d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .scenario-card h4 { color: #92400e; font-size: 1rem; margin-bottom: 0.75rem; }
+        .scenario-card p { color: #78350f; font-size: 0.95rem; margin-bottom: 1rem; }
+        .scenario-card textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+        .scenario-card textarea:focus { outline: none; border-color: #f59e0b; }
+        .reflection-box {
+            background: #fffbeb;
+            border: 2px solid #fcd34d;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .reflection-box h3 { color: #92400e; font-size: 1rem; margin-bottom: 0.75rem; }
+        .reflection-box p { color: #78350f; font-size: 0.95rem; margin-bottom: 1rem; }
+        .reflection-textarea {
+            width: 100%;
+            min-height: 100px;
+            padding: 1rem;
+            border: 1px solid #fcd34d;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            background: white;
+        }
+        .reflection-textarea:focus { outline: none; border-color: #f59e0b; }
+        /* Practice Cards */
+        .practice-card {
+            background: #f0fdf4;
+            border: 2px solid #86efac;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .practice-card h4 { color: #166534; font-size: 1rem; margin-bottom: 0.5rem; }
+        .practice-card p { color: #14532d; font-size: 0.9rem; }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            text-decoration: none;
+        }
+        .btn-secondary { background: #edf2f7; color: var(--text-dark); }
+        .btn-secondary:hover { background: #e2e8f0; }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+            color: white;
+        }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 10px 25px rgba(26, 54, 93, 0.3);
         }
-
-        .xp-badge {
-            background: #fbbf24;
-            color: #78350f;
-            padding: 4px 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-        }
-
-        .lesson-badge {
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            background: #10b981;
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%);
             color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-weight: 700;
-            font-size: 14px;
-            opacity: 0;
-            transform: scale(0.5);
-            transition: all 0.3s ease;
         }
-
-        .lesson-badge.show {
-            opacity: 1;
-            transform: scale(1);
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(56, 161, 105, 0.3);
         }
-
-        .achievement-popup {
-            position: fixed;
-            top: 20px;
-            right: -400px;
-            background: white;
-            padding: 20px 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 350px;
-            transition: right 0.5s ease;
-            z-index: 1000;
-            border-left: 5px solid #3b82f6;
-        }
-
-        .achievement-popup.show {
-            right: 20px;
-        }
-
-        .achievement-header {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .achievement-icon {
-            font-size: 40px;
-        }
-
-        .achievement-text h4 {
-            color: #1a365d;
-            font-size: 18px;
-            margin-bottom: 5px;
-        }
-
-        .achievement-text p {
-            color: #64748b;
-            font-size: 14px;
-            margin: 0;
-        }
-
-        .achievement-xp {
-            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-            color: #78350f;
-            padding: 8px 16px;
-            border-radius: 10px;
+        .stripe-earned {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, #7c3aed 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            color: white;
             text-align: center;
-            font-weight: 700;
-            font-size: 16px;
-            margin-top: 10px;
+            margin-bottom: 1.5rem;
         }
-
+        .stripe-earned h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .stripe-visual { font-size: 3rem; margin: 1rem 0; }
+        .quote-block {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        .quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+        .quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
         @media (max-width: 768px) {
-            body {
-                padding: 10px;
-            }
-
-            h1 {
-                font-size: 24px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .lesson-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
+            body { padding: 1rem; }
+            .main-card { padding: 1.5rem; }
+            .header h1 { font-size: 1.75rem; }
+            .nav-buttons { flex-direction: column; }
+            .btn { width: 100%; text-align: center; }
+            .quadrant-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Module Header -->
-        <div class="module-header">
-            <div class="belt-badge">
-                🔵 BLUE BELT - STRIPE 3 of 4
-            </div>
-            
-            <div class="stripe-indicator">
-                <div class="stripe-dot"></div>
-                <div class="stripe-dot"></div>
-                <div class="stripe-dot"></div>
-                <div class="stripe-dot inactive"></div>
-            </div>
+        <div class="header">
+            <div class="stripe-badge">💙 Blue Belt • Stripe 3 of 4</div>
+            <h1>Feedback Systems</h1>
+            <p>Giving and Receiving Truth</p>
+        </div>
 
-            <h1>⚔️ Facilitating Team Conflict</h1>
-            <p class="module-description">
-                Learn to facilitate productive conflict as a leader. Master mining for conflict, real-time facilitation techniques, conflict resolution processes, and creating team conflict norms.
-            </p>
-
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-value" id="xpDisplay">0</span>
-                    <span class="stat-label">XP Earned</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="streakDisplay">0</span>
-                    <span class="stat-label">Completed</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="badgesDisplay">0</span>
-                    <span class="stat-label">Stripe</span>
-                </div>
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Progress</span>
+                <span id="progress-text">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
             </div>
         </div>
 
-        <!-- Progress Section -->
-        <div class="progress-section">
-            <h3 style="color: #1a365d; margin-bottom: 10px;">📊 Your Progress</h3>
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressFill"></div>
-            </div>
-            <p class="progress-text" id="progressText">0 of 4 lessons completed</p>
-        </div>
+        <div class="main-card">
+            <!-- Section 1: Introduction -->
+            <div class="section active" id="section-1">
+                <h2 class="section-title">🎯 The Feedback Problem</h2>
+                <p class="section-subtitle">Most feedback either hurts or is useless. There's a better way.</p>
 
-        <!-- Lesson 1: Mining for Conflict -->
-        <div class="lesson-card">
-            <div class="lesson-badge" id="badge1">+25 XP</div>
-            <div class="lesson-header" onclick="toggleLesson('lesson1')">
-                <div class="lesson-title-section">
-                    <div class="lesson-number">Lesson 1</div>
-                    <div class="lesson-title">Mining for Conflict</div>
-                </div>
-                <div class="lesson-status" id="status1">Start</div>
-            </div>
-            <div class="lesson-body" id="lesson1">
-                <div class="lesson-section">
-                    <h3>🎯 What You'll Learn</h3>
-                    <ul>
-                        <li>How to surface hidden disagreements in teams</li>
-                        <li>Techniques for "mining" conflict that's being avoided</li>
-                        <li>When and how leaders should provoke productive debate</li>
-                    </ul>
+                <div class="intro-box">
+                    <h3>Why Feedback Fails</h3>
+                    <p>Most people swing between two extremes: they're either brutally honest (and damage relationships) or they're so nice that their feedback is meaningless (and damage performance).</p>
+                    <p>Neither works. <strong>People need feedback that's both kind AND clear.</strong> That's harder than it sounds.</p>
                 </div>
 
-                <div class="lesson-section">
-                    <h3>📖 Core Concept</h3>
-                    <p>
-                        In most teams, the real conflicts don't happen in meetings—they happen in parking lots, Slack DMs, and hallway conversations. As a leader, one of your primary jobs is to <strong>mine for conflict</strong>: deliberately surface the disagreements that people are avoiding.
-                    </p>
-                    <p>
-                        This feels counterintuitive. Most leaders try to <em>reduce</em> conflict. But if you're not seeing any conflict in your meetings, you're not seeing honesty.
-                    </p>
+                <div class="intro-box philosophy">
+                    <h3>🥋 The BJJ Principle: Honest Sparring</h3>
+                    <p>In Jiu-Jitsu, if your partner goes too easy on you, you don't improve. If they go too hard, you get injured. <strong>The best training partners push you to your edge without breaking you.</strong></p>
+                    <p>That's what good feedback looks like: honest enough to create growth, delivered in a way that keeps the relationship intact.</p>
+                    <p><em>"Your job is to care personally while challenging directly."</em> — Kim Scott</p>
                 </div>
 
-                <div class="highlight-box">
-                    <h4>🔑 Lencioni's Insight</h4>
-                    <p>
-                        "If everyone around the table agrees too quickly, it's probably not because you have perfect alignment—it's because someone isn't speaking up."
-                    </p>
-                    <p>
-                        Leaders must <strong>actively extract</strong> the conflict that's lurking beneath the surface of artificial harmony.
-                    </p>
+                <div class="intro-box research">
+                    <h3>📊 The Research</h3>
+                    <p><strong>Kim Scott</strong>, former Google and Apple executive, developed the Radical Candor framework after seeing how feedback failures destroyed teams and careers.</p>
+                    <p>Her research found that <strong>85% of workers</strong> have received feedback that was so vague or unclear they couldn't act on it. And <strong>37%</strong> have experienced feedback so harsh it damaged their relationship with the giver permanently.</p>
                 </div>
 
-                <div class="lesson-section">
-                    <h3>⛏️ Mining Techniques</h3>
-                    
-                    <p><strong>1. Call Out the Silence</strong></p>
-                    <p>"We agreed on this too easily. What are we not saying?"</p>
-                    
-                    <p><strong>2. Assign Devil's Advocate</strong></p>
-                    <p>Explicitly ask someone to argue the opposite position: "Sarah, can you make the case against this decision?"</p>
-                    
-                    <p><strong>3. Name the Elephant</strong></p>
-                    <p>"I think there's tension around resource allocation that we're not discussing. Let's put it on the table."</p>
-                    
-                    <p><strong>4. Ask Specific People Directly</strong></p>
-                    <p>"Marcus, you've been quiet. What concerns do you have?" (Silence is often disagreement in disguise.)</p>
-                    
-                    <p><strong>5. Pause Before Decisions</strong></p>
-                    <p>"Before we finalize, I want to hear one concern from each person."</p>
-                </div>
-
-                <div class="research-box">
-                    <h4>📊 Why Teams Avoid Conflict (Even When Leaders Ask)</h4>
-                    <p>
-                        People don't speak up even when directly asked because:
-                    </p>
-                    <ul>
-                        <li><strong>Social risk:</strong> "If I disagree, I'll look like a problem."</li>
-                        <li><strong>Futility belief:</strong> "The decision is already made anyway."</li>
-                        <li><strong>Retaliation fear:</strong> "Challenging the boss is career suicide."</li>
-                        <li><strong>Peer pressure:</strong> "Everyone else is agreeing, so maybe I'm wrong."</li>
-                    </ul>
-                    <p>
-                        <strong>The leader's job:</strong> Make disagreement explicitly safe and expected.
-                    </p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>🥋 The BJJ Analogy</h3>
-                    <p>
-                        In sparring, if your partner isn't resisting, you're not learning. The same is true for team decisions. If nobody pushes back, you're not getting better ideas—you're getting compliance.
-                    </p>
-                    <p>
-                        A good leader, like a good training partner, <strong>invites resistance</strong> because that's where growth happens.
-                    </p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>⚠️ Warning Signs You Need to Mine Deeper</h3>
-                    <ul>
-                        <li>Meetings end with "consensus" in under 15 minutes</li>
-                        <li>Nobody asks clarifying questions</li>
-                        <li>The same voices dominate while others stay quiet</li>
-                        <li>People agree in meetings but express concerns privately afterward</li>
-                        <li>Decisions get revisited or implementations stall</li>
-                    </ul>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>💡 Key Takeaways</h3>
-                    <ul>
-                        <li>Artificial harmony is the enemy of good decisions—leaders must mine for hidden conflict</li>
-                        <li>Quick consensus is often a red flag, not a green light</li>
-                        <li>Make disagreement safe by explicitly inviting it and modeling it yourself</li>
-                    </ul>
-                </div>
-
-                <div class="practice-box">
-                    <h4>✨ Practice Exercise</h4>
-                    <p>
-                        <strong>This week:</strong> In your next team meeting, use at least 2 mining techniques:
-                    </p>
-                    <ol>
-                        <li>"We agreed too quickly. What are we missing?"</li>
-                        <li>"Before we decide, I want one concern from each person."</li>
-                        <li>Assign someone to play devil's advocate</li>
-                    </ol>
-                    <p>Track: Did new information emerge? Did the decision change?</p>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="completeLesson(1)">
-                        Mark Complete <span class="xp-badge">+25 XP</span>
-                    </button>
+                <div class="nav-buttons">
+                    <a href="blue-belt.html" class="btn btn-secondary">← Back to Hub</a>
+                    <button class="btn btn-primary" onclick="nextSection()">The Framework →</button>
                 </div>
             </div>
-        </div>
 
-        <!-- Lesson 2: Real-Time Facilitation -->
-        <div class="lesson-card">
-            <div class="lesson-badge" id="badge2">+25 XP</div>
-            <div class="lesson-header" onclick="toggleLesson('lesson2')">
-                <div class="lesson-title-section">
-                    <div class="lesson-number">Lesson 2</div>
-                    <div class="lesson-title">Real-Time Facilitation</div>
+            <!-- Section 2: Radical Candor Framework -->
+            <div class="section" id="section-2">
+                <h2 class="section-title">📊 The Radical Candor Framework</h2>
+                <p class="section-subtitle">Two axes. Four quadrants. One sweet spot.</p>
+
+                <div class="intro-box">
+                    <h3>The Two Dimensions</h3>
+                    <p><strong>Care Personally:</strong> Do you genuinely care about this person as a human being?</p>
+                    <p><strong>Challenge Directly:</strong> Are you willing to tell them the uncomfortable truth?</p>
                 </div>
-                <div class="lesson-status" id="status2">Start</div>
+
+                <div class="quadrant-labels">
+                    <span class="quadrant-label-left">← Challenge Directly</span>
+                    <span class="quadrant-label-right">Challenge Directly →</span>
+                </div>
+
+                <div class="quadrant-grid">
+                    <div class="quadrant ruinous-empathy">
+                        <h4>😊 Ruinous Empathy</h4>
+                        <p>Care personally, but don't challenge. "You're doing great!" (when they're not). Feels kind, but hurts growth.</p>
+                    </div>
+                    <div class="quadrant radical-candor">
+                        <h4>🎯 Radical Candor</h4>
+                        <p>Care personally AND challenge directly. "I know you can do better. Here's specifically what I'm seeing..."</p>
+                    </div>
+                    <div class="quadrant manipulative-insincerity">
+                        <h4>😐 Manipulative Insincerity</h4>
+                        <p>Don't care, don't challenge. False praise or silence. Just getting through the day.</p>
+                    </div>
+                    <div class="quadrant obnoxious-aggression">
+                        <h4>😤 Obnoxious Aggression</h4>
+                        <p>Challenge directly, but don't care personally. "This is terrible. Fix it." Honest, but damaging.</p>
+                    </div>
+                </div>
+
+                <div class="quadrant-labels">
+                    <span class="quadrant-label-left">↑ Care Personally</span>
+                    <span class="quadrant-label-right"></span>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">⚠️</div>
+                    <div class="insight-title">The Most Common Trap</div>
+                    <div class="insight-content">
+                        Most people default to <strong>Ruinous Empathy</strong>—being nice instead of being helpful. It feels kind in the moment, but it's actually selfish: you're protecting your own comfort at the expense of their growth.
+                    </div>
+                </div>
+
+                <div class="intro-box philosophy">
+                    <h3>🥋 The Hard Truth</h3>
+                    <p>Telling someone their guard sucks is a gift if it helps them fix it before a tournament. Telling them "nice try" when they got swept is comfortable—for you—but useless for them.</p>
+                    <p><strong>Real caring sometimes feels uncomfortable.</strong> That's how you know you're doing it right.</p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextSection()">How to Give Feedback →</button>
+                </div>
             </div>
-            <div class="lesson-body" id="lesson2">
-                <div class="lesson-section">
-                    <h3>🎯 What You'll Learn</h3>
-                    <ul>
-                        <li>How to facilitate conflict in real-time during meetings</li>
-                        <li>Interventions to keep conflict productive vs. destructive</li>
-                        <li>Reading the room and adjusting your approach on the fly</li>
+
+            <!-- Section 3: Giving Feedback -->
+            <div class="section" id="section-3">
+                <h2 class="section-title">📤 Giving Feedback Well</h2>
+                <p class="section-subtitle">Specific, timely, and kind-but-clear.</p>
+
+                <div class="practice-card">
+                    <h4>1. Be Specific, Not General</h4>
+                    <p>❌ "Your presentation was bad."<br>
+                    ✅ "When you skipped the demo, the client looked confused and asked follow-up questions you'd already answered."</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>2. Focus on Behavior, Not Character</h4>
+                    <p>❌ "You're careless."<br>
+                    ✅ "The last three reports had data errors that required revision."</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>3. Be Timely</h4>
+                    <p>Give feedback as close to the event as possible. Waiting for the annual review means they've practiced the wrong behavior for months.</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>4. State Your Intent</h4>
+                    <p>Start by making your intention clear: "I'm sharing this because I want to help you succeed" or "I care about your growth, which is why I'm saying this."</p>
+                </div>
+
+                <div class="scenario-card">
+                    <h4>✍️ Your Practice: Give Feedback</h4>
+                    <p>Think of someone who needs feedback from you. Write out what you'd say using Radical Candor principles:</p>
+                    <textarea id="feedback-give" placeholder="I want to share something with you because I care about [your success/our project/our relationship]. I noticed that [specific behavior]. The impact was [specific result]. What I'd love to see instead is [desired change]..."></textarea>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Receiving Feedback →</button>
+                </div>
+            </div>
+
+            <!-- Section 4: Receiving Feedback -->
+            <div class="section" id="section-4">
+                <h2 class="section-title">📥 Receiving Feedback Well</h2>
+                <p class="section-subtitle">This is harder than giving it.</p>
+
+                <div class="intro-box">
+                    <h3>Your Default Reaction Will Fight You</h3>
+                    <p>When you hear critical feedback, your brain goes into defense mode. You want to explain, justify, minimize, or counterattack. <strong>This is natural. And it's also the enemy.</strong></p>
+                    <p>The ability to receive feedback without defensiveness is a superpower. Most people can't do it.</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>1. Listen First</h4>
+                    <p>Don't respond immediately. Let them finish. Take a breath. Your first instinct is usually to defend—don't.</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>2. Seek to Understand</h4>
+                    <p>Ask clarifying questions: "Can you give me an example?" or "What would you have liked to see instead?" You're trying to understand, not to rebut.</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>3. Thank Them</h4>
+                    <p>Even if the feedback stings, thank them for giving it. This encourages more feedback in the future—which is what you want.</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>4. Reflect Before Reacting</h4>
+                    <p>You don't have to agree immediately. Say "Let me think about this" and come back later with a considered response.</p>
+                </div>
+
+                <div class="intro-box philosophy">
+                    <h3>🥋 The Tap as Feedback</h3>
+                    <p>In BJJ, the tap is the ultimate feedback: "That worked. I was caught." The best training partners don't get defensive when they tap. They ask: "What did I miss? Where did I go wrong?"</p>
+                    <p><strong>Every tap is a lesson.</strong> Every piece of feedback is the same.</p>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">💡</div>
+                    <div class="insight-title">The Real Test</div>
+                    <div class="insight-content">
+                        How you respond to feedback determines whether you get more of it. If you're defensive, people will stop being honest. If you're grateful, they'll keep helping you improve.
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Final Reflection →</button>
+                </div>
+            </div>
+
+            <!-- Section 5: Reflection -->
+            <div class="section" id="section-5">
+                <h2 class="section-title">🪞 Build Your Feedback System</h2>
+                <p class="section-subtitle">Make feedback a habit, not an event.</p>
+
+                <div class="reflection-box">
+                    <h3>📝 Your Feedback Avoidance</h3>
+                    <p>Who are you avoiding giving feedback to? What's the feedback? Why are you avoiding it?</p>
+                    <textarea class="reflection-textarea" id="feedback-avoidance" placeholder="I've been avoiding telling [person] that..."></textarea>
+                </div>
+
+                <div class="reflection-box">
+                    <h3>📝 Your Feedback Ask</h3>
+                    <p>Who could give you valuable feedback that you haven't asked for? What would you ask them?</p>
+                    <textarea class="reflection-textarea" id="feedback-ask" placeholder="I should ask [person] for feedback on..."></textarea>
+                </div>
+
+                <div class="quote-block">
+                    <p class="quote">"Criticism may not be agreeable, but it is necessary. It fulfills the same function as pain in the human body. It calls attention to an unhealthy state of things."</p>
+                    <p class="author">— Winston Churchill</p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="showResults()">Complete Stripe 3 →</button>
+                </div>
+            </div>
+
+            <!-- Section 6: Results -->
+            <div class="section" id="section-6">
+                <div class="stripe-earned">
+                    <h2>🎉 Stripe 3 Earned!</h2>
+                    <div class="stripe-visual">💙 ▬▬▬</div>
+                    <p>You've completed Feedback Systems and earned your third Blue Belt stripe.</p>
+                </div>
+
+                <div class="intro-box">
+                    <h3>📋 What You Learned</h3>
+                    <ul style="margin: 1rem 0 0 1.5rem; color: var(--text-dark);">
+                        <li style="margin-bottom: 0.5rem;"><strong>Radical Candor</strong> — Care personally + Challenge directly</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>The Four Quadrants</strong> — Ruinous Empathy, Obnoxious Aggression, Manipulative Insincerity, Radical Candor</li>
+                        <li style="margin-bottom: 0.5rem;"><strong>Giving Feedback</strong> — Specific, behavior-focused, timely, with stated intent</li>
+                        <li><strong>Receiving Feedback</strong> — Listen, understand, thank, reflect</li>
                     </ul>
                 </div>
 
-                <div class="lesson-section">
-                    <h3>📖 Core Concept</h3>
-                    <p>
-                        Mining for conflict gets disagreement into the room. <strong>Real-time facilitation</strong> is what you do once it's there—how you manage the conversation so it stays productive and doesn't spiral into personal attacks or shutdowns.
-                    </p>
-                    <p>
-                        This is the hardest leadership skill to develop because it requires reading emotional cues, making split-second decisions, and intervening without controlling.
-                    </p>
+                <div class="intro-box philosophy">
+                    <h3>🥋 Your Two Assignments</h3>
+                    <p><strong>1. Give the feedback you've been avoiding.</strong> Use the script you wrote. Do it this week.</p>
+                    <p><strong>2. Ask for feedback you haven't sought.</strong> Ask the person you identified. Be specific about what you want feedback on.</p>
+                    <p>Both will be uncomfortable. Both will make you better.</p>
                 </div>
 
-                <div class="highlight-box">
-                    <h4>🔑 The Facilitator's Balance</h4>
-                    <p>
-                        Too hands-off → Conflict becomes destructive or dominates<br>
-                        Too controlling → You shut down the very conflict you mined for
-                    </p>
-                    <p>
-                        <strong>The sweet spot:</strong> Guide without directing. Create structure without stifling energy.
-                    </p>
+                <div class="quote-block">
+                    <p class="quote">"The most helpful thing you can do for someone is tell them the truth about what you see."</p>
+                    <p class="author">— Kim Scott</p>
                 </div>
 
-                <div class="lesson-section">
-                    <h3>🛠️ Real-Time Interventions</h3>
-                    
-                    <p><strong>1. Redirect to Ideas, Not People</strong></p>
-                    <p>
-                        <em>When:</em> Conflict becomes personal ("You always..." or "That's because you...")<br>
-                        <em>Say:</em> "Let's focus on the idea, not the person. What specifically about the proposal concerns you?"
-                    </p>
-
-                    <p><strong>2. Equalize Airtime</strong></p>
-                    <p>
-                        <em>When:</em> One person dominates while others shut down<br>
-                        <em>Say:</em> "Jordan, hold that thought. I want to hear from the folks who haven't spoken yet. Alex, what's your take?"
-                    </p>
-
-                    <p><strong>3. Slow Down Escalation</strong></p>
-                    <p>
-                        <em>When:</em> Voices get louder, interruptions increase<br>
-                        <em>Say:</em> "This is important. Let's slow down so we can really hear each other. One person at a time."
-                    </p>
-
-                    <p><strong>4. Reframe Disagreement as Data</strong></p>
-                    <p>
-                        <em>When:</em> People seem uncomfortable with the conflict<br>
-                        <em>Say:</em> "This tension is good—it means we're exploring different perspectives. Keep going."
-                    </p>
-
-                    <p><strong>5. Call a Tactical Pause</strong></p>
-                    <p>
-                        <em>When:</em> Emotions are too hot to process information<br>
-                        <em>Say:</em> "Let's take 5 minutes. Come back ready to find a solution together."
-                    </p>
-                </div>
-
-                <div class="research-box">
-                    <h4>📊 Reading the Room: What to Watch For</h4>
-                    <table>
-                        <tr>
-                            <th>Body Language</th>
-                            <th>What It Means</th>
-                            <th>Your Move</th>
-                        </tr>
-                        <tr>
-                            <td>Arms crossed, leaning back</td>
-                            <td>Defensiveness or disengagement</td>
-                            <td>Invite them back in: "I notice you've gone quiet. What's your read?"</td>
-                        </tr>
-                        <tr>
-                            <td>Leaning forward, interrupting</td>
-                            <td>High energy, possibly escalating</td>
-                            <td>Slow it down: "One at a time. Let's make sure everyone is heard."</td>
-                        </tr>
-                        <tr>
-                            <td>Looking at phones/laptops</td>
-                            <td>Checked out—conflict feels unsafe or futile</td>
-                            <td>Re-engage: "This matters. I need everyone present."</td>
-                        </tr>
-                        <tr>
-                            <td>Eyes darting to you</td>
-                            <td>Looking for rescue or permission to speak</td>
-                            <td>Invite them: "You look like you have something to add. Go ahead."</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>🥋 The BJJ Mindset: Staying Calm Under Pressure</h3>
-                    <p>
-                        In BJJ, when someone passes your guard or gets you in a bad position, panicking makes it worse. The same is true in facilitation.
-                    </p>
-                    <p>
-                        When conflict escalates, your job is to <strong>stay regulated</strong> so you can think clearly. Use your own physiology as a guide: if your heart is racing, take a breath before intervening.
-                    </p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>⚠️ Common Facilitation Mistakes</h3>
-                    <ul>
-                        <li><strong>Rescuing too quickly:</strong> Jumping in at the first sign of tension kills productive conflict</li>
-                        <li><strong>Forcing resolution:</strong> "Let's agree to disagree" avoids the real work</li>
-                        <li><strong>Taking sides:</strong> Even subtle agreement with one position undermines your neutrality</li>
-                        <li><strong>Talking too much:</strong> The facilitator should talk less than everyone else combined</li>
-                    </ul>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>💡 Key Takeaways</h3>
-                    <ul>
-                        <li>Facilitation is about guiding conflict, not controlling it</li>
-                        <li>Watch body language to read when to intervene and how</li>
-                        <li>Your own emotional regulation is your most important tool</li>
-                    </ul>
-                </div>
-
-                <div class="practice-box">
-                    <h4>✨ Practice Exercise</h4>
-                    <p>
-                        <strong>This week:</strong> During a team conflict, practice one of these interventions:
-                    </p>
-                    <ol>
-                        <li><strong>Redirect to ideas:</strong> "Let's focus on the idea, not the person."</li>
-                        <li><strong>Equalize airtime:</strong> "I want to hear from folks who haven't spoken."</li>
-                        <li><strong>Reframe tension:</strong> "This tension is good—it means we care."</li>
-                    </ol>
-                    <p>
-                        <strong>After:</strong> Reflect on what you observed. Did the intervention help? What would you do differently?
-                    </p>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="completeLesson(2)">
-                        Mark Complete <span class="xp-badge">+25 XP</span>
-                    </button>
+                <div class="nav-buttons">
+                    <a href="blue-belt.html" class="btn btn-secondary">← Back to Blue Belt</a>
+                    <a href="blue-belt-stripe4-gamified.html" class="btn btn-success">Start Stripe 4: Boundaries →</a>
                 </div>
             </div>
         </div>
-
-        <!-- Lesson 3: Conflict Resolution Processes -->
-        <div class="lesson-card">
-            <div class="lesson-badge" id="badge3">+25 XP</div>
-            <div class="lesson-header" onclick="toggleLesson('lesson3')">
-                <div class="lesson-title-section">
-                    <div class="lesson-number">Lesson 3</div>
-                    <div class="lesson-title">Conflict Resolution Processes</div>
-                </div>
-                <div class="lesson-status" id="status3">Start</div>
-            </div>
-            <div class="lesson-body" id="lesson3">
-                <div class="lesson-section">
-                    <h3>🎯 What You'll Learn</h3>
-                    <ul>
-                        <li>Structured processes for resolving team conflicts</li>
-                        <li>When to use formal vs. informal resolution approaches</li>
-                        <li>How to design conflict resolution frameworks for your team</li>
-                    </ul>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>📖 Core Concept</h3>
-                    <p>
-                        Not all conflicts resolve themselves through good facilitation. Sometimes you need a <strong>structured process</strong>—a clear pathway from disagreement to decision.
-                    </p>
-                    <p>
-                        Without process, conflicts either:
-                    </p>
-                    <ul>
-                        <li>Drag on indefinitely (decision paralysis)</li>
-                        <li>Get resolved through power dynamics (whoever is loudest or most senior wins)</li>
-                        <li>Go underground and resurface later</li>
-                    </ul>
-                </div>
-
-                <div class="highlight-box">
-                    <h4>🔑 Why Process Matters</h4>
-                    <p>
-                        Process creates <strong>psychological safety for conflict</strong>. When people know:
-                    </p>
-                    <ul>
-                        <li>How decisions will be made</li>
-                        <li>What their role is</li>
-                        <li>When resolution will happen</li>
-                    </ul>
-                    <p>
-                        ...they're more willing to engage honestly.
-                    </p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>🛠️ Resolution Process Framework</h3>
-                    
-                    <p><strong>Step 1: Define the Decision-Making Method</strong></p>
-                    <p>Before debating, clarify <em>how</em> the decision will be made:</p>
-                    <ul>
-                        <li><strong>Leader decides after input:</strong> Team debates, leader chooses</li>
-                        <li><strong>Consensus:</strong> Everyone must agree (use sparingly—slow and rare)</li>
-                        <li><strong>Majority vote:</strong> Democratic but can leave minority feeling unheard</li>
-                        <li><strong>Delegate to expert:</strong> Person closest to the work decides</li>
-                    </ul>
-
-                    <p><strong>Step 2: Set Time Boundaries</strong></p>
-                    <p>"We'll discuss for 30 minutes, then make a decision."</p>
-                    <p>Open-ended debate creates anxiety. Time boxes create urgency.</p>
-
-                    <p><strong>Step 3: Surface All Positions</strong></p>
-                    <p>Go around the room. Each person states their position in 2 minutes or less.</p>
-
-                    <p><strong>Step 4: Explore Underlying Interests</strong></p>
-                    <p>"What problem are we each trying to solve?" (Often reveals alignment beneath disagreement.)</p>
-
-                    <p><strong>Step 5: Generate Options</strong></p>
-                    <p>Brainstorm solutions. No evaluation yet—just possibilities.</p>
-
-                    <p><strong>Step 6: Make the Decision</strong></p>
-                    <p>Using the method from Step 1, decide. Announce it clearly.</p>
-
-                    <p><strong>Step 7: Commit (Disagree & Commit)</strong></p>
-                    <p>"Does everyone commit to executing this decision, even if you disagree?"</p>
-                </div>
-
-                <div class="research-box">
-                    <h4>📊 Example: Product Feature Conflict</h4>
-                    <p><strong>Conflict:</strong> Engineering wants to refactor tech debt. Product wants new features.</p>
-                    <p><strong>Process:</strong></p>
-                    <ol>
-                        <li><strong>Decision method:</strong> Product leader decides after input</li>
-                        <li><strong>Time box:</strong> 45-minute discussion, decision at the end</li>
-                        <li><strong>Positions:</strong> Engineering: "Tech debt slows us down." Product: "Customers need features."</li>
-                        <li><strong>Interests:</strong> Both want sustainable velocity</li>
-                        <li><strong>Options:</strong> 50/50 split, rotating sprints, dedicated tech debt day/week</li>
-                        <li><strong>Decision:</strong> Product leader chooses 70/30 (features/tech debt)</li>
-                        <li><strong>Commit:</strong> Engineering commits despite preferring 50/50</li>
-                    </ol>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>💡 Key Takeaways</h3>
-                    <ul>
-                        <li>Process creates safety for conflict by clarifying roles and decision methods</li>
-                        <li>Define <em>how</em> decisions will be made before debating <em>what</em> to decide</li>
-                        <li>Time boundaries prevent endless debate and create urgency</li>
-                    </ul>
-                </div>
-
-                <div class="practice-box">
-                    <h4>✨ Practice Exercise</h4>
-                    <p>
-                        <strong>This week:</strong> For your next team conflict:
-                    </p>
-                    <ol>
-                        <li>Before discussion starts, announce the decision-making method</li>
-                        <li>Set a time box: "We'll discuss for X minutes, then decide"</li>
-                        <li>Follow the 7-step process</li>
-                    </ol>
-                    <p>Reflect: Did having process make the conflict feel safer?</p>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="completeLesson(3)">
-                        Mark Complete <span class="xp-badge">+25 XP</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Lesson 4: Conflict Norms Canvas -->
-        <div class="lesson-card">
-            <div class="lesson-badge" id="badge4">+25 XP</div>
-            <div class="lesson-header" onclick="toggleLesson('lesson4')">
-                <div class="lesson-title-section">
-                    <div class="lesson-number">Lesson 4</div>
-                    <div class="lesson-title">Conflict Norms Canvas</div>
-                </div>
-                <div class="lesson-status" id="status4">Start</div>
-            </div>
-            <div class="lesson-body" id="lesson4">
-                <div class="lesson-section">
-                    <h3>🎯 What You'll Learn</h3>
-                    <ul>
-                        <li>How to create explicit team norms around conflict</li>
-                        <li>The Conflict Norms Canvas framework</li>
-                        <li>How to get team buy-in for conflict agreements</li>
-                    </ul>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>📖 Core Concept</h3>
-                    <p>
-                        Every team has conflict norms—rules (usually unspoken) about how disagreement is handled. The problem: <strong>implicit norms default to the safest option: avoidance</strong>.
-                    </p>
-                    <p>
-                        High-performing teams make conflict norms <strong>explicit</strong>. They agree upfront how they'll disagree.
-                    </p>
-                </div>
-
-                <div class="highlight-box">
-                    <h4>🔑 Why Explicit Norms Matter</h4>
-                    <p>
-                        "I disagree" feels risky when norms are unclear. You don't know:
-                    </p>
-                    <ul>
-                        <li>Will I be seen as difficult?</li>
-                        <li>Will this damage my relationship with my manager?</li>
-                        <li>Is disagreement even allowed here?</li>
-                    </ul>
-                    <p>
-                        <strong>Explicit norms remove ambiguity.</strong> Everyone knows the rules, so conflict feels safer.
-                    </p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>🗺️ The Conflict Norms Canvas</h3>
-                    <p>Use this template in a team session to co-create your conflict norms:</p>
-                    
-                    <table>
-                        <tr>
-                            <th>Element</th>
-                            <th>Questions to Answer</th>
-                        </tr>
-                        <tr>
-                            <td><strong>1. Purpose</strong></td>
-                            <td>Why is productive conflict valuable for our team?</td>
-                        </tr>
-                        <tr>
-                            <td><strong>2. Invitation</strong></td>
-                            <td>How do we invite disagreement? What phrases signal safety?</td>
-                        </tr>
-                        <tr>
-                            <td><strong>3. Boundaries</strong></td>
-                            <td>What's off-limits? (e.g., personal attacks, late-night Slack arguments)</td>
-                        </tr>
-                        <tr>
-                            <td><strong>4. Resolution</strong></td>
-                            <td>How do we make decisions when we disagree?</td>
-                        </tr>
-                        <tr>
-                            <td><strong>5. Commitment</strong></td>
-                            <td>How do we commit to decisions we disagree with?</td>
-                        </tr>
-                        <tr>
-                            <td><strong>6. Repair</strong></td>
-                            <td>What happens when conflict goes wrong? How do we repair?</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="research-box">
-                    <h4>📝 Example Conflict Norms (Tech Team)</h4>
-                    <p><strong>1. Purpose:</strong> "We value productive conflict because it leads to better technical decisions."</p>
-                    <p><strong>2. Invitation:</strong> "Play devil's advocate" = explicit invitation to disagree</p>
-                    <p><strong>3. Boundaries:</strong> No personal attacks. No passive-aggressive Slack comments after meetings.</p>
-                    <p><strong>4. Resolution:</strong> Tech lead decides after 30 minutes of debate</p>
-                    <p><strong>5. Commitment:</strong> "Disagree & Commit"—once decided, we execute as if unanimous</p>
-                    <p><strong>6. Repair:</strong> If conflict gets personal, we pause and do a 1:1 debrief afterward</p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>🥋 The BJJ Parallel: Mat Rules</h3>
-                    <p>
-                        Every BJJ gym has explicit rules: tap when caught, no slamming, respect your partner. These norms make sparring safe even though it's physically intense.
-                    </p>
-                    <p>
-                        Your team needs the same: <strong>conflict rules that make disagreement safe</strong>.
-                    </p>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>⚠️ How to Roll Out Team Norms</h3>
-                    <ol>
-                        <li><strong>Co-create, don't dictate:</strong> Use a team session to build the canvas together</li>
-                        <li><strong>Make it visible:</strong> Post norms in your team space (Slack, Notion, physical wall)</li>
-                        <li><strong>Reference them:</strong> "Remember our norm—disagreement is expected here"</li>
-                        <li><strong>Update regularly:</strong> Revisit quarterly. What's working? What's not?</li>
-                        <li><strong>Model them:</strong> Leaders must visibly follow the norms (especially #2: inviting disagreement)</li>
-                    </ol>
-                </div>
-
-                <div class="lesson-section">
-                    <h3>💡 Key Takeaways</h3>
-                    <ul>
-                        <li>Implicit norms default to conflict avoidance; explicit norms enable productive conflict</li>
-                        <li>The Conflict Norms Canvas creates clarity around purpose, invitation, boundaries, resolution, commitment, and repair</li>
-                        <li>Co-create norms with the team; don't impose them top-down</li>
-                    </ul>
-                </div>
-
-                <div class="practice-box">
-                    <h4>✨ Practice Exercise</h4>
-                    <p>
-                        <strong>This week:</strong> Schedule a 60-minute team session to create your Conflict Norms Canvas.
-                    </p>
-                    <p><strong>Agenda:</strong></p>
-                    <ol>
-                        <li>Intro (5 min): Why explicit conflict norms matter</li>
-                        <li>Canvas creation (40 min): Work through each element as a group</li>
-                        <li>Commitment (10 min): Everyone signs off on the norms</li>
-                        <li>Documentation (5 min): Post norms where everyone can see them</li>
-                    </ol>
-                    <p>Follow up in 2 weeks: "How are our conflict norms working?"</p>
-                </div>
-
-                <div style="margin-top: 30px;">
-                    <button class="btn btn-primary" onclick="completeLesson(4)">
-                        Mark Complete <span class="xp-badge">+25 XP</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Summary Dashboard -->
-        <div class="progress-section" style="margin-top: 40px;">
-            <h2 style="color: #1a365d; margin-bottom: 10px;">📊 Stripe 3 Summary</h2>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="stat-value" id="summaryComplete">0/4</span>
-                    <span class="stat-label">Lessons Completed</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="summaryStatus">0%</span>
-                    <span class="stat-label">Progress</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="summaryXP">0</span>
-                    <span class="stat-label">Total XP</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-value" id="summaryBadges">In Progress</span>
-                    <span class="stat-label">Stripe Status</span>
-                </div>
-            </div>
-        </div>
-
-        <div style="text-align: center; margin: 40px 0;">
-            <a href="learning-hub.html" style="color: white; text-decoration: none; font-weight: 600; background: rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 10px; display: inline-block;">
-                ← Back to Learning Hub
-            </a>
-        </div>
-    </div>
-
-    <!-- Achievement Popup -->
-    <div class="achievement-popup" id="achievementPopup">
-        <div class="achievement-header">
-            <div class="achievement-icon">🏆</div>
-            <div class="achievement-text">
-                <h4 id="achievementTitle">Lesson Complete!</h4>
-                <p id="achievementDesc">You're mastering conflict facilitation</p>
-            </div>
-        </div>
-        <div class="achievement-xp" id="achievementXP">+25 XP</div>
     </div>
 
     <script>
-        const STORAGE_KEY = 'bluebeltStripe3Completed';
-        const XP_KEY = 'bluebeltStripe3ModuleXP';
-        const TOTAL_LESSONS = 4; // All 4 lessons available
-        const XP_PER_LESSON = 25;
-        const MODULE_BONUS_XP = 100;
+        let currentSection = 1;
+        const totalSections = 6;
 
-        function initModule() {
-            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            completed.forEach(lessonNum => {
-                markLessonAsComplete(lessonNum, false);
+        function nextSection() {
+            if (currentSection < totalSections) {
+                document.getElementById(`section-${currentSection}`).classList.remove('active');
+                currentSection++;
+                document.getElementById(`section-${currentSection}`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function prevSection() {
+            if (currentSection > 1) {
+                document.getElementById(`section-${currentSection}`).classList.remove('active');
+                currentSection--;
+                document.getElementById(`section-${currentSection}`).classList.add('active');
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentSection - 1) / (totalSections - 1)) * 100;
+            document.getElementById('progress-fill').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = `${Math.round(progress)}%`;
+        }
+
+        function showResults() {
+            localStorage.setItem('blueBeltStripe3Complete', 'true');
+
+            const fields = ['feedback-give', 'feedback-avoidance', 'feedback-ask'];
+            fields.forEach(field => {
+                const el = document.getElementById(field);
+                if (el && el.value) {
+                    localStorage.setItem(`feedback_${field}`, el.value);
+                }
             });
-            updateAllStats();
+
+            nextSection();
         }
 
-        function toggleLesson(lessonId) {
-            const body = document.getElementById(lessonId);
-            body.classList.toggle('active');
-        }
-
-        function completeLesson(lessonNum) {
-            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            
-            if (completed.includes(lessonNum)) {
-                showAchievement('Already Complete!', 'You completed this lesson already');
-                return;
-            }
-
-            completed.push(lessonNum);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-
-            let moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
-            moduleXP += XP_PER_LESSON;
-            
-            if (completed.length === TOTAL_LESSONS) {
-                moduleXP += MODULE_BONUS_XP;
-                localStorage.setItem(XP_KEY, moduleXP);
-                
-                const stripesEarned = JSON.parse(localStorage.getItem('blueStripesEarned') || '[]');
-                if (!stripesEarned.includes(3)) {
-                    stripesEarned.push(3);
-                    localStorage.setItem('blueStripesEarned', JSON.stringify(stripesEarned));
-                }
-                
-                markLessonAsComplete(lessonNum, true);
-                updateAllStats();
-                showAchievement('Stripe 3 Complete! 🔵', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
-            } else {
-                localStorage.setItem(XP_KEY, moduleXP);
-                markLessonAsComplete(lessonNum, true);
-                updateAllStats();
-                showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
-            }
-        }
-
-        function markLessonAsComplete(lessonNum, showBadge) {
-            const status = document.getElementById(`status${lessonNum}`);
-            const badge = document.getElementById(`badge${lessonNum}`);
-            const lessonBody = document.getElementById(`lesson${lessonNum}`);
-            
-            lessonBody.classList.add('active');
-            status.textContent = '✓ Done';
-            status.style.background = '#10b981';
-            
-            if (showBadge) {
-                badge.classList.add('show');
-            }
-        }
-
-        function updateAllStats() {
-            const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-            const moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
-            const percentage = (completed.length / TOTAL_LESSONS) * 100;
-            const stripeEarned = completed.length >= TOTAL_LESSONS ? 1 : 0;
-
-            document.getElementById('xpDisplay').textContent = moduleXP;
-            document.getElementById('streakDisplay').textContent = completed.length;
-            document.getElementById('badgesDisplay').textContent = stripeEarned + '/1';
-            document.getElementById('progressFill').style.width = percentage + '%';
-            document.getElementById('progressText').textContent = `${completed.length} of ${TOTAL_LESSONS} lessons completed`;
-            document.getElementById('summaryComplete').textContent = `${completed.length}/${TOTAL_LESSONS}`;
-            document.getElementById('summaryStatus').textContent = Math.round(percentage) + '%';
-            document.getElementById('summaryXP').textContent = moduleXP;
-            document.getElementById('summaryBadges').textContent = stripeEarned ? '✓ Earned' : 'In Progress';
-        }
-
-        function showAchievement(title, desc) {
-            const popup = document.getElementById('achievementPopup');
-            document.getElementById('achievementTitle').textContent = title;
-            document.getElementById('achievementDesc').textContent = desc;
-            
-            if (title.includes('Stripe')) {
-                document.getElementById('achievementXP').textContent = `+${XP_PER_LESSON + MODULE_BONUS_XP} XP!`;
-            } else if (title.includes('Already')) {
-                document.getElementById('achievementXP').textContent = 'No XP';
-            } else {
-                document.getElementById('achievementXP').textContent = `+${XP_PER_LESSON} XP`;
-            }
-
-            popup.classList.add('show');
-            setTimeout(() => popup.classList.remove('show'), 4000);
-        }
-
-        const APP_VERSION = '2024-11-24-v2';
-        function checkVersion() {
-            const cachedVersion = localStorage.getItem('appVersion');
-            if (cachedVersion && cachedVersion !== APP_VERSION) {
-                localStorage.setItem('appVersion', APP_VERSION);
-                if (!sessionStorage.getItem('hasReloaded')) {
-                    sessionStorage.setItem('hasReloaded', 'true');
-                    window.location.reload(true);
-                }
-            } else {
-                localStorage.setItem('appVersion', APP_VERSION);
-            }
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            checkVersion();
-            initModule();
-        });
+        updateProgress();
     </script>
 </body>
 </html>
