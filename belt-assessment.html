@@ -396,6 +396,141 @@
             transform: translateY(-3px);
         }
         
+        .btn-tap {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-tap:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+        }
+        
+        /* Modal */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .tap-out-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        
+        .tap-out-option {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 30px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .tap-out-option:hover {
+            border-color: #1a365d;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(26, 54, 93, 0.2);
+        }
+        
+        .tap-out-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+        
+        .tap-out-option h3 {
+            color: #1a365d;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .tap-out-option p {
+            color: #64748b;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .belt-selector-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .belt-selector-card {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .belt-selector-card:hover {
+            border-color: #1a365d;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(26, 54, 93, 0.2);
+        }
+        
+        .belt-selector-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .belt-selector-card h3 {
+            color: #1a365d;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+        
+        .belt-selector-card p {
+            color: #64748b;
+            font-size: 0.85em;
+        }
+        
         /* Results Screen */
         .results-content { 
             text-align: center; 
@@ -706,6 +841,77 @@
             <div class="nav-buttons">
                 <button class="btn-secondary" onclick="previousQuestion()" id="prevBtn">← Previous</button>
                 <button class="btn-primary" onclick="nextQuestion()" id="nextBtn" disabled>Next →</button>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn-tap" onclick="showTapModal()">🥋 Tap</button>
+                <p style="color: #64748b; font-size: 0.9em; margin-top: 10px;">Ready to start training? Or need a break?</p>
+            </div>
+        </div>
+        
+        <!-- Tap Modal -->
+        <div class="modal" id="tapModal" style="display: none;">
+            <div class="modal-content">
+                <h2 style="color: #1a365d; margin-bottom: 10px;">🥋 Tap?</h2>
+                <p style="color: #64748b; margin-bottom: 30px;">Choose your next move:</p>
+                
+                <div class="tap-out-options">
+                    <div class="tap-out-option" onclick="showBeltSelector()">
+                        <div class="tap-out-icon">🎯</div>
+                        <h3>Tap → Start Training</h3>
+                        <p>Stop the assessment and jump to a belt level to start learning</p>
+                    </div>
+                    
+                    <div class="tap-out-option" onclick="tapOutToGym()">
+                        <div class="tap-out-icon">💾</div>
+                        <h3>Tap Out → Back to Gym</h3>
+                        <p>Save progress and return to the main hub</p>
+                    </div>
+                </div>
+                
+                <button class="btn-secondary" onclick="closeTapModal()" style="margin-top: 20px;">← Back to Assessment</button>
+            </div>
+        </div>
+        
+        <!-- Belt Selector Modal -->
+        <div class="modal" id="beltSelectorModal" style="display: none;">
+            <div class="modal-content">
+                <h2 style="color: #1a365d; margin-bottom: 10px;">🥋 Choose Your Starting Belt</h2>
+                <p style="color: #64748b; margin-bottom: 30px;">Pick the belt you want to start training with:</p>
+                
+                <div class="belt-selector-grid">
+                    <div class="belt-selector-card" onclick="tapToBelt('white-belt.html')">
+                        <div class="belt-selector-icon">⚪</div>
+                        <h3>White Belt</h3>
+                        <p>Trust & Vulnerability</p>
+                    </div>
+                    
+                    <div class="belt-selector-card" onclick="tapToBelt('blue-belt.html')">
+                        <div class="belt-selector-icon">🔵</div>
+                        <h3>Blue Belt</h3>
+                        <p>Healthy Conflict</p>
+                    </div>
+                    
+                    <div class="belt-selector-card" onclick="tapToBelt('purple-belt.html')">
+                        <div class="belt-selector-icon">🟣</div>
+                        <h3>Purple Belt</h3>
+                        <p>Commitment & Buy-in</p>
+                    </div>
+                    
+                    <div class="belt-selector-card" onclick="tapToBelt('brown-belt.html')">
+                        <div class="belt-selector-icon">🟤</div>
+                        <h3>Brown Belt</h3>
+                        <p>Accountability</p>
+                    </div>
+                    
+                    <div class="belt-selector-card" onclick="tapToBelt('black-belt.html')">
+                        <div class="belt-selector-icon">⚫</div>
+                        <h3>Black Belt</h3>
+                        <p>Results Focus</p>
+                    </div>
+                </div>
+                
+                <button class="btn-secondary" onclick="closeBeltSelector()" style="margin-top: 20px;">← Back</button>
             </div>
         </div>
 
@@ -1294,20 +1500,142 @@
                 ]
             },
 
-            // BLACK BELT - RESULTS (8 questions)
-            { id: 33, section: 'results', text: 'When your personal goals conflict with team goals, what do you prioritize?', scale: ['Always my goals first', 'Usually personal goals', 'Depends on the situation', 'Usually team goals', 'Always team goals'] },
-            { id: 34, section: 'results', text: 'How do you measure success?', scale: ['My individual metrics', 'Mostly personal achievement', 'Mix of personal and team', 'Mostly team outcomes', 'Purely team results'] },
-            { id: 35, section: 'results', text: 'When the team succeeds but you didn\'t contribute much, how do you feel?', scale: ['Disappointed I wasn\'t central', 'Slightly left out', 'Neutral about it', 'Happy for the team', 'Genuinely celebrate team win'] },
-            { id: 36, section: 'results', text: 'How willing are you to sacrifice your project for a higher team priority?', scale: ['Very resistant', 'Reluctant but compliant', 'Will do it if necessary', 'Willing to shift', 'Immediately reallocate'] },
-            { id: 37, section: 'results', text: 'When discussing success, do you use "I" or "we"?', scale: ['Almost always "I"', 'Mostly "I"', 'Mix of both', 'Mostly "we"', 'Always "we"'] },
-            { id: 38, section: 'results', text: 'How do you react when a teammate gets recognition you feel you deserved?', scale: ['Resentful and bitter', 'Disappointed internally', 'Neutral acceptance', 'Happy for them', 'Genuinely celebrate their win'] },
-            { id: 39, section: 'results', text: 'What\'s your team\'s most important metric or goal?', scale: ['No idea', 'Vaguely aware', 'Know it but not focused on it', 'Clear and track it', 'Obsessed with it daily'] },
-            { id: 40, section: 'results', text: 'When you have to choose between looking good and the team winning, which do you pick?', scale: ['Looking good', 'Usually personal image', 'Depends on stakes', 'Usually team winning', 'Always team winning'] }
+            // BLACK BELT - RESULTS/OUTCOMES (10 questions)
+            {
+                id: 41,
+                section: 'black',
+                type: 'scenario',
+                text: 'Your personal goal conflicts with what would create the best outcome. What do you prioritize?',
+                scale: [
+                    'Always my goal—I worked hard for this',
+                    'Usually prioritize my goals',
+                    'Depends on the stakes',
+                    'Usually prioritize the better outcome',
+                    'Always prioritize the outcome over my ego'
+                ]
+            },
+            {
+                id: 42,
+                section: 'black',
+                type: 'scale',
+                text: 'How do you measure your own success?',
+                scale: [
+                    'My individual metrics and achievements',
+                    'Mostly personal accomplishments',
+                    'Mix of personal and collective impact',
+                    'Mostly collective outcomes',
+                    'Purely by collective results—did we win?'
+                ]
+            },
+            {
+                id: 43,
+                section: 'black',
+                type: 'binary',
+                text: 'The group succeeds, but you didn\'t contribute much. How do you feel?',
+                scale: [
+                    'Disappointed—I wasn\'t central to the win',
+                    'Slightly left out or diminished',
+                    'Neutral—a win is a win',
+                    'Happy for everyone',
+                    'Genuinely celebrate—the outcome is what matters'
+                ]
+            },
+            {
+                id: 44,
+                section: 'black',
+                type: 'scenario',
+                text: 'You\'re asked to drop your project for something more impactful. What\'s your reaction?',
+                scale: [
+                    'Very resistant—I\'ve invested too much',
+                    'Reluctant but eventually comply',
+                    'Willing if truly necessary',
+                    'Readily shift priorities',
+                    'Immediately reallocate—impact > attachment'
+                ]
+            },
+            {
+                id: 45,
+                section: 'black',
+                type: 'scale',
+                text: 'When discussing success, do you say "I" or "we"?',
+                scale: [
+                    'Almost always "I"—I own my wins',
+                    'Mostly "I" with some "we"',
+                    'Mix of both',
+                    'Mostly "we"—credit the collective',
+                    'Always "we"—even when it was mostly me'
+                ]
+            },
+            {
+                id: 46,
+                section: 'black',
+                type: 'binary',
+                text: 'A colleague gets recognition for work you feel you deserved credit for. What\'s your reaction?',
+                scale: [
+                    'Resentful—I deserved that recognition',
+                    'Disappointed and frustrated internally',
+                    'Neutral—these things happen',
+                    'Happy for them',
+                    'Genuinely celebrate their recognition'
+                ]
+            },
+            {
+                id: 47,
+                section: 'black',
+                type: 'scale',
+                text: 'Can you name the most important metric or goal for your team/organization right now?',
+                scale: [
+                    'No idea what it is',
+                    'Vaguely aware of it',
+                    'Know it but not focused on it',
+                    'Clear and actively track it',
+                    'Obsessed with it—check it daily'
+                ]
+            },
+            {
+                id: 48,
+                section: 'black',
+                type: 'scenario',
+                text: 'You have to choose: look good personally or achieve the best outcome. Which do you pick?',
+                scale: [
+                    'Looking good—reputation matters most',
+                    'Usually protect my image',
+                    'Depends on the situation',
+                    'Usually choose the outcome',
+                    'Always choose the outcome over ego'
+                ]
+            },
+            {
+                id: 49,
+                section: 'black',
+                type: 'binary',
+                text: 'How often do you check: "Did my work today move us toward the goal?"',
+                scale: [
+                    'Never—I just do my job',
+                    'Rarely think about it',
+                    'Sometimes reflect on it',
+                    'Often ask myself this',
+                    'Every single day—it\'s my filter'
+                ]
+            },
+            {
+                id: 50,
+                section: 'black',
+                type: 'scale',
+                text: 'When the outcome is achieved, how much credit do you need?',
+                scale: [
+                    'Need clear attribution to my contribution',
+                    'Want recognition for my part',
+                    'Neutral—some acknowledgment is nice',
+                    'Don\'t need much credit',
+                    'Need zero credit—the outcome is the reward'
+                ]
+            }
         ];
 
         let currentQuestion = 0;
         let answers = {};
-        let sectionScores = { trust: 0, conflict: 0, commitment: 0, accountability: 0, results: 0 };
+        let sectionScores = { white: 0, blue: 0, purple: 0, brown: 0, black: 0, trust: 0, conflict: 0, commitment: 0, accountability: 0, results: 0 };
 
         function startAssessment() {
             currentQuestion = 0;
@@ -1452,6 +1780,47 @@
                 currentQuestion--;
                 showQuestion();
             }
+        }
+        
+        // Tap functionality
+        function showTapModal() {
+            document.getElementById('tapModal').style.display = 'flex';
+        }
+        
+        function closeTapModal() {
+            document.getElementById('tapModal').style.display = 'none';
+        }
+        
+        function showBeltSelector() {
+            closeTapModal();
+            document.getElementById('beltSelectorModal').style.display = 'flex';
+        }
+        
+        function closeBeltSelector() {
+            document.getElementById('beltSelectorModal').style.display = 'none';
+            showTapModal();
+        }
+        
+        function tapToBelt(beltFile) {
+            // Save that user completed assessment
+            localStorage.setItem('assessmentCompleted', 'partial');
+            localStorage.setItem('assessmentAnswers', JSON.stringify(answers));
+            localStorage.setItem('assessmentProgress', currentQuestion);
+            
+            // Unlock all belts since they've tapped to one
+            localStorage.setItem('beltsUnlocked', 'true');
+            
+            // Navigate to the belt they chose
+            window.location.href = beltFile;
+        }
+        
+        function tapOutToGym() {
+            // Save progress
+            localStorage.setItem('assessmentAnswers', JSON.stringify(answers));
+            localStorage.setItem('assessmentProgress', currentQuestion);
+            
+            // Return to main page
+            window.location.href = 'index.html';
         }
 
         function calculateResults() {
@@ -1645,15 +2014,17 @@
             };
             localStorage.setItem('beltAssessment', JSON.stringify(resultsData));
             
-            // Save to global gamification
+            // Save to global gamification and UNLOCK ALL BELTS
             const gamification = JSON.parse(localStorage.getItem('gamification') || '{"xp": 0, "level": 1, "achievements": []}');
             gamification.xp = (gamification.xp || 0) + 500;
             gamification.completedBeltAssessment = true;
-            gamification.unlockedBelts = gamification.unlockedBelts || [];
-            if (!gamification.unlockedBelts.includes(belt)) {
-                gamification.unlockedBelts.push(belt);
-            }
+            
+            // Unlock ALL belts when assessment is complete
+            gamification.unlockedBelts = ['white', 'blue', 'purple', 'brown', 'black'];
             localStorage.setItem('gamification', JSON.stringify(gamification));
+            
+            // Mark belts as unlocked globally
+            localStorage.setItem('beltsUnlocked', 'true');
             
             // Show results screen
             document.getElementById('screen-questions').classList.remove('active');
