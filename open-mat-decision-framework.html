@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Decision-Making Framework | TAP-IN Open Mat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-navy: #1a365d;
+            --navy-light: #2d4a7c;
+            --dark-bg: #0a0a0a;
+            --dark-bg-2: #1a1a1a;
+            --card-bg: #141414;
+            --border-subtle: #2d2d2d;
+            --text-white: #ffffff;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --accent-gold: #f6e05e;
+            --accent-red: #b91c1c;
+            --success-green: #38a169;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            line-height: 1.7;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-white);
+        }
+
+        .xp-badge {
+            background: var(--accent-gold);
+            color: var(--dark-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .exercise-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .exercise-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .exercise-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--border-subtle);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .meta-badge.framework {
+            background: var(--primary-navy);
+            color: white;
+        }
+
+        .exercise-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .exercise-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .content-section p {
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .decision-input {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 2px solid var(--accent-gold);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+        }
+
+        .decision-label {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+
+        textarea, input[type="text"] {
+            width: 100%;
+            background: var(--dark-bg);
+            border: 1px solid var(--border-subtle);
+            color: var(--text-white);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            line-height: 1.6;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary-navy);
+        }
+
+        .framework-section {
+            background: var(--card-bg);
+            border-left: 4px solid var(--primary-navy);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .framework-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: var(--text-white);
+        }
+
+        .question-block {
+            margin-bottom: 2rem;
+        }
+
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-white);
+        }
+
+        .question-helper {
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+            font-style: italic;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .score-card {
+            background: rgba(26, 54, 93, 0.3);
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid var(--border-subtle);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .clarity-meter {
+            margin-top: 3rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 100%);
+            border: 2px solid var(--accent-gold);
+            border-radius: 16px;
+        }
+
+        .meter-title {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--accent-gold);
+        }
+
+        .meter-bar {
+            width: 100%;
+            height: 40px;
+            background: var(--border-subtle);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .meter-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-red) 0%, var(--accent-gold) 50%, var(--success-green) 100%);
+            width: 0%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 1rem;
+            color: white;
+            font-weight: 700;
+        }
+
+        .meter-recommendation {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: rgba(26, 54, 93, 0.3);
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .recommendation-emoji {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .recommendation-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            border: none;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .btn-analyze {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--navy-light) 100%);
+            color: white;
+        }
+
+        .btn-complete {
+            background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .tips-box {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 100%);
+            border: 1px solid #4a3030;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .tips-title {
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .score-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="gym-dashboard.html" class="back-link">← Back to GYM</a>
+            <div class="xp-badge">+20 XP</div>
+        </div>
+    </header>
+
+    <div class="exercise-container">
+        <header class="exercise-header">
+            <div class="exercise-meta">
+                <span class="meta-badge framework">Framework</span>
+                <span class="meta-badge">🎯 Exercise</span>
+                <span class="meta-badge">⏱️ 15 min</span>
+                <span class="meta-badge">💼 Blue Belt+</span>
+            </div>
+            <h1 class="exercise-title">Decision-Making Framework</h1>
+            <p class="exercise-subtitle">Stop spinning — get clarity on hard choices</p>
+        </header>
+
+        <!-- Intro -->
+        <section class="content-section">
+            <h2>When to Use This</h2>
+            <p>Use this framework for <strong>big, unclear decisions</strong>:</p>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li>Should I take this job offer?</li>
+                <li>Should I start this business?</li>
+                <li>Should I move cities?</li>
+                <li>Should I end this relationship?</li>
+                <li>Should I pursue this opportunity?</li>
+            </ul>
+            <p style="margin-top: 1.5rem;"><strong>Don't use it for:</strong> Routine decisions, choices you've already made emotionally (you're just seeking validation), or things that don't matter.</p>
+        </section>
+
+        <!-- Decision Input -->
+        <div class="decision-input">
+            <div class="decision-label">What decision are you facing?</div>
+            <input type="text" id="decision" placeholder="e.g., Should I quit my job to start a business?">
+        </div>
+
+        <!-- Framework Questions -->
+        <div class="framework-section">
+            <div class="framework-title">1. Regret Minimization (10-10-10)</div>
+            
+            <div class="question-block">
+                <div class="question-text">How will you feel about this decision in 10 minutes?</div>
+                <textarea id="tenMinutes" placeholder="Your immediate reaction..."></textarea>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">How will you feel about this decision in 10 months?</div>
+                <textarea id="tenMonths" placeholder="Medium-term consequences..."></textarea>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">How will you feel about this decision in 10 years?</div>
+                <div class="question-helper">This is where clarity lives. What does your 10-year-older self want you to do?</div>
+                <textarea id="tenYears" placeholder="Long-term perspective..."></textarea>
+            </div>
+        </div>
+
+        <div class="framework-section">
+            <div class="framework-title">2. Second-Order Thinking</div>
+            
+            <div class="question-block">
+                <div class="question-text">If you say YES, what happens next? And then what?</div>
+                <div class="question-helper">Don't just think one move ahead. Play the tape forward 3-5 moves.</div>
+                <textarea id="yesConsequences" placeholder="If I say yes... then... and then..."></textarea>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">If you say NO, what happens next? And then what?</div>
+                <textarea id="noConsequences" placeholder="If I say no... then... and then..."></textarea>
+            </div>
+        </div>
+
+        <div class="framework-section">
+            <div class="framework-title">3. Values Alignment</div>
+            
+            <div class="question-block">
+                <div class="question-text">What are your top 3 values right now?</div>
+                <div class="question-helper">e.g., Freedom, Growth, Family, Impact, Security, Adventure...</div>
+                <textarea id="values" class="short" placeholder="1. 
+2. 
+3."></textarea>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">Which option better aligns with those values?</div>
+                <textarea id="alignment" class="short"></textarea>
+            </div>
+        </div>
+
+        <div class="framework-section">
+            <div class="framework-title">4. Fear vs Intuition Test</div>
+            
+            <div class="question-block">
+                <div class="question-text">Are you leaning toward this choice because it excites you, or because you're afraid of the alternative?</div>
+                <textarea id="fearTest" class="short"></textarea>
+            </div>
+
+            <div class="question-block">
+                <div class="question-text">What would you do if you weren't afraid?</div>
+                <textarea id="noFear" class="short"></textarea>
+            </div>
+        </div>
+
+        <!-- Analyze Button -->
+        <button class="btn btn-analyze" onclick="analyzeDecision()">🧠 Analyze My Decision</button>
+
+        <!-- Results (hidden until analyzed) -->
+        <div class="clarity-meter" id="results" style="display: none;">
+            <div class="meter-title">Clarity Score</div>
+            <div class="meter-bar">
+                <div class="meter-fill" id="clarityFill">0%</div>
+            </div>
+            <div class="meter-recommendation" id="recommendation"></div>
+        </div>
+
+        <!-- Tips -->
+        <div class="tips-box">
+            <div class="tips-title">💡 Decision-Making Principles</div>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li><strong>Reversible vs Irreversible:</strong> If it's reversible, decide fast. If it's irreversible, take your time.</li>
+                <li><strong>Opportunity cost:</strong> Saying yes to this means saying no to something else. What are you giving up?</li>
+                <li><strong>The rule of hell yeah or no:</strong> If it's not a "hell yeah," it's a no. (Use for non-essential commitments.)</li>
+                <li><strong>Advice from future you:</strong> Imagine you're 80 years old. What would you tell yourself to do?</li>
+                <li><strong>Sleep on it:</strong> Big decisions deserve overnight processing. Your subconscious is smarter than you think.</li>
+            </ul>
+        </div>
+
+        <!-- Complete -->
+        <button class="btn btn-complete" onclick="markComplete()">✓ Save & Earn XP</button>
+    </div>
+
+    <script>
+        function analyzeDecision() {
+            const fields = [
+                'decision', 'tenMinutes', 'tenMonths', 'tenYears',
+                'yesConsequences', 'noConsequences', 'values', 'alignment',
+                'fearTest', 'noFear'
+            ];
+            
+            // Calculate completion
+            let filled = 0;
+            fields.forEach(field => {
+                if (document.getElementById(field).value.trim()) filled++;
+            });
+            
+            const clarityScore = Math.round((filled / fields.length) * 100);
+            
+            // Show results
+            const results = document.getElementById('results');
+            const fill = document.getElementById('clarityFill');
+            const recommendation = document.getElementById('recommendation');
+            
+            results.style.display = 'block';
+            fill.style.width = `${clarityScore}%`;
+            fill.textContent = `${clarityScore}%`;
+            
+            // Generate recommendation
+            let emoji, text;
+            if (clarityScore >= 80) {
+                emoji = '🎯';
+                text = 'HIGH CLARITY: You\'ve done the work. Trust your analysis. The answer is probably already clear to you.';
+            } else if (clarityScore >= 50) {
+                emoji = '🤔';
+                text = 'MODERATE CLARITY: Keep thinking. The questions you skipped might hold the answer. Revisit them.';
+            } else {
+                emoji = '⚠️';
+                text = 'LOW CLARITY: You need more data. Talk to people who\'ve made this choice. Sleep on it. Don\'t rush.';
+            }
+            
+            recommendation.innerHTML = `
+                <div class="recommendation-emoji">${emoji}</div>
+                <div class="recommendation-text">${text}</div>
+            `;
+            
+            // Save analysis
+            const analysisData = {
+                date: new Date().toISOString(),
+                clarityScore: clarityScore,
+                ...Object.fromEntries(fields.map(f => [f, document.getElementById(f).value]))
+            };
+            
+            const decisions = JSON.parse(localStorage.getItem('tapinDecisions') || '[]');
+            decisions.unshift(analysisData);
+            localStorage.setItem('tapinDecisions', JSON.stringify(decisions.slice(0, 20)));
+            
+            // Scroll to results
+            results.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        function markComplete() {
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            const decisionKey = `decision-framework-${Date.now()}`;
+            
+            completedContent.push(decisionKey);
+            localStorage.setItem('tapinOpenMatCompleted', JSON.stringify(completedContent));
+            
+            const currentXP = parseInt(localStorage.getItem('tapinTotalXP') || '0');
+            localStorage.setItem('tapinTotalXP', currentXP + 20);
+            
+            const activity = {
+                type: 'open_mat_complete',
+                title: 'Decision-Making Framework',
+                xp: 20,
+                timestamp: new Date().toISOString()
+            };
+            const activityLog = JSON.parse(localStorage.getItem('tapinActivityLog') || '[]');
+            activityLog.unshift(activity);
+            localStorage.setItem('tapinActivityLog', JSON.stringify(activityLog.slice(0, 50)));
+            
+            alert('Decision framework complete! You earned 20 XP. 🎯');
+            
+            // Clear form
+            document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+            document.getElementById('results').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

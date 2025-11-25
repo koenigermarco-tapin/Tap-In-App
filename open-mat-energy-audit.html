@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Energy Audit Exercise | TAP-IN Open Mat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-navy: #1a365d;
+            --navy-light: #2d4a7c;
+            --dark-bg: #0a0a0a;
+            --dark-bg-2: #1a1a1a;
+            --card-bg: #141414;
+            --border-subtle: #2d2d2d;
+            --text-white: #ffffff;
+            --text-muted: #a0aec0;
+            --text-dim: #718096;
+            --accent-gold: #f6e05e;
+            --accent-red: #b91c1c;
+            --success-green: #38a169;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-white);
+            line-height: 1.7;
+        }
+
+        .header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-subtle);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: var(--text-white);
+        }
+
+        .xp-badge {
+            background: var(--accent-gold);
+            color: var(--dark-bg);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .exercise-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .exercise-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-subtle);
+        }
+
+        .exercise-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .meta-badge {
+            background: var(--border-subtle);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .meta-badge.insights {
+            background: var(--primary-navy);
+            color: white;
+        }
+
+        .exercise-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+
+        .exercise-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+        }
+
+        .content-section {
+            margin-bottom: 3rem;
+        }
+
+        .content-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+        }
+
+        .content-section p {
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        /* Audit Grid */
+        .audit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .time-slot {
+            background: var(--card-bg);
+            border: 2px solid var(--border-subtle);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .time-slot:hover {
+            border-color: var(--primary-navy);
+        }
+
+        .time-slot.selected {
+            border-color: var(--accent-gold);
+            background: rgba(246, 224, 94, 0.1);
+        }
+
+        .time-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-white);
+        }
+
+        .energy-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .energy-btn {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .energy-btn.high {
+            background: var(--success-green);
+            color: white;
+        }
+
+        .energy-btn.medium {
+            background: var(--accent-gold);
+            color: var(--dark-bg);
+        }
+
+        .energy-btn.low {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        .energy-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .energy-btn.selected {
+            box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Chart */
+        .chart-container {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 1px solid #2d3748;
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 3rem 0;
+        }
+
+        .chart-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 300px;
+            border-bottom: 2px solid var(--border-subtle);
+            border-left: 2px solid var(--border-subtle);
+            padding: 1rem;
+            gap: 0.5rem;
+        }
+
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, var(--accent-gold) 0%, var(--primary-navy) 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.5s;
+            min-height: 20px;
+        }
+
+        .chart-bar.high {
+            background: linear-gradient(180deg, var(--success-green) 0%, #2f855a 100%);
+        }
+
+        .chart-bar.medium {
+            background: linear-gradient(180deg, var(--accent-gold) 0%, #d69e2e 100%);
+        }
+
+        .chart-bar.low {
+            background: linear-gradient(180deg, var(--accent-red) 0%, #991b1b 100%);
+        }
+
+        .chart-label {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Insights */
+        .insights-box {
+            background: var(--card-bg);
+            border: 2px solid var(--primary-navy);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        .insights-box h3 {
+            color: var(--accent-gold);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .insight-item {
+            background: rgba(26, 54, 93, 0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--accent-gold);
+        }
+
+        .insight-title {
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .insight-text {
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .completion-section {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--border-subtle);
+        }
+
+        .complete-button {
+            background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .complete-button:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .audit-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .chart {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="gym-dashboard.html" class="back-link">← Back to GYM</a>
+            <div class="xp-badge">+25 XP</div>
+        </div>
+    </header>
+
+    <div class="exercise-container">
+        <header class="exercise-header">
+            <div class="exercise-meta">
+                <span class="meta-badge insights">Insights</span>
+                <span class="meta-badge">📊 Exercise</span>
+                <span class="meta-badge">⏱️ 10 min</span>
+                <span class="meta-badge">🎯 All Belts</span>
+            </div>
+            <h1 class="exercise-title">Energy Audit Exercise</h1>
+            <p class="exercise-subtitle">Track your energy patterns to optimize when you do what</p>
+        </header>
+
+        <!-- Why This Works -->
+        <section class="content-section">
+            <h2>Why This Works</h2>
+            <p>Most people manage their time. High performers manage their <strong>energy</strong>.</p>
+            
+            <p>You have roughly 3-4 hours of peak cognitive energy per day. The question is: are you using them on what matters, or wasting them on email and meetings?</p>
+
+            <p><strong>This audit shows you:</strong></p>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li>When you're sharpest (schedule deep work here)</li>
+                <li>When you're drained (batch admin tasks here)</li>
+                <li>Patterns you can't see without tracking</li>
+            </ul>
+
+            <p style="margin-top: 1.5rem;">Once you know your rhythm, you can design your day around it instead of fighting it.</p>
+        </section>
+
+        <!-- The Audit -->
+        <section class="content-section">
+            <h2>Rate Your Energy</h2>
+            <p>For each 2-hour block, rate your typical energy level. Be honest — this is about patterns, not what you wish was true.</p>
+        </section>
+
+        <div class="audit-grid" id="auditGrid">
+            <!-- Will be populated by JS -->
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <div class="chart-title">Your Energy Map</div>
+            <div class="chart" id="chart"></div>
+        </div>
+
+        <!-- Insights -->
+        <div class="insights-box" id="insightsBox" style="display: none;">
+            <h3>💡 Your Insights</h3>
+            <div id="insights"></div>
+        </div>
+
+        <!-- What To Do -->
+        <section class="content-section">
+            <h2>How to Use This</h2>
+            <p><strong>Schedule strategically:</strong></p>
+            <ul style="margin-left: 1.5rem; color: var(--text-muted);">
+                <li><strong>High energy blocks:</strong> Deep work, creative thinking, important decisions, difficult conversations</li>
+                <li><strong>Medium energy blocks:</strong> Meetings, collaboration, planning, routine work</li>
+                <li><strong>Low energy blocks:</strong> Email, admin, simple tasks, learning (you retain more in low-energy states)</li>
+            </ul>
+
+            <p style="margin-top: 1.5rem;"><strong>Most people get this backwards:</strong> They check email first thing (wasting high energy) and try to do deep work at 3pm (when they're fried).</p>
+        </section>
+
+        <!-- Completion -->
+        <div class="completion-section">
+            <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Complete the audit to earn 25 XP</p>
+            <button class="complete-button" id="completeButton" onclick="markComplete()" disabled>Mark Complete & Earn XP</button>
+        </div>
+    </div>
+
+    <script>
+        const timeSlots = [
+            { label: '6-8am', key: '6am' },
+            { label: '8-10am', key: '8am' },
+            { label: '10am-12pm', key: '10am' },
+            { label: '12-2pm', key: '12pm' },
+            { label: '2-4pm', key: '2pm' },
+            { label: '4-6pm', key: '4pm' },
+            { label: '6-8pm', key: '6pm' },
+            { label: '8-10pm', key: '8pm' }
+        ];
+
+        const energyLevels = {};
+
+        function initAudit() {
+            const grid = document.getElementById('auditGrid');
+            
+            timeSlots.forEach(slot => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot';
+                slotDiv.innerHTML = `
+                    <div class="time-label">${slot.label}</div>
+                    <div class="energy-buttons">
+                        <button class="energy-btn high" onclick="setEnergy('${slot.key}', 'high')">High 🔥</button>
+                        <button class="energy-btn medium" onclick="setEnergy('${slot.key}', 'medium')">Medium ⚡</button>
+                        <button class="energy-btn low" onclick="setEnergy('${slot.key}', 'low')">Low 🪫</button>
+                    </div>
+                `;
+                grid.appendChild(slotDiv);
+            });
+        }
+
+        function setEnergy(timeKey, level) {
+            energyLevels[timeKey] = level;
+            
+            // Update button states
+            const buttons = event.target.parentElement.querySelectorAll('.energy-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            // Check if all slots filled
+            if (Object.keys(energyLevels).length === timeSlots.length) {
+                generateChart();
+                generateInsights();
+                document.getElementById('completeButton').disabled = false;
+            }
+        }
+
+        function generateChart() {
+            const chart = document.getElementById('chart');
+            const container = document.getElementById('chartContainer');
+            chart.innerHTML = '';
+            
+            timeSlots.forEach(slot => {
+                const level = energyLevels[slot.key];
+                const height = level === 'high' ? 100 : level === 'medium' ? 60 : 30;
+                
+                const barContainer = document.createElement('div');
+                barContainer.style.flex = '1';
+                barContainer.style.display = 'flex';
+                barContainer.style.flexDirection = 'column';
+                barContainer.style.alignItems = 'center';
+                
+                const bar = document.createElement('div');
+                bar.className = `chart-bar ${level || ''}`;
+                bar.style.height = `${height}%`;
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = slot.label;
+                
+                barContainer.appendChild(bar);
+                barContainer.appendChild(label);
+                chart.appendChild(barContainer);
+            });
+            
+            container.style.display = 'block';
+        }
+
+        function generateInsights() {
+            const insightsDiv = document.getElementById('insights');
+            const insightsBox = document.getElementById('insightsBox');
+            const insights = [];
+            
+            // Find peak energy time
+            const highEnergySlots = timeSlots.filter(s => energyLevels[s.key] === 'high');
+            if (highEnergySlots.length > 0) {
+                insights.push({
+                    title: '🔥 Your Peak Hours',
+                    text: `You have high energy during ${highEnergySlots.map(s => s.label).join(', ')}. This is your golden time — protect it fiercely. Schedule deep work, creative thinking, or important decisions here. Never waste peak hours on email.`
+                });
+            }
+            
+            // Find afternoon slump
+            const afternoonSlots = ['12pm', '2pm', '4pm'];
+            const afternoonLow = afternoonSlots.filter(key => energyLevels[key] === 'low');
+            if (afternoonLow.length >= 2) {
+                insights.push({
+                    title: '🪫 Afternoon Energy Dip',
+                    text: 'You have a significant afternoon slump. This is normal (circadian rhythm). Instead of fighting it with coffee, lean into it: schedule admin work, emails, or simple tasks. Consider a 20-minute walk or power nap to reset.'
+                });
+            }
+            
+            // Morning energy
+            const morningHigh = ['6am', '8am', '10am'].filter(key => energyLevels[key] === 'high');
+            if (morningHigh.length >= 2) {
+                insights.push({
+                    title: '🌅 Morning Person',
+                    text: `You're a morning person. Your cognitive horsepower peaks before noon. Protect your mornings ruthlessly — no morning meetings if possible. Do your hardest thinking before lunch. Your brain is sharpest when everyone else is still waking up.`
+                });
+            }
+            
+            // Evening energy
+            const eveningHigh = ['6pm', '8pm'].filter(key => energyLevels[key] === 'high');
+            if (eveningHigh.length >= 1) {
+                insights.push({
+                    title: '🦉 Night Owl Tendency',
+                    text: `You have energy in the evening. Consider: if you have morning meetings, you're operating below capacity. Can you shift your day later? Work 10am-6pm instead of 8am-4pm? Or use evenings for side projects and creative work.`
+                });
+            }
+            
+            // If mostly medium
+            const mediumCount = Object.values(energyLevels).filter(v => v === 'medium').length;
+            if (mediumCount >= 5) {
+                insights.push({
+                    title: '⚖️ Steady Energy Profile',
+                    text: `Your energy is relatively steady throughout the day. This is rare and valuable — you're not constrained by dramatic peaks/valleys. Focus on managing decision fatigue instead: tackle your hardest decisions early before willpower depletes.`
+                });
+            }
+            
+            insightsDiv.innerHTML = insights.map(i => `
+                <div class="insight-item">
+                    <div class="insight-title">${i.title}</div>
+                    <div class="insight-text">${i.text}</div>
+                </div>
+            `).join('');
+            
+            insightsBox.style.display = 'block';
+            
+            // Save to localStorage
+            const auditData = {
+                date: new Date().toISOString(),
+                energyLevels: {...energyLevels},
+                insights: insights
+            };
+            localStorage.setItem('tapinEnergyAudit', JSON.stringify(auditData));
+        }
+
+        function markComplete() {
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            if (!completedContent.includes('energy-audit')) {
+                completedContent.push('energy-audit');
+                localStorage.setItem('tapinOpenMatCompleted', JSON.stringify(completedContent));
+                
+                const currentXP = parseInt(localStorage.getItem('tapinTotalXP') || '0');
+                localStorage.setItem('tapinTotalXP', currentXP + 25);
+                
+                const activity = {
+                    type: 'open_mat_complete',
+                    title: 'Energy Audit Exercise',
+                    xp: 25,
+                    timestamp: new Date().toISOString()
+                };
+                const activityLog = JSON.parse(localStorage.getItem('tapinActivityLog') || '[]');
+                activityLog.unshift(activity);
+                localStorage.setItem('tapinActivityLog', JSON.stringify(activityLog.slice(0, 50)));
+                
+                const button = document.getElementById('completeButton');
+                button.textContent = '✓ Complete! (+25 XP)';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    alert('You earned 25 XP! Now use this data to design your ideal day. 📊');
+                }, 300);
+            }
+        }
+
+        // Check if already completed
+        window.addEventListener('DOMContentLoaded', () => {
+            initAudit();
+            
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            if (completedContent.includes('energy-audit')) {
+                const button = document.getElementById('completeButton');
+                button.textContent = '✓ Already Completed';
+                button.disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
