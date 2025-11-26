@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
     <title>Confession Poker - Trust-Building Card Game</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -825,3 +826,685 @@
     </script>
 </body>
 </html>
+=======
+    <title>Confession Poker - Leadership Training Game | Tap-In</title>
+    <meta name="description" content="Build psychological safety by rating and guessing workplace confessions. A free leadership training game from Tap-In Academy.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .game-screen {
+            display: none;
+        }
+
+        .game-screen.active {
+            display: block;
+        }
+
+        /* Setup Screen */
+        .setup-card {
+            background: white;
+            border-radius: 20px;
+            padding: 60px 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .game-logo {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 48px;
+            font-weight: 800;
+            color: #1a365d;
+            margin-bottom: 15px;
+        }
+
+        .game-subtitle {
+            font-size: 18px;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        .player-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .player-tag {
+            background: #dbeafe;
+            color: #1e40af;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .remove-player {
+            cursor: pointer;
+            font-weight: bold;
+            color: #991b1b;
+        }
+
+        .btn {
+            padding: 16px 40px;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Game Play Screen */
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .round-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .round-number {
+            font-size: 16px;
+            color: #64748b;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .active-player {
+            font-size: 32px;
+            font-weight: 800;
+            color: #1a365d;
+        }
+
+        .confession-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 3px solid #f59e0b;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .confession-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: #78350f;
+            line-height: 1.5;
+        }
+
+        .confession-hint {
+            font-size: 14px;
+            color: #92400e;
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        .rating-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .rating-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            border: 3px solid #cbd5e1;
+            background: white;
+            font-size: 32px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .rating-btn:hover {
+            transform: scale(1.1);
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+
+        .rating-btn.selected {
+            background: #2563eb;
+            color: white;
+            border-color: #1e40af;
+        }
+
+        .guess-section {
+            background: #f1f5f9;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .guess-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .guess-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .guess-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+        }
+
+        .guess-name {
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .guess-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .guess-buttons button {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            border: 2px solid #cbd5e1;
+            background: white;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .guess-buttons button:hover {
+            border-color: #2563eb;
+            background: #dbeafe;
+        }
+
+        .guess-buttons button.selected {
+            background: #2563eb;
+            color: white;
+            border-color: #1e40af;
+        }
+
+        /* Results Screen */
+        .results-table {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .results-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .results-table th {
+            background: #1a365d;
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .results-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .results-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .winner-badge {
+            background: #fbbf24;
+            color: #78350f;
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .setup-card, .game-card {
+                padding: 30px 20px;
+            }
+
+            .game-title {
+                font-size: 36px;
+            }
+
+            .rating-buttons {
+                gap: 8px;
+            }
+
+            .rating-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+
+            .confession-text {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="leadership-games.html" class="back-link">← Back to Games</a>
+
+        <!-- Setup Screen -->
+        <div id="setupScreen" class="game-screen active">
+            <div class="setup-card">
+                <div class="game-logo">🃏</div>
+                <h1 class="game-title">Confession Poker</h1>
+                <p class="game-subtitle">Build psychological safety through shared vulnerability</p>
+
+                <div class="input-group">
+                    <label>Add Players (3-8 players recommended)</label>
+                    <input type="text" id="playerInput" placeholder="Enter player name..." onkeypress="if(event.key==='Enter') addPlayer()">
+                    <button onclick="addPlayer()" class="btn btn-primary" style="margin-top: 10px; width: 100%;">Add Player</button>
+                    <div id="playerTags" class="player-tags"></div>
+                </div>
+
+                <button onclick="startGame()" id="startButton" class="btn btn-primary" disabled>
+                    Start Game
+                </button>
+
+                <div style="margin-top: 40px; padding-top: 40px; border-top: 2px solid #e2e8f0;">
+                    <h3 style="font-size: 20px; font-weight: 700; color: #1a365d; margin-bottom: 15px;">How to Play:</h3>
+                    <ol style="text-align: left; color: #475569; line-height: 1.8; padding-left: 20px;">
+                        <li><strong>One player</strong> reads a workplace confession card</li>
+                        <li><strong>Active player</strong> rates themselves 1-5 (how much they've done this)</li>
+                        <li><strong>Others guess</strong> what the active player rated themselves</li>
+                        <li><strong>Reveal & score</strong> - closest guesses earn points!</li>
+                        <li><strong>Rotate</strong> until everyone has been active player</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rating Screen -->
+        <div id="ratingScreen" class="game-screen">
+            <div class="game-card">
+                <div class="round-header">
+                    <div class="round-number" id="roundNumber">Round 1 of X</div>
+                    <div class="active-player" id="activePlayerName">Player Name</div>
+                </div>
+
+                <div class="confession-card">
+                    <div class="confession-text" id="confessionText">Loading confession...</div>
+                    <div class="confession-hint">Rate yourself honestly: 1 = Never, 5 = Always</div>
+                </div>
+
+                <div class="rating-buttons" id="ratingButtons">
+                    <button class="rating-btn" onclick="selectRating(1)">1</button>
+                    <button class="rating-btn" onclick="selectRating(2)">2</button>
+                    <button class="rating-btn" onclick="selectRating(3)">3</button>
+                    <button class="rating-btn" onclick="selectRating(4)">4</button>
+                    <button class="rating-btn" onclick="selectRating(5)">5</button>
+                </div>
+
+                <button onclick="submitRating()" id="submitRating" class="btn btn-primary" style="width: 100%;" disabled>
+                    Submit Rating
+                </button>
+            </div>
+        </div>
+
+        <!-- Guessing Screen -->
+        <div id="guessingScreen" class="game-screen">
+            <div class="game-card">
+                <div class="round-header">
+                    <div class="round-number" id="guessingRoundNumber">Round 1 of X</div>
+                    <div class="active-player">Guess <span id="guessingActivePlayer">Player</span>'s Rating</div>
+                </div>
+
+                <div class="confession-card">
+                    <div class="confession-text" id="guessingConfessionText">Confession text here</div>
+                    <div class="confession-hint">How did they rate themselves? (1-5)</div>
+                </div>
+
+                <div class="guess-section">
+                    <div class="guess-title">Submit Your Guesses:</div>
+                    <div class="guess-grid" id="guessGrid"></div>
+                </div>
+
+                <button onclick="submitGuesses()" id="submitGuesses" class="btn btn-primary" style="width: 100%;">
+                    Reveal Results
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="game-screen">
+            <div class="game-card">
+                <h2 style="font-size: 36px; font-weight: 800; color: #1a365d; text-align: center; margin-bottom: 30px;">
+                    🏆 Final Scores
+                </h2>
+
+                <div class="results-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Player</th>
+                                <th style="text-align: right;">Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="resultsTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="location.reload()" class="btn btn-primary" style="flex: 1;">
+                        Play Again
+                    </button>
+                    <button onclick="location.href='leadership-games.html'" class="btn btn-primary" style="flex: 1;">
+                        More Games
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock confession cards (replace with JSON database later)
+        const confessions = [
+            "I've checked my phone during a 1-on-1 meeting with a team member",
+            "I've taken credit for someone else's idea in a meeting",
+            "I've avoided giving critical feedback to keep the peace",
+            "I've pretended to understand something when I was completely lost",
+            "I've made a promise to my team that I knew I probably couldn't keep",
+            "I've complained about my boss/organization to my direct reports",
+            "I've said 'yes' to a commitment when I meant 'no' because I didn't want conflict",
+            "I've hidden a mistake rather than admitting it immediately",
+            "I've blamed a system or process for something that was my fault",
+            "I've scheduled meetings that could have been emails",
+            "I've micromanaged someone because I didn't trust them to deliver",
+            "I've made decisions without consulting the people most affected",
+            "I've ghosted on a commitment and hoped no one would notice",
+            "I've let poor performance slide because addressing it felt uncomfortable",
+            "I've prioritized looking good over helping my team succeed"
+        ];
+
+        // Game state
+        let players = [];
+        let currentRound = 0;
+        let currentRating = null;
+        let guesses = {};
+        let scores = {};
+        let usedConfessions = [];
+
+        function addPlayer() {
+            const input = document.getElementById('playerInput');
+            const name = input.value.trim();
+            
+            if (name && !players.includes(name)) {
+                players.push(name);
+                scores[name] = 0;
+                input.value = '';
+                updatePlayerTags();
+                updateStartButton();
+            }
+        }
+
+        function removePlayer(name) {
+            players = players.filter(p => p !== name);
+            delete scores[name];
+            updatePlayerTags();
+            updateStartButton();
+        }
+
+        function updatePlayerTags() {
+            const container = document.getElementById('playerTags');
+            container.innerHTML = players.map(name => `
+                <div class="player-tag">
+                    ${name}
+                    <span class="remove-player" onclick="removePlayer('${name}')">✕</span>
+                </div>
+            `).join('');
+        }
+
+        function updateStartButton() {
+            document.getElementById('startButton').disabled = players.length < 3;
+        }
+
+        function startGame() {
+            if (players.length < 3) {
+                alert('Need at least 3 players to start!');
+                return;
+            }
+            currentRound = 0;
+            showScreen('ratingScreen');
+            nextRound();
+        }
+
+        function nextRound() {
+            if (currentRound >= players.length) {
+                showResults();
+                return;
+            }
+
+            const activePlayer = players[currentRound];
+            const confession = getRandomConfession();
+
+            // Update round info
+            document.getElementById('roundNumber').textContent = `Round ${currentRound + 1} of ${players.length}`;
+            document.getElementById('activePlayerName').textContent = activePlayer + "'s Turn";
+            document.getElementById('confessionText').textContent = confession;
+
+            // Reset rating selection
+            currentRating = null;
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            document.getElementById('submitRating').disabled = true;
+        }
+
+        function getRandomConfession() {
+            const available = confessions.filter(c => !usedConfessions.includes(c));
+            if (available.length === 0) {
+                usedConfessions = [];
+                return confessions[0];
+            }
+            const confession = available[Math.floor(Math.random() * available.length)];
+            usedConfessions.push(confession);
+            return confession;
+        }
+
+        function selectRating(rating) {
+            currentRating = rating;
+            document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('submitRating').disabled = false;
+        }
+
+        function submitRating() {
+            // Move to guessing screen
+            const activePlayer = players[currentRound];
+            const confession = document.getElementById('confessionText').textContent;
+
+            document.getElementById('guessingRoundNumber').textContent = `Round ${currentRound + 1} of ${players.length}`;
+            document.getElementById('guessingActivePlayer').textContent = activePlayer;
+            document.getElementById('guessingConfessionText').textContent = confession;
+
+            // Create guess inputs for other players
+            const guessGrid = document.getElementById('guessGrid');
+            guessGrid.innerHTML = players
+                .filter(p => p !== activePlayer)
+                .map(p => `
+                    <div class="guess-row">
+                        <div class="guess-name">${p}</div>
+                        <div class="guess-buttons">
+                            <button onclick="selectGuess('${p}', 1)">1</button>
+                            <button onclick="selectGuess('${p}', 2)">2</button>
+                            <button onclick="selectGuess('${p}', 3)">3</button>
+                            <button onclick="selectGuess('${p}', 4)">4</button>
+                            <button onclick="selectGuess('${p}', 5)">5</button>
+                        </div>
+                    </div>
+                `).join('');
+
+            guesses = {};
+            showScreen('guessingScreen');
+        }
+
+        function selectGuess(player, rating) {
+            guesses[player] = rating;
+            
+            // Update button styling
+            const row = event.target.closest('.guess-row');
+            row.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+        }
+
+        function submitGuesses() {
+            // Calculate scores
+            const activePlayer = players[currentRound];
+            const otherPlayers = players.filter(p => p !== activePlayer);
+
+            let allGuessed = true;
+            otherPlayers.forEach(p => {
+                if (!guesses[p]) allGuessed = false;
+            });
+
+            if (!allGuessed) {
+                alert('All players must submit a guess!');
+                return;
+            }
+
+            // Score guesses (exact match = 2 points, off by 1 = 1 point)
+            otherPlayers.forEach(p => {
+                const diff = Math.abs(guesses[p] - currentRating);
+                if (diff === 0) scores[p] += 2;
+                else if (diff === 1) scores[p] += 1;
+            });
+
+            currentRound++;
+            
+            if (currentRound < players.length) {
+                setTimeout(() => {
+                    showScreen('ratingScreen');
+                    nextRound();
+                }, 100);
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            // Sort players by score
+            const sorted = players.sort((a, b) => scores[b] - scores[a]);
+            
+            const tbody = document.getElementById('resultsTableBody');
+            tbody.innerHTML = sorted.map((player, index) => `
+                <tr>
+                    <td>
+                        ${index === 0 ? '<span class="winner-badge">🏆 WINNER</span> ' : ''}
+                        ${player}
+                    </td>
+                    <td style="text-align: right; font-weight: 700; color: #1a365d; font-size: 24px;">
+                        ${scores[player]}
+                    </td>
+                </tr>
+            `).join('');
+
+            showScreen('resultsScreen');
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.game-screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
+
+>>>>>>> f82bb98a71dd8a9521785cc7a4d3d6198bde9727

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Belt System Navigator | Tap-In Leadership</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+        }
+
+        .stats-bar {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: #2563eb;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 5px;
+        }
+
+        .belt-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .belt-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .belt-icon {
+            font-size: 48px;
+        }
+
+        .belt-info h2 {
+            font-size: 28px;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+
+        .belt-theme {
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .stripes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .stripe-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border: 2px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stripe-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #2563eb;
+        }
+
+        .stripe-card.completed {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-color: #10b981;
+        }
+
+        .stripe-card.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: grayscale(1);
+        }
+
+        .stripe-card.locked:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        .stripe-number {
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .stripe-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+
+        .stripe-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 15px;
+        }
+
+        .stripe-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .stripe-status.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        .stripe-status.locked {
+            background: #94a3b8;
+            color: white;
+        }
+
+        .stripe-status.available {
+            background: #2563eb;
+            color: white;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            opacity: 0.3;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 60px;
+            opacity: 0.8;
+        }
+
+        .footer a {
+            color: white;
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .stripes-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🥋 Your Leadership Journey</h1>
+            <p>Master all 20 stripes across 5 belts to earn your Black Belt in Leadership</p>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat">
+                <span class="stat-value" id="totalXP">0</span>
+                <span class="stat-label">Total XP</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="completedStripes">0/20</span>
+                <span class="stat-label">Stripes Complete</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="currentBelt">White</span>
+                <span class="stat-label">Current Belt</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="overallProgress">0%</span>
+                <span class="stat-label">Overall Progress</span>
+            </div>
+        </div>
+
+        <div id="beltSections">
+            <div class="loading" style="text-align: center; color: white; padding: 60px 0;">
+                Loading belt system...
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>From <strong>Tap-In Leadership Academy</strong> - Leadership training inspired by Brazilian Jiu Jitsu</p>
+            <p style="margin-top: 10px;">
+                <a href="index.html">Home</a> · 
+                <a href="leadership-games.html">Play Games</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Anonymous Auth
+        class AnonymousAuth {
+            constructor() {
+                this.userId = this.getOrCreateUserId();
+                this.backupCode = this.getOrCreateBackupCode();
+            }
+
+            getOrCreateUserId() {
+                let userId = localStorage.getItem('tap_in_user_id');
+                if (!userId) {
+                    userId = 'user_' + this.generateRandomId();
+                    localStorage.setItem('tap_in_user_id', userId);
+                }
+                return userId;
+            }
+
+            getOrCreateBackupCode() {
+                let code = localStorage.getItem('tap_in_backup_code');
+                if (!code) {
+                    code = this.generateBackupCode();
+                    localStorage.setItem('tap_in_backup_code', code);
+                }
+                return code;
+            }
+
+            generateRandomId() {
+                return 'xxxx-xxxx-xxxx'.replace(/x/g, () => 
+                    Math.floor(Math.random() * 16).toString(16)
+                );
+            }
+
+            generateBackupCode() {
+                const words = ['alpha', 'bravo', 'charlie', 'delta', 'echo', 'foxtrot'];
+                const word1 = words[Math.floor(Math.random() * words.length)];
+                const word2 = words[Math.floor(Math.random() * words.length)];
+                const num = Math.floor(1000 + Math.random() * 8999);
+                return `${word1}-${word2}-${num}`;
+            }
+
+            loadProgress() {
+                const saved = localStorage.getItem('tap_in_progress');
+                return saved ? JSON.parse(saved).data : null;
+            }
+        }
+
+        // Belt Navigator
+        class BeltNavigator {
+            constructor() {
+                this.auth = new AnonymousAuth();
+                this.progress = this.auth.loadProgress() || { 
+                    xp: 0, 
+                    completedStripes: []
+                };
+                this.stripeData = null;
+                this.init();
+            }
+
+            async init() {
+                await this.loadContent();
+                this.updateStats();
+                this.render();
+            }
+
+            async loadContent() {
+                try {
+                    const response = await fetch('stripe-content.json');
+                    const data = await response.json();
+                    this.stripeData = data.stripes;
+                } catch (error) {
+                    document.getElementById('beltSections').innerHTML = `
+                        <div style="background: white; padding: 40px; border-radius: 15px; text-align: center;">
+                            <h2 style="color: #991b1b; margin-bottom: 15px;">Error Loading Content</h2>
+                            <p style="color: #7f1d1d;">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            updateStats() {
+                document.getElementById('totalXP').textContent = this.progress.xp.toLocaleString();
+                document.getElementById('completedStripes').textContent = `${this.progress.completedStripes.length}/20`;
+                
+                const percentage = Math.round((this.progress.completedStripes.length / 20) * 100);
+                document.getElementById('overallProgress').textContent = percentage + '%';
+                
+                const currentBelt = this.getCurrentBelt();
+                document.getElementById('currentBelt').textContent = currentBelt;
+            }
+
+            getCurrentBelt() {
+                const completed = this.progress.completedStripes.length;
+                if (completed < 4) return 'White Belt';
+                if (completed < 8) return 'Blue Belt';
+                if (completed < 12) return 'Purple Belt';
+                if (completed < 16) return 'Brown Belt';
+                if (completed < 20) return 'Black Belt';
+                return 'Black Belt (Master)';
+            }
+
+            render() {
+                const belts = {
+                    white: { icon: '⚪', name: 'White Belt', theme: 'Absence of Trust', stripes: [1,2,3,4] },
+                    blue: { icon: '🔵', name: 'Blue Belt', theme: 'Fear of Conflict', stripes: [5,6,7,8] },
+                    purple: { icon: '🟣', name: 'Purple Belt', theme: 'Lack of Commitment', stripes: [9,10,11,12] },
+                    brown: { icon: '🟤', name: 'Brown Belt', theme: 'Avoidance of Accountability', stripes: [13,14,15,16] },
+                    black: { icon: '⚫', name: 'Black Belt', theme: 'Inattention to Results', stripes: [17,18,19,20] }
+                };
+
+                let html = '';
+
+                for (const [key, belt] of Object.entries(belts)) {
+                    html += `
+                        <div class="belt-section">
+                            <div class="belt-header">
+                                <div class="belt-icon">${belt.icon}</div>
+                                <div class="belt-info">
+                                    <h2>${belt.name}</h2>
+                                    <div class="belt-theme">${belt.theme}</div>
+                                </div>
+                            </div>
+                            <div class="stripes-grid">
+                    `;
+
+                    belt.stripes.forEach(stripeNum => {
+                        html += this.renderStripeCard(stripeNum);
+                    });
+
+                    html += `
+                            </div>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('beltSections').innerHTML = html;
+            }
+
+            renderStripeCard(stripeNum) {
+                const stripe = this.stripeData[stripeNum];
+                const isCompleted = this.progress.completedStripes.includes(stripeNum);
+                const isLocked = this.isStripeLocked(stripeNum);
+                
+                let statusClass = 'available';
+                let statusText = 'Start';
+                let statusIcon = '▶️';
+                
+                if (isCompleted) {
+                    statusClass = 'completed';
+                    statusText = 'Completed';
+                    statusIcon = '✓';
+                } else if (isLocked) {
+                    statusClass = 'locked';
+                    statusText = 'Locked';
+                    statusIcon = '🔒';
+                }
+
+                const cardClass = isCompleted ? 'completed' : (isLocked ? 'locked' : '');
+                const onClick = isLocked ? '' : `onclick="navigator.goToStripe(${stripeNum})"`;
+
+                return `
+                    <div class="stripe-card ${cardClass}" ${onClick}>
+                        ${isLocked ? '<div class="lock-icon">🔒</div>' : ''}
+                        <div class="stripe-number">Stripe ${stripeNum} of 20</div>
+                        <div class="stripe-title">${stripe.title}</div>
+                        <div class="stripe-meta">
+                            <span>📚 ${stripe.lessons.length} Lessons</span>
+                        </div>
+                        <div class="stripe-status ${statusClass}">
+                            ${statusIcon} ${statusText}
+                        </div>
+                    </div>
+                `;
+            }
+
+            isStripeLocked(stripeNum) {
+                // Stripe 1 is always unlocked
+                if (stripeNum === 1) return false;
+                
+                // Check if previous stripe is completed
+                return !this.progress.completedStripes.includes(stripeNum - 1);
+            }
+
+            goToStripe(stripeNum) {
+                // Map stripe numbers to actual HTML files
+                const stripeFiles = {
+                    // White Belt
+                    1: 'white-belt-stripe1-gamified.html',
+                    2: 'white-belt-stripe2-gamified.html',
+                    3: 'white-belt-stripe3-gamified.html',
+                    4: 'white-belt-stripe4-gamified.html',
+                    
+                    // Blue Belt
+                    5: 'blue-belt-stripe1-gamified.html',
+                    6: 'blue-belt-stripe2-gamified.html',
+                    7: 'blue-belt-stripe3-gamified.html',
+                    8: 'blue-belt-stripe4-gamified.html',
+                    
+                    // Purple Belt
+                    9: 'purple-belt-stripe1-gamified.html',
+                    10: 'purple-belt-stripe2-gamified.html',
+                    11: 'purple-belt-stripe3-gamified.html',
+                    12: 'purple-belt-stripe4-gamified.html',
+                    
+                    // Brown Belt
+                    13: 'brown-belt-stripe1-gamified.html',
+                    14: 'brown-belt-stripe2-gamified.html',
+                    15: 'brown-belt-stripe3-gamified.html',
+                    16: 'brown-belt-stripe4-gamified.html',
+                    
+                    // Black Belt
+                    17: 'black-belt-stripe1-gamified.html',
+                    18: 'black-belt-stripe2-gamified.html',
+                    19: 'black-belt-stripe3-gamified.html',
+                    20: 'black-belt-stripe4-gamified.html'
+                };
+                
+                const filename = stripeFiles[stripeNum];
+                if (filename) {
+                    window.location.href = filename;
+                } else {
+                    alert('This stripe is not available yet.');
+                }
+            }
+        }
+
+        // Initialize
+        let navigator;
+        window.addEventListener('DOMContentLoaded', () => {
+            navigator = new BeltNavigator();
+        });
+    </script>
+</body>
+</html>
+
