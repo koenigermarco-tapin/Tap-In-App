@@ -1,0 +1,91 @@
+╔══════════════════════════════════════════════════════════════╗
+║         🗄️  SUPABASE SETUP - DO THIS FIRST!                  ║
+╚══════════════════════════════════════════════════════════════╝
+
+BEFORE DEPLOYING, run the SQL migration in Supabase:
+
+═══════════════════════════════════════════════════════════════
+
+STEP 1: Open Supabase SQL Editor
+───────────────────────────────────────────────────────────────
+
+1. Go to https://supabase.com
+2. Open your project
+3. Click "SQL Editor" in left sidebar
+4. Click "New query"
+
+
+STEP 2: Copy & Run the Migration
+───────────────────────────────────────────────────────────────
+
+Copy the entire contents of:
+  supabase-gamification.sql
+
+Paste into SQL Editor and click "Run"
+
+
+STEP 3: Verify Tables Created
+───────────────────────────────────────────────────────────────
+
+Go to "Table Editor" and verify these exist:
+  ✓ user_profiles (with new gamification columns)
+  ✓ xp_history
+  ✓ assessment_results
+
+
+STEP 4: Verify Functions Created
+───────────────────────────────────────────────────────────────
+
+Go to "Database" → "Functions" and verify:
+  ✓ add_xp
+  ✓ update_streak
+  ✓ add_badge
+  ✓ complete_assessment
+
+
+═══════════════════════════════════════════════════════════════
+
+WHAT THE MIGRATION ADDS:
+───────────────────────────────────────────────────────────────
+
+To user_profiles table:
+  • total_xp (INTEGER)
+  • level (INTEGER)
+  • current_belt (VARCHAR)
+  • current_stripe (INTEGER)
+  • current_streak (INTEGER)
+  • longest_streak (INTEGER)
+  • last_active_date (DATE)
+  • badges (TEXT[])
+  • completed_modules (TEXT[])
+  • completed_assessments (TEXT[])
+
+New tables:
+  • xp_history - Logs all XP gains
+  • assessment_results - Stores assessment completions
+
+Functions:
+  • add_xp() - Awards XP, updates level/belt
+  • update_streak() - Updates daily streak
+  • add_badge() - Awards badges
+  • complete_assessment() - Completes assessment with XP
+
+═══════════════════════════════════════════════════════════════
+
+⚠️  IMPORTANT:
+───────────────────────────────────────────────────────────────
+
+You MUST run this migration BEFORE deploying, or XP/streak
+system will fail!
+
+═══════════════════════════════════════════════════════════════
+
+AFTER RUNNING MIGRATION:
+───────────────────────────────────────────────────────────────
+
+1. ✅ Verify no errors in SQL Editor
+2. ✅ Check tables exist in Table Editor
+3. ✅ Check functions exist in Database → Functions
+4. ✅ Ready to deploy!
+
+═══════════════════════════════════════════════════════════════
