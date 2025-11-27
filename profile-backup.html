@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Backup | TAP-IN</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1d2e;
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding-top: 2rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: #94a3b8;
+            font-size: 1.125rem;
+        }
+
+        .card {
+            background: #252940;
+            border: 1px solid #3d4466;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .section-desc {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .qr-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .qr-container.show {
+            display: block;
+        }
+
+        #qrcode {
+            display: inline-block;
+            margin: 1rem auto;
+        }
+
+        .btn {
+            background: #4a5568;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-block;
+            margin: 0.5rem;
+        }
+
+        .btn:hover {
+            background: #5a6478;
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #818cf8 100%);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: #2d3548;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #94a3b8;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #6366f1;
+        }
+
+        .warning-box {
+            background: rgba(251, 191, 36, 0.1);
+            border-left: 4px solid #fbbf24;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .warning-box h3 {
+            color: #fbbf24;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .warning-box p {
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .file-input-container {
+            border: 2px dashed #3d4466;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-input-container:hover {
+            border-color: #6366f1;
+            background: rgba(99, 102, 241, 0.05);
+        }
+
+        .file-input-container input {
+            display: none;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #94a3b8;
+            text-decoration: none;
+            margin-bottom: 2rem;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            color: white;
+        }
+
+        .success-message {
+            background: rgba(34, 197, 94, 0.1);
+            border-left: 4px solid #22c55e;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .success-message h3 {
+            color: #22c55e;
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .card {
+                padding: 1.5rem;
+            }
+            h1 {
+                font-size: 2rem;
+            }
+            .btn {
+                width: 100%;
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="gym-dashboard.html" class="back-link">← Back to Dashboard</a>
+
+        <div class="header">
+            <h1>💾 Profile Backup</h1>
+            <p class="subtitle">Save and restore your progress across devices</p>
+        </div>
+
+        <!-- Current Progress Summary -->
+        <div class="card">
+            <h2 class="section-title">📊 Your Current Progress</h2>
+            <div class="progress-stats" id="progressStats">
+                <div class="stat-box">
+                    <div class="stat-label">Total XP</div>
+                    <div class="stat-value" id="statXP">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Current Belt</div>
+                    <div class="stat-value" id="statBelt">White</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Completed</div>
+                    <div class="stat-value" id="statCompleted">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Streak</div>
+                    <div class="stat-value" id="statStreak">0</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="card">
+            <h2 class="section-title">📤 Export Your Progress</h2>
+            <p class="section-desc">
+                Generate a QR code containing all your progress. Save this QR code 
+                (screenshot or print) and scan it on any other device to restore your progress.
+            </p>
+
+            <div class="warning-box">
+                <h3>⚠️ Important</h3>
+                <p>
+                    Save this QR code in a safe place! If you lose it and clear your browser 
+                    data, your progress will be lost. We recommend taking a screenshot and 
+                    storing it in a secure location.
+                </p>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="btn btn-primary" onclick="generateQRCode()">
+                    Generate Backup QR Code
+                </button>
+            </div>
+
+            <div class="qr-container" id="qrContainer">
+                <h3 style="color: #1a1d2e; margin-bottom: 1rem;">Your Progress Backup QR Code</h3>
+                <div id="qrcode"></div>
+                <p style="color: #475569; margin-top: 1rem;">
+                    Right-click to save, or screenshot this entire card
+                </p>
+                <button class="btn" onclick="downloadQRCode()">Download as PNG</button>
+                <button class="btn" onclick="window.print()">Print</button>
+            </div>
+        </div>
+
+        <!-- Import Section -->
+        <div class="card">
+            <h2 class="section-title">📥 Restore Progress</h2>
+            <p class="section-desc">
+                Have a backup QR code from another device? Upload it here to restore your progress.
+            </p>
+
+            <div class="warning-box">
+                <h3>⚠️ Warning</h3>
+                <p>
+                    Restoring progress will <strong>replace</strong> your current progress 
+                    with the backup data. Make sure to export your current progress first 
+                    if you want to keep it.
+                </p>
+            </div>
+
+            <div class="file-input-container" onclick="document.getElementById('qrUpload').click()">
+                <input type="file" id="qrUpload" accept="image/*" onchange="restoreFromQR(event)">
+                <p style="font-size: 1.125rem; color: #94a3b8; margin-bottom: 0.5rem;">
+                    📁 Click to upload QR code image
+                </p>
+                <p style="font-size: 0.875rem; color: #6b7280;">
+                    Supports: PNG, JPG, or screenshot
+                </p>
+            </div>
+
+            <div class="success-message" id="successMessage">
+                <h3>✅ Progress Restored Successfully!</h3>
+                <p>Your progress has been restored from the backup. Redirecting to dashboard...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+    <script>
+        // Load and display current progress
+        function loadProgressStats() {
+            const totalXP = localStorage.getItem('totalXP') || '0';
+            const currentBelt = localStorage.getItem('currentBelt') || 'white';
+            const completedStripes = JSON.parse(localStorage.getItem('completedStripes') || '[]');
+            const currentStreak = localStorage.getItem('currentStreak') || '0';
+
+            document.getElementById('statXP').textContent = totalXP;
+            document.getElementById('statBelt').textContent = 
+                currentBelt.charAt(0).toUpperCase() + currentBelt.slice(1);
+            document.getElementById('statCompleted').textContent = completedStripes.length;
+            document.getElementById('statStreak').textContent = currentStreak + ' 🔥';
+        }
+
+        // Generate QR Code
+        function generateQRCode() {
+            // Collect all progress data
+            const progressData = {
+                version: '1.0',
+                timestamp: new Date().toISOString(),
+                totalXP: localStorage.getItem('totalXP') || '0',
+                currentBelt: localStorage.getItem('currentBelt') || 'white',
+                currentStripe: localStorage.getItem('currentStripe') || '1',
+                completedStripes: JSON.parse(localStorage.getItem('completedStripes') || '[]'),
+                currentStreak: localStorage.getItem('currentStreak') || '0',
+                longestStreak: localStorage.getItem('longestStreak') || '0',
+                lastLoginDate: localStorage.getItem('lastLoginDate') || '',
+                // Add all lesson progress
+                lessons: {},
+                assessments: {}
+            };
+
+            // Collect all lesson progress
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key.startsWith('lesson_') || key.startsWith('module_')) {
+                    progressData.lessons[key] = localStorage.getItem(key);
+                }
+                if (key.startsWith('assessment_')) {
+                    progressData.assessments[key] = localStorage.getItem(key);
+                }
+            }
+
+            // Compress data
+            const jsonString = JSON.stringify(progressData);
+            const compressed = LZString.compressToBase64(jsonString);
+
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+
+            // Generate QR code
+            new QRCode(document.getElementById('qrcode'), {
+                text: compressed,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            // Show QR container
+            document.getElementById('qrContainer').classList.add('show');
+        }
+
+        // Download QR Code as PNG
+        function downloadQRCode() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (canvas) {
+                const url = canvas.toDataURL('image/png');
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `tap-in-backup-${new Date().toISOString().split('T')[0]}.png`;
+                link.click();
+            }
+        }
+
+        // Restore from QR Code
+        function restoreFromQR(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
+                    
+                    if (code) {
+                        try {
+                            // Decompress data
+                            const decompressed = LZString.decompressFromBase64(code.data);
+                            const progressData = JSON.parse(decompressed);
+
+                            // Restore to localStorage
+                            localStorage.setItem('totalXP', progressData.totalXP);
+                            localStorage.setItem('currentBelt', progressData.currentBelt);
+                            localStorage.setItem('currentStripe', progressData.currentStripe);
+                            localStorage.setItem('completedStripes', 
+                                JSON.stringify(progressData.completedStripes));
+                            localStorage.setItem('currentStreak', progressData.currentStreak);
+                            localStorage.setItem('longestStreak', progressData.longestStreak);
+                            localStorage.setItem('lastLoginDate', progressData.lastLoginDate);
+
+                            // Restore lesson progress
+                            Object.keys(progressData.lessons).forEach(key => {
+                                localStorage.setItem(key, progressData.lessons[key]);
+                            });
+
+                            // Restore assessments
+                            Object.keys(progressData.assessments).forEach(key => {
+                                localStorage.setItem(key, progressData.assessments[key]);
+                            });
+
+                            // Show success message
+                            document.getElementById('successMessage').classList.add('show');
+
+                            // Reload stats
+                            loadProgressStats();
+
+                            // Redirect after 2 seconds
+                            setTimeout(() => {
+                                window.location.href = 'gym-dashboard.html';
+                            }, 2000);
+
+                        } catch (error) {
+                            alert('Error restoring progress: Invalid QR code or corrupted data.');
+                            console.error(error);
+                        }
+                    } else {
+                        alert('No QR code detected in image. Please try again with a clear image.');
+                    }
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Load stats on page load
+        document.addEventListener('DOMContentLoaded', loadProgressStats);
+    </script>
+</body>
+</html>
+

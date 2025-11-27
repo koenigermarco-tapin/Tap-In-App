@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekly Experiment Lab | TAP-IN Open Mat</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #1a1d2e;
+            color: white;
+            font-family: Inter, -apple-system, sans-serif;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .back-btn {
+            color: #94a3b8;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 2rem;
+        }
+        .back-btn:hover { color: white; }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; color: #4a7c9c; }
+        .badge {
+            background: #7c3aed;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            display: inline-block;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        .day-card {
+            background: #252940;
+            border: 2px solid #3d4466;
+            border-left: 3px solid #4a7c9c;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .day-card.completed {
+            border-color: #4a7c9c;
+            opacity: 0.7;
+        }
+        .day-card h3 { color: #4a7c9c; margin-bottom: 1rem; }
+        .day-card p { color: #e2e8f0; line-height: 1.6; }
+        textarea {
+            width: 100%;
+            min-height: 80px;
+            background: #1a1d2e;
+            border: 2px solid #3d4466;
+            border-radius: 8px;
+            color: white;
+            padding: 1rem;
+            font-family: Inter, sans-serif;
+            margin-top: 1rem;
+            resize: vertical;
+        }
+        textarea:focus { outline: none; border-color: #4a7c9c; }
+        button {
+            background: #4a7c9c;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        button:hover { background: #5a8cac; }
+        button:disabled { background: #3d4466; cursor: not-allowed; }
+        .progress-bar {
+            background: #252940;
+            border-radius: 8px;
+            height: 12px;
+            margin: 2rem 0;
+            overflow: hidden;
+        }
+        .progress-fill {
+            background: linear-gradient(90deg, #4a7c9c, #5a8cac);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="gym-dashboard.html" class="back-btn">← Back to Gym</a>
+        
+        <div class="badge">WEEKLY EXPERIMENT</div>
+        <h1>🧪 Say "I Don't Know" Every Day</h1>
+        <p style="color: #94a3b8; margin-bottom: 2rem;">
+            7-day experiment: Practice intellectual humility by admitting what you don't know.
+        </p>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress" style="width: 0%;"></div>
+        </div>
+        <p style="color: #94a3b8; text-align: center; margin-bottom: 3rem;" id="progress-text">0 of 7 days complete</p>
+
+        <div id="days"></div>
+
+        <div style="background: #252940; border: 2px solid #4a7c9c; border-radius: 12px; 
+                    padding: 2rem; margin-top: 2rem; text-align: center;" id="final-message" style="display: none;">
+            <h2>🎉 Experiment Complete!</h2>
+            <p style="color: #94a3b8; margin-top: 1rem;">
+                You practiced intellectual humility for a full week. This is a cornerstone of psychological safety.
+            </p>
+            <div style="background: rgba(74, 124, 156, 0.2); border: 1px solid #4a7c9c; color: #4a7c9c; 
+                        padding: 0.5rem 1.5rem; border-radius: 8px; display: inline-block; 
+                        margin-top: 1rem; font-weight: 600;">
+                +100 XP Earned!
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const days = [
+            { day: 1, prompt: "In a meeting or conversation, admit something you don't know instead of pretending or deflecting." },
+            { day: 2, prompt: "When asked for an opinion, say 'I'm not sure yet' if you need more information." },
+            { day: 3, prompt: "Ask someone to explain something you don't understand, even if you think you 'should' know it." },
+            { day: 4, prompt: "Admit uncertainty about a decision you need to make." },
+            { day: 5, prompt: "When someone shares expertise, say 'I don't know much about that, tell me more.'" },
+            { day: 6, prompt: "In your area of expertise, admit what you're still learning or unsure about." },
+            { day: 7, prompt: "Reflect: What happened when you admitted you didn't know? How did people respond?" }
+        ];
+
+        const completed = JSON.parse(localStorage.getItem('weekly-experiment-idk') || '{}');
+        const container = document.getElementById('days');
+
+        function render() {
+            container.innerHTML = '';
+            const completedCount = Object.keys(completed).length;
+            
+            days.forEach(d => {
+                const isCompleted = completed[d.day];
+                const card = document.createElement('div');
+                card.className = 'day-card' + (isCompleted ? ' completed' : '');
+                card.innerHTML = `
+                    <h3>Day ${d.day} ${isCompleted ? '✅' : ''}</h3>
+                    <p>${d.prompt}</p>
+                    ${isCompleted ? 
+                        `<p style="color: #4a7c9c; margin-top: 1rem;"><strong>Completed!</strong></p>
+                         <p style="color: #94a3b8; margin-top: 0.5rem; font-style: italic;">${completed[d.day]}</p>` :
+                        `<textarea id="day${d.day}text" placeholder="What happened when you said 'I don't know'? How did you feel? How did others respond?"></textarea>
+                         <button onclick="completeDay(${d.day})">Complete Day ${d.day} (+15 XP)</button>`
+                    }
+                `;
+                container.appendChild(card);
+            });
+
+            // Update progress
+            const percent = Math.round((completedCount / 7) * 100);
+            document.getElementById('progress').style.width = percent + '%';
+            document.getElementById('progress-text').textContent = `${completedCount} of 7 days complete`;
+
+            // Show final message if all complete
+            if (completedCount === 7) {
+                document.getElementById('final-message').style.display = 'block';
+            }
+        }
+
+        function completeDay(dayNum) {
+            const text = document.getElementById(`day${dayNum}text`).value;
+            if (!text.trim()) {
+                alert('Please reflect on your experience before marking complete!');
+                return;
+            }
+
+            completed[dayNum] = text;
+            localStorage.setItem('weekly-experiment-idk', JSON.stringify(completed));
+
+            // Award XP
+            const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+            localStorage.setItem('totalXP', currentXP + 15);
+
+            // Check if all complete for bonus
+            if (Object.keys(completed).length === 7) {
+                localStorage.setItem('totalXP', currentXP + 100);
+                const completedExperiments = JSON.parse(localStorage.getItem('completedExperiments') || '[]');
+                if (!completedExperiments.includes('idk')) {
+                    completedExperiments.push('idk');
+                    localStorage.setItem('completedExperiments', JSON.stringify(completedExperiments));
+                }
+            }
+
+            render();
+        }
+
+        render();
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥋 THE GYM | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0e1a;
+            min-height: 100vh;
+            padding: 20px;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(99,102,241,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139,92,246,0.08) 0%, transparent 50%);
+        }
+        
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-top: 30px;
+        }
+        
+        .gym-logo {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+        
+        .gym-title {
+            font-size: 42px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        
+        .gym-subtitle {
+            font-size: 18px;
+            color: #94a3b8;
+        }
+        
+        /* Progress Overview */
+        .progress-overview {
+            background: rgba(15, 15, 25, 0.8);
+            border: 2px solid rgba(255,255,255,0.1);
+            border-left: 4px solid #6366f1;
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        
+        .current-belt {
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .belt-display {
+            font-size: 36px;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+        
+        .xp-bar-container {
+            background: rgba(0,0,0,0.3);
+            height: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .xp-bar-fill {
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+            box-shadow: 0 0 10px rgba(99,102,241,0.5);
+        }
+        
+        .xp-text {
+            font-size: 16px;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+        
+        .xp-text .highlight {
+            color: #a78bfa;
+            font-weight: 700;
+        }
+        
+        /* Current Training Card */
+        .training-card {
+            background: rgba(20, 20, 32, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .training-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        
+        .card-header {
+            margin-bottom: 30px;
+        }
+        
+        .card-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .card-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .card-description {
+            font-size: 16px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        
+        /* Stripe Progress */
+        .stripe-progress {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .stripe-item {
+            background: rgba(10, 10, 18, 0.8);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            padding: 20px 15px;
+            text-align: center;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .stripe-item.completed {
+            background: rgba(16,185,129,0.12);
+            border-color: rgba(16,185,129,0.4);
+            border-left: 3px solid #10b981;
+        }
+        
+        .stripe-item.current {
+            background: rgba(99,102,241,0.15);
+            border-color: rgba(99,102,241,0.6);
+            border-left: 3px solid #6366f1;
+            box-shadow: 0 0 24px rgba(99,102,241,0.25);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(139,92,246,0.3); }
+            50% { box-shadow: 0 0 30px rgba(139,92,246,0.5); }
+        }
+        
+        .stripe-item.locked {
+            opacity: 0.4;
+        }
+        
+        .stripe-number {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        
+        .stripe-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .stripe-status {
+            font-size: 12px;
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .stripe-item.current .stripe-status {
+            color: #a78bfa;
+        }
+        
+        .stripe-item.locked .stripe-status {
+            color: #64748b;
+        }
+        
+        /* Primary CTA */
+        .primary-cta {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+        
+        .primary-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.5);
+        }
+        
+        /* Next Belt Preview */
+        .next-belt-card {
+            background: rgba(15, 15, 25, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 35px;
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .next-belt-card:before {
+            content: "🔒";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 32px;
+            opacity: 0.2;
+        }
+        
+        .next-belt-card:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%);
+        }
+        
+        .next-belt-label {
+            font-size: 12px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .next-belt-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .unlock-requirement {
+            font-size: 16px;
+            color: #fbbf24;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .next-belt-preview {
+            font-size: 14px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+        
+        /* Hub Nudge */
+        .hub-nudge {
+            background: rgba(139,92,246,0.08);
+            border: 1px solid rgba(139,92,246,0.25);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .nudge-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .nudge-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        
+        .nudge-text {
+            font-size: 14px;
+            color: #cbd5e1;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        .nudge-button {
+            display: inline-block;
+            background: rgba(139,92,246,0.2);
+            border: 1px solid rgba(139,92,246,0.4);
+            color: #c4b5fd;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .nudge-button:hover {
+            background: rgba(139,92,246,0.3);
+            border-color: rgba(139,92,246,0.6);
+        }
+        
+        /* Top Navigation */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 15px 0;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .nav-link {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: #ffffff;
+        }
+        
+        .nav-link.active {
+            color: #ffffff;
+            font-weight: 700;
+        }
+        
+        /* Belt Journey Visualization */
+        .belt-journey {
+            background: rgba(15, 15, 25, 0.6);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .journey-title {
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .journey-path {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .journey-belt {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        .journey-belt-icon {
+            font-size: 36px;
+            opacity: 0.3;
+            filter: grayscale(1);
+            transition: all 0.3s;
+        }
+        
+        .journey-belt.completed .journey-belt-icon,
+        .journey-belt.current .journey-belt-icon {
+            opacity: 1;
+            filter: grayscale(0);
+        }
+        
+        .journey-belt.current .journey-belt-icon {
+            animation: pulse 2s infinite;
+        }
+        
+        .journey-belt-label {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .journey-belt.completed .journey-belt-label {
+            color: #10b981;
+        }
+        
+        .journey-belt.current .journey-belt-label {
+            color: #6366f1;
+        }
+        
+        .journey-arrow {
+            font-size: 20px;
+            color: #334155;
+        }
+        
+        /* Mobile */
+        @media (max-width: 768px) {
+            .stripe-progress {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .gym-title { font-size: 32px; }
+            .belt-display { font-size: 28px; }
+            .training-card { padding: 30px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Top Navigation -->
+        <div class="top-nav">
+            <div class="nav-links">
+                <a href="index-DUAL-ENTRY.html" class="nav-link">← Home</a>
+                <a href="gym-home-FOCUSED.html" class="nav-link active">🥋 The Gym</a>
+                <a href="hub-home-BUSINESS.html" class="nav-link">🏢 The Hub</a>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="nav-link">Profile</a>
+                <a href="#" class="nav-link">Settings</a>
+            </div>
+        </div>
+        
+        <!-- Header -->
+        <div class="header">
+            <div class="gym-logo">🥋</div>
+            <h1 class="gym-title">THE GYM</h1>
+            <p class="gym-subtitle">Your Personal Training Ground</p>
+        </div>
+        
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+            <div class="current-belt">Current Progress</div>
+            <div class="belt-display" id="current-belt-display">⚪ White Belt - Stripe 2 of 4</div>
+            <div class="xp-bar-container">
+                <div class="xp-bar-fill" id="xp-bar"></div>
+            </div>
+            <div class="xp-text">
+                <span id="xp-current">75</span> XP / 
+                <span id="xp-next">100</span> XP to 
+                <span class="highlight" id="next-belt-name">Blue Belt</span>
+            </div>
+        </div>
+        
+        <!-- Belt Journey -->
+        <div class="belt-journey">
+            <div class="journey-title">Your Belt Journey</div>
+            <div class="journey-path" id="beltJourney">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+        
+        <!-- Current Training -->
+        <div class="training-card">
+            <div class="card-header">
+                <div class="card-label">Your Current Training</div>
+                <h2 class="card-title" id="current-belt-title">⚪ WHITE BELT - Trust Foundation</h2>
+                <p class="card-description">Master vulnerability-based trust as the foundation of high-performing teams</p>
+            </div>
+            
+            <div class="stripe-progress" id="stripe-progress">
+                <!-- Dynamically populated -->
+            </div>
+            
+            <button class="primary-cta" id="continue-btn" onclick="continueTraining()">
+                Continue Training →
+            </button>
+        </div>
+        
+        <!-- Next Belt Preview -->
+        <div class="next-belt-card" id="next-belt-card">
+            <div class="next-belt-label">What's Next</div>
+            <h3 class="next-belt-title" id="next-belt-title">🔵 BLUE BELT - Healthy Conflict</h3>
+            <div class="unlock-requirement" id="unlock-text">🔒 Unlock at 100 XP (Need 25 more XP)</div>
+            <p class="next-belt-preview">
+                Learn to engage in productive conflict. Master difficult conversations, 
+                active listening, feedback systems, and healthy boundaries.
+            </p>
+        </div>
+        
+        <!-- Hub Nudge -->
+        <div class="hub-nudge">
+            <div class="nudge-icon">💡</div>
+            <div class="nudge-title">Want Bonus XP?</div>
+            <p class="nudge-text">
+                Visit The Hub for team-focused modules like Communication Mastery. 
+                Each module earns +25 XP toward your next belt!
+            </p>
+            <a href="hub-home-BUSINESS.html" class="nudge-button">Explore The Hub →</a>
+        </div>
+    </div>
+    
+    <script>
+        // Belt configurations
+        const belts = [
+            {
+                name: 'White Belt',
+                emoji: '⚪',
+                theme: 'Trust Foundation',
+                description: 'Master vulnerability-based trust as the foundation of high-performing teams',
+                stripes: [
+                    { num: 1, name: 'Trust Foundations', file: 'white-belt-stripe1-interactive-FULL.html' },
+                    { num: 2, name: 'Practicing Vulnerability', file: 'white-belt-stripe2-interactive-FULL.html' },
+                    { num: 3, name: 'Building Team Trust', file: 'white-belt-stripe3-interactive-FULL.html' },
+                    { num: 4, name: 'Trust Mastery', file: 'white-belt-stripe4-interactive-FULL.html' }
+                ],
+                xpRequired: 100,
+                nextBelt: 'Blue Belt'
+            },
+            {
+                name: 'Blue Belt',
+                emoji: '🔵',
+                theme: 'Healthy Conflict',
+                description: 'Learn to engage in productive conflict and difficult conversations',
+                stripes: [
+                    { num: 1, name: 'Conflict Foundations', file: 'blue-belt-stripe1-gamified.html' },
+                    { num: 2, name: 'Productive Disagreement', file: 'blue-belt-stripe2-gamified.html' },
+                    { num: 3, name: 'Conflict Navigation', file: 'blue-belt-stripe3-gamified.html' },
+                    { num: 4, name: 'Conflict Mastery', file: 'blue-belt-stripe4-gamified.html' }
+                ],
+                xpRequired: 200,
+                nextBelt: 'Purple Belt'
+            },
+            {
+                name: 'Purple Belt',
+                emoji: '🟣',
+                theme: 'Commitment',
+                description: 'Build alignment, buy-in, and collective commitment',
+                stripes: [
+                    { num: 1, name: 'Decision Foundations', file: 'purple-belt-stripe1-gamified.html' },
+                    { num: 2, name: 'Alignment & Buy-In', file: 'purple-belt-stripe2-gamified.html' },
+                    { num: 3, name: 'Clarity & Direction', file: 'purple-belt-stripe3-gamified.html' },
+                    { num: 4, name: 'Commitment Mastery', file: 'purple-belt-stripe4-gamified.html' }
+                ],
+                xpRequired: 400,
+                nextBelt: 'Brown Belt'
+            },
+            {
+                name: 'Brown Belt',
+                emoji: '🟤',
+                theme: 'Accountability',
+                description: 'Master holding yourself and others accountable',
+                stripes: [
+                    { num: 1, name: 'Accountability Foundations', file: 'brown-belt-stripe1-gamified.html' },
+                    { num: 2, name: 'Peer Accountability', file: 'brown-belt-stripe2-gamified.html' },
+                    { num: 3, name: 'Standards & Ownership', file: 'brown-belt-stripe3-gamified.html' },
+                    { num: 4, name: 'Accountability Mastery', file: 'brown-belt-stripe4-gamified.html' }
+                ],
+                xpRequired: 600,
+                nextBelt: 'Black Belt'
+            },
+            {
+                name: 'Black Belt',
+                emoji: '⚫',
+                theme: 'Results Mastery',
+                description: 'Focus on results, teach others, and build your leadership legacy',
+                stripes: [
+                    { num: 1, name: 'Results Orientation', file: 'black-belt-stripe1-gamified.html' },
+                    { num: 2, name: 'Team Goals Over Ego', file: 'black-belt-stripe2-gamified.html' },
+                    { num: 3, name: 'Metrics & Measurement', file: 'black-belt-stripe3-gamified.html' },
+                    { num: 4, name: 'Results Mastery', file: 'black-belt-stripe4-gamified.html' }
+                ],
+                xpRequired: 1000,
+                nextBelt: 'Mastery'
+            }
+        ];
+        
+        // Render Belt Journey
+        function renderBeltJourney() {
+            const totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+            
+            // Determine current belt
+            let currentBeltIndex = 0;
+            if (totalXP >= 600) currentBeltIndex = 4;
+            else if (totalXP >= 400) currentBeltIndex = 3;
+            else if (totalXP >= 200) currentBeltIndex = 2;
+            else if (totalXP >= 100) currentBeltIndex = 1;
+            
+            const beltIcons = ['⚪', '🔵', '🟣', '🟤', '⚫'];
+            const beltNames = ['White', 'Blue', 'Purple', 'Brown', 'Black'];
+            
+            const journeyContainer = document.getElementById('beltJourney');
+            journeyContainer.innerHTML = '';
+            
+            beltIcons.forEach((icon, index) => {
+                // Add belt
+                const beltDiv = document.createElement('div');
+                beltDiv.className = 'journey-belt';
+                
+                if (index < currentBeltIndex) {
+                    beltDiv.classList.add('completed');
+                } else if (index === currentBeltIndex) {
+                    beltDiv.classList.add('current');
+                }
+                
+                beltDiv.innerHTML = `
+                    <div class="journey-belt-icon">${icon}</div>
+                    <div class="journey-belt-label">${beltNames[index]}</div>
+                `;
+                
+                journeyContainer.appendChild(beltDiv);
+                
+                // Add arrow (except after last belt)
+                if (index < beltIcons.length - 1) {
+                    const arrowDiv = document.createElement('div');
+                    arrowDiv.className = 'journey-arrow';
+                    arrowDiv.textContent = '→';
+                    journeyContainer.appendChild(arrowDiv);
+                }
+            });
+        }
+        
+        // Load and display progress
+        function loadProgress() {
+            const totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+            const completedStripes = JSON.parse(localStorage.getItem('completedStripes') || '[]');
+            
+            // Determine current belt
+            let currentBeltIndex = 0;
+            if (totalXP >= 600) currentBeltIndex = 4;
+            else if (totalXP >= 400) currentBeltIndex = 3;
+            else if (totalXP >= 200) currentBeltIndex = 2;
+            else if (totalXP >= 100) currentBeltIndex = 1;
+            
+            const currentBelt = belts[currentBeltIndex];
+            const nextBelt = belts[currentBeltIndex + 1];
+            
+            // Calculate stripe within current belt
+            const stripesInBelt = completedStripes.filter(s => 
+                s >= (currentBeltIndex * 4 + 1) && s <= ((currentBeltIndex + 1) * 4)
+            ).length;
+            
+            const currentStripe = stripesInBelt + 1;
+            
+            // Update header
+            document.getElementById('current-belt-display').textContent = 
+                `${currentBelt.emoji} ${currentBelt.name} - Stripe ${currentStripe} of 4`;
+            
+            // Update XP bar
+            const xpInBelt = totalXP - (currentBeltIndex === 0 ? 0 : belts[currentBeltIndex - 1]?.xpRequired || 0);
+            const xpNeeded = currentBelt.xpRequired - (currentBeltIndex === 0 ? 0 : belts[currentBeltIndex - 1]?.xpRequired || 0);
+            const xpPercent = (xpInBelt / xpNeeded) * 100;
+            
+            document.getElementById('xp-bar').style.width = `${xpPercent}%`;
+            document.getElementById('xp-current').textContent = totalXP;
+            document.getElementById('xp-next').textContent = currentBelt.xpRequired;
+            document.getElementById('next-belt-name').textContent = nextBelt ? nextBelt.name : 'Mastery';
+            
+            // Update current belt card
+            document.getElementById('current-belt-title').textContent = 
+                `${currentBelt.emoji} ${currentBelt.name.toUpperCase()} - ${currentBelt.theme}`;
+            
+            // Render stripe progress
+            const stripeContainer = document.getElementById('stripe-progress');
+            stripeContainer.innerHTML = '';
+            
+            currentBelt.stripes.forEach((stripe, index) => {
+                const stripeNum = currentBeltIndex * 4 + index + 1;
+                const isCompleted = completedStripes.includes(stripeNum);
+                const isCurrent = !isCompleted && index === stripesInBelt;
+                const isLocked = !isCompleted && !isCurrent;
+                
+                const stripeDiv = document.createElement('div');
+                stripeDiv.className = `stripe-item ${isCompleted ? 'completed' : isCurrent ? 'current' : 'locked'}`;
+                stripeDiv.innerHTML = `
+                    <div class="stripe-number">Stripe ${stripe.num}</div>
+                    <div class="stripe-name">${stripe.name}</div>
+                    <div class="stripe-status">
+                        ${isCompleted ? '✓ Complete' : isCurrent ? '← You Are Here' : '🔒 Locked'}
+                    </div>
+                `;
+                
+                if (!isLocked) {
+                    stripeDiv.style.cursor = 'pointer';
+                    stripeDiv.onclick = () => window.location.href = stripe.file;
+                }
+                
+                stripeContainer.appendChild(stripeDiv);
+            });
+            
+            // Update next belt card
+            if (nextBelt) {
+                document.getElementById('next-belt-title').textContent = 
+                    `${nextBelt.emoji} ${nextBelt.name.toUpperCase()} - ${nextBelt.theme}`;
+                
+                const xpNeeded = currentBelt.xpRequired - totalXP;
+                document.getElementById('unlock-text').textContent = 
+                    `🔒 Unlock at ${currentBelt.xpRequired} XP (Need ${xpNeeded} more XP)`;
+            } else {
+                document.getElementById('next-belt-card').style.display = 'none';
+            }
+        }
+        
+        function continueTraining() {
+            const completedStripes = JSON.parse(localStorage.getItem('completedStripes') || '[]');
+            const totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+            
+            // Determine current belt
+            let currentBeltIndex = 0;
+            if (totalXP >= 600) currentBeltIndex = 4;
+            else if (totalXP >= 400) currentBeltIndex = 3;
+            else if (totalXP >= 200) currentBeltIndex = 2;
+            else if (totalXP >= 100) currentBeltIndex = 1;
+            
+            const currentBelt = belts[currentBeltIndex];
+            const stripesInBelt = completedStripes.filter(s => 
+                s >= (currentBeltIndex * 4 + 1) && s <= ((currentBeltIndex + 1) * 4)
+            ).length;
+            
+            // Go to next incomplete stripe
+            const nextStripe = currentBelt.stripes[stripesInBelt];
+            if (nextStripe) {
+                window.location.href = nextStripe.file;
+            } else {
+                alert('Current belt complete! Moving to next belt...');
+                // Go to belt assessment or next belt
+            }
+        }
+        
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            renderBeltJourney();
+            loadProgress();
+        });
+    </script>
+
+<!-- Language Switcher Component -->
+<!-- Include this at the top of every page -->
+
+<style>
+    .language-switcher {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+    
+    .lang-toggle {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 14px;
+    }
+    
+    .lang-toggle:hover {
+        background: rgba(255, 255, 255, 0.15);
+        border-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .lang-flag {
+        font-size: 18px;
+    }
+    
+    .lang-code {
+        font-weight: 700;
+        letter-spacing: 0.5px;
+    }
+    
+    .lang-arrow {
+        font-size: 10px;
+        opacity: 0.7;
+    }
+    
+    .lang-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 8px;
+        background: rgba(30, 30, 50, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 8px;
+        overflow: hidden;
+        display: none;
+        min-width: 150px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .lang-dropdown.show {
+        display: block;
+        animation: slideDown 0.3s ease;
+    }
+    
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        color: #ffffff;
+        text-decoration: none;
+        transition: all 0.2s;
+        font-weight: 500;
+        font-size: 14px;
+    }
+    
+    .lang-option:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .lang-option.active {
+        background: rgba(99, 102, 241, 0.2);
+        color: #a5b4fc;
+    }
+    
+    .lang-option .lang-flag {
+        font-size: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .language-switcher {
+            top: 10px;
+            right: 10px;
+        }
+        
+        .lang-toggle {
+            padding: 6px 12px;
+            font-size: 13px;
+        }
+    }
+</style>
+
+<div class="language-switcher">
+    <button class="lang-toggle" id="langToggle">
+        <span class="lang-flag" id="currentFlag">🇬🇧</span>
+        <span class="lang-code" id="currentLang">EN</span>
+        <span class="lang-arrow">▼</span>
+    </button>
+    <div class="lang-dropdown" id="langDropdown">
+        <a href="#" class="lang-option" data-lang="en" data-file="">
+            <span class="lang-flag">🇬🇧</span> English
+        </a>
+        <a href="#" class="lang-option" data-lang="de" data-file="-de">
+            <span class="lang-flag">🇩🇪</span> Deutsch
+        </a>
+    </div>
+</div>
+
+<script>
+(function() {
+    // Language Switcher Logic
+    const toggle = document.getElementById('langToggle');
+    const dropdown = document.getElementById('langDropdown');
+    const currentFlag = document.getElementById('currentFlag');
+    const currentLang = document.getElementById('currentLang');
+    
+    // Detect current language from URL
+    const isGerman = window.location.pathname.includes('-de.html');
+    const currentLanguage = isGerman ? 'de' : 'en';
+    
+    // Update UI to show current language
+    if (isGerman) {
+        currentFlag.textContent = '🇩🇪';
+        currentLang.textContent = 'DE';
+    }
+    
+    // Mark active language option
+    document.querySelectorAll('.lang-option').forEach(option => {
+        if (option.dataset.lang === currentLanguage) {
+            option.classList.add('active');
+        }
+    });
+    
+    // Toggle dropdown
+    toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('show');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', () => {
+        dropdown.classList.remove('show');
+    });
+    
+    // Language switch handler
+    document.querySelectorAll('.lang-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetLang = option.dataset.lang;
+            const fileSuffix = option.dataset.file;
+            
+            // Don't switch if already on that language
+            if (targetLang === currentLanguage) {
+                dropdown.classList.remove('show');
+                return;
+            }
+            
+            // Store preference
+            localStorage.setItem('preferredLanguage', targetLang);
+            
+            // Get current page without language suffix
+            let currentPath = window.location.pathname;
+            let basePath = currentPath.replace('-de.html', '.html');
+            
+            // Build new path
+            let newPath = basePath.replace('.html', fileSuffix + '.html');
+            
+            // Navigate to new language version
+            window.location.href = newPath;
+        });
+    });
+    
+    // Auto-redirect based on stored preference (optional)
+    // Uncomment if you want automatic redirects
+    /*
+    const storedLang = localStorage.getItem('preferredLanguage');
+    if (storedLang && storedLang !== currentLanguage) {
+        const fileSuffix = storedLang === 'de' ? '-de' : '';
+        let basePath = window.location.pathname.replace('-de.html', '.html');
+        let newPath = basePath.replace('.html', fileSuffix + '.html');
+        window.location.href = newPath;
+    }
+    */
+})();
+</script>
+
+
+</body>
+</html>
+

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Managing Up | Tap-In Hub</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1d2e;
+      color: #e2e8f0;
+      font-family: Inter, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    .lesson-nav {
+      position: sticky;
+      top: 0;
+      background: #1a1d2e;
+      border-bottom: 2px solid #3d4466;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .back-btn {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-btn:hover { color: #ffffff; }
+
+    .progress-indicator {
+      color: #4a7c9c;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .lesson-header {
+      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    .lesson-header h1 {
+      font-size: 2.5rem;
+      color: #4a7c9c;
+      margin-bottom: 0.5rem;
+    }
+
+    .lesson-subtitle {
+      color: #94a3b8;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .lesson-meta {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .content-section {
+      background: #2d3548;
+      border: 2px solid #3d4466;
+      border-left: 4px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .content-section h2 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .content-section p {
+      color: #e2e8f0;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .content-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .content-section ul li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      color: #e2e8f0;
+    }
+
+    .content-section ul li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #4a7c9c;
+      font-weight: bold;
+    }
+
+    .principle-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .principle-box {
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .principle-box .emoji {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .principle-box h4 {
+      color: #4a7c9c;
+      margin-bottom: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .principle-box p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .script-box {
+      background: #1a1d2e;
+      border: 2px solid #4a7c9c;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .script-box h4 {
+      color: #4a7c9c;
+      margin-bottom: 0.75rem;
+      font-size: 1rem;
+    }
+
+    .script-box p {
+      color: #e2e8f0;
+      font-style: italic;
+      font-size: 0.95rem;
+    }
+
+    .highlight-box {
+      background: rgba(74, 124, 156, 0.1);
+      border-left: 4px solid #4a7c9c;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .highlight-box h3 {
+      color: #4a7c9c;
+      margin-bottom: 0.75rem;
+      font-size: 1.2rem;
+    }
+
+    .warning-box {
+      background: rgba(239, 68, 68, 0.1);
+      border-left: 4px solid #ef4444;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .warning-box h3 {
+      color: #ef4444;
+      margin-bottom: 0.75rem;
+      font-size: 1.2rem;
+    }
+
+    .comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .comparison-box {
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .comparison-box h4 {
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .comparison-box.good h4 {
+      color: #10b981;
+    }
+
+    .comparison-box.bad h4 {
+      color: #ef4444;
+    }
+
+    .comparison-box p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-style: italic;
+    }
+
+    .practice-section {
+      background: #252940;
+      border: 2px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .practice-section h3 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+    }
+
+    .practice-section p {
+      margin-bottom: 1rem;
+      color: #e2e8f0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 8px;
+      color: #e2e8f0;
+      padding: 1rem;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      margin-bottom: 1rem;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4a7c9c;
+    }
+
+    .save-btn {
+      background: #3d4466;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .save-btn:hover {
+      background: #4d5476;
+      transform: translateY(-2px);
+    }
+
+    .takeaway-section {
+      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      border: 2px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .takeaway-section h3 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+    }
+
+    .takeaway-text {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .complete-btn {
+      background: #4a7c9c;
+      color: white;
+      border: none;
+      padding: 1rem 3rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .complete-btn:hover {
+      background: #5a8cac;
+      transform: translateY(-2px);
+    }
+
+    .lesson-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid #3d4466;
+    }
+
+    .nav-btn {
+      background: #3d4466;
+      color: white;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-btn:hover {
+      background: #4d5476;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .principle-grid, .comparison-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-header h1 {
+        font-size: 2rem;
+      }
+
+      .container {
+        padding: 2rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="lesson-nav">
+    <a href="hub-home-BUSINESS.html" class="back-btn">← Back to Hub</a>
+    <div class="progress-indicator">Lesson 1 of 3</div>
+  </nav>
+
+  <div class="lesson-header">
+    <h1>Managing Up</h1>
+    <p class="lesson-subtitle">Setting expectations with bosses and stakeholders</p>
+    <div class="lesson-meta">
+      <span>⏱️ 15 min</span>
+      <span>⭐ 25 XP</span>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="content-section">
+      <h2>⬆️ What "Managing Up" Really Means</h2>
+      <p>Managing up isn't manipulation or politics—it's taking responsibility for the relationship with your boss or stakeholders. It means proactively communicating in ways that help them do their job while getting what you need to do yours. It's about creating mutual success, not gaming the system.</p>
+
+      <p>Most people wait for their manager to set expectations, provide context, and solve problems. Effective leaders reverse this dynamic. They bring their manager information, propose solutions, and clarify expectations before misunderstandings arise. They make themselves easy to manage.</p>
+
+      <p>Why does this matter? Your manager has limited time and attention. They're juggling multiple priorities and people. The clearer and more proactive your communication, the more they can support you effectively. The less effort you require, the more trust you build.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>🧩 Understanding Your Manager's World</h2>
+      <p>Effective managing up starts with empathy—understanding the pressures, priorities, and constraints your manager faces. What do they care about? What are they accountable for? What keeps them up at night? The better you understand their world, the better you can align your communication.</p>
+
+      <div class="principle-grid">
+        <div class="principle-box">
+          <div class="emoji">🎯</div>
+          <h4>Their Goals</h4>
+          <p>What outcomes are they measured on? How does your work connect to what they need to achieve?</p>
+        </div>
+        <div class="principle-box">
+          <div class="emoji">⚡</div>
+          <h4>Their Pressures</h4>
+          <p>What are they being asked about by their manager? What's causing them stress right now?</p>
+        </div>
+        <div class="principle-box">
+          <div class="emoji">🔔</div>
+          <h4>Their Preferences</h4>
+          <p>Do they want detailed updates or high-level summaries? Email or Slack? How often?</p>
+        </div>
+        <div class="principle-box">
+          <div class="emoji">🚧</div>
+          <h4>Their Blind Spots</h4>
+          <p>What context do they lack that you have? What might they be missing?</p>
+        </div>
+      </div>
+
+      <p>Ask directly if needed: "What's the best way to keep you updated on this project? How much detail do you want?" Most managers appreciate this—it shows you're thinking about making the relationship work, not just waiting to be managed.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>📊 Proactive Status Communication</h2>
+      <p>The biggest expectation gap between managers and team members is usually around status updates. Managers want to know where things stand without having to ask. Team members often assume that if there's a problem, they'll raise it—but silence is ambiguous. Is no news good news, or is the person drowning?</p>
+
+      <p>The rule: communicate before you're asked. Regular, proactive updates build trust and eliminate the anxiety of uncertainty. Your manager should never be surprised by a missed deadline or a significant problem.</p>
+
+      <div class="comparison-grid">
+        <div class="comparison-box bad">
+          <h4>❌ Reactive Communication</h4>
+          <p>"I wanted to let you know we're going to miss the Friday deadline. We hit some unexpected issues last week..."</p>
+        </div>
+        <div class="comparison-box good">
+          <h4>✅ Proactive Communication</h4>
+          <p>"Quick status on Project X: We're on track for the Friday deadline. Hit one snag with the API integration yesterday but found a workaround. I'll flag it if that changes."</p>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>The "No Surprises" Rule</h3>
+        <p>Bad news doesn't improve with age. If there's a problem—especially one that will affect deadlines, budgets, or stakeholders—communicate it immediately with a proposed path forward. Your manager needs time to help solve problems and manage expectations upward. Don't rob them of that time.</p>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>📝 Setting Clear Expectations</h2>
+      <p>Assumption is the enemy of alignment. When you receive a new project or priority, don't assume you understand what success looks like—explicitly clarify it. This is your responsibility, not your manager's.</p>
+
+      <p>Questions to ask (or answer proactively):</p>
+      <ul>
+        <li><strong>What does done look like?</strong> Specific deliverables, quality standards, format</li>
+        <li><strong>What's the deadline?</strong> And is it flexible or fixed? What happens if we miss it?</li>
+        <li><strong>What's the priority?</strong> How does this rank against my other commitments?</li>
+        <li><strong>Who else needs to be involved?</strong> Stakeholders, reviewers, collaborators</li>
+        <li><strong>What constraints should I know about?</strong> Budget, resources, dependencies</li>
+        <li><strong>How should I escalate if blocked?</strong> What decisions can I make vs. need approval for?</li>
+      </ul>
+
+      <div class="script-box">
+        <h4>Clarification Script</h4>
+        <p>"To make sure I deliver what you need: I'm planning to [summary of approach] with a target of [date]. The key deliverable will be [specific output]. Does that match your expectations, or should I adjust anything?"</p>
+      </div>
+
+      <p>This proactive clarification takes 60 seconds but can save hours of rework from misaligned expectations. It also signals competence—you're thinking ahead instead of just executing blindly.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>🚨 Escalating Effectively</h2>
+      <p>Knowing when and how to escalate is a crucial skill. Escalate too late and you've created a bigger problem. Escalate too early and you seem unable to handle challenges. Escalate poorly and you dump problems without solutions.</p>
+
+      <p>When to escalate:</p>
+      <ul>
+        <li>When you're blocked and can't unblock yourself</li>
+        <li>When a deadline is at risk and you've exhausted alternatives</li>
+        <li>When a decision is above your authority level</li>
+        <li>When you need resources you can't obtain yourself</li>
+        <li>When there's interpersonal conflict you can't resolve</li>
+      </ul>
+
+      <p>How to escalate well:</p>
+
+      <div class="script-box">
+        <h4>Effective Escalation Formula</h4>
+        <p>"I need your help with [specific issue]. Here's the situation: [brief context]. I've tried [what you've already done]. My recommendation is [proposed solution], but I need [specific help needed] to move forward. Can we discuss?"</p>
+      </div>
+
+      <div class="warning-box">
+        <h3>Never Escalate Without a Recommendation</h3>
+        <p>Coming to your manager with a problem but no proposed solution signals that you want them to do your thinking. Always have a recommendation, even if you're not sure it's right. "I'm not certain this is the best approach, but here's what I'm thinking..." is perfectly acceptable.</p>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>🔄 Managing Shifting Priorities</h2>
+      <p>Priorities change. New requests come in. What seemed important last week gets deprioritized. This is normal in dynamic organizations—but it creates expectation challenges. The skill is navigating these shifts transparently rather than just absorbing them silently.</p>
+
+      <p>When priorities shift, make the trade-offs explicit:</p>
+
+      <div class="script-box">
+        <h4>Trade-off Conversation</h4>
+        <p>"I can take on this new request. To do that well, I'll need to push back Project Y by a week, or reduce the scope of Project Z. Which would you prefer? Or is there something else I should deprioritize instead?"</p>
+      </div>
+
+      <p>This approach has multiple benefits: it prevents you from over-committing, it gives your manager visibility into your workload, and it involves them in the prioritization decision rather than surprising them later with delayed deliverables.</p>
+
+      <div class="highlight-box">
+        <h3>The "Yes, And" Technique</h3>
+        <p>Instead of saying "no" to new requests, say "yes, and here's what that means for other priorities." This is collaborative rather than resistant, while still protecting your capacity. Most managers appreciate this transparency over false promises.</p>
+      </div>
+    </div>
+
+    <div class="practice-section">
+      <h3>💪 Practice Exercise</h3>
+      <p>Think about your current relationship with your manager or key stakeholder. Identify one area where expectations might be misaligned, and write out how you'll proactively address it.</p>
+      <textarea id="practiceAnswer" placeholder="My manager/key stakeholder:
+
+Current potential misalignment:
+- What I think they expect:
+- What I'm actually planning to deliver:
+- The gap:
+
+Proactive conversation I'll have:
+- Key points to clarify:
+- Questions I'll ask:
+- My recommendation:
+
+How I'll improve ongoing communication:
+
+One thing I'll do differently starting this week:"></textarea>
+      <button class="save-btn" onclick="saveExercise()">Save Progress</button>
+    </div>
+
+    <div class="takeaway-section">
+      <h3>🎯 Key Takeaway</h3>
+      <p class="takeaway-text">"The best people to manage are those who make themselves easy to manage"</p>
+      <button class="complete-btn" onclick="completeLesson()">Mark Complete (+25 XP)</button>
+    </div>
+
+    <div class="lesson-footer">
+      <a href="hub-home-BUSINESS.html" class="nav-btn">← Back to Hub</a>
+      <a href="expectation-management-2-downward.html" class="nav-btn">Next Lesson →</a>
+    </div>
+
+  </div>
+
+  <script>
+    function saveExercise() {
+      const answer = document.getElementById('practiceAnswer').value;
+      if (answer.trim()) {
+        localStorage.setItem('expectation-management-1-upward-exercise', answer);
+        alert('💾 Progress saved!');
+      } else {
+        alert('Please write something before saving!');
+      }
+    }
+
+    function completeLesson() {
+      const lessonId = 'expectation-management-1-upward';
+      const xpReward = 25;
+
+      localStorage.setItem(lessonId + '-complete', 'true');
+
+      const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+      localStorage.setItem('totalXP', currentXP + xpReward);
+
+      alert('✅ Lesson complete! +' + xpReward + ' XP');
+
+      window.location.href = 'expectation-management-2-downward.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const saved = localStorage.getItem('expectation-management-1-upward-exercise');
+      if (saved) {
+        document.getElementById('practiceAnswer').value = saved;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!-- LOADING SCREEN COMPONENT -->
+<!-- Add this at the START of <body> tag -->
+
+<style>
+    /* Loading Screen - Critical CSS */
+    #loadingScreen {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #1a1d2e;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        transition: opacity 0.3s ease;
+    }
+    
+    #loadingScreen.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+    
+    .loading-spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid #3d4466;
+        border-top-color: #6366f1;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .loading-text {
+        margin-top: 20px;
+        color: #94a3b8;
+        font-size: 16px;
+        font-weight: 500;
+    }
+    
+    .loading-logo {
+        font-size: 32px;
+        font-weight: 800;
+        color: #ffffff;
+        margin-bottom: 30px;
+        letter-spacing: -0.5px;
+    }
+</style>
+
+<div id="loadingScreen">
+    <div class="loading-logo">TAP-IN</div>
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Loading...</div>
+</div>
+
+<script>
+// Hide loading screen when page is ready
+(function() {
+    function hideLoading() {
+        const loader = document.getElementById('loadingScreen');
+        if (loader) {
+            loader.classList.add('hidden');
+            setTimeout(() => {
+                loader.style.display = 'none';
+            }, 300);
+        }
+    }
+    
+    // Hide on window load
+    window.addEventListener('load', hideLoading);
+    
+    // Fallback timeout (5 seconds max)
+    setTimeout(hideLoading, 5000);
+    
+    // Emergency fallback (DOMContentLoaded)
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(hideLoading, 100);
+    } else {
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(hideLoading, 500);
+        });
+    }
+})();
+</script>
+

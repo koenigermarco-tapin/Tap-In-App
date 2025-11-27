@@ -1,0 +1,284 @@
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TAP-IN BELT PROGRESSION SYSTEM - UNLOCK LOGIC
+// Ensures proper belt progression and prevents skipping ahead
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+// Belt System Configuration
+const BELT_SYSTEM = {
+  white: { 
+    name: 'White Belt', 
+    stripes: 4, 
+    requiredPrevious: null,
+    theme: 'Absence of Trust',
+    color: '#e2e8f0'
+  },
+  blue: { 
+    name: 'Blue Belt', 
+    stripes: 4, 
+    requiredPrevious: 'white',
+    theme: 'Fear of Conflict',
+    color: '#4a7c9c'
+  },
+  purple: { 
+    name: 'Purple Belt', 
+    stripes: 4, 
+    requiredPrevious: 'blue',
+    theme: 'Lack of Commitment',
+    color: '#a855f7'
+  },
+  brown: { 
+    name: 'Brown Belt', 
+    stripes: 4, 
+    requiredPrevious: 'purple',
+    theme: 'Avoidance of Accountability',
+    color: '#d97706'
+  },
+  black: { 
+    name: 'Black Belt', 
+    stripes: 4, 
+    requiredPrevious: 'brown',
+    theme: 'Inattention to Results',
+    color: '#fbbf24'
+  }
+};
+
+const BeltProgressionSystem = {
+  
+  // Check if belt is unlocked
+  isBeltUnlocked(beltName) {
+    if (beltName === 'white') return true; // White always unlocked
+    
+    // Check assessment unlock (skip ahead if belt earned in assessment)
+    const assessmentResult = localStorage.getItem('beltLevel') || localStorage.getItem('beltAssessmentResult');
+    if (assessmentResult) {
+      const beltOrder = ['white', 'blue', 'purple', 'brown', 'black'];
+      const assessmentIndex = beltOrder.indexOf(assessmentResult);
+      const currentIndex = beltOrder.indexOf(beltName);
+      if (currentIndex <= assessmentIndex) {
+        return true; // Can skip to earned belt
+      }
+    }
+    
+    // Check progression unlock (must complete previous belt)
+    const belt = BELT_SYSTEM[beltName];
+    if (belt.requiredPrevious) {
+      return this.checkBeltComplete(belt.requiredPrevious);
+    }
+    
+    return false;
+  },
+  
+  // Check if belt is complete (all stripes done)
+  checkBeltComplete(beltName) {
+    const belt = BELT_SYSTEM[beltName];
+    if (!belt) return false;
+    
+    let completedStripes = 0;
+    
+    // Check both naming conventions for compatibility
+    for (let i = 1; i <= belt.stripes; i++) {
+      const key1 = `${beltName}-stripe-${i}-complete`;
+      const key2 = `${beltName}BeltStripe${i}Complete`;
+      
+      if (localStorage.getItem(key1) === 'true' || localStorage.getItem(key2) === 'true') {
+        completedStripes++;
+      }
+    }
+    
+    return completedStripes >= belt.stripes;
+  },
+  
+  // Get belt completion percentage
+  getBeltCompletionPercentage(beltName) {
+    const belt = BELT_SYSTEM[beltName];
+    if (!belt) return 0;
+    
+    let completedStripes = 0;
+    
+    for (let i = 1; i <= belt.stripes; i++) {
+      const key1 = `${beltName}-stripe-${i}-complete`;
+      const key2 = `${beltName}BeltStripe${i}Complete`;
+      
+      if (localStorage.getItem(key1) === 'true' || localStorage.getItem(key2) === 'true') {
+        completedStripes++;
+      }
+    }
+    
+    return Math.round((completedStripes / belt.stripes) * 100);
+  },
+  
+  // Get unlock requirements for a belt
+  getUnlockRequirements(beltName) {
+    const belt = BELT_SYSTEM[beltName];
+    if (!belt) return null;
+    
+    if (!belt.requiredPrevious) {
+      return { unlocked: true, message: 'Always available' };
+    }
+    
+    const isUnlocked = this.isBeltUnlocked(beltName);
+    const previousBelt = belt.requiredPrevious;
+    const previousComplete = this.checkBeltComplete(previousBelt);
+    const assessmentResult = localStorage.getItem('beltLevel');
+    
+    if (isUnlocked) {
+      return {
+        unlocked: true,
+        message: assessmentResult ? 'Unlocked via assessment' : 'Unlocked via progression'
+      };
+    }
+    
+    return {
+      unlocked: false,
+      requiredBelt: BELT_SYSTEM[previousBelt].name,
+      completionPercentage: this.getBeltCompletionPercentage(previousBelt),
+      message: `Complete ${BELT_SYSTEM[previousBelt].name} (all ${BELT_SYSTEM[previousBelt].stripes} stripes) OR achieve ${belt.name} in assessment`
+    };
+  },
+  
+  // Apply locked state to belt card
+  applyLockedState(cardElement, beltName) {
+    if (!cardElement) return;
+    
+    const requirements = this.getUnlockRequirements(beltName);
+    
+    if (!requirements.unlocked) {
+      // Add locked class
+      cardElement.classList.add('locked');
+      cardElement.style.opacity = '0.5';
+      cardElement.style.cursor = 'not-allowed';
+      cardElement.style.position = 'relative';
+      
+      // Add lock icon
+      const lockIcon = document.createElement('div');
+      lockIcon.innerHTML = '🔒';
+      lockIcon.style.cssText = `
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        font-size: 2rem;
+        z-index: 10;
+      `;
+      cardElement.appendChild(lockIcon);
+      
+      // Disable click
+      const links = cardElement.querySelectorAll('a');
+      links.forEach(link => {
+        link.onclick = (e) => {
+          e.preventDefault();
+          this.showUnlockModal(beltName, requirements);
+        };
+      });
+      
+      // Also disable any onclick attributes
+      cardElement.onclick = (e) => {
+        e.preventDefault();
+        this.showUnlockModal(beltName, requirements);
+      };
+    }
+  },
+  
+  // Show unlock requirements modal
+  showUnlockModal(beltName, requirements) {
+    const belt = BELT_SYSTEM[beltName];
+    
+    const modal = document.createElement('div');
+    modal.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      backdrop-filter: blur(4px);
+    `;
+    
+    modal.innerHTML = `
+      <div style="
+        background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+        border: 2px solid #4a7c9c;
+        border-radius: 16px;
+        padding: 3rem;
+        max-width: 500px;
+        text-align: center;
+      ">
+        <div style="font-size: 4rem; margin-bottom: 1rem;">🔒</div>
+        <h3 style="color: #4a7c9c; font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">
+          ${belt.name} Locked
+        </h3>
+        <p style="color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1.5rem; line-height: 1.6;">
+          ${requirements.message}
+        </p>
+        ${requirements.completionPercentage !== undefined ? `
+          <div style="background: rgba(74, 124, 156, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #4a7c9c;">
+            <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">
+              ${requirements.requiredBelt} Progress
+            </div>
+            <div style="background: rgba(0,0,0,0.3); height: 8px; border-radius: 4px; overflow: hidden;">
+              <div style="background: #4a7c9c; height: 100%; width: ${requirements.completionPercentage}%; transition: width 0.3s;"></div>
+            </div>
+            <div style="color: #4a7c9c; font-weight: 600; margin-top: 0.5rem;">
+              ${requirements.completionPercentage}% Complete
+            </div>
+          </div>
+        ` : ''}
+        <button onclick="this.closest('div').parentElement.remove()" style="
+          background: #4a7c9c;
+          color: white;
+          border: none;
+          padding: 1rem 2rem;
+          border-radius: 8px;
+          font-weight: 600;
+          cursor: pointer;
+          font-size: 1rem;
+        ">
+          Got It
+        </button>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+  },
+  
+  // Initialize belt locking system
+  initializeBeltLocking() {
+    // Check all belt cards and apply locked state
+    const beltCards = {
+      blue: document.getElementById('blue-belt-card') || document.querySelector('[data-belt="blue"]'),
+      purple: document.getElementById('purple-belt-card') || document.querySelector('[data-belt="purple"]'),
+      brown: document.getElementById('brown-belt-card') || document.querySelector('[data-belt="brown"]'),
+      black: document.getElementById('black-belt-card') || document.querySelector('[data-belt="black"]')
+    };
+    
+    Object.entries(beltCards).forEach(([beltName, cardElement]) => {
+      if (cardElement && !this.isBeltUnlocked(beltName)) {
+        this.applyLockedState(cardElement, beltName);
+      }
+    });
+  }
+};
+
+// Auto-initialize
+if (typeof window !== 'undefined') {
+  window.BeltProgressionSystem = BeltProgressionSystem;
+  window.BELT_SYSTEM = BELT_SYSTEM;
+  
+  // Run after DOM loads
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      BeltProgressionSystem.initializeBeltLocking();
+    });
+  } else {
+    BeltProgressionSystem.initializeBeltLocking();
+  }
+}
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { BeltProgressionSystem, BELT_SYSTEM };
+}
+

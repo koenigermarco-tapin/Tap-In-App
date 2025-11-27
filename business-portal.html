@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Portal | Tap-In Team Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #1a1d2e;
+      color: #e2e8f0;
+      font-family: Inter, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 3rem;
+    }
+
+    .breadcrumb {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .breadcrumb a {
+      color: #4a7c9c;
+      text-decoration: none;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      border-color: #4a7c9c;
+      transform: translateY(-4px);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4a7c9c;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: #4a7c9c;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5a8cac;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #3d4466;
+      color: #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #4d5476;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .team-code-box {
+      background: #1a1d2e;
+      border: 2px solid #4a7c9c;
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .team-code-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #4a7c9c;
+      letter-spacing: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #3d4466;
+    }
+
+    tr:hover {
+      background: rgba(74, 124, 156, 0.05);
+    }
+
+    .belt-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .belt-white { background: rgba(226, 232, 240, 0.2); color: #e2e8f0; }
+    .belt-blue { background: rgba(74, 124, 156, 0.2); color: #4a7c9c; }
+    .belt-purple { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+    .belt-brown { background: rgba(217, 119, 6, 0.2); color: #d97706; }
+    .belt-black { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+    .add-member-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .form-input {
+      padding: 0.75rem 1rem;
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #4a7c9c;
+    }
+
+    .action-btn {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      color: #dc2626;
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .add-member-form {
+        grid-template-columns: 1fr;
+      }
+      table {
+        font-size: 0.85rem;
+      }
+      th, td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="header">
+      <div class="breadcrumb">
+        <a href="index-DUAL-ENTRY.html">Home</a> / Business Portal
+      </div>
+      <h1>🏢 Business Portal</h1>
+      <p class="subtitle">Manage your team's leadership development journey</p>
+    </div>
+
+    <!-- Team Access Code -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔑 Your Team Access Code</div>
+        <button class="btn btn-secondary" onclick="generateNewCode()">
+          🔄 Generate New Code
+        </button>
+      </div>
+      <div class="team-code-box">
+        <div>
+          <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">Share this code with your team:</div>
+          <div class="team-code-text" id="teamCode">TEAM-LOADING</div>
+        </div>
+        <button class="btn btn-primary" onclick="copyTeamCode()">
+          📋 Copy Code
+        </button>
+      </div>
+      <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+        Team members can enter this code when they sign up to join your team dashboard automatically.
+      </p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalMembers">0</div>
+        <div class="stat-label">Team Members</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgXP">0</div>
+        <div class="stat-label">Avg XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="completionRate">0%</div>
+        <div class="stat-label">Completion Rate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activeMembers">0</div>
+        <div class="stat-label">Active This Week</div>
+      </div>
+    </div>
+
+    <!-- Add Team Member -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">➕ Add Team Member</div>
+        <button class="btn btn-secondary" onclick="exportCSV()">
+          📥 Export CSV
+        </button>
+      </div>
+      
+      <div class="add-member-form">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input type="text" id="memberName" class="form-input" placeholder="John Doe" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input type="email" id="memberEmail" class="form-input" placeholder="john@company.com" />
+        </div>
+        <button class="btn btn-primary" onclick="addMember()">
+          ➕ Add Member
+        </button>
+      </div>
+    </div>
+
+    <!-- Team Members Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👥 Team Members</div>
+        <div style="color: #94a3b8; font-size: 0.9rem;" id="memberCount">0 members</div>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Belt</th>
+              <th>Stripe</th>
+              <th>XP</th>
+              <th>Joined</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teamMembersTable">
+            <!-- Members will be dynamically inserted -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Team management system
+    const TeamPortal = {
+      
+      // Get team code
+      getTeamCode() {
+        let code = localStorage.getItem('teamCode');
+        if (!code) {
+          code = this.generateCode();
+          localStorage.setItem('teamCode', code);
+        }
+        return code;
+      },
+      
+      // Generate new team code
+      generateCode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = 'TEAM-';
+        for (let i = 0; i < 6; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+      },
+      
+      // Get team members
+      getTeamMembers() {
+        const stored = localStorage.getItem('teamMembers');
+        return stored ? JSON.parse(stored) : [];
+      },
+      
+      // Save team members
+      saveTeamMembers(members) {
+        localStorage.setItem('teamMembers', JSON.stringify(members));
+        this.renderTable();
+        this.updateStats();
+      },
+      
+      // Add team member
+      addMember(name, email) {
+        const members = this.getTeamMembers();
+        const newMember = {
+          id: Date.now(),
+          name: name,
+          email: email,
+          belt: 'white',
+          stripe: 1,
+          xp: 0,
+          joinedDate: new Date().toISOString().split('T')[0],
+          lastActive: new Date().toISOString().split('T')[0]
+        };
+        members.push(newMember);
+        this.saveTeamMembers(members);
+        return newMember;
+      },
+      
+      // Remove team member
+      removeMember(id) {
+        const members = this.getTeamMembers();
+        const filtered = members.filter(m => m.id !== id);
+        this.saveTeamMembers(filtered);
+      },
+      
+      // Render table
+      renderTable() {
+        const members = this.getTeamMembers();
+        const tbody = document.getElementById('teamMembersTable');
+        
+        if (members.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: #94a3b8; padding: 3rem;">
+                No team members yet. Add your first member above!
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        tbody.innerHTML = members.map(member => `
+          <tr>
+            <td style="font-weight: 600;">${member.name}</td>
+            <td style="color: #94a3b8;">${member.email}</td>
+            <td>
+              <span class="belt-badge belt-${member.belt}">
+                ${this.getBeltEmoji(member.belt)} ${this.capitalize(member.belt)}
+              </span>
+            </td>
+            <td style="color: #4a7c9c; font-weight: 600;">${member.stripe}/4</td>
+            <td style="color: #fbbf24; font-weight: 600;">${member.xp} XP</td>
+            <td style="color: #94a3b8; font-size: 0.85rem;">${this.formatDate(member.joinedDate)}</td>
+            <td>
+              <button class="action-btn" onclick="TeamPortal.removeMember(${member.id})" title="Remove member">
+                🗑️
+              </button>
+            </td>
+          </tr>
+        `).join('');
+        
+        document.getElementById('memberCount').textContent = `${members.length} member${members.length !== 1 ? 's' : ''}`;
+      },
+      
+      // Update stats
+      updateStats() {
+        const members = this.getTeamMembers();
+        
+        // Total members
+        document.getElementById('totalMembers').textContent = members.length;
+        
+        // Average XP
+        const avgXP = members.length > 0 
+          ? Math.round(members.reduce((sum, m) => sum + m.xp, 0) / members.length)
+          : 0;
+        document.getElementById('avgXP').textContent = avgXP;
+        
+        // Completion rate (members who completed at least 1 belt)
+        const completedMembers = members.filter(m => m.belt !== 'white' || m.stripe > 1).length;
+        const completionRate = members.length > 0
+          ? Math.round((completedMembers / members.length) * 100)
+          : 0;
+        document.getElementById('completionRate').textContent = completionRate + '%';
+        
+        // Active this week (placeholder - would check lastActive date)
+        const activeCount = members.filter(m => {
+          const lastActive = new Date(m.lastActive);
+          const weekAgo = new Date();
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          return lastActive >= weekAgo;
+        }).length;
+        document.getElementById('activeMembers').textContent = activeCount;
+      },
+      
+      // Export to CSV
+      exportToCSV() {
+        const members = this.getTeamMembers();
+        
+        if (members.length === 0) {
+          alert('No members to export');
+          return;
+        }
+        
+        // CSV header
+        let csv = 'Name,Email,Belt,Stripe,XP,Joined Date,Last Active\n';
+        
+        // CSV rows
+        members.forEach(member => {
+          csv += `"${member.name}","${member.email}","${member.belt}",${member.stripe},${member.xp},"${member.joinedDate}","${member.lastActive}"\n`;
+        });
+        
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `tap-in-team-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        alert('✅ Team data exported successfully!');
+      },
+      
+      // Helper functions
+      getBeltEmoji(belt) {
+        const emojis = {
+          white: '⚪',
+          blue: '🔵',
+          purple: '🟣',
+          brown: '🟤',
+          black: '⚫'
+        };
+        return emojis[belt] || '⚪';
+      },
+      
+      capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      },
+      
+      formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+      },
+      
+      // Initialize
+      init() {
+        // Load team code
+        document.getElementById('teamCode').textContent = this.getTeamCode();
+        
+        // Render table
+        this.renderTable();
+        this.updateStats();
+      }
+    };
+
+    // Global functions for buttons
+    function addMember() {
+      const nameInput = document.getElementById('memberName');
+      const emailInput = document.getElementById('memberEmail');
+      
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      
+      if (!name || !email) {
+        alert('Please enter both name and email');
+        return;
+      }
+      
+      if (!email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      TeamPortal.addMember(name, email);
+      
+      // Clear inputs
+      nameInput.value = '';
+      emailInput.value = '';
+      
+      alert(`✅ ${name} added to team!`);
+    }
+
+    function generateNewCode() {
+      if (confirm('Are you sure? This will invalidate the old code.')) {
+        const newCode = TeamPortal.generateCode();
+        localStorage.setItem('teamCode', newCode);
+        document.getElementById('teamCode').textContent = newCode;
+        alert('✅ New team code generated!');
+      }
+    }
+
+    function copyTeamCode() {
+      const code = TeamPortal.getTeamCode();
+      navigator.clipboard.writeText(code).then(() => {
+        alert('✅ Team code copied to clipboard!');
+      });
+    }
+
+    function exportCSV() {
+      TeamPortal.exportToCSV();
+    }
+
+    // Initialize on load
+    TeamPortal.init();
+  </script>
+</body>
+</html>

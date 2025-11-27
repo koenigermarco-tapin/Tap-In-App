@@ -1,62 +1,66 @@
-# Netlify Configuration for TAP-IN Assessments
-
 [build]
-  # No build command needed - static HTML files
   publish = "."
-  command = ""
-  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF ."
+  command = "echo 'No build needed - static site'"
 
-# Environment variables (configure in Netlify UI)
-# SUPABASE_URL
-# SUPABASE_ANON_KEY
-# SUPABASE_SERVICE_ROLE_KEY
-
-# ========================================
-# FORCE HTTPS REDIRECTS (NEW!)
-# ========================================
+# Redirects for clean URLs
 [[redirects]]
-  from = "http://tap-in-teams.netlify.app/*"
-  to = "https://tap-in-teams.netlify.app/:splat"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "http://*"
-  to = "https://:splat"
-  status = 301
-  force = true
-
-# ========================================
-# LANGUAGE REDIRECTS
-# ========================================
-[[redirects]]
-  # German language redirect
-  from = "/de"
-  to = "/index.de.html"
+  from = "/"
+  to = "/index-DUAL-ENTRY.html"
   status = 200
 
-# ========================================
-# SECURITY AND CACHE HEADERS
-# ========================================
+[[redirects]]
+  from = "/de"
+  to = "/index-DUAL-ENTRY-de.html"
+  status = 200
+
+[[redirects]]
+  from = "/gym"
+  to = "/gym-dashboard.html"
+  status = 200
+
+[[redirects]]
+  from = "/hub"
+  to = "/learning-hub.html"
+  status = 200
+
+[[redirects]]
+  from = "/assessment"
+  to = "/assessment-belt-landing.html"
+  status = 200
+
+[[redirects]]
+  from = "/business"
+  to = "/business-portal.html"
+  status = 200
+
+# Security headers
 [[headers]]
-  # NEVER cache HTML files - always fetch fresh to avoid hard refresh
-  for = "/*.html"
-    [headers.values]
-    Cache-Control = "no-cache, no-store, must-revalidate, max-age=0, s-maxage=0"
-    Pragma = "no-cache"
-    Expires = "0"
+  for = "/*"
+  [headers.values]
     X-Frame-Options = "DENY"
     X-XSS-Protection = "1; mode=block"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+# Cache static assets
+[[headers]]
+  for = "/*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
 
 [[headers]]
-  # Security headers for other files (CSS, JS, images)
-  for = "/*"
-    [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    # Short cache for static assets (1 hour) so updates appear quickly
-    Cache-Control = "public, max-age=3600, must-revalidate"
+  for = "/*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.woff2"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Don't cache HTML (for updates)
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

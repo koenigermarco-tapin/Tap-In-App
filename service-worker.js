@@ -1,5 +1,5 @@
 // TAP-IN Service Worker - Offline Support & Caching
-const CACHE_NAME = 'tap-in-v9-2024-11-24';
+const CACHE_NAME = 'tap-in-v10-2024-11-27-FORCE-REFRESH'; // CRITICAL: Updated to force all users to refresh
 const urlsToCache = [
   '/',
   '/index.html',
