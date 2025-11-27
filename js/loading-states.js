@@ -1,0 +1,47 @@
+const LoadingStates = {
+  show(message = 'Loading...') {
+    const existing = document.getElementById('global-loader');
+    if (existing) return;
+    
+    const loader = document.createElement('div');
+    loader.id = 'global-loader';
+    loader.innerHTML = `
+      <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                  background: rgba(0,0,0,0.9); display: flex; align-items: center; 
+                  justify-content: center; z-index: 99999; backdrop-filter: blur(4px);">
+        <div style="text-align: center; color: white;">
+          <div class="spinner"></div>
+          <p style="margin-top: 1rem; font-size: 1.125rem;">${message}</p>
+        </div>
+      </div>
+      <style>
+        .spinner {
+          width: 60px;
+          height: 60px;
+          border: 5px solid rgba(255,255,255,0.2);
+          border-top-color: #4a7c9c;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin: 0 auto;
+        }
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+      </style>
+    `;
+    document.body.appendChild(loader);
+  },
+  
+  hide() {
+    const loader = document.getElementById('global-loader');
+    if (loader) loader.remove();
+  },
+  
+  showWithProgress(message = 'Loading...', duration = 3000) {
+    this.show(message);
+    setTimeout(() => this.hide(), duration);
+  }
+};
+
+window.LoadingStates = LoadingStates;
+
