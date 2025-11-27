@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deine Impact-Bewertung - Ergebnisse | Tap-In</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1d2e;
+      color: #e2e8f0;
+      font-family: Inter, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding-bottom: 4rem;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    .header h1 {
+      font-size: 2.5rem;
+      color: #4a7c9c;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      margin-bottom: 3rem;
+    }
+
+    .score-card {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 16px;
+      padding: 3rem;
+      text-align: center;
+    }
+
+    .score-card.main {
+      border-color: #4a7c9c;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .score-card.main::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4a7c9c 0%, #5a8cac 100%);
+    }
+
+    .score-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 1rem;
+    }
+
+    .score-value {
+      font-size: 5rem;
+      font-weight: 800;
+      color: #4a7c9c;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .score-suffix {
+      font-size: 2rem;
+      color: #94a3b8;
+    }
+
+    .score-interpretation {
+      color: #e2e8f0;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    .belt-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .belt-icon {
+      font-size: 6rem;
+      margin-bottom: 1rem;
+      animation: beltReveal 1s ease-out;
+    }
+
+    @keyframes beltReveal {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .belt-name {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    .belt-name.white { color: #f8fafc; }
+    .belt-name.blue { color: #3b82f6; }
+    .belt-name.purple { color: #a855f7; }
+    .belt-name.brown { color: #a16207; }
+    .belt-name.black { color: #fbbf24; }
+
+    .belt-description {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .breakdown-section {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .breakdown-section h2 {
+      color: #4a7c9c;
+      font-size: 1.5rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .dysfunction-bars {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .dysfunction-item {
+      display: grid;
+      grid-template-columns: 140px 1fr 60px;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .dysfunction-label {
+      color: #e2e8f0;
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .dysfunction-bar {
+      height: 24px;
+      background: #1a1d2e;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .dysfunction-fill {
+      height: 100%;
+      border-radius: 12px;
+      transition: width 1s ease-out;
+      position: relative;
+    }
+
+    .dysfunction-fill.high { background: linear-gradient(90deg, #10b981 0%, #34d399 100%); }
+    .dysfunction-fill.medium { background: linear-gradient(90deg, #fbbf24 0%, #fcd34d 100%); }
+    .dysfunction-fill.low { background: linear-gradient(90deg, #ef4444 0%, #f87171 100%); }
+
+    .dysfunction-score {
+      color: #e2e8f0;
+      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: right;
+    }
+
+    .weakest-highlight {
+      background: rgba(239, 68, 68, 0.1);
+      border: 2px solid #ef4444;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-top: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .weakest-highlight .icon {
+      font-size: 2rem;
+    }
+
+    .weakest-highlight .content h4 {
+      color: #ef4444;
+      font-size: 1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .weakest-highlight .content p {
+      color: #e2e8f0;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .recommendations-section {
+      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      border: 2px solid #4a7c9c;
+      border-radius: 16px;
+      padding: 2.5rem;
+      margin-bottom: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .recommendations-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #4a7c9c 0%, #5a8cac 100%);
+    }
+
+    .recommendations-section h2 {
+      color: #4a7c9c;
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .recommendation-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .rec-card {
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .rec-card:hover {
+      border-color: #4a7c9c;
+      transform: translateY(-4px);
+    }
+
+    .rec-card.primary {
+      border-color: #10b981;
+      grid-column: 1 / -1;
+    }
+
+    .rec-card .badge {
+      display: inline-block;
+      background: rgba(74, 124, 156, 0.2);
+      color: #4a7c9c;
+      padding: 0.3rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+
+    .rec-card.primary .badge {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+
+    .rec-card h3 {
+      color: #e2e8f0;
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .rec-card p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .rec-card .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      font-size: 0.95rem;
+    }
+
+    .rec-card .btn-primary {
+      background: #4a7c9c;
+      color: white;
+    }
+
+    .rec-card .btn-primary:hover {
+      background: #5a8cac;
+    }
+
+    .rec-card.primary .btn-primary {
+      background: #10b981;
+    }
+
+    .rec-card.primary .btn-primary:hover {
+      background: #059669;
+    }
+
+    .rec-card .btn-secondary {
+      background: #3d4466;
+      color: #e2e8f0;
+    }
+
+    .rec-card .btn-secondary:hover {
+      background: #4d5476;
+    }
+
+    .share-section {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .share-section h2 {
+      color: #4a7c9c;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .share-section p {
+      color: #94a3b8;
+      margin-bottom: 1.5rem;
+    }
+
+    .share-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: 2px solid #3d4466;
+      background: #1a1d2e;
+      color: #e2e8f0;
+      cursor: pointer;
+    }
+
+    .share-btn:hover {
+      border-color: #4a7c9c;
+      transform: translateY(-2px);
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1.25rem 2.5rem;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      font-size: 1.1rem;
+    }
+
+    .action-btn.primary {
+      background: #4a7c9c;
+      color: white;
+      box-shadow: 0 8px 24px rgba(74, 124, 156, 0.3);
+    }
+
+    .action-btn.primary:hover {
+      background: #5a8cac;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(74, 124, 156, 0.4);
+    }
+
+    .action-btn.secondary {
+      background: #3d4466;
+      color: #e2e8f0;
+    }
+
+    .action-btn.secondary:hover {
+      background: #4d5476;
+      transform: translateY(-2px);
+    }
+
+    .xp-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .results-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .recommendation-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .rec-card.primary {
+        grid-column: 1;
+      }
+
+      .dysfunction-item {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+
+      .dysfunction-score {
+        text-align: left;
+      }
+
+      .header h1 {
+        font-size: 2rem;
+      }
+
+      .score-value {
+        font-size: 4rem;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+      }
+
+      .action-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>🎯 Deine Impact-Bewertung</h1>
+    <p>Basierend auf Patrick Lencionis 5 Dysfunktionen eines Teams</p>
+  </div>
+
+  <div class="container">
+
+    <div class="results-grid">
+      <div class="score-card main">
+        <div class="score-label">Gesamtpunktzahl</div>
+        <div class="score-value" id="totalScore">0<span class="score-suffix">%</span></div>
+        <div class="score-interpretation" id="scoreInterpretation">Wird berechnet...</div>
+      </div>
+
+      <div class="score-card belt-display">
+        <div class="score-label">Dein Gürtellevel</div>
+        <div class="belt-icon" id="beltIcon">🥋</div>
+        <div class="belt-name" id="beltName">Wird ermittelt...</div>
+        <div class="belt-description" id="beltDescription"></div>
+      </div>
+    </div>
+
+    <div class="breakdown-section">
+      <h2>📊 Aufschlüsselung nach Bereich</h2>
+
+      <div class="dysfunction-bars">
+        <div class="dysfunction-item">
+          <div class="dysfunction-label">Vertrauen</div>
+          <div class="dysfunction-bar">
+            <div class="dysfunction-fill" id="trustFill" style="width: 0%"></div>
+          </div>
+          <div class="dysfunction-score" id="trustScore">0%</div>
+        </div>
+
+        <div class="dysfunction-item">
+          <div class="dysfunction-label">Konflikt</div>
+          <div class="dysfunction-bar">
+            <div class="dysfunction-fill" id="conflictFill" style="width: 0%"></div>
+          </div>
+          <div class="dysfunction-score" id="conflictScore">0%</div>
+        </div>
+
+        <div class="dysfunction-item">
+          <div class="dysfunction-label">Verbindlichkeit</div>
+          <div class="dysfunction-bar">
+            <div class="dysfunction-fill" id="commitmentFill" style="width: 0%"></div>
+          </div>
+          <div class="dysfunction-score" id="commitmentScore">0%</div>
+        </div>
+
+        <div class="dysfunction-item">
+          <div class="dysfunction-label">Verantwortung</div>
+          <div class="dysfunction-bar">
+            <div class="dysfunction-fill" id="accountabilityFill" style="width: 0%"></div>
+          </div>
+          <div class="dysfunction-score" id="accountabilityScore">0%</div>
+        </div>
+
+        <div class="dysfunction-item">
+          <div class="dysfunction-label">Ergebnisse</div>
+          <div class="dysfunction-bar">
+            <div class="dysfunction-fill" id="resultsFill" style="width: 0%"></div>
+          </div>
+          <div class="dysfunction-score" id="resultsScore">0%</div>
+        </div>
+      </div>
+
+      <div class="weakest-highlight" id="weakestHighlight">
+        <div class="icon">⚠️</div>
+        <div class="content">
+          <h4>Dein größter Entwicklungsbereich</h4>
+          <p id="weakestAreaName">Wird analysiert...</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="recommendations-section">
+      <h2>🎯 Deine personalisierte Lernreise</h2>
+
+      <div class="recommendation-cards" id="recommendationCards">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Team Invite Section -->
+    <div class="invite-section" style="margin-bottom: 3rem; padding: 2.5rem; background: linear-gradient(135deg, #4a7c9c 0%, #2d5a7b 100%); border-radius: 16px; text-align: center; position: relative; overflow: hidden;">
+      <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%); animation: inviteShine 6s linear infinite;"></div>
+      <div style="position: relative; z-index: 1;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🚀</div>
+        <h3 style="font-size: 1.8rem; margin-bottom: 1rem; color: white;">Lade dein Team ein</h3>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 2rem; font-size: 1.1rem; max-width: 500px; margin-left: auto; margin-right: auto;">
+          Hilf deinen Teamkollegen, ihr Impact-Level zu entdecken.<br>
+          Teams, die sich gemeinsam bewerten, wachsen gemeinsam.
+        </p>
+
+        <a href="invite-team-de.html" style="display: inline-block; background: white; color: #4a7c9c; padding: 1rem 2.5rem; border-radius: 8px; text-decoration: none; font-weight: 700; font-size: 1.1rem; transition: all 0.3s; box-shadow: 0 4px 16px rgba(0,0,0,0.2);">
+          Teamkollegen einladen →
+        </a>
+
+        <div style="margin-top: 1.5rem; color: rgba(255,255,255,0.85); font-size: 0.95rem;">
+          ✨ Erhalte +50 XP für jeden Teamkollegen, der die Bewertung abschließt
+        </div>
+      </div>
+    </div>
+
+    <style>
+      @keyframes inviteShine {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
+    </style>
+
+    <div class="share-section">
+      <h2>📤 Teile deine Ergebnisse</h2>
+      <p>Lade dein Team ein, das Assessment zu absolvieren</p>
+      <div class="share-buttons">
+        <button class="share-btn" onclick="copyResults()">
+          📋 Ergebnisse kopieren
+        </button>
+        <button class="share-btn" onclick="shareAssessment()">
+          🔗 Assessment-Link teilen
+        </button>
+      </div>
+    </div>
+
+    <div class="action-buttons">
+      <a href="gym-dashboard.de.html" class="action-btn primary">
+        🥋 Training im Gym starten
+      </a>
+      <a href="hub-home-BUSINESS-de.html" class="action-btn secondary">
+        📚 Hub erkunden
+      </a>
+    </div>
+
+    <div style="text-align: center;">
+      <div class="xp-badge">
+        ⭐ +100 XP für das Assessment verdient!
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Belt level configurations
+    const beltConfig = {
+      white: {
+        icon: '🤍',
+        name: 'Weißgurt',
+        description: 'Impact-Grundlagen',
+        className: 'white'
+      },
+      blue: {
+        icon: '💙',
+        name: 'Blaugurt',
+        description: 'Impact-Kernkompetenzen',
+        className: 'blue'
+      },
+      purple: {
+        icon: '💜',
+        name: 'Lilagurt',
+        description: 'Fortgeschrittene Impact-Techniken',
+        className: 'purple'
+      },
+      brown: {
+        icon: '🤎',
+        name: 'Braungurt',
+        description: 'Impact-Meisterschaft',
+        className: 'brown'
+      },
+      black: {
+        icon: '🖤',
+        name: 'Schwarzgurt',
+        description: 'Impact-Exzellenz',
+        className: 'black'
+      }
+    };
+
+    // Score interpretations
+    const interpretations = {
+      90: 'Exzellent - Du bist ein außergewöhnlicher Impact-Leader',
+      75: 'Sehr gut - Starke Impact-Fähigkeiten mit Raum für Verfeinerung',
+      60: 'Gut - Solide Grundlage mit klaren Entwicklungsbereichen',
+      45: 'Ausreichend - Wichtige Lücken zu schließen',
+      0: 'Entwicklungsbedarf - Beginne mit den Grundlagen'
+    };
+
+    // Dysfunction names in German
+    const dysfunctionNames = {
+      trust: 'Vertrauen',
+      conflict: 'Konflikt',
+      commitment: 'Verbindlichkeit',
+      accountability: 'Verantwortung',
+      results: 'Ergebnisse'
+    };
+
+    // Routing map for recommendations
+    const routingMap = {
+      trust: {
+        gymLink: 'white-belt.html',
+        gymName: 'Weißgurt: Vertrauensaufbau (Streifen 1-4)',
+        hubLink: 'communication-mastery-1-active-de.html',
+        hubName: 'Kommunikationsmeisterschaft',
+        message: 'Vertrauen wird durch Verletzlichkeit und offene Kommunikation aufgebaut'
+      },
+      conflict: {
+        gymLink: 'white-belt.html',
+        gymName: 'Weißgurt: Konfliktfähigkeit (Streifen 5-8)',
+        hubLink: 'feedback-culture-1-fundamentals-de.html',
+        hubName: 'Feedbackkultur',
+        message: 'Gesunder Konflikt führt zu besseren Entscheidungen'
+      },
+      commitment: {
+        gymLink: 'blue-belt.html',
+        gymName: 'Blaugurt: Verbindlichkeit (Streifen 1-4)',
+        hubLink: 'expectation-management-1-upward-de.html',
+        hubName: 'Erwartungsmanagement',
+        message: 'Klare Verbindlichkeit erfordert Klarheit und Zustimmung'
+      },
+      accountability: {
+        gymLink: 'blue-belt.html',
+        gymName: 'Blaugurt: Verantwortung (Streifen 5-8)',
+        hubLink: 'boundaries-1-why-de.html',
+        hubName: 'Grenzen setzen',
+        message: 'Gegenseitige Verantwortung treibt hohe Leistung an'
+      },
+      results: {
+        gymLink: 'purple-belt.html',
+        gymName: 'Lilagurt: Ergebnisorientierung',
+        hubLink: 'energy-management-1-8020-de.html',
+        hubName: 'Energiemanagement',
+        message: 'Kollektive Ergebnisse übertrumpfen individuelle Ziele'
+      }
+    };
+
+    function getInterpretation(score) {
+      if (score >= 90) return interpretations[90];
+      if (score >= 75) return interpretations[75];
+      if (score >= 60) return interpretations[60];
+      if (score >= 45) return interpretations[45];
+      return interpretations[0];
+    }
+
+    function getBarClass(score) {
+      if (score >= 70) return 'high';
+      if (score >= 45) return 'medium';
+      return 'low';
+    }
+
+    function loadResults() {
+      // Get stored results
+      const scores = JSON.parse(localStorage.getItem('assessmentScores') || '{}');
+      const totalScore = parseInt(localStorage.getItem('assessmentTotal') || '0');
+      const beltLevel = localStorage.getItem('beltLevel') || 'white';
+      const weakestArea = localStorage.getItem('weakestArea') || 'trust';
+
+      // Display total score with animation
+      const scoreElement = document.getElementById('totalScore');
+      animateNumber(scoreElement, totalScore);
+
+      // Display interpretation
+      document.getElementById('scoreInterpretation').textContent = getInterpretation(totalScore);
+
+      // Display belt level
+      const belt = beltConfig[beltLevel];
+      document.getElementById('beltIcon').textContent = belt.icon;
+      document.getElementById('beltName').textContent = belt.name;
+      document.getElementById('beltName').className = 'belt-name ' + belt.className;
+      document.getElementById('beltDescription').textContent = belt.description;
+
+      // Display dysfunction bars with animation
+      setTimeout(() => {
+        Object.keys(scores).forEach(key => {
+          const score = scores[key];
+          const fillElement = document.getElementById(key + 'Fill');
+          const scoreElement = document.getElementById(key + 'Score');
+
+          if (fillElement && scoreElement) {
+            fillElement.style.width = score + '%';
+            fillElement.className = 'dysfunction-fill ' + getBarClass(score);
+            scoreElement.textContent = score + '%';
+          }
+        });
+      }, 500);
+
+      // Display weakest area
+      document.getElementById('weakestAreaName').textContent = dysfunctionNames[weakestArea];
+
+      // Generate recommendations
+      generateRecommendations(weakestArea, scores);
+    }
+
+    function animateNumber(element, target) {
+      let current = 0;
+      const increment = target / 50;
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          current = target;
+          clearInterval(timer);
+        }
+        element.innerHTML = Math.round(current) + '<span class="score-suffix">%</span>';
+      }, 30);
+    }
+
+    function generateRecommendations(weakestArea, scores) {
+      const container = document.getElementById('recommendationCards');
+      const routing = routingMap[weakestArea];
+
+      // Primary recommendation (for weakest area)
+      let html = `
+        <div class="rec-card primary">
+          <div class="badge">Empfohlener Start</div>
+          <h3>${routing.gymName}</h3>
+          <p>${routing.message}</p>
+          <a href="${routing.gymLink}" class="btn btn-primary">
+            Training starten →
+          </a>
+        </div>
+      `;
+
+      // Secondary recommendations
+      const otherAreas = Object.keys(scores)
+        .filter(key => key !== weakestArea)
+        .sort((a, b) => scores[a] - scores[b])
+        .slice(0, 2);
+
+      otherAreas.forEach(area => {
+        const r = routingMap[area];
+        html += `
+          <div class="rec-card">
+            <div class="badge">Auch empfohlen</div>
+            <h3>${dysfunctionNames[area]} verbessern</h3>
+            <p>Entdecke ${r.hubName} im Hub</p>
+            <a href="${r.hubLink}" class="btn btn-secondary">
+              Kurs erkunden →
+            </a>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+    }
+
+    function copyResults() {
+      const totalScore = localStorage.getItem('assessmentTotal') || '0';
+      const beltLevel = localStorage.getItem('beltLevel') || 'white';
+      const belt = beltConfig[beltLevel];
+      const scores = JSON.parse(localStorage.getItem('assessmentScores') || '{}');
+
+      const text = `🥋 Mein Tap-In Impact-Assessment Ergebnis:
+
+📊 Gesamtpunktzahl: ${totalScore}%
+🎖️ Gürtellevel: ${belt.name}
+
+Bereiche:
+• Vertrauen: ${scores.trust || 0}%
+• Konflikt: ${scores.conflict || 0}%
+• Verbindlichkeit: ${scores.commitment || 0}%
+• Verantwortung: ${scores.accountability || 0}%
+• Ergebnisse: ${scores.results || 0}%
+
+Mach das Assessment selbst: ${window.location.origin}/assessment-belt-landing-de.html`;
+
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ Ergebnisse in die Zwischenablage kopiert!');
+      });
+    }
+
+    function shareAssessment() {
+      const url = window.location.origin + '/assessment-belt-landing-de.html';
+      navigator.clipboard.writeText(url).then(() => {
+        alert('✅ Assessment-Link kopiert! Teile ihn mit deinem Team.');
+      });
+    }
+
+    // Load results on page load
+    window.addEventListener('DOMContentLoaded', loadResults);
+  </script>
+</body>
+</html>

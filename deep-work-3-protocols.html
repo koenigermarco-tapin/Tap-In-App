@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deep Work Protocols | Tap-In Hub</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #1a1d2e;
+      color: #e2e8f0;
+      font-family: Inter, -apple-system, sans-serif;
+      line-height: 1.6;
+    }
+
+    .lesson-nav {
+      position: sticky;
+      top: 0;
+      background: #1a1d2e;
+      border-bottom: 2px solid #3d4466;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .back-btn {
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+    }
+
+    .back-btn:hover { color: #ffffff; }
+
+    .progress-indicator {
+      color: #4a7c9c;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .lesson-header {
+      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      padding: 3rem 2rem;
+      text-align: center;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    .lesson-header h1 {
+      font-size: 2.5rem;
+      color: #4a7c9c;
+      margin-bottom: 0.5rem;
+    }
+
+    .lesson-subtitle {
+      color: #94a3b8;
+      font-size: 1.2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .lesson-meta {
+      display: flex;
+      gap: 2rem;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    .content-section {
+      background: #2d3548;
+      border: 2px solid #3d4466;
+      border-left: 4px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .content-section h2 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+      font-size: 1.5rem;
+    }
+
+    .content-section p {
+      color: #e2e8f0;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .content-section ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .content-section ul li {
+      padding: 0.5rem 0;
+      padding-left: 1.5rem;
+      position: relative;
+      color: #e2e8f0;
+    }
+
+    .content-section ul li:before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: #4a7c9c;
+      font-weight: bold;
+    }
+
+    .protocol-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .protocol-box {
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 1.5rem;
+    }
+
+    .protocol-box h4 {
+      color: #4a7c9c;
+      margin-bottom: 0.75rem;
+      font-size: 1.1rem;
+    }
+
+    .protocol-box .emoji {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .protocol-box p {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .protocol-box .best-for {
+      background: rgba(74, 124, 156, 0.2);
+      padding: 0.5rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #4a7c9c;
+    }
+
+    .technique-box {
+      background: #1a1d2e;
+      border: 2px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .technique-box h4 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .technique-steps {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 1rem 0;
+    }
+
+    .step {
+      background: #2d3548;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .step .time {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #4a7c9c;
+    }
+
+    .step .label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .step-arrow {
+      display: flex;
+      align-items: center;
+      color: #4a7c9c;
+      font-size: 1.5rem;
+    }
+
+    .highlight-box {
+      background: rgba(74, 124, 156, 0.1);
+      border-left: 4px solid #4a7c9c;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+    }
+
+    .highlight-box h3 {
+      color: #4a7c9c;
+      margin-bottom: 0.75rem;
+      font-size: 1.2rem;
+    }
+
+    .schedule-example {
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .schedule-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid #3d4466;
+    }
+
+    .schedule-item:last-child {
+      border-bottom: none;
+    }
+
+    .schedule-time {
+      font-weight: 700;
+      color: #4a7c9c;
+      min-width: 100px;
+    }
+
+    .schedule-task {
+      color: #e2e8f0;
+    }
+
+    .schedule-task.deep {
+      font-weight: 600;
+    }
+
+    .schedule-task.shallow {
+      color: #94a3b8;
+    }
+
+    .practice-section {
+      background: #252940;
+      border: 2px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .practice-section h3 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+    }
+
+    .practice-section p {
+      margin-bottom: 1rem;
+      color: #e2e8f0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 8px;
+      color: #e2e8f0;
+      padding: 1rem;
+      font-family: inherit;
+      font-size: 1rem;
+      resize: vertical;
+      margin-bottom: 1rem;
+    }
+
+    textarea:focus {
+      outline: none;
+      border-color: #4a7c9c;
+    }
+
+    .save-btn {
+      background: #3d4466;
+      color: white;
+      border: none;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .save-btn:hover {
+      background: #4d5476;
+      transform: translateY(-2px);
+    }
+
+    .takeaway-section {
+      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      border: 2px solid #4a7c9c;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .takeaway-section h3 {
+      color: #4a7c9c;
+      margin-bottom: 1rem;
+    }
+
+    .takeaway-text {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      margin-bottom: 2rem;
+      font-style: italic;
+    }
+
+    .complete-btn {
+      background: #4a7c9c;
+      color: white;
+      border: none;
+      padding: 1rem 3rem;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .complete-btn:hover {
+      background: #5a8cac;
+      transform: translateY(-2px);
+    }
+
+    .lesson-footer {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 2px solid #3d4466;
+    }
+
+    .nav-btn {
+      background: #3d4466;
+      color: white;
+      text-decoration: none;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      display: inline-block;
+    }
+
+    .nav-btn:hover {
+      background: #4d5476;
+      transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+      .protocol-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .technique-steps {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .step-arrow {
+        transform: rotate(90deg);
+      }
+
+      .lesson-header h1 {
+        font-size: 2rem;
+      }
+
+      .container {
+        padding: 2rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="lesson-nav">
+    <a href="hub-home-BUSINESS.html" class="back-btn">← Back to Hub</a>
+    <div class="progress-indicator">Lesson 3 of 4</div>
+  </nav>
+
+  <div class="lesson-header">
+    <h1>Deep Work Protocols</h1>
+    <p class="lesson-subtitle">Practical systems for focused work</p>
+    <div class="lesson-meta">
+      <span>⏱️ 18 min</span>
+      <span>⭐ 30 XP</span>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="content-section">
+      <h2>📋 Choosing Your Deep Work Philosophy</h2>
+      <p>Not everyone can or should approach deep work the same way. Cal Newport identifies four different philosophies for integrating deep work into your life. Your choice depends on your role, responsibilities, and what you can realistically commit to.</p>
+
+      <div class="protocol-grid">
+        <div class="protocol-box">
+          <div class="emoji">🏔️</div>
+          <h4>Monastic Philosophy</h4>
+          <p>Eliminate or radically minimize shallow obligations. Maximize deep work by default.</p>
+          <div class="best-for">Best for: Writers, researchers, artists with minimal collaboration needs</div>
+        </div>
+        <div class="protocol-box">
+          <div class="emoji">🔄</div>
+          <h4>Bimodal Philosophy</h4>
+          <p>Divide time into clearly defined stretches of deep work (days/weeks) and periods of availability.</p>
+          <div class="best-for">Best for: Academics, executives who can batch availability</div>
+        </div>
+        <div class="protocol-box">
+          <div class="emoji">📅</div>
+          <h4>Rhythmic Philosophy</h4>
+          <p>Create a daily ritual with set hours for deep work. Chain together days for momentum.</p>
+          <div class="best-for">Best for: Most knowledge workers, managers with regular schedules</div>
+        </div>
+        <div class="protocol-box">
+          <div class="emoji">📰</div>
+          <h4>Journalistic Philosophy</h4>
+          <p>Fit deep work wherever you can in your schedule. Requires trained ability to switch modes.</p>
+          <div class="best-for">Best for: Experienced practitioners, those with unpredictable schedules</div>
+        </div>
+      </div>
+
+      <p>Most leaders benefit from the rhythmic philosophy—it's sustainable, predictable, and compatible with team responsibilities. Start here, and evolve your approach as your deep work capacity grows.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>🍅 The Pomodoro Technique</h2>
+      <p>The Pomodoro Technique is the simplest entry point into structured deep work. Developed by Francesco Cirillo, it uses a timer to break work into focused intervals, traditionally 25 minutes, separated by short breaks.</p>
+
+      <div class="technique-box">
+        <h4>The Classic Pomodoro Cycle</h4>
+        <div class="technique-steps">
+          <div class="step">
+            <div class="time">25</div>
+            <div class="label">min focus</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">5</div>
+            <div class="label">min break</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">25</div>
+            <div class="label">min focus</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">5</div>
+            <div class="label">min break</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">25</div>
+            <div class="label">min focus</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">5</div>
+            <div class="label">min break</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">25</div>
+            <div class="label">min focus</div>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="time">15-30</div>
+            <div class="label">min long break</div>
+          </div>
+        </div>
+      </div>
+
+      <p>The power of Pomodoro is its simplicity: you're only committing to 25 minutes at a time. This makes starting less daunting. Over time, many practitioners extend their focus periods to 50 or 90 minutes as their concentration capacity grows.</p>
+
+      <p>Key rules: During a Pomodoro, no interruptions are allowed. If something comes up, write it down and return to it after. If you must stop, the Pomodoro doesn't count—you start fresh. This trains your brain to protect focus time absolutely.</p>
+    </div>
+
+    <div class="content-section">
+      <h2>📆 Time Blocking</h2>
+      <p>Time blocking is the practice of planning every minute of your day in advance. Instead of working from a to-do list (which research shows is ineffective), you assign specific tasks to specific time slots on your calendar.</p>
+
+      <p>This approach forces you to make realistic commitments about what you can accomplish. It eliminates the question "what should I do now?" which drains willpower. And it ensures deep work actually happens by giving it a protected spot in your schedule.</p>
+
+      <div class="schedule-example">
+        <div class="schedule-item">
+          <div class="schedule-time">8:00-8:30</div>
+          <div class="schedule-task shallow">Email batch #1, daily planning</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">8:30-10:30</div>
+          <div class="schedule-task deep">Deep Work Block: Project X strategy document</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">10:30-10:45</div>
+          <div class="schedule-task shallow">Break + quick Slack check</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">10:45-12:00</div>
+          <div class="schedule-task deep">Deep Work Block: Code review / technical work</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">12:00-1:00</div>
+          <div class="schedule-task shallow">Lunch + recovery</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">1:00-3:00</div>
+          <div class="schedule-task shallow">Meeting block (batch all meetings here)</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">3:00-4:30</div>
+          <div class="schedule-task deep">Deep Work Block: Creative/analytical work</div>
+        </div>
+        <div class="schedule-item">
+          <div class="schedule-time">4:30-5:00</div>
+          <div class="schedule-task shallow">Email batch #2, next-day planning, shutdown</div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>The Overflow Strategy</h3>
+        <p>Your schedule will get disrupted—that's normal. Include an "overflow" block each day (30-60 minutes of unscheduled time) to absorb the inevitable interruptions. If nothing comes up, use it for additional deep work or recovery.</p>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>🔚 The Shutdown Ritual</h2>
+      <p>A proper workday ending is as important as a strong start. The shutdown ritual is a set routine you perform at the end of each day that signals to your brain that work is complete. This enables genuine mental rest, which is essential for sustained high performance.</p>
+
+      <p>Without a shutdown ritual, work thoughts leak into your evening, preventing the recovery your brain needs. You half-rest while half-working—the worst of both worlds. A clean shutdown enables clean recovery.</p>
+
+      <p>A complete shutdown ritual includes:</p>
+      <ul>
+        <li><strong>Capture:</strong> Review all open loops and capture any lingering tasks or ideas</li>
+        <li><strong>Review:</strong> Check calendar for tomorrow—are you prepared for each commitment?</li>
+        <li><strong>Plan:</strong> Rough block your schedule for tomorrow, especially deep work time</li>
+        <li><strong>Close:</strong> Close all work applications, clear your desk, say a closing phrase</li>
+      </ul>
+
+      <p>Cal Newport uses the phrase "shutdown complete" to signal that his work mind can release. Choose your own phrase—something that explicitly tells your brain: work is done, time to recover.</p>
+
+      <div class="highlight-box">
+        <h3>The Two-Minute Close</h3>
+        <p>Before shutdown, handle any task that takes less than two minutes. These micro-tasks create mental clutter if left undone. Clearing them provides a sense of completion that makes true shutdown possible.</p>
+      </div>
+    </div>
+
+    <div class="content-section">
+      <h2>🎯 The Daily Highlight</h2>
+      <p>With time blocking, your calendar fills quickly. But not all blocks are equal. The Daily Highlight practice asks: "If this were the only thing I accomplished today, would I be satisfied?" Identify this one task and protect it above all else.</p>
+
+      <p>Your highlight should be meaningful, not just urgent. It's the work that actually moves your most important goals forward. Everything else—meetings, emails, requests—fits around this core commitment, not the other way around.</p>
+
+      <p>Each morning, write down your Daily Highlight. Make it specific and achievable in 60-90 minutes of focused work. If you accomplish nothing else, accomplish this. On most days, you'll do more—but even on chaotic days, you'll have made progress on what matters most.</p>
+    </div>
+
+    <div class="practice-section">
+      <h3>💪 Practice Exercise</h3>
+      <p>Design your ideal deep work schedule for tomorrow. Include at least two 90-minute deep work blocks, batch your shallow work, and create a shutdown ritual. Be specific about times and tasks.</p>
+      <textarea id="practiceAnswer" placeholder="Tomorrow's Time-Blocked Schedule:
+
+Morning routine (before work):
+
+Work blocks:
+___:___ - ___:___ |
+___:___ - ___:___ |
+___:___ - ___:___ |
+___:___ - ___:___ |
+___:___ - ___:___ |
+___:___ - ___:___ |
+___:___ - ___:___ |
+
+My Daily Highlight (most important task):
+
+My Shutdown Ritual:
+1.
+2.
+3.
+4.
+Closing phrase:"></textarea>
+      <button class="save-btn" onclick="saveExercise()">Save Progress</button>
+    </div>
+
+    <div class="takeaway-section">
+      <h3>🎯 Key Takeaway</h3>
+      <p class="takeaway-text">"What gets scheduled gets done—protect your deep work blocks like meetings with your CEO"</p>
+      <button class="complete-btn" onclick="completeLesson()">Mark Complete (+30 XP)</button>
+    </div>
+
+    <div class="lesson-footer">
+      <a href="deep-work-2-flow.html" class="nav-btn">← Previous Lesson</a>
+      <a href="deep-work-4-defending.html" class="nav-btn">Next Lesson →</a>
+    </div>
+
+  </div>
+
+  <script>
+    function saveExercise() {
+      const answer = document.getElementById('practiceAnswer').value;
+      if (answer.trim()) {
+        localStorage.setItem('deep-work-3-protocols-exercise', answer);
+        alert('💾 Progress saved!');
+      } else {
+        alert('Please write something before saving!');
+      }
+    }
+
+    function completeLesson() {
+      const lessonId = 'deep-work-3-protocols';
+      const xpReward = 30;
+
+      localStorage.setItem(lessonId + '-complete', 'true');
+
+      const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+      localStorage.setItem('totalXP', currentXP + xpReward);
+
+      alert('✅ Lesson complete! +' + xpReward + ' XP');
+
+      window.location.href = 'deep-work-4-defending.html';
+    }
+
+    window.addEventListener('DOMContentLoaded', function() {
+      const saved = localStorage.getItem('deep-work-3-protocols-exercise');
+      if (saved) {
+        document.getElementById('practiceAnswer').value = saved;
+      }
+    });
+  </script>
+</body>
+</html>
