@@ -1,317 +1,426 @@
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-// TAP-IN WISDOM TRACKER - "NOTHING IN EXCESS" (μηδὲν ἄγαν)
-// Active Recovery System for Sustainable Learning
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+/**
+ * Wisdom Tracker - "Nothing in Excess" System
+ * Bilingual support (English + German)
+ * Tracks session time and reminds users to take breaks
+ */
 
-const WisdomTracker = {
-  
-  // Session tracking
-  sessionStart: null,
-  
-  // Thresholds (in minutes)
-  thresholds: {
-    gentle: 30,    // Gentle reminder after 30 min
-    moderate: 45,  // Stronger suggestion after 45 min
-    strong: 60,    // Active rest reward after 60 min
-    hardcore: 90   // Concern message after 90 min
-  },
-  
-  // Initialize on page load
-  init() {
-    this.sessionStart = parseInt(localStorage.getItem('sessionStart')) || Date.now();
-    localStorage.setItem('sessionStart', this.sessionStart);
-    this.startMonitoring();
-  },
-  
-  // Calculate session duration
-  getSessionDuration() {
-    const now = Date.now();
-    const duration = (now - this.sessionStart) / 1000 / 60; // in minutes
-    return Math.round(duration);
-  },
-  
-  // Check if we should show wisdom reminder
-  checkWisdom() {
-    const duration = this.getSessionDuration();
-    const lastReminder = parseInt(localStorage.getItem('lastWisdomReminder')) || 0;
-    const timeSinceReminder = (Date.now() - lastReminder) / 1000 / 60;
-    
-    // Don't show reminders more than once per 15 minutes
-    if (timeSinceReminder < 15) return;
-    
-    if (duration >= this.thresholds.hardcore && !this.hasShownReminder('hardcore')) {
-      this.showWisdomModal('hardcore');
-    } else if (duration >= this.thresholds.strong && !this.hasShownReminder('strong')) {
-      this.showWisdomModal('strong');
-    } else if (duration >= this.thresholds.moderate && !this.hasShownReminder('moderate')) {
-      this.showWisdomModal('moderate');
-    } else if (duration >= this.thresholds.gentle && !this.hasShownReminder('gentle')) {
-      this.showWisdomModal('gentle');
+(function() {
+  'use strict';
+
+  // ============================================
+  // LANGUAGE DETECTION
+  // ============================================
+  const isGerman = window.location.pathname.includes('-de.html') ||
+                   window.location.pathname.includes('-de/') ||
+                   localStorage.getItem('preferredLanguage') === 'de';
+
+  // ============================================
+  // GERMAN MESSAGES (Du-form + Impact jargon)
+  // ============================================
+  const wisdomMessagesDE = {
+    gentle: {
+      title: "🏛️ Denk an das Orakel",
+      message: "\"Nichts im Übermaß\" - Du trainierst seit 30 Minuten. Toller Fortschritt!",
+      suggestion: "Zieh in Erwägung, eine 5-minütige Pause einzulegen, damit das Gelernte sich setzen kann.",
+      reward: null,
+      xpBonus: 0,
+      breakDuration: 5,
+      canDismiss: true
+    },
+    moderate: {
+      title: "🏛️ Weisheit aus Delphi",
+      message: "\"Nichts im Übermaß\" - 45 Minuten fokussiertes Lernen. Beeindruckende Hingabe.",
+      suggestion: "Mach eine 10-minütige Pause. Geh spazieren, atme, reflektiere über das Gelernte.",
+      reward: "+10 XP für achtsame Praxis",
+      xpBonus: 10,
+      breakDuration: 10,
+      canDismiss: true
+    },
+    strong: {
+      title: "🏛️ Aktive Erholung freigeschaltet",
+      message: "\"Nichts im Übermaß\" - 60 Minuten! Zeit für aktive Erholung.",
+      suggestion: "Du hast +25 XP verdient und eine 15-minütige geführte Reflexion freigeschaltet.",
+      reward: "+25 XP",
+      xpBonus: 25,
+      breakDuration: 15,
+      canDismiss: true
+    },
+    hardcore: {
+      title: "⚠️ Das Orakel spricht",
+      message: "\"Nichts im Übermaß\" - 90+ Minuten überschreitet gesundes Lernen.",
+      suggestion: "Selbst Kampfkünstler ruhen sich aus. Mach eine Pause. Das Training ist morgen noch da.",
+      reward: "Keine XP-Strafe, aber Pause dringend empfohlen",
+      xpBonus: 0,
+      breakDuration: 20,
+      canDismiss: true
     }
-  },
-  
-  // Track which reminders shown this session
-  hasShownReminder(level) {
-    const shown = JSON.parse(localStorage.getItem('wisdomRemindersShown') || '[]');
-    return shown.includes(level);
-  },
-  
-  // Mark reminder as shown
-  markReminderShown(level) {
-    const shown = JSON.parse(localStorage.getItem('wisdomRemindersShown') || '[]');
-    shown.push(level);
-    localStorage.setItem('wisdomRemindersShown', JSON.stringify(shown));
-    localStorage.setItem('lastWisdomReminder', Date.now());
-  },
-  
-  // Show wisdom modal
-  showWisdomModal(level) {
-    const messages = {
-      gentle: {
-        title: "🏛️ Remember the Oracle",
-        message: "\"Nothing in Excess\" - You've been training for 30 minutes. Great progress!",
-        suggestion: "Consider taking a 5-minute break to let the learning settle.",
-        reward: null,
-        canDismiss: true
-      },
-      moderate: {
-        title: "🏛️ Wisdom from Delphi",
-        message: "\"Nothing in Excess\" - 45 minutes of focused learning. Impressive dedication.",
-        suggestion: "Take a 10-minute break. Walk, breathe, reflect on what you've learned.",
-        reward: "+10 XP for mindful practice",
-        canDismiss: true
-      },
-      strong: {
-        title: "🏛️ Active Rest Unlocked",
-        message: "\"Nothing in Excess\" - 60 minutes! Time for active recovery.",
-        suggestion: "You've earned +25 XP and unlocked a 15-minute guided reflection.",
-        reward: "+25 XP",
-        canDismiss: true
-      },
-      hardcore: {
-        title: "⚠️ The Oracle Speaks",
-        message: "\"Nothing in Excess\" - 90+ minutes is beyond healthy learning.",
-        suggestion: "Even martial artists rest. Take a break. The training will be here tomorrow.",
-        reward: "No XP penalty, but strongly recommended break",
-        canDismiss: true
+  };
+
+  const wisdomUIDE = {
+    takeBreak: "Mach eine Pause",
+    continueTraining: "Training fortsetzen",
+    breakTaken: "🏛️ Weise Entscheidung. Ruhe ist Teil der Meisterschaft. Bis bald!",
+    sessionPaused: "⏸️ Session pausiert. Dein Fortschritt ist gespeichert.",
+    welcomeBack: "🥋 Willkommen zurück, Impact-Leader! Bereit für mehr Training?",
+    xpAwarded: (xp) => `✨ +${xp} XP für achtsame Praxis verdient!`,
+    modalTitle: "Nichts im Übermaß",
+    subtitle: "Antike Weisheit für moderne Meisterschaft",
+    timerLabel: "Aktive Trainingszeit",
+    minutes: "Min"
+  };
+
+  // ============================================
+  // ENGLISH MESSAGES
+  // ============================================
+  const wisdomMessagesEN = {
+    gentle: {
+      title: "🏛️ Remember the Oracle",
+      message: "\"Nothing in Excess\" - You've been training for 30 minutes. Great progress!",
+      suggestion: "Consider taking a 5-minute break to let the learning settle.",
+      reward: null,
+      xpBonus: 0,
+      breakDuration: 5,
+      canDismiss: true
+    },
+    moderate: {
+      title: "🏛️ Wisdom from Delphi",
+      message: "\"Nothing in Excess\" - 45 minutes of focused learning. Impressive dedication.",
+      suggestion: "Take a 10-minute break. Walk, breathe, reflect on what you've learned.",
+      reward: "+10 XP for mindful practice",
+      xpBonus: 10,
+      breakDuration: 10,
+      canDismiss: true
+    },
+    strong: {
+      title: "🏛️ Active Recovery Unlocked",
+      message: "\"Nothing in Excess\" - 60 minutes! Time for active recovery.",
+      suggestion: "You've earned +25 XP and unlocked a 15-minute guided reflection.",
+      reward: "+25 XP",
+      xpBonus: 25,
+      breakDuration: 15,
+      canDismiss: true
+    },
+    hardcore: {
+      title: "⚠️ The Oracle Speaks",
+      message: "\"Nothing in Excess\" - 90+ minutes exceeds healthy learning.",
+      suggestion: "Even martial artists rest. Take a break. The training will be here tomorrow.",
+      reward: "No XP penalty, but break strongly recommended",
+      xpBonus: 0,
+      breakDuration: 20,
+      canDismiss: true
+    }
+  };
+
+  const wisdomUIEN = {
+    takeBreak: "Take a Break",
+    continueTraining: "Continue Training",
+    breakTaken: "🏛️ Wise choice. Rest is part of mastery. See you soon!",
+    sessionPaused: "⏸️ Session paused. Your progress is saved.",
+    welcomeBack: "🥋 Welcome back! Ready for more training?",
+    xpAwarded: (xp) => `✨ +${xp} XP earned for mindful practice!`,
+    modalTitle: "Nothing in Excess",
+    subtitle: "Ancient wisdom for modern mastery",
+    timerLabel: "Active Training Time",
+    minutes: "min"
+  };
+
+  // ============================================
+  // SELECT LANGUAGE
+  // ============================================
+  const messages = isGerman ? wisdomMessagesDE : wisdomMessagesEN;
+  const ui = isGerman ? wisdomUIDE : wisdomUIEN;
+
+  // ============================================
+  // TIMING THRESHOLDS (in minutes)
+  // ============================================
+  const THRESHOLDS = {
+    gentle: 30,
+    moderate: 45,
+    strong: 60,
+    hardcore: 90
+  };
+
+  // ============================================
+  // STATE MANAGEMENT
+  // ============================================
+  let sessionStartTime = null;
+  let checkInterval = null;
+  let lastNotificationLevel = null;
+  let modalOpen = false;
+
+  // ============================================
+  // INITIALIZE TRACKER
+  // ============================================
+  function init() {
+    // Check if already initialized
+    if (sessionStartTime) return;
+
+    // Get or set session start time
+    const storedStart = sessionStorage.getItem('wisdomSessionStart');
+    if (storedStart) {
+      sessionStartTime = parseInt(storedStart);
+    } else {
+      sessionStartTime = Date.now();
+      sessionStorage.setItem('wisdomSessionStart', sessionStartTime);
+    }
+
+    // Start checking
+    checkInterval = setInterval(checkSessionTime, 60000); // Check every minute
+
+    // Initial check
+    checkSessionTime();
+
+    console.log('🏛️ Wisdom Tracker initialized');
+  }
+
+  // ============================================
+  // CHECK SESSION TIME
+  // ============================================
+  function checkSessionTime() {
+    if (modalOpen) return; // Don't interrupt if modal is open
+
+    const sessionMinutes = getSessionMinutes();
+    let currentLevel = null;
+
+    // Determine current level
+    if (sessionMinutes >= THRESHOLDS.hardcore) {
+      currentLevel = 'hardcore';
+    } else if (sessionMinutes >= THRESHOLDS.strong) {
+      currentLevel = 'strong';
+    } else if (sessionMinutes >= THRESHOLDS.moderate) {
+      currentLevel = 'moderate';
+    } else if (sessionMinutes >= THRESHOLDS.gentle) {
+      currentLevel = 'gentle';
+    }
+
+    // Show notification if we've reached a new level
+    if (currentLevel && currentLevel !== lastNotificationLevel) {
+      // Check if this level was already dismissed this session
+      const dismissedLevels = JSON.parse(sessionStorage.getItem('wisdomDismissed') || '[]');
+      if (!dismissedLevels.includes(currentLevel)) {
+        showWisdomModal(currentLevel);
+        lastNotificationLevel = currentLevel;
       }
-    };
-    
-    const config = messages[level];
-    
+    }
+  }
+
+  // ============================================
+  // GET SESSION MINUTES
+  // ============================================
+  function getSessionMinutes() {
+    if (!sessionStartTime) return 0;
+    return Math.floor((Date.now() - sessionStartTime) / 60000);
+  }
+
+  // ============================================
+  // SHOW WISDOM MODAL
+  // ============================================
+  function showWisdomModal(level) {
+    modalOpen = true;
+    const msg = messages[level];
+
     // Create modal overlay
     const overlay = document.createElement('div');
-    overlay.className = 'wisdom-modal-overlay';
+    overlay.id = 'wisdom-modal-overlay';
     overlay.style.cssText = `
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 10000;
-      backdrop-filter: blur(4px);
+      animation: wisdomFadeIn 0.3s ease;
     `;
-    
-    // Create modal
+
+    // Create modal content
     const modal = document.createElement('div');
-    modal.className = 'wisdom-modal';
     modal.style.cssText = `
-      background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+      background: linear-gradient(135deg, #252940 0%, #1a1d2e 100%);
       border: 2px solid #4a7c9c;
-      border-radius: 16px;
-      padding: 3rem;
+      border-radius: 20px;
+      padding: 2.5rem;
       max-width: 500px;
+      width: 90%;
       text-align: center;
-      animation: slideIn 0.3s ease;
       position: relative;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      animation: wisdomSlideUp 0.4s ease;
     `;
-    
+
+    // Timer display
+    const sessionMinutes = getSessionMinutes();
+
     modal.innerHTML = `
-      <div style="font-size: 4rem; margin-bottom: 1rem;">${config.title.includes('⚠️') ? '⚠️' : '🏛️'}</div>
-      <h3 style="color: #4a7c9c; font-size: 1.5rem; margin-bottom: 1rem; font-weight: 700;">
-        ${config.title.replace('🏛️ ', '').replace('⚠️ ', '')}
-      </h3>
-      <p style="color: #94a3b8; font-size: 1.1rem; line-height: 1.6; margin-bottom: 1.5rem;">
-        ${config.message}
-      </p>
-      <p style="color: #e2e8f0; font-size: 1rem; margin-bottom: 2rem; line-height: 1.6;">
-        ${config.suggestion}
-      </p>
-      ${config.reward && config.reward.includes('XP') ? `
-        <div style="background: rgba(74, 124, 156, 0.2); padding: 1rem; border-radius: 8px; margin-bottom: 2rem; border: 1px solid #4a7c9c;">
-          <span style="color: #fbbf24; font-weight: 600;">${config.reward}</span>
-        </div>
-      ` : ''}
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <button onclick="WisdomTracker.takeBreak('${level}')" style="
-          background: #4a7c9c;
-          color: white;
-          border: none;
+      <style>
+        @keyframes wisdomFadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes wisdomSlideUp {
+          from { transform: translateY(30px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .wisdom-btn {
           padding: 1rem 2rem;
-          border-radius: 8px;
+          border-radius: 10px;
+          font-size: 1rem;
           font-weight: 600;
           cursor: pointer;
           transition: all 0.2s;
-          font-size: 1rem;
-        " onmouseover="this.style.background='#5a8cac'; this.style.transform='translateY(-2px)'" 
-           onmouseout="this.style.background='#4a7c9c'; this.style.transform='translateY(0)'">
-          Take a Break
+          border: none;
+        }
+        .wisdom-btn:hover {
+          transform: translateY(-2px);
+        }
+        .wisdom-btn-primary {
+          background: #10b981;
+          color: white;
+        }
+        .wisdom-btn-primary:hover {
+          background: #059669;
+        }
+        .wisdom-btn-secondary {
+          background: #3d4466;
+          color: #e2e8f0;
+        }
+        .wisdom-btn-secondary:hover {
+          background: #4d5476;
+        }
+      </style>
+
+      <div style="font-size: 4rem; margin-bottom: 1rem;">🏛️</div>
+
+      <h2 style="color: #4a7c9c; font-size: 1.8rem; margin-bottom: 0.5rem;">
+        ${msg.title}
+      </h2>
+
+      <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 1.5rem;">
+        ${ui.timerLabel}: <strong style="color: #e2e8f0;">${sessionMinutes} ${ui.minutes}</strong>
+      </p>
+
+      <p style="color: #e2e8f0; font-size: 1.1rem; margin-bottom: 1rem; line-height: 1.6;">
+        ${msg.message}
+      </p>
+
+      <p style="color: #94a3b8; font-size: 1rem; margin-bottom: 1.5rem;">
+        ${msg.suggestion}
+      </p>
+
+      ${msg.reward ? `
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; border-radius: 8px; padding: 0.75rem; margin-bottom: 1.5rem;">
+          <span style="color: #10b981; font-weight: 600;">${msg.reward}</span>
+        </div>
+      ` : ''}
+
+      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <button class="wisdom-btn wisdom-btn-primary" id="wisdom-break-btn">
+          ${ui.takeBreak}
         </button>
-        ${config.canDismiss ? `
-          <button onclick="WisdomTracker.dismissReminder('${level}')" style="
-            background: transparent;
-            color: #94a3b8;
-            border: 2px solid #3d4466;
-            padding: 1rem 2rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 1rem;
-          " onmouseover="this.style.borderColor='#4a7c9c'; this.style.color='#e2e8f0'" 
-             onmouseout="this.style.borderColor='#3d4466'; this.style.color='#94a3b8'">
-            Continue Training
+        ${msg.canDismiss ? `
+          <button class="wisdom-btn wisdom-btn-secondary" id="wisdom-continue-btn">
+            ${ui.continueTraining}
           </button>
         ` : ''}
       </div>
     `;
-    
+
     overlay.appendChild(modal);
     document.body.appendChild(overlay);
-    
-    this.markReminderShown(level);
-    
+
+    // Event listeners
+    document.getElementById('wisdom-break-btn').addEventListener('click', () => {
+      handleBreak(level, msg.xpBonus);
+    });
+
+    const continueBtn = document.getElementById('wisdom-continue-btn');
+    if (continueBtn) {
+      continueBtn.addEventListener('click', () => {
+        handleContinue(level);
+      });
+    }
+  }
+
+  // ============================================
+  // HANDLE BREAK
+  // ============================================
+  function handleBreak(level, xpBonus) {
     // Award XP if applicable
-    if (config.reward && config.reward.includes('XP')) {
-      const xpMatch = config.reward.match(/\+(\d+)/);
-      if (xpMatch) {
-        const xpAmount = parseInt(xpMatch[1]);
-        const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
-        localStorage.setItem('totalXP', currentXP + xpAmount);
-      }
+    if (xpBonus > 0) {
+      const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+      localStorage.setItem('totalXP', currentXP + xpBonus);
+      alert(ui.xpAwarded(xpBonus));
     }
-  },
-  
-  // User takes break
-  takeBreak(level) {
-    const overlay = document.querySelector('.wisdom-modal-overlay');
-    if (overlay) overlay.remove();
-    
-    // Reset session timer
-    localStorage.setItem('sessionStart', Date.now());
-    this.sessionStart = Date.now();
-    localStorage.setItem('wisdomRemindersShown', JSON.stringify([]));
-    
-    // Show affirmation
-    this.showAffirmation('🏛️ Wise choice. Rest is part of mastery. See you soon!');
-  },
-  
-  // User dismisses reminder
-  dismissReminder(level) {
-    const overlay = document.querySelector('.wisdom-modal-overlay');
-    if (overlay) overlay.remove();
-  },
-  
-  // Show affirmation message
-  showAffirmation(message) {
-    const affirmation = document.createElement('div');
-    affirmation.style.cssText = `
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, #4a7c9c 0%, #2d5a7b 100%);
-      color: white;
-      padding: 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 8px 24px rgba(74, 124, 156, 0.3);
-      z-index: 10001;
-      animation: slideInRight 0.3s ease;
-      max-width: 300px;
-    `;
-    affirmation.textContent = message;
-    document.body.appendChild(affirmation);
-    
-    setTimeout(() => {
-      affirmation.style.opacity = '0';
-      affirmation.style.transform = 'translateX(400px)';
-      affirmation.style.transition = 'all 0.3s ease';
-      setTimeout(() => affirmation.remove(), 300);
-    }, 4000);
-  },
-  
-  // Start monitoring (check every 5 minutes)
-  startMonitoring() {
-    // Check immediately on load
-    setTimeout(() => this.checkWisdom(), 5000); // After 5 seconds
-    
-    // Then check every 5 minutes
-    setInterval(() => {
-      this.checkWisdom();
-    }, 5 * 60 * 1000); // Every 5 minutes
-  },
-  
-  // Reset on new session (call this on page navigation)
-  resetSession() {
-    localStorage.setItem('sessionStart', Date.now());
-    localStorage.setItem('wisdomRemindersShown', JSON.stringify([]));
-  },
-  
-  // Get session stats (for debugging/display)
-  getSessionStats() {
-    return {
-      duration: this.getSessionDuration(),
-      remindersShown: JSON.parse(localStorage.getItem('wisdomRemindersShown') || '[]'),
-      lastReminder: new Date(parseInt(localStorage.getItem('lastWisdomReminder') || '0')).toLocaleString()
-    };
-  }
-};
 
-// Add CSS for animations
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes slideIn {
-    from {
-      transform: translateY(-50px);
-      opacity: 0;
-    }
-    to {
-      transform: translateY(0);
-      opacity: 1;
-    }
-  }
-  
-  @keyframes slideInRight {
-    from {
-      transform: translateX(400px);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-`;
-document.head.appendChild(style);
+    // Close modal
+    closeModal();
 
-// Auto-initialize
-if (typeof window !== 'undefined') {
-  window.WisdomTracker = WisdomTracker;
-  
-  // Initialize when DOM is ready
+    // Show confirmation
+    alert(ui.breakTaken);
+
+    // Reset session
+    resetSession();
+
+    // Optionally redirect to a break page or home
+    // window.location.href = isGerman ? 'index-de.html' : 'index.html';
+  }
+
+  // ============================================
+  // HANDLE CONTINUE
+  // ============================================
+  function handleContinue(level) {
+    // Mark this level as dismissed for this session
+    const dismissedLevels = JSON.parse(sessionStorage.getItem('wisdomDismissed') || '[]');
+    if (!dismissedLevels.includes(level)) {
+      dismissedLevels.push(level);
+      sessionStorage.setItem('wisdomDismissed', JSON.stringify(dismissedLevels));
+    }
+
+    // Close modal
+    closeModal();
+  }
+
+  // ============================================
+  // CLOSE MODAL
+  // ============================================
+  function closeModal() {
+    const overlay = document.getElementById('wisdom-modal-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+    modalOpen = false;
+  }
+
+  // ============================================
+  // RESET SESSION
+  // ============================================
+  function resetSession() {
+    sessionStartTime = Date.now();
+    sessionStorage.setItem('wisdomSessionStart', sessionStartTime);
+    sessionStorage.removeItem('wisdomDismissed');
+    lastNotificationLevel = null;
+  }
+
+  // ============================================
+  // PUBLIC API
+  // ============================================
+  window.WisdomTracker = {
+    init: init,
+    getSessionMinutes: getSessionMinutes,
+    resetSession: resetSession,
+    showModal: showWisdomModal,
+    isGerman: isGerman
+  };
+
+  // ============================================
+  // AUTO-INITIALIZE
+  // ============================================
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => WisdomTracker.init());
+    document.addEventListener('DOMContentLoaded', init);
   } else {
-    WisdomTracker.init();
+    init();
   }
-}
 
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = WisdomTracker;
-}
-
+})();
