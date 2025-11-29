@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Brauner Gürtel: Verantwortlichkeit | TAP-IN</title>
+    
+    <!-- Supabase & Auth -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth-system.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { 
+            /* Primary Colors */
+            --primary-navy: #1a365d; 
+            --secondary-navy: #334155; 
+            --brown-dark: #78350f;
+            --brown-mid: #92400e;
+            --accent-bronze: #a67c52; 
+            --accent-red: #b91c1c; 
+            --accent-purple: #a78bfa; 
+            --success-green: #38a169; 
+            --warning-orange: #dd6b20; 
+            --card-bg: #ffffff; 
+            --border-light: #e2e8f0; 
+            --text-dark: #1e293b; 
+            --text-muted: #64748b; 
+            --light-bg: #f8fafc; 
+        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #78350f 0%, #92400e 100%); min-height: 100vh; padding: 2rem 1rem; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: white; }
+        .belt-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); padding: 0.75rem 1.5rem; border-radius: 30px; font-size: 1rem; margin-bottom: 1rem; font-weight: 600; }
+        .header h1 { font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff 0%, #a67c52 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header p { font-size: 1.2rem; opacity: 0.8; max-width: 600px; margin: 0 auto; }
+        .progress-section { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .progress-title { color: white; font-weight: 600; }
+        .progress-count { color: var(--accent-bronze); font-weight: 700; }
+        .stripe-visual { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .stripe { height: 8px; flex: 1; border-radius: 4px; background: rgba(255,255,255,0.2); transition: all 0.3s; }
+        .stripe.earned { background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); box-shadow: 0 0 10px rgba(185, 28, 28, 0.5); }
+        .progress-bar-container { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); border-radius: 3px; transition: width 0.5s ease; }
+        .main-card { background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 25px 80px rgba(0,0,0,0.4); }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+        .intro-box { background: var(--light-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: var(--primary-navy); }
+        .intro-box.philosophy { background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%); border-left: 6px solid var(--primary-navy); }
+        .intro-box.philosophy em { color: var(--accent-purple); }
+        .intro-box.research { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); border: none; }
+        .intro-box.research h3 { color: #fff; }
+        .intro-box.research p { color: #e2e8f0; }
+        .intro-box.research strong { color: var(--accent-purple); }
+        .intro-box.warning { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 6px solid var(--warning-orange); }
+        .intro-box.warning h3 { color: #92400e; }
+        .intro-box.warning p { color: #78350f; }
+        .stripe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .stripe-card { background: white; border: 2px solid var(--border-light); border-radius: 16px; padding: 1.5rem; transition: all 0.3s; text-decoration: none; display: block; }
+        .stripe-card:hover { border-color: var(--accent-bronze); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(120, 53, 15, 0.15); }
+        .stripe-card.complete { border-color: var(--success-green); background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+        .stripe-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .stripe-number { width: 50px; height: 50px; background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown-mid) 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0; }
+        .stripe-card.complete .stripe-number { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); }
+        .stripe-title { font-weight: 700; color: var(--text-dark); font-size: 1.1rem; }
+        .stripe-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+        .stripe-description { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .stripe-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .topic-tag { background: #f5e6d3; color: var(--brown-dark); padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; }
+        .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .principle-card { background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown-mid) 100%); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .principle-card .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .principle-card h4 { color: white; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .principle-card p { color: #e2e8f0; font-size: 0.85rem; }
+        .quote-block { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0; border: 1px solid rgba(255,255,255,0.1); }
+        .quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+        .quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; text-align: center; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3); }
+        .btn-success { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); color: white; }
+        .btn-secondary { background: #edf2f7; color: var(--text-dark); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+        @media (max-width: 768px) { body { padding: 1rem; } .main-card { padding: 1.5rem; } .header h1 { font-size: 2rem; } .nav-buttons { flex-direction: column; } .btn { width: 100%; text-align: center; } .stripe-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="belt-badge">🟤 BRAUNER GÜRTEL</div>
+            <h1>Verantwortlichkeit</h1>
+            <p>The hard conversations. The high standards. The courage to hold the line when it matters most.</p>
+        </div>
+
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">Brauner Gürtel Fortschritt</span>
+                <span class="progress-count" id="stripe-count">0/4 Streifen</span>
+            </div>
+            <div class="stripe-visual">
+                <div class="stripe" id="stripe-1"></div>
+                <div class="stripe" id="stripe-2"></div>
+                <div class="stripe" id="stripe-3"></div>
+                <div class="stripe" id="stripe-4"></div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <div class="intro-box warning">
+                <h3>⚠️ The Hardest Dysfunction to Master</h3>
+                <p>Trust is foundational. Conflict is energizing. Commitment is clarifying. But <strong>accountability is where most teams break</strong>. Why? Because it requires courage.</p>
+                <p>Brown Belt teaches you to have the conversations everyone else avoids.</p>
+            </div>
+
+            <div class="intro-box">
+                <h3>What Changes at Brown Belt</h3>
+                <p>You've built trust (White Belt), mastered productive conflict (Blue Belt), and secured clear commitment (Purple Belt). Now comes the real test: <strong>Can you hold the line when standards slip?</strong></p>
+                <p>Can you call out behavior that hurts the team? Can you be direct when it's uncomfortable? Can you maintain high standards even when it's easier to let things slide?</p>
+                <p><strong>Accountability isn't about being the bad guy—it's about caring enough to speak up.</strong></p>
+            </div>
+
+            <div class="intro-box philosophy">
+                <h3>🥋 The BJJ Principle: Pressure & Position</h3>
+                <p>Brown belts in Brazilian Jiu-Jitsu master constant, relentless pressure. They don't let you escape bad positions. They hold you accountable to the consequences of your mistakes.</p>
+                <p>This isn't aggression—it's discipline. It's the ability to maintain standards consistently, even when your opponent (or teammate) wants to slack off.</p>
+                <p>In teams, accountability works the same way: <strong>gentle, consistent pressure that keeps everyone honest.</strong></p>
+                <p><em>"Position before submission. Standards before results."</em></p>
+            </div>
+
+            <div class="intro-box research">
+                <h3>📊 The Research</h3>
+                <p><strong>Kim Scott's research (Radical Candor)</strong> found that teams with direct, caring feedback have 50% lower turnover and 3x higher innovation rates.</p>
+                <p>The opposite—"ruinous empathy"—where managers avoid hard conversations to be "nice," is one of the top reasons high performers leave.</p>
+                <p><strong>Withholding feedback isn't kindness—it's cowardice.</strong> Clear is kind. Unclear is unkind.</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 2rem;">🥋 Brown Belt Principles</h2>
+
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="icon">🎯</div>
+                    <h4>Direct Feedback</h4>
+                    <p>Say what needs to be said. Kind and clear beats nice and vague every time.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">⚖️</div>
+                    <h4>Peer Accountability</h4>
+                    <p>Everyone holds everyone accountable—not just managers downward.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">📊</div>
+                    <h4>High Standards</h4>
+                    <p>Never compromise on what truly matters. Standards aren't negotiable.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">⚡</div>
+                    <h4>Early Intervention</h4>
+                    <p>Address small issues immediately before they become big problems.</p>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 2rem;">📚 Your Brown Belt Streifen</h2>
+
+            <div class="stripe-grid">
+                <a href="brown-belt-stripe1-gamified-de.html" class="stripe-card" id="card-1">
+                    <div class="stripe-header">
+                        <div class="stripe-number">1</div>
+                        <div>
+                            <div class="stripe-title">Accountability Foundation</div>
+                            <div class="stripe-subtitle">Building the Basics</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Master direct feedback, peer accountability, maintaining standards, and early intervention.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Direct Feedback</span>
+                        <span class="topic-tag">Peer Accountability</span>
+                        <span class="topic-tag">Standards</span>
+                    </div>
+                </a>
+
+                <a href="brown-belt-stripe2-gamified-de.html" class="stripe-card" id="card-2">
+                    <div class="stripe-header">
+                        <div class="stripe-number">2</div>
+                        <div>
+                            <div class="stripe-title">Accountability Depth</div>
+                            <div class="stripe-subtitle">Handling Complexity</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Navigate resistance, politics, ambiguous authority, and cultural norms that prevent accountability.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Resistance</span>
+                        <span class="topic-tag">Politics</span>
+                        <span class="topic-tag">Consistency</span>
+                    </div>
+                </a>
+
+                <a href="brown-belt-stripe3-gamified-de.html" class="stripe-card" id="card-3">
+                    <div class="stripe-header">
+                        <div class="stripe-number">3</div>
+                        <div>
+                            <div class="stripe-title">Accountability Systems</div>
+                            <div class="stripe-subtitle">Building Culture</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Create systems, rituals, and norms that make accountability automatic, not heroic.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Systems</span>
+                        <span class="topic-tag">Rituals</span>
+                        <span class="topic-tag">Culture</span>
+                    </div>
+                </a>
+
+                <a href="brown-belt-stripe4-gamified-de.html" class="stripe-card" id="card-4">
+                    <div class="stripe-header">
+                        <div class="stripe-number">4</div>
+                        <div>
+                            <div class="stripe-title">Accountability Mastery</div>
+                            <div class="stripe-subtitle">Advanced Applications</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">22 varied elements testing accountability mastery through exercises, scenarios, reflections, and challenges.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Integration</span>
+                        <span class="topic-tag">Application</span>
+                        <span class="topic-tag">Mastery</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="quote-block">
+                <p class="quote">"Clear is kind. Unclear is unkind."</p>
+                <p class="author">— Brené Brown</p>
+            </div>
+
+            <div class="nav-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="gym-dashboard-de.html" class="btn btn-secondary">← GYM Dashboard</a>
+                <a href="purple-belt-de.html" class="btn btn-secondary" style="background: #7c3aed; color: white;">← Purple Belt</a>
+                <a href="black-belt-de.html" class="btn btn-primary">Preview Black Belt →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStripeProgress() {
+            let completed = 0;
+            for (let i = 1; i <= 4; i++) {
+                if (localStorage.getItem(`brownBeltStripe${i}Complete`) === 'true') {
+                    completed++;
+                    document.getElementById(`stripe-${i}`).classList.add('earned');
+                    document.getElementById(`card-${i}`).classList.add('complete');
+                }
+            }
+            document.getElementById('stripe-count').textContent = `${completed}/4 Streifen`;
+            document.getElementById('progress-fill').style.width = `${(completed / 4) * 100}%`;
+        }
+        updateStripeProgress();
+    </script>
+
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+</body>
+</html>

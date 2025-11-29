@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Schwarzer Gürtel: Vision & Ergebnisse | TAP-IN</title>
+    
+    <!-- Supabase & Auth -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth-system.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary-navy: #1a365d; --secondary-navy: #334155; --accent-red: #b91c1c; --accent-purple: #a78bfa; --success-green: #38a169; --warning-orange: #dd6b20; --card-bg: #ffffff; --border-light: #e2e8f0; --text-dark: #1e293b; --text-muted: #64748b; --light-bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); min-height: 100vh; padding: 2rem 1rem; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: white; }
+        .belt-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); padding: 0.75rem 1.5rem; border-radius: 30px; font-size: 1rem; margin-bottom: 1rem; font-weight: 600; }
+        .header h1 { font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header p { font-size: 1.2rem; opacity: 0.8; }
+        .progress-section { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .progress-title { color: white; font-weight: 600; }
+        .progress-count { color: var(--accent-purple); font-weight: 700; }
+        .stripe-visual { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .stripe { height: 8px; flex: 1; border-radius: 4px; background: rgba(255,255,255,0.2); transition: all 0.3s; }
+        .stripe.earned { background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); box-shadow: 0 0 10px rgba(185, 28, 28, 0.5); }
+        .progress-bar-container { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); border-radius: 3px; transition: width 0.5s ease; }
+        .main-card { background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 25px 80px rgba(0,0,0,0.4); }
+        .intro-box { background: var(--light-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: var(--primary-navy); }
+        .intro-box.warning { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 6px solid var(--warning-orange); }
+        .intro-box.warning h3 { color: #92400e; }
+        .intro-box.warning p { color: #78350f; }
+        .intro-box.philosophy { background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%); border-left: 6px solid var(--primary-navy); }
+        .intro-box.philosophy em { color: var(--accent-purple); }
+        .intro-box.research { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); border: none; }
+        .intro-box.research h3 { color: #fff; }
+        .intro-box.research p { color: #e2e8f0; }
+        .intro-box.research strong { color: var(--accent-purple); }
+        .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .principle-card { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-radius: 12px; padding: 1.25rem; text-align: center; border: 1px solid rgba(255,255,255,0.1); }
+        .principle-card .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .principle-card h4 { color: white; font-size: 1rem; margin-bottom: 0.25rem; }
+        .principle-card p { color: #a1a1aa; font-size: 0.85rem; }
+        .stripe-cards { display: flex; flex-direction: column; gap: 1rem; margin: 1.5rem 0; }
+        .stripe-card { display: flex; align-items: center; background: var(--light-bg); border: 2px solid var(--border-light); border-radius: 12px; padding: 1.25rem; transition: all 0.3s; text-decoration: none; }
+        .stripe-card:hover { border-color: var(--accent-red); transform: translateX(5px); }
+        .stripe-card.completed { border-color: var(--success-green); background: #f0fdf4; }
+        .stripe-number { width: 40px; height: 40px; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 1rem; flex-shrink: 0; }
+        .stripe-card.completed .stripe-number { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); }
+        .stripe-content { flex: 1; }
+        .stripe-content h4 { color: var(--text-dark); font-size: 1rem; margin-bottom: 0.25rem; }
+        .stripe-content p { color: var(--text-muted); font-size: 0.85rem; margin: 0; }
+        .stripe-status { font-size: 1.25rem; }
+        .quote-block { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0; border: 1px solid rgba(255,255,255,0.1); }
+        .quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+        .quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; }
+        .btn { padding: 1rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; text-decoration: none; text-align: center; }
+        .btn-secondary { background: #edf2f7; color: var(--text-dark); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); color: white; }
+        @media (max-width: 768px) { body { padding: 1rem; } .main-card { padding: 1.5rem; } .nav-buttons { flex-direction: column; } .btn { width: 100%; } .principles-grid { grid-template-columns: 1fr 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="belt-badge">⚫ SCHWARZER GÜRTEL</div>
+            <h1>Vision & Ergebnisse</h1>
+            <p>The final dysfunction: Prioritizing collective outcomes over personal recognition</p>
+        </div>
+        <div class="progress-section">
+            <div class="progress-header">
+                <span class="progress-title">Schwarzer Gürtel Fortschritt</span>
+                <span class="progress-count" id="stripe-count">0/4 Streifen</span>
+            </div>
+            <div class="stripe-visual">
+                <div class="stripe" id="stripe-1"></div>
+                <div class="stripe" id="stripe-2"></div>
+                <div class="stripe" id="stripe-3"></div>
+                <div class="stripe" id="stripe-4"></div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="progress-fill"></div>
+            </div>
+        </div>
+        <div class="main-card">
+            <div class="intro-box warning">
+                <h3>⚠️ The Ultimate Test</h3>
+                <p>You can have trust, healthy conflict, commitment, and accountability—but if team members prioritize personal goals over collective results, the team fails. <strong>Black Belt is about subordinating your ego to the mission.</strong></p>
+                <p>This is the hardest dysfunction to overcome because it requires you to win by helping others win, to succeed by making the team succeed, to be recognized by giving recognition away.</p>
+            </div>
+
+            <div class="intro-box">
+                <h3>What Makes Black Belt Different</h3>
+                <p>At every previous belt, you were building capabilities: trust, conflict, commitment, accountability. These are <strong>skills you can practice</strong>.</p>
+                <p>Black Belt is different. It's not a skill—it's a <strong>choice</strong>. Every day, in every moment, you choose:</p>
+                <p><strong>Do I prioritize team results or personal recognition?</strong></p>
+                <p>The Black Belt leader chooses team results. Every. Single. Time.</p>
+            </div>
+            <div class="intro-box philosophy">
+                <h3>🥋 The BJJ Principle: Tap Your Ego</h3>
+                <p>In Brazilian Jiu-Jitsu, you must tap when you're caught—surrender your ego to survive and learn. <strong>The person who can't tap gets injured.</strong> The person who taps early learns faster.</p>
+                <p>Great teams are built by leaders who can tap their ego:</p>
+                <p>• Take the blame publicly, give credit privately<br>
+                • Give recognition away freely<br>
+                • Prioritize team wins over personal advancement<br>
+                • Measure success by collective outcomes, not individual glory</p>
+                <p><em>"A Black Belt's ego serves the team, not themselves."</em></p>
+            </div>
+
+            <div class="intro-box research">
+                <h3>📊 The Research</h3>
+                <p><strong>Patrick Lencioni's research</strong> shows that inattention to results is the ultimate team dysfunction. When team members prioritize individual goals—career advancement, recognition, empire-building, turf protection—even high-performing teams fail.</p>
+                <p><strong>Jim Collins (Good to Great)</strong> found that Level 5 leaders—the highest performing CEOs—share one trait: they attribute success to the team and failure to themselves. They deflect praise and absorb blame.</p>
+                <p>The best leaders don't ask <strong>"Did I look good?"</strong> They ask <strong>"Did we win?"</strong></p>
+            </div>
+            <h3 style="color: var(--text-dark); margin: 1.5rem 0 1rem;">The Four Pillars of Results Focus</h3>
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="icon">🎯</div>
+                    <h4>Team Wins First</h4>
+                    <p>Collective success over personal glory—always</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">📊</div>
+                    <h4>Scoreboard Clarity</h4>
+                    <p>Define winning in measurable, collective terms</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">🏆</div>
+                    <h4>Credit Distribution</h4>
+                    <p>Give it away freely—leaders shine when teams shine</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">⚖️</div>
+                    <h4>Ego Subordination</h4>
+                    <p>Mission over recognition—purpose over praise</p>
+                </div>
+            </div>
+            <h3 style="color: var(--text-dark); margin: 1.5rem 0 1rem;">Your Path to Black Belt Mastery</h3>
+            <div class="stripe-cards">
+                <a href="black-belt-stripe1-gamified-de.html" class="stripe-card" id="card-1">
+                    <div class="stripe-number">1</div>
+                    <div class="stripe-content">
+                        <h4>Results Foundation</h4>
+                        <p>Define success in terms of collective outcomes, not individual wins or personal advancement</p>
+                    </div>
+                    <div class="stripe-status" id="status-1">→</div>
+                </a>
+                <a href="black-belt-stripe2-de.html" class="stripe-card" id="card-2">
+                    <div class="stripe-number">2</div>
+                    <div class="stripe-content">
+                        <h4>Ego Management</h4>
+                        <p>Subordinate personal goals when they conflict with team results—tap your ego daily</p>
+                    </div>
+                    <div class="stripe-status" id="status-2">→</div>
+                </a>
+                <a href="black-belt-stripe3-de.html" class="stripe-card" id="card-3">
+                    <div class="stripe-number">3</div>
+                    <div class="stripe-content">
+                        <h4>Scoreboard Discipline</h4>
+                        <p>Track what matters, ignore vanity metrics, stay ruthlessly focused on the mission</p>
+                    </div>
+                    <div class="stripe-status" id="status-3">→</div>
+                </a>
+                <a href="black-belt-stripe4-gamified-de.html" class="stripe-card" id="card-4">
+                    <div class="stripe-number">4</div>
+                    <div class="stripe-content">
+                        <h4>Results Mastery</h4>
+                        <p>Build a culture where everyone measures success by collective wins, not individual glory</p>
+                    </div>
+                    <div class="stripe-status" id="status-4">→</div>
+                </a>
+            </div>
+            <div class="quote-block">
+                <p class="quote">"There is no success without a successor. Great leaders build teams that succeed after they're gone."</p>
+                <p class="author">— Roberto Goizueta, Coca-Cola CEO</p>
+            </div>
+            <div class="nav-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="gym-dashboard-de.html" class="btn btn-secondary">← GYM Dashboard</a>
+                <a href="brown-belt-de.html" class="btn btn-secondary" style="background: #92400e; color: white;">← Brown Belt</a>
+                <a href="black-belt-stripe1-gamified-de.html" class="btn btn-primary">Start Stripe 1 →</a>
+            </div>
+        </div>
+    </div>
+    <script>
+        function checkProgress() {
+            let completed = 0;
+            for (let i = 1; i <= 4; i++) {
+                if (localStorage.getItem(`blackBeltStripe${i}Complete`) === 'true') {
+                    completed++;
+                    document.getElementById(`stripe-${i}`).classList.add('earned');
+                    document.getElementById(`card-${i}`).classList.add('completed');
+                    document.getElementById(`status-${i}`).textContent = '✓';
+                }
+            }
+            document.getElementById('stripe-count').textContent = `${completed}/4 Streifen`;
+            document.getElementById('progress-fill').style.width = `${(completed / 4) * 100}%`;
+        }
+        checkProgress();
+    </script>
+
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+</body>
+</html>

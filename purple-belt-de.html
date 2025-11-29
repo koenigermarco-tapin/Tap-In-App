@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Violetter Gürtel: Commitment & Ausrichtung | TAP-IN</title>
+    
+    <!-- Supabase & Auth -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth-system.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-navy: #1a365d;
+            --secondary-navy: #334155;
+            --accent-red: #b91c1c;
+            --accent-purple: #a78bfa;
+            --success-green: #38a169;
+            --warning-orange: #dd6b20;
+            --card-bg: #ffffff;
+            --border-light: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --light-bg: #f8fafc;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #581c87 0%, #7c3aed 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: white; }
+        .belt-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 0.5rem 1.5rem; border-radius: 25px; font-size: 0.9rem; margin-bottom: 1rem; }
+        .header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .header p { font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        .stripe-progress { display: flex; justify-content: center; gap: 0.5rem; margin: 1.5rem 0; }
+        .stripe { width: 60px; height: 8px; background: rgba(255,255,255,0.3); border-radius: 4px; }
+        .stripe.complete { background: var(--accent-red); }
+        .main-card { background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.2); margin-bottom: 2rem; }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+        .intro-box { background: var(--light-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: var(--primary-navy); }
+        .intro-box.philosophy { background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%); border-left: 6px solid var(--primary-navy); }
+        .intro-box.philosophy em { color: var(--accent-purple); }
+        .intro-box.research { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); border: none; }
+        .intro-box.research h3 { color: #fff; }
+        .intro-box.research p { color: #e2e8f0; }
+        .intro-box.research strong { color: var(--accent-purple); }
+        .intro-box.warning { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 6px solid var(--warning-orange); }
+        .intro-box.warning h3 { color: #92400e; }
+        .intro-box.warning p { color: #78350f; }
+        .stripe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .stripe-card { background: white; border: 2px solid var(--border-light); border-radius: 16px; padding: 1.5rem; transition: all 0.3s; }
+        .stripe-card:hover { border-color: var(--accent-purple); transform: translateY(-4px); box-shadow: 0 10px 30px rgba(124, 58, 237, 0.15); }
+        .stripe-card.complete { border-color: var(--success-green); background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+        .stripe-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .stripe-number { width: 40px; height: 40px; background: linear-gradient(135deg, #581c87 0%, #7c3aed 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+        .stripe-card.complete .stripe-number { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); }
+        .stripe-title { font-weight: 700; color: var(--text-dark); }
+        .stripe-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+        .stripe-description { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .stripe-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .topic-tag { background: #f3e8ff; color: #7c3aed; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; }
+        .btn { display: inline-block; padding: 0.75rem 1.5rem; border-radius: 8px; font-size: 0.95rem; font-weight: 600; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3); }
+        .btn-success { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); color: white; }
+        .btn-secondary { background: #edf2f7; color: var(--text-dark); }
+        .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .principle-card { background: linear-gradient(135deg, var(--secondary-navy) 0%, var(--text-dark) 100%); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .principle-card .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .principle-card h4 { color: white; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .principle-card p { color: #cbd5e1; font-size: 0.85rem; }
+        .quote-block { background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%); border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0; }
+        .quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+        .quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+        @media (max-width: 768px) { body { padding: 1rem; } .main-card { padding: 1.5rem; } .header h1 { font-size: 2rem; } .nav-buttons { flex-direction: column; } .btn { width: 100%; text-align: center; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="belt-badge">🟣 Purple Belt</div>
+            <h1>Commitment & Ausrichtung</h1>
+            <p>From personal mastery to collective excellence. Purple Belt transforms your communication skills into team results.</p>
+            <div class="stripe-progress">
+                <div class="stripe" id="stripe-1"></div>
+                <div class="stripe" id="stripe-2"></div>
+                <div class="stripe" id="stripe-3"></div>
+                <div class="stripe" id="stripe-4"></div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <h2 class="section-title">🟣 The Team Challenge</h2>
+            
+            <div class="intro-box warning">
+                <h3>⚠️ Individual Excellence ≠ Team Results</h3>
+                <p>You can be an excellent communicator and still be on a dysfunctional team. Purple Belt addresses the gap between personal skills and collective performance.</p>
+                <p><strong>Most teams fail not from lack of talent, but from lack of alignment.</strong></p>
+            </div>
+
+            <div class="intro-box">
+                <h3>What Changes at Purple Belt</h3>
+                <p>White Belt built your foundation. Blue Belt gave you communication skills. <strong>Purple Belt teaches you to align groups of people around shared outcomes.</strong></p>
+                <p>This is where leadership gets real. It's no longer about you—it's about enabling the team to perform together.</p>
+            </div>
+
+            <div class="intro-box philosophy">
+                <h3>🥋 The BJJ Principle: Position Over Submission</h3>
+                <p>Purple belts in BJJ understand that <strong>position determines everything</strong>. You don't hunt submissions—you build such strong position that submissions become inevitable.</p>
+                <p>Team leadership works the same way. <strong>Align the team first, and results follow.</strong> Skip alignment and you're just grabbing for outcomes you can't hold.</p>
+                <p><em>"The team is not the sum of its parts. It's the product of their interactions."</em></p>
+            </div>
+
+            <div class="intro-box research">
+                <h3>📊 The Research</h3>
+                <p><strong>Patrick Lencioni's</strong> work with hundreds of leadership teams identified the same pattern: dysfunctional teams fail in predictable ways. His "Five Dysfunctions" model shows that <strong>absence of trust</strong> leads to <strong>fear of conflict</strong>, which leads to <strong>lack of commitment</strong>, which leads to <strong>avoidance of accountability</strong>, which leads to <strong>inattention to results</strong>.</p>
+                <p>Purple Belt attacks these dysfunctions directly.</p>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 2rem;">🥋 Purple Belt Principles</h2>
+
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="icon">🎯</div>
+                    <h4>Shared Goals</h4>
+                    <p>Alignment starts with clarity on what we're actually trying to achieve together</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">⚔️</div>
+                    <h4>Healthy Conflict</h4>
+                    <p>Great teams fight—about ideas, not people. Conflict is the crucible of commitment.</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">🤝</div>
+                    <h4>Collective Accountability</h4>
+                    <p>Peer-to-peer accountability beats top-down pressure every time</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon">🏆</div>
+                    <h4>Results Focus</h4>
+                    <p>Individual ego dies so team results can live</p>
+                </div>
+            </div>
+
+            <h2 class="section-title" style="margin-top: 2rem;">📚 Your Purple Belt Streifen</h2>
+
+            <div class="stripe-grid">
+                <div class="stripe-card" id="card-1">
+                    <div class="stripe-header">
+                        <div class="stripe-number">1</div>
+                        <div>
+                            <div class="stripe-title">Shared Goals</div>
+                            <div class="stripe-subtitle">Creating Clarity Together</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Learn to build goals that everyone owns—not mandates from above that nobody believes in.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">OKRs</span>
+                        <span class="topic-tag">Alignment</span>
+                        <span class="topic-tag">Clarity</span>
+                    </div>
+                    <a href="purple-belt-stripe1-gamified-de.html" class="btn btn-primary">Start Stripe 1 →</a>
+                </div>
+
+                <div class="stripe-card" id="card-2">
+                    <div class="stripe-header">
+                        <div class="stripe-number">2</div>
+                        <div>
+                            <div class="stripe-title">Healthy Conflict</div>
+                            <div class="stripe-subtitle">Fighting About Ideas, Not People</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Transform destructive arguments into productive debates that make decisions stick.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Debate</span>
+                        <span class="topic-tag">Decisions</span>
+                        <span class="topic-tag">Commitment</span>
+                    </div>
+                    <a href="purple-belt-stripe2-gamified-de.html" class="btn btn-primary">Start Stripe 2 →</a>
+                </div>
+
+                <div class="stripe-card" id="card-3">
+                    <div class="stripe-header">
+                        <div class="stripe-number">3</div>
+                        <div>
+                            <div class="stripe-title">Collective Accountability</div>
+                            <div class="stripe-subtitle">Peer Pressure That Works</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Build teams where people hold each other accountable—without the leader playing referee.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Standards</span>
+                        <span class="topic-tag">Peer Accountability</span>
+                        <span class="topic-tag">Commitments</span>
+                    </div>
+                    <a href="purple-belt-stripe3-gamified-de.html" class="btn btn-primary">Start Stripe 3 →</a>
+                </div>
+
+                <div class="stripe-card" id="card-4">
+                    <div class="stripe-header">
+                        <div class="stripe-number">4</div>
+                        <div>
+                            <div class="stripe-title">Results Focus</div>
+                            <div class="stripe-subtitle">Team Wins Over Individual Glory</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Kill the ego. Build scoreboard discipline. Make collective results the only thing that matters.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Scoreboards</span>
+                        <span class="topic-tag">Team Ego</span>
+                        <span class="topic-tag">Collective Wins</span>
+                    </div>
+                    <a href="purple-belt-stripe4-gamified-de.html" class="btn btn-primary">Start Stripe 4 →</a>
+                </div>
+            </div>
+
+            <div class="quote-block">
+                <p class="quote">"Not finance. Not strategy. Not technology. It is teamwork that remains the ultimate competitive advantage, both because it is so powerful and so rare."</p>
+                <p class="author">— Patrick Lencioni</p>
+            </div>
+
+            <div class="nav-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="gym-dashboard-de.html" class="btn btn-secondary">← GYM Dashboard</a>
+                <a href="blue-belt-de.html" class="btn btn-secondary" style="background: #3b82f6; color: white;">← Blue Belt</a>
+                <a href="brown-belt-de.html" class="btn btn-primary">Preview Brown Belt →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check localStorage for completed stripes
+        function updateStripeProgress() {
+            for (let i = 1; i <= 4; i++) {
+                if (localStorage.getItem(`purpleBeltStripe${i}Complete`) === 'true') {
+                    document.getElementById(`stripe-${i}`).classList.add('complete');
+                    document.getElementById(`card-${i}`).classList.add('complete');
+                }
+            }
+        }
+        updateStripeProgress();
+    </script>
+
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+</body>
+</html>
