@@ -3,6 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Open Graph / Facebook -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tap-in-platform.netlify.app/temp.html">
+<meta property="og:title" content="Find Your Leadership Belt Level">
+<meta property="og:description" content="Complete this assessment to discover your current leadership level and get a personalized training path.">
+<meta property="og:image" content="/og-image.png">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://tap-in-platform.netlify.app/temp.html">
+<meta property="twitter:title" content="Find Your Leadership Belt Level">
+<meta property="twitter:description" content="Complete this assessment to discover your current leadership level and get a personalized training path.">
+<meta property="twitter:image" content="/og-image.png">
+
     <title>TAP-IN Belt Assessment | Discover Your Starting Point</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -662,9 +676,39 @@
                 font-size: 0.6rem;
             }
         }
-    </style>
-</head>
+    
+/* Enhanced Focus Styles for Accessibility */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus,
+.stripe-item:focus,
+.module-card:focus,
+.entry-card:focus {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.2);
+}
+
+/* Screen reader only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+</style>
+    <link rel="canonical" href="https://tap-in-platform.netlify.app/belt-assessment-v2.html">
+
 <body>
+    <a href="#main-content" class="skip-link" style="position: absolute; top: -40px; left: 0; background: #6366f1; color: white; padding: 8px 16px; text-decoration: none; z-index: 9999; border-radius: 0 0 4px 0; font-weight: 600;"
+    onfocus="this.style.top='0';" onblur="this.style.top='-40px';">Skip to main content</a>
     <div class="container">
         <div class="header">
             <h1>🥋 TAP-IN Belt Assessment</h1>
@@ -698,7 +742,7 @@
                     <p><em>Answer honestly. There are no right or wrong answers—only accurate and inaccurate ones.</em></p>
                 </div>
 
-                <button class="begin-button" onclick="startAssessment()">
+                <button class="begin-button" onclick="startAssessment()" aria-label="🥋 Begin Assessment">
                     🥋 Begin Assessment
                 </button>
             </div>
@@ -1167,8 +1211,8 @@
             // Navigation
             html += `
                 <div class="nav-buttons">
-                    <button class="nav-btn back" onclick="prevQuestion()" ${index === 0 ? 'style="visibility:hidden"' : ''}>← Back</button>
-                    <button class="nav-btn next" onclick="nextQuestion()" ${answers[index] === undefined ? 'disabled' : ''}>
+                    <button class="nav-btn back" onclick="prevQuestion()" ${index === 0 ? 'style="visibility:hidden"' : ''} aria-label="← Back">← Back</button>
+                    <button class="nav-btn next" onclick="nextQuestion()" ${answers[index] === undefined ? 'disabled' : ''} aria-label="${index === questions.length - 1 ? 'See Results' : 'Continue →'}">
                         ${index === questions.length - 1 ? 'See Results' : 'Continue →'}
                     </button>
                 </div>
@@ -1255,7 +1299,7 @@
                 <h3>${data.title}</h3>
                 <p>${data.message}</p>
                 <div class="stripe-visual">${stripes}</div>
-                <button class="stripe-continue" onclick="closeStripeUnlock()">Continue →</button>
+                <button class="stripe-continue" onclick="closeStripeUnlock()" aria-label="Continue →">Continue →</button>
             `;
             
             overlay.style.display = 'flex';
@@ -1518,7 +1562,7 @@
                 </div>
                 
                 <div class="results-cta">
-                    <button class="begin-button" onclick="location.href='${results.belt.toLowerCase()}-belt.html'">
+                    <button class="begin-button" onclick="location.href='${results.belt.toLowerCase()}-belt.html'" aria-label="Start ${results.belt} Belt Training →">
                         Start ${results.belt} Belt Training →
                     </button>
                     <p class="cta-subtext">Your personalized development path awaits. Time to earn your stripes.</p>
@@ -1598,5 +1642,73 @@ document.addEventListener('DOMContentLoaded', function() {
     <script src="js/structured-data.js"></script>
 
 <script src="js/performance-monitor.js"></script>
-</body>
+<!-- Toast Notification System -->
+<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
+
+<script>
+(function() {
+    'use strict';
+    
+    window.showToast = function(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            min-width: 300px;
+            max-width: 500px;
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        `;
+        
+        const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+        toast.innerHTML = `<span style="font-size: 1.25rem;">${icon}</span><span>${message}</span>`;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    };
+    
+    // Add animations if not present
+    if (!document.getElementById('toast-animations')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animations';
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+})();
+</script>
+
 </html>

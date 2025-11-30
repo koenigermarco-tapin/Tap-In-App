@@ -462,7 +462,34 @@
             .featured-box { padding: 1.5rem; }
             .box-content h2 { font-size: 1.5rem; }
         }
-    </style>
+    
+/* Enhanced Focus Styles for Accessibility */
+button:focus,
+a:focus,
+input:focus,
+textarea:focus,
+select:focus,
+.stripe-item:focus,
+.module-card:focus,
+.entry-card:focus {
+    outline: 3px solid #6366f1;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px rgba(99, 102, 241, 0.2);
+}
+
+/* Screen reader only class */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+</style>
 
 <!-- PWA Manifest -->
 <link rel="manifest" href="/manifest.json">
@@ -472,8 +499,11 @@
 <meta name="apple-mobile-web-app-title" content="Tap-In">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
-</head>
+    <link rel="canonical" href="https://tap-in-platform.netlify.app/index.html">
+
 <body>
+    <a href="#main-content" class="skip-link" style="position: absolute; top: -40px; left: 0; background: #6366f1; color: white; padding: 8px 16px; text-decoration: none; z-index: 9999; border-radius: 0 0 4px 0; font-weight: 600;"
+    onfocus="this.style.top='0';" onblur="this.style.top='-40px';">Skip to main content</a>
 <!-- LOADING SCREEN COMPONENT -->
 <!-- Add this at the START of <body> tag -->
 
@@ -591,7 +621,7 @@
                     <span class="feature-tag">✓ +150 XP unlock</span>
                 </div>
             </div>
-            <button class="featured-btn assessment-btn" onclick="location.href='belt-assessment-sales-landing.html'">
+            <button class="featured-btn assessment-btn" onclick="location.href='belt-assessment-sales-landing.html'" aria-label="Take Assessment →">
                 Take Assessment →
             </button>
         </div>
@@ -613,7 +643,7 @@
                     <span class="feature-tag">✓ Recruiter tools</span>
                 </div>
             </div>
-            <button class="featured-btn business-btn" onclick="location.href='business-portal.html'">
+            <button class="featured-btn business-btn" onclick="location.href='business-portal.html'" aria-label="Enter Portal →">
                 Enter Portal →
             </button>
         </div>
@@ -644,7 +674,7 @@
                     <div class="progress-detail" id="gym-progress">Stripe 2 of 4 • 75 XP</div>
                 </div>
                 
-                <button class="entry-button">Enter The Gym →</button>
+                <button class="entry-button" aria-label="Enter The Gym →">Enter The Gym →</button>
             </div>
             
             <!-- THE HUB -->
@@ -671,7 +701,7 @@
                     <div class="progress-detail">Communication • Analytics • Assessments</div>
                 </div>
                 
-                <button class="entry-button">Enter The Hub →</button>
+                <button class="entry-button" aria-label="Enter The Hub →">Enter The Hub →</button>
             </div>
         </div>
         
@@ -1052,14 +1082,14 @@
     <script>
     // Global error handler - prevents silent failures
     window.addEventListener('error', function(e) {
-        console.error('Resource failed to load:', e.target.src || e.target.href || e.message);
+        if(typeof showToast === 'function') { showToast('Something went wrong. Please try again.', 'error'); } console.error('Resource failed to load:', e.target.src || e.target.href || e.message);
         // Don't break the page, just log
         e.preventDefault();
     });
     
     // Handle promise rejections
     window.addEventListener('unhandledrejection', function(e) {
-        console.error('Unhandled promise rejection:', e.reason);
+        if(typeof showToast === 'function') { showToast('Unhandled promise rejection:', 'error'); } console.error('Unhandled promise rejection:', e.reason);
         e.preventDefault();
     });
     </script>
@@ -1095,7 +1125,7 @@
 <script>
 // Global error handling
 window.addEventListener('error', (event) => {
-  console.error('💥 Error:', event.error);
+  if(typeof showToast === 'function') { showToast('Something went wrong. Please try again.', 'error'); } console.error('💥 Error:', event.error);
   showErrorToast('Something went wrong. Please refresh the page.');
 });
 
@@ -1108,7 +1138,7 @@ window.addEventListener('unhandledrejection', (event) => {
     return;
   }
   
-  console.error('💥 Unhandled promise rejection:', event.reason);
+  if(typeof showToast === 'function') { showToast('💥 Unhandled promise rejection:', 'error'); } console.error('💥 Unhandled promise rejection:', event.reason);
   showErrorToast('A background process failed. Everything else should work fine.');
 });
 
@@ -1188,6 +1218,74 @@ window.showErrorToast = showErrorToast;
     <script src="js/achievement-badges.js"></script>
     <script src="js/structured-data.js"></script>
 
-</body>
+<!-- Toast Notification System -->
+<div id="toast-container" style="position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px;"></div>
+
+<script>
+(function() {
+    'use strict';
+    
+    window.showToast = function(message, type = 'info', duration = 3000) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#3b82f6'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            min-width: 300px;
+            max-width: 500px;
+            animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+        `;
+        
+        const icon = type === 'error' ? '❌' : type === 'success' ? '✅' : 'ℹ️';
+        toast.innerHTML = `<span style="font-size: 1.25rem;">${icon}</span><span>${message}</span>`;
+        
+        container.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, duration);
+    };
+    
+    // Add animations if not present
+    if (!document.getElementById('toast-animations')) {
+        const style = document.createElement('style');
+        style.id = 'toast-animations';
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+})();
+</script>
+
 </html>
 
