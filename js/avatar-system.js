@@ -1,231 +1,202 @@
 /**
  * TAP-IN Avatar System
- * CSS-based avatar with customizable items, belt sync, and XP integration
+ * Visual character representation with belt colors, XP, and levels
  */
 
-const AvatarSystem = {
-    // Default avatar state
-    defaultState: {
-        belt: 'white',
-        beltStripes: 0,
-        totalXP: 0,
-        giColor: 'white',
-        patchLeft: 'none',
-        patchRight: 'none',
-        background: 'garage',
-        ownedItems: ['white-gi', 'garage-bg'],
-        equippedItems: ['white-gi', 'garage-bg'],
-        activeEffects: []
-    },
-
-    // Initialize avatar system
-    init() {
-        this.loadState();
-        this.syncBeltWithProgress();
-    },
-
-    // Load state from localStorage or create default
-    loadState() {
-        const saved = localStorage.getItem('avatarState');
-        if (saved) {
-            try {
-                this.state = JSON.parse(saved);
-            } catch (e) {
-                this.state = { ...this.defaultState };
-            }
-        } else {
-            this.state = { ...this.defaultState };
-            this.saveState();
+const AVATAR_SYSTEM = {
+  // Belt color mapping
+  beltColors: {
+    'white': '#FFFFFF',
+    'blue': '#1e40af',
+    'purple': '#7c3aed',
+    'brown': '#92400e',
+    'black': '#1f2937'
+  },
+  
+  // XP level thresholds
+  xpLevels: [
+    { level: 1, xp: 0, title: "Beginner" },
+    { level: 2, xp: 100, title: "Apprentice" },
+    { level: 3, xp: 250, title: "Practitioner" },
+    { level: 4, xp: 500, title: "Skilled" },
+    { level: 5, xp: 1000, title: "Dedicated" },
+    { level: 6, xp: 1500, title: "Advanced" },
+    { level: 7, xp: 2000, title: "Expert" },
+    { level: 8, xp: 3000, title: "Elite" },
+    { level: 9, xp: 4000, title: "Master" },
+    { level: 10, xp: 5000, title: "Grand Master" },
+    { level: 11, xp: 6000, title: "Champion" },
+    { level: 12, xp: 7500, title: "Legend" },
+    { level: 13, xp: 9000, title: "Sage" },
+    { level: 14, xp: 11000, title: "Mentor" },
+    { level: 15, xp: 13000, title: "Master Instructor" },
+    { level: 16, xp: 15000, title: "Grand Master" },
+    { level: 17, xp: 18000, title: "Legendary Master" },
+    { level: 18, xp: 21000, title: "Supreme Master" },
+    { level: 19, xp: 25000, title: "Ultimate Master" },
+    { level: 20, xp: 30000, title: "Perfect Master" }
+  ],
+  
+  /**
+   * Get current belt from localStorage
+   */
+  getCurrentBelt: function() {
+    // Check if user has completed any belt
+    if (localStorage.getItem('blackBeltComplete') === 'true') return 'black';
+    if (localStorage.getItem('brownBeltComplete') === 'true') return 'brown';
+    if (localStorage.getItem('purpleBeltComplete') === 'true') return 'purple';
+    if (localStorage.getItem('blueBeltComplete') === 'true') return 'blue';
+    if (localStorage.getItem('whiteBeltComplete') === 'true') return 'white';
+    
+    // Check assessment result
+    const assessment = localStorage.getItem('tapinBeltAssessment');
+    if (assessment) {
+      try {
+        const result = JSON.parse(assessment);
+        if (result.belt) {
+          return result.belt.toLowerCase();
         }
-        return this.state;
-    },
-
-    // Save state to localStorage
-    saveState() {
-        // Sync with auth system if available
-        if (window.tapInAuth && window.tapInAuth.saveAvatarState) {
-            window.tapInAuth.saveAvatarState(this.state);
-        }
-        localStorage.setItem('avatarState', JSON.stringify(this.state));
-    },
-
-    // Get current state
-    getState() {
-        return this.state || this.loadState();
-    },
-
-    // Sync belt with user progress
-    syncBeltWithProgress() {
-        const currentBelt = localStorage.getItem('currentBelt') || 'white';
-        const beltMap = {
-            'White': 'white',
-            'Blue': 'blue',
-            'Purple': 'purple',
-            'Brown': 'brown',
-            'Black': 'black'
-        };
-        const beltColor = beltMap[currentBelt] || currentBelt.toLowerCase();
-        
-        // Count stripes completed
-        let stripes = 0;
-        for (let i = 1; i <= 4; i++) {
-            const key = `${currentBelt.toLowerCase()}BeltStripe${i}Complete`;
-            if (localStorage.getItem(key) === 'true') {
-                stripes++;
-            }
-        }
-        
-        this.state = this.getState();
-        this.state.belt = beltColor;
-        this.state.beltStripes = stripes;
-        this.state.totalXP = parseInt(localStorage.getItem('totalXP') || '0');
-        this.saveState();
-    },
-
-    // Render avatar to container
-    renderAvatar(containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-
-        const state = this.getState();
-        this.syncBeltWithProgress();
-        
-        // Clear container
-        container.innerHTML = '';
-
-        // Create avatar layers
-        const avatar = document.createElement('div');
-        avatar.className = 'avatar-layers';
-        
-        // Background
-        const bg = document.createElement('div');
-        bg.className = `avatar-bg avatar-bg-${state.background}`;
-        avatar.appendChild(bg);
-
-        // Body (gi)
-        const body = document.createElement('div');
-        body.className = `avatar-body avatar-gi-${state.giColor}`;
-        avatar.appendChild(body);
-
-        // Patches
-        if (state.patchLeft !== 'none') {
-            const patchL = document.createElement('div');
-            patchL.className = `avatar-patch avatar-patch-left avatar-patch-${state.patchLeft}`;
-            avatar.appendChild(patchL);
-        }
-        if (state.patchRight !== 'none') {
-            const patchR = document.createElement('div');
-            patchR.className = `avatar-patch avatar-patch-right avatar-patch-${state.patchRight}`;
-            avatar.appendChild(patchR);
-        }
-
-        // Belt
-        const belt = document.createElement('div');
-        belt.className = `avatar-belt avatar-belt-${state.belt}`;
-        // Add stripes
-        for (let i = 0; i < state.beltStripes; i++) {
-            const stripe = document.createElement('div');
-            stripe.className = 'avatar-stripe';
-            belt.appendChild(stripe);
-        }
-        avatar.appendChild(belt);
-
-        // Effects
-        state.activeEffects.forEach(effect => {
-            const effectEl = document.createElement('div');
-            effectEl.className = `avatar-effect avatar-effect-${effect}`;
-            avatar.appendChild(effectEl);
-        });
-
-        container.appendChild(avatar);
-    },
-
-    // Get owned items count
-    getOwnedItems() {
-        const state = this.getState();
-        return state.ownedItems || [];
-    },
-
-    // Equip item
-    equipItem(itemId) {
-        const state = this.getState();
-        if (!state.ownedItems.includes(itemId)) {
-            return false; // Don't own it
-        }
-        
-        // Handle different item types
-        if (itemId.includes('-gi')) {
-            state.giColor = itemId.replace('-gi', '');
-        } else if (itemId.includes('-bg')) {
-            state.background = itemId.replace('-bg', '');
-        } else if (itemId.includes('-patch')) {
-            const side = itemId.includes('-left') ? 'patchLeft' : 'patchRight';
-            const patchType = itemId.replace('-patch-left', '').replace('-patch-right', '').replace('-patch', '');
-            state[side] = patchType;
-        }
-        
-        if (!state.equippedItems.includes(itemId)) {
-            state.equippedItems.push(itemId);
-        }
-        
-        this.saveState();
-        return true;
-    },
-
-    // Unequip item
-    unequipItem(itemId) {
-        const state = this.getState();
-        state.equippedItems = state.equippedItems.filter(id => id !== itemId);
-        
-        // Reset to defaults if unequipped
-        if (itemId.includes('-gi')) {
-            state.giColor = 'white';
-        } else if (itemId.includes('-bg')) {
-            state.background = 'garage';
-        } else if (itemId.includes('-patch-left')) {
-            state.patchLeft = 'none';
-        } else if (itemId.includes('-patch-right')) {
-            state.patchRight = 'none';
-        }
-        
-        this.saveState();
-        return true;
-    },
-
-    // Purchase item (check XP, add to owned)
-    purchaseItem(itemId, cost) {
-        const state = this.getState();
-        const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
-        
-        if (currentXP < cost) {
-            return false; // Not enough XP
-        }
-        
-        if (state.ownedItems.includes(itemId)) {
-            return true; // Already owned
-        }
-        
-        // Deduct XP
-        const newXP = currentXP - cost;
-        localStorage.setItem('totalXP', newXP.toString());
-        state.totalXP = newXP;
-        
-        // Add to owned
-        state.ownedItems.push(itemId);
-        this.saveState();
-        
-        return true;
+      } catch (e) {
+        console.warn('Error parsing assessment result:', e);
+      }
     }
+    
+    // Default to white
+    return 'white';
+  },
+  
+  /**
+   * Get total XP from localStorage
+   */
+  getTotalXP: function() {
+    return parseInt(localStorage.getItem('totalXP')) || 0;
+  },
+  
+  /**
+   * Calculate current level from XP
+   */
+  getCurrentLevel: function(xp) {
+    for (let i = this.xpLevels.length - 1; i >= 0; i--) {
+      if (xp >= this.xpLevels[i].xp) {
+        return this.xpLevels[i];
+      }
+    }
+    return this.xpLevels[0];
+  },
+  
+  /**
+   * Get XP for next level
+   */
+  getNextLevelXP: function(currentLevel) {
+    const currentIndex = this.xpLevels.findIndex(l => l.level === currentLevel);
+    if (currentIndex < this.xpLevels.length - 1) {
+      return this.xpLevels[currentIndex + 1].xp;
+    }
+    return this.xpLevels[currentIndex].xp; // Max level
+  },
+  
+  /**
+   * Initialize avatar on page load
+   */
+  init: function() {
+    const totalXP = this.getTotalXP();
+    const currentBelt = this.getCurrentBelt();
+    const currentLevel = this.getCurrentLevel(totalXP);
+    const nextLevelXP = this.getNextLevelXP(currentLevel.level);
+    
+    // Update belt color in SVG
+    const beltElement = document.getElementById('userBelt');
+    if (beltElement) {
+      beltElement.style.fill = this.beltColors[currentBelt];
+      beltElement.className = 'belt ' + currentBelt + '-belt';
+    }
+    
+    // Update belt name
+    const beltNameElement = document.getElementById('avatarBeltName');
+    if (beltNameElement) {
+      const beltName = currentBelt.charAt(0).toUpperCase() + currentBelt.slice(1);
+      beltNameElement.textContent = `${beltName} Belt`;
+    }
+    
+    // Update XP display
+    const xpElement = document.getElementById('avatarXP');
+    if (xpElement) {
+      xpElement.textContent = `${totalXP} / ${nextLevelXP} XP`;
+    }
+    
+    // Update level display
+    const levelElement = document.getElementById('avatarLevel');
+    if (levelElement) {
+      levelElement.textContent = `Level ${currentLevel.level}: ${currentLevel.title}`;
+    }
+  },
+  
+  /**
+   * Update avatar when XP changes
+   */
+  update: function() {
+    this.init(); // Re-initialize with new values
+  },
+  
+  /**
+   * Check for level up and show celebration
+   */
+  checkLevelUp: function() {
+    const totalXP = this.getTotalXP();
+    const currentLevel = this.getCurrentLevel(totalXP);
+    const lastLevel = parseInt(localStorage.getItem('lastKnownLevel')) || 1;
+    
+    if (currentLevel.level > lastLevel) {
+      localStorage.setItem('lastKnownLevel', currentLevel.level.toString());
+      this.showLevelUpCelebration(currentLevel);
+      return true;
+    }
+    
+    return false;
+  },
+  
+  /**
+   * Show level up celebration
+   */
+  showLevelUpCelebration: function(level) {
+    // Create celebration popup
+    const popup = document.createElement('div');
+    popup.className = 'level-up-popup';
+    popup.innerHTML = `
+      <div class="level-up-content">
+        <div class="level-up-icon">🎉</div>
+        <h2>Level Up!</h2>
+        <p class="level-up-level">Level ${level.level}</p>
+        <p class="level-up-title">${level.title}</p>
+        <div class="level-up-xp">+${level.level * 10} XP Bonus!</div>
+      </div>
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Trigger confetti if available
+    if (typeof triggerConfetti === 'function') {
+      triggerConfetti();
+    }
+    
+    // Show animation
+    setTimeout(() => {
+      popup.classList.add('show');
+    }, 100);
+    
+    // Remove after animation
+    setTimeout(() => {
+      popup.classList.remove('show');
+      setTimeout(() => popup.remove(), 500);
+    }, 4000);
+  }
 };
 
-// Auto-initialize on load
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => AvatarSystem.init());
-} else {
-    AvatarSystem.init();
-}
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+  AVATAR_SYSTEM.init();
+  AVATAR_SYSTEM.checkLevelUp();
+});
 
-// Export for global access
-window.AvatarSystem = AvatarSystem;
-
-
+// Export for use in other scripts
+window.AVATAR_SYSTEM = AVATAR_SYSTEM;

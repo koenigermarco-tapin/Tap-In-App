@@ -1420,6 +1420,9 @@
             const wtData = workerTypes[results.workerType];
             
             container.innerHTML = `
+                <!-- User Avatar in Results -->
+                <div id="resultsAvatar" style="margin-bottom: 2rem;"></div>
+                
                 <div class="belt-result">
                     <div class="belt-icon">🥋</div>
                     <h2>Your Starting Belt</h2>
@@ -1524,6 +1527,27 @@
             
             container.style.display = 'block';
             
+            // Load avatar in results
+            setTimeout(function() {
+                const avatarContainer = document.getElementById('resultsAvatar');
+                if (avatarContainer) {
+                    fetch('components/user-avatar.html')
+                        .then(r => r.text())
+                        .then(html => {
+                            avatarContainer.innerHTML = html;
+                            setTimeout(function() {
+                                if (typeof AVATAR_SYSTEM !== 'undefined') {
+                                    AVATAR_SYSTEM.init();
+                                }
+                            }, 100);
+                        })
+                        .catch(err => {
+                            console.warn('Avatar component not found:', err);
+                            if (avatarContainer) avatarContainer.style.display = 'none';
+                        });
+                }
+            }, 500);
+            
             // Save results
             localStorage.setItem('tapinBeltAssessment', JSON.stringify({
                 date: new Date().toISOString(),
@@ -1533,11 +1557,45 @@
         }
     </script>
 
+    <!-- Avatar System -->
+    <script src="js/avatar-system.js"></script>
+    
     <!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.js"></script>
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.js"></script>
 <script src="js/storage-health.js"></script>
+
+<!-- Load Avatar in Results -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Load avatar in results if results container is visible
+    const resultsContainer = document.getElementById('results-container');
+    const avatarContainer = document.getElementById('resultsAvatar');
+    
+    if (resultsContainer && resultsContainer.style.display !== 'none' && avatarContainer) {
+        fetch('components/user-avatar.html')
+            .then(r => r.text())
+            .then(html => {
+                avatarContainer.innerHTML = html;
+                setTimeout(function() {
+                    if (typeof AVATAR_SYSTEM !== 'undefined') {
+                        AVATAR_SYSTEM.init();
+                    }
+                }, 100);
+            })
+            .catch(err => {
+                console.warn('Avatar component not found:', err);
+            });
+    }
+});
+</script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
 </body>
 </html>

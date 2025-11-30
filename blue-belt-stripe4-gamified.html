@@ -664,7 +664,8 @@
                 <h3>Quiz Complete! 🎉</h3>
                 <p class="quiz-score">You scored: <span id="quizScore">0</span>/10</p>
                 <p class="quiz-xp">+50 XP awarded!</p>
-                <button class="btn-primary" onclick="completeQuiz(4)">Continue</button>
+                <button class="btn-primary" onclick="completeQuiz(4)
+                    window.dispatchEvent(new CustomEvent(\'lessonCompleted\'));">Continue</button>
             </div>
         </div>
 
@@ -1606,6 +1607,7 @@
         }
         function showResults() {
             localStorage.setItem('blueBeltStripe4Complete', 'true');
+                    window.dispatchEvent(new CustomEvent(\'lessonCompleted\'));
             localStorage.setItem('blueBeltComplete', 'true');
             const fields = ['boundary-needed', 'boundary-cost'];
             fields.forEach(field => {
@@ -1615,7 +1617,41 @@
             nextSection();
         }
         updateProgress();
-    </script>
+    
+        function getStripeNumber() {
+            const match = window.location.pathname.match(/stripe(\d+)/);
+            return match ? parseInt(match[1]) : 1;
+        }
+        
+        function retryQuiz() {
+            quizAnswers = [];
+            quizScore = 0;
+            document.querySelectorAll('.quiz-question').forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'auto';
+                    opt.classList.remove('selected-correct', 'selected-incorrect');
+                });
+                const feedback = question.querySelector('.quiz-feedback');
+                if (feedback) {
+                    feedback.style.display = 'none';
+                    feedback.classList.remove('correct', 'incorrect');
+                }
+            });
+            const completionDiv = document.querySelector('.quiz-completion');
+            if (completionDiv) completionDiv.style.display = 'none';
+            const firstQuestion = document.querySelector('.quiz-question');
+            if (firstQuestion) firstQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function scrollToLessons() {
+            const lessonsSection = document.querySelector('.intro-section, .main-card, .header');
+            if (lessonsSection) {
+                lessonsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }</script>
     <!-- Gamification System -->
     <!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.js"></script>
@@ -1679,17 +1715,132 @@
             const answered = quizAnswers.filter(a => a !== undefined).length;
             
             if (answered === totalQuestions) {
-                // Show completion
                 const completionDiv = document.querySelector('.quiz-completion');
                 completionDiv.style.display = 'block';
-                document.getElementById('quizScore').textContent = quizScore;
                 
-                // Award XP
-                const xpAmount = quizScore >= 7 ? 50 : 25; // Bonus for passing (70%)
-                awardQuizXP(xpAmount);
+                // Check if passed
+                const passingThreshold = 7;
+                const passed = quizScore >= passingThreshold;
+                
+                if (passed) {
+                    // PASSED - Show success message
+                    completionDiv.innerHTML = `
+                        <h3>Quiz Complete! 🎉</h3>
+                        <p class="quiz-score">You scored: <span id="quizScore">${quizScore}</span>/10</p>
+                        <p class="quiz-xp">+${quizScore === 10 ? 75 : 50} XP awarded!</p>
+                        <button class="btn-primary" onclick="completeQuiz(getStripeNumber())">Continue</button>
+                    `;
+                    document.getElementById('quizScore').textContent = quizScore;
+                    
+                    // Award XP
+                    const xpAmount = quizScore === 10 ? 75 : 50;
+                    awardQuizXP(xpAmount);
+                } else {
+                    // FAILED - Show belt-specific submission message
+                    const failedQuestions = [];
+                    quizAnswers.forEach((isCorrect, index) => {
+                        if (!isCorrect) {
+                            const question = document.querySelector(`[data-question="${index + 1}"]`);
+                            if (question) {
+                                const questionText = question.querySelector('.question-text')?.textContent || `Question ${index + 1}`;
+                                failedQuestions.push({
+                                    num: index + 1,
+                                    text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
+                                });
+                            }
+                        }
+                    });
+                    
+                    completionDiv.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🔵</div>
+                            <h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">You Got Submitted by a Blue Belt! 🥋</h3>
+                            <p style="color: #64748b; margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">The blue belt caught you. That's okay - every submission teaches you something. Review what you missed and come back stronger!</p>
+                            
+                            <div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+                                <h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;">📚 Review These Questions:</h4>
+                                <ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
+                                    ${failedQuestions.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Question ${q.num}:</strong> ${q.text}</li>`).join('')}
+                                </ul>
+                                <p style="color: #991b1b; margin-top: 1rem; font-size: 0.9rem;">
+                                    <strong>💡 Tip:</strong> Scroll up to review the lessons and scenarios, then retry the quiz!
+                                </p>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <button class="btn-primary" onclick="retryQuiz()" style="margin-right: 1rem; padding: 12px 24px; font-size: 1rem;">🔄 Retry Quiz</button>
+                                <button class="btn-secondary" onclick="scrollToLessons()" style="padding: 12px 24px; font-size: 1rem;">📖 Review Lessons</button>
+                            </div>
+                            
+                            <p style="color: #64748b; margin-top: 1.5rem; font-size: 0.9rem;">Score: ${quizScore}/10 (Need ${passingThreshold}/10 to pass)</p>
+                        </div>
+                    `;
+                    
+                    // Award small XP for attempt
+                    awardQuizXP(10);
+                }
                 
                 // Scroll to completion
                 completionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }</span>/10</p>
+                        <p class="quiz-xp">+${quizScore === 10 ? 75 : 50} XP awarded!</p>
+                        <button class="btn-primary" onclick="completeQuiz(getStripeNumber())">Continue</button>
+                    `;
+                    document.getElementById('quizScore').textContent = quizScore;
+                    
+                    // Award XP
+                    const xpAmount = quizScore === 10 ? 75 : 50;
+                    awardQuizXP(xpAmount);
+                } else {
+                    // FAILED - Show belt-specific submission message
+                    const failedQuestions = [];
+                    quizAnswers.forEach((isCorrect, index) => {
+                        if (!isCorrect) {
+                            const question = document.querySelector(`[data-question="${index + 1}"]`);
+                            if (question) {
+                                const questionText = question.querySelector('.question-text')?.textContent || `Question ${index + 1}`;
+                                failedQuestions.push({
+                                    num: index + 1,
+                                    text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
+                                });
+                            }
+                        }
+                    });
+                    
+                    completionDiv.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🔵</div>
+                            <h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">You Got Submitted by a Blue Belt! 🥋</h3>
+                            <p style="color: #64748b; margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">The blue belt caught you. That's okay - every submission teaches you something. Review what you missed and come back stronger!</p>
+                            
+                            <div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+                                <h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;">📚 Review These Questions:</h4>
+                                <ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
+                                    ${failedQuestions.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Question ${q.num}:</strong> ${q.text}</li>`).join('')}
+                                </ul>
+                                <p style="color: #991b1b; margin-top: 1rem; font-size: 0.9rem;">
+                                    <strong>💡 Tip:</strong> Scroll up to review the lessons and scenarios, then retry the quiz!
+                                </p>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <button class="btn-primary" onclick="retryQuiz()" style="margin-right: 1rem; padding: 12px 24px; font-size: 1rem;">🔄 Retry Quiz</button>
+                                <button class="btn-secondary" onclick="scrollToLessons()" style="padding: 12px 24px; font-size: 1rem;">📖 Review Lessons</button>
+                            </div>
+                            
+                            <p style="color: #64748b; margin-top: 1.5rem; font-size: 0.9rem;">Score: ${quizScore}/10 (Need ${passingThreshold}/10 to pass)</p>
+                        </div>
+                    `;
+                    
+                    // Award small XP for attempt
+                    awardQuizXP(10);
+                }
+                
+                // Scroll to completion
+                completionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
             }
         }
 
@@ -2006,5 +2157,11 @@
                 <button class="btn-primary" onclick="completeQuiz()">Continue</button>
             </div>
         </div>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
 
 </html>

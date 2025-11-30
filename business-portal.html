@@ -330,6 +330,30 @@
       </p>
     </div>
 
+    <!-- Shareable Link Section -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🔗 Invite Link</div>
+      </div>
+      
+      <p style="color: #94a3b8; margin-bottom: 1rem; line-height: 1.6;">
+        Share this link with team members to join automatically:
+      </p>
+      
+      <div class="team-code-box">
+        <div>
+          <div class="team-code-text" style="font-size: 1rem; word-break: break-all;" id="inviteLink">Loading...</div>
+        </div>
+        <button class="btn btn-primary" onclick="copyInviteLink()">
+          📋 Copy Link
+        </button>
+      </div>
+      
+      <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-top: 1rem;">
+        Team members who click this link will have their code pre-filled for easy signup.
+      </p>
+    </div>
+
     <!-- Stats Overview -->
     <div class="stats-grid">
       <div class="stat-card">
@@ -612,10 +636,31 @@
         return date.toLocaleDateString('en-US', options);
       },
       
+      // Generate invite link
+      updateInviteLink() {
+        const teamCode = this.getTeamCode();
+        const baseURL = window.location.origin;
+        const inviteLink = `${baseURL}/join-team.html?code=${teamCode}`;
+        const inviteLinkElement = document.getElementById('inviteLink');
+        if (inviteLinkElement) {
+          inviteLinkElement.textContent = inviteLink;
+        }
+        
+        // Store valid codes for validation
+        const validCodes = JSON.parse(localStorage.getItem('validTeamCodes') || '[]');
+        if (!validCodes.includes(teamCode)) {
+          validCodes.push(teamCode);
+          localStorage.setItem('validTeamCodes', JSON.stringify(validCodes));
+        }
+      },
+      
       // Initialize
       init() {
         // Load team code
         document.getElementById('teamCode').textContent = this.getTeamCode();
+        
+        // Update invite link
+        this.updateInviteLink();
         
         // Render table
         this.renderTable();
@@ -655,8 +700,25 @@
         const newCode = TeamPortal.generateCode();
         localStorage.setItem('teamCode', newCode);
         document.getElementById('teamCode').textContent = newCode;
+        TeamPortal.updateInviteLink(); // Update invite link with new code
         alert('✅ New team code generated!');
       }
+    }
+
+    function copyInviteLink() {
+      const link = document.getElementById('inviteLink').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('✅ Invite link copied! Share this with your team.');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = link;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('✅ Invite link copied! Share this with your team.');
+      });
     }
 
     function copyTeamCode() {
@@ -866,5 +928,11 @@ function analyzeTeam() {
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.js"></script>
 <script src="js/storage-health.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
 </body>
 </html>

@@ -1,0 +1,1499 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brown Belt Stripe 1: Accountability Foundation | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght=400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary-brown: #3e2723; --brown-dark: #2c1810; --brown-mid: #5d4037; --accent-bronze: #a67c52; --accent-gold: #d4af37; --success-green: #38a169; --warning-orange: #dd6b20; --card-bg: #ffffff; --border-light: #e2e8f0; --text-dark: #1e293b; --text-muted: #64748b; --light-bg: #f8fafc; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #2c1810 0%, #3e2723 50%, #4a2c1f 100%); min-height: 100vh; padding: 2rem 1rem; line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: white; }
+        .stripe-badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1rem; }
+        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .progress-container { background: rgba(255,255,255,0.2); border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 2rem; }
+        .progress-header { display: flex; justify-content: space-between; color: white; font-size: 0.9rem; margin-bottom: 0.5rem; }
+        .progress-bar { background: rgba(255,255,255,0.3); height: 8px; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-bronze) 0%, var(--accent-gold) 100%); border-radius: 4px; transition: width 0.5s ease; }
+        .main-card { background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.15); }
+        .intro-section { margin-bottom: 2rem; }
+        .intro-box { background: var(--light-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .intro-box h3 { color: var(--primary-brown); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box strong { color: var(--primary-brown); }
+        .question-card { background: var(--light-bg); border: 2px solid var(--border-light); border-radius: 12px; padding: 2rem; margin-bottom: 1.5rem; }
+        .question-number { color: var(--accent-bronze); font-size: 0.8rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .question-text { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1.5rem; }
+        .options { display: flex; flex-direction: column; gap: 0.75rem; }
+        .option { background: white; border: 2px solid var(--border-light); border-radius: 8px; padding: 1rem; cursor: pointer; transition: all 0.2s; }
+        .option:hover { border-color: var(--accent-bronze); }
+        .option.selected { background: #f5e6d3; border-color: var(--primary-brown); }
+        .option input[type="radio"] { margin-right: 0.75rem; }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+        .btn { padding: 1rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; }
+        .btn-secondary { background: #e2e8f0; color: var(--text-dark); }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-brown) 0%, var(--brown-dark) 100%); color: white; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .results-container { display: none; }
+        .results-container.active { display: block; }
+        .score-display { text-align: center; padding: 2rem; background: linear-gradient(135deg, #f5e6d3 0%, #e8d5c4 100%); border-radius: 12px; margin-bottom: 2rem; }
+        .score-number { font-size: 4rem; font-weight: 800; color: var(--primary-brown); }
+        .score-label { font-size: 1.2rem; color: var(--brown-dark); font-weight: 600; }
+        .recommendation { background: white; border: 2px solid var(--primary-brown); border-radius: 12px; padding: 1.5rem; margin-top: 2rem; }
+        .recommendation h3 { color: var(--primary-brown); margin-bottom: 1rem; }
+        @media (max-width: 768px) { body { padding: 1rem; } .main-card { padding: 1.5rem; } .nav-buttons { flex-direction: column; } }
+    
+        /* ============= NUMBERED OPTION BOX READABILITY FIX ============= */
+        .scale-option,
+        .rating-option,
+        .numbered-option,
+        .option-number,
+        [data-value="1"],
+        [data-value="2"],
+        [data-value="3"],
+        [data-value="4"],
+        [data-value="5"] {
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 1.1rem !important;
+            background: #1e293b !important;
+            border: 2px solid #475569 !important;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+        }
+        .scale-option:hover,
+        .rating-option:hover,
+        .numbered-option:hover,
+        .option-number:hover,
+        [data-value]:hover {
+            background: #334155 !important;
+            border-color: #667eea !important;
+            color: #FFFFFF !important;
+            transform: scale(1.05) !important;
+        }
+        .scale-option.selected,
+        .rating-option.selected,
+        .numbered-option.selected,
+        .option-number.selected,
+        [data-value].selected {
+            background: #667eea !important;
+            border-color: #818cf8 !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+        }
+        .scale-label,
+        .rating-label,
+        .option-label {
+            color: #FFFFFF !important;
+            font-weight: 600 !important;
+            font-size: 0.9rem !important;
+            text-align: center !important;
+            margin-top: 0.5rem !important;
+        }
+        .scale-container,
+        .rating-container,
+        .options-row {
+            display: flex !important;
+            justify-content: space-between !important;
+            gap: 0.75rem !important;
+            margin: 1.5rem 0 !important;
+        }
+        .scale-container > *,
+        .rating-container > *,
+        .options-row > * {
+            flex: 1 !important;
+            min-width: 60px !important;
+            text-align: center !important;
+            padding: 1rem 0.5rem !important;
+            border-radius: 8px !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        @media (max-width: 768px) {
+            .scale-option,
+            .rating-option,
+            .numbered-option,
+            .option-number,
+            [data-value] {
+                font-size: 1rem !important;
+                padding: 0.75rem 0.25rem !important;
+                min-width: 50px !important;
+            }
+            .scale-label,
+            .rating-label,
+            .option-label {
+                font-size: 0.75rem !important;
+            }
+        }
+        input[type="range"] {
+            -webkit-appearance: none !important;
+            width: 100% !important;
+            height: 8px !important;
+            background: #334155 !important;
+            border-radius: 5px !important;
+            outline: none !important;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none !important;
+            width: 24px !important;
+            height: 24px !important;
+            background: #667eea !important;
+            cursor: pointer !important;
+            border-radius: 50% !important;
+            border: 3px solid #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 24px !important;
+            height: 24px !important;
+            background: #667eea !important;
+            cursor: pointer !important;
+            border-radius: 50% !important;
+            border: 3px solid #FFFFFF !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+        }
+        .slider-value,
+        .range-value {
+            display: block !important;
+            text-align: center !important;
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+            color: #667eea !important;
+            margin-top: 1rem !important;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+        }
+        .slider-labels {
+            display: flex !important;
+            justify-content: space-between !important;
+            margin-top: 0.5rem !important;
+        }
+        .slider-labels span {
+            font-size: 0.85rem !important;
+            color: #cbd5e1 !important;
+            font-weight: 600 !important;
+        }
+
+    
+        /* Quiz Section Styling */
+        .quiz-section {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .quiz-section .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .quiz-section .section-header h2 {
+            color: #1a365d;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .quiz-section .section-header p {
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .quiz-question {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 30px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .quiz-question h3 {
+            color: #667eea;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #2d3748;
+            line-height: 1.6;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 12px;
+        }
+
+        .quiz-option {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px 20px;
+            text-align: left;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #2d3748;
+            font-family: inherit;
+        }
+
+        .quiz-option:hover {
+            border-color: #667eea;
+            background: #f7fafc;
+            transform: translateX(4px);
+        }
+
+        .quiz-option:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .quiz-option.selected-correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+            font-weight: 600;
+        }
+
+        .quiz-option.selected-incorrect {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .quiz-feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .quiz-feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .quiz-feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .quiz-feedback .feedback-text {
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .quiz-completion {
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+
+        .quiz-completion h3 {
+            color: #155724;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-score {
+            font-size: 24px;
+            font-weight: 600;
+            color: #155724;
+            margin-bottom: 10px;
+        }
+
+        .quiz-xp {
+            font-size: 20px;
+            color: #155724;
+            margin-bottom: 20px;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .quiz-section {
+                padding: 20px;
+            }
+            
+            .quiz-question {
+                padding: 20px;
+            }
+            
+            .question-text {
+                font-size: 16px;
+            }
+
+            .quiz-section .section-header h2 {
+                font-size: 24px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="stripe-badge">🟤 Brown Belt • Stripe 1</div>
+            <h1>Accountability Foundation</h1>
+            <p>Building the bedrock: Speaking up, calling out, holding the line</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Frage <span id="currentQ">1</span> von 37</span>
+                <span><span id="progress-percent">0</span>% Abgeschlossen</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+        
+        <div class="main-card">
+            <div class="intro-section" id="introSection">
+                <div class="intro-box">
+                    <h3>🎯 Willkommen zum Brown Belt</h3>
+                    <p>Du hast Vertrauen aufgebaut, Konflikte gemeistert, Verpflichtung gesichert und dich auf Ergebnisse konzentriert. Jetzt kommt die schwierigste Fähigkeit von allen: <strong>Menschen zur Verantwortung ziehen</strong>.</p>
+                    <p>Verantwortlichkeit geht nicht darum, der Böse zu sein. Es geht darum, genug zu kümmern, um zu sprechen, wenn Standards sinken, Verhalten anzusprechen, das dem Team schadet, und den Mut zu haben, das zu sagen, was gesagt werden muss.</p>
+                </div>
+                
+                <div class="intro-box">
+                    <h3>⏱️ Bewertungsdetails</h3>
+                    <p><strong>Fragen:</strong> 37 Fragen</p>
+                    <p><strong>Zeit:</strong> 8-10 Minuten</p>
+                    <p><strong>Format:</strong> Ehrliche Selbsteinschätzung</p>
+                </div>
+                
+                <button class="btn btn-primary" onclick="startAssessment()">Bewertung starten →</button>
+            </div>
+            
+            <div id="questionSection" style="display: none;">
+                <div id="questionCard" class="question-card">
+                    <!-- Fragen will be inserted here -->
+                </div>
+                
+                
+        
+        <!-- QUIZ SECTION -->
+        <div class="quiz-section" id="quizSection" style="margin-top: 60px;">
+            <div class="section-header">
+                <h2>🎯 Teste dein Wissen</h2>
+                <p>Abgeschlossen this quiz to validate dein understanding von this stripe's content.</p>
+            </div>
+
+            
+            <!-- Frage 1: Multiple Choice -->
+            <div class="quiz-question" data-question="1">
+                <h3>Frage 1 von 10</h3>
+                <p class="question-text">Du've been promoted to lead a struggling team. The previous manager was beloved but ineffective - the team is comfortable but underperforming. Dein mentor Jocko would likely advise du to:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfektes Verständnis von "Extreme Ownership". Bevor du sie nach vorne führen kannst, musst du Verantwortung für ihren aktuellen Zustand übernehmen - auch wenn du ihn nicht geschaffen hast. Dieses Paradoxon baut Vertrauen auf: "Ich bin für dieses Chaos verantwortlich und ich werde es MIT dir beheben." Erst nach der Übernahme der Verantwortung kannst du glaubwürdig verlangen, dass sie ihren Teil übernehmen. Das ist Jockos Kernlehre - Führung beginnt damit, Verantwortung für alles in deiner Welt zu übernehmen." onclick="selectQuizAnswer(1, this)">
+                        A) Immediately set higher standards to shift the culture quickly
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfektes Verständnis von "Extreme Ownership". Bevor du sie nach vorne führen kannst, musst du Verantwortung für ihren aktuellen Zustand übernehmen - auch wenn du ihn nicht geschaffen hast. Dieses Paradoxon baut Vertrauen auf: "Ich bin für dieses Chaos verantwortlich und ich werde es MIT dir beheben." Erst nach der Übernahme der Verantwortung kannst du glaubwürdig verlangen, dass sie ihren Teil übernehmen. Das ist Jockos Kernlehre - Führung beginnt damit, Verantwortung für alles in deiner Welt zu übernehmen." onclick="selectQuizAnswer(1, this)">
+                        B) Build relationships first, then gradually raise expectations
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Perfektes Verständnis von "Extreme Ownership". Bevor du sie nach vorne führen kannst, musst du Verantwortung für ihren aktuellen Zustand übernehmen - auch wenn du ihn nicht geschaffen hast. Dieses Paradoxon baut Vertrauen auf: "Ich bin für dieses Chaos verantwortlich und ich werde es MIT dir beheben." Erst nach der Übernahme der Verantwortung kannst du glaubwürdig verlangen, dass sie ihren Teil übernehmen. Das ist Jockos Kernlehre - Führung beginnt damit, Verantwortung für alles in deiner Welt zu übernehmen." onclick="selectQuizAnswer(1, this)">
+                        C) Take extreme ownership von past failures before changing anything
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfektes Verständnis von "Extreme Ownership". Bevor du sie nach vorne führen kannst, musst du Verantwortung für ihren aktuellen Zustand übernehmen - auch wenn du ihn nicht geschaffen hast. Dieses Paradoxon baut Vertrauen auf: "Ich bin für dieses Chaos verantwortlich und ich werde es MIT dir beheben." Erst nach der Übernahme der Verantwortung kannst du glaubwürdig verlangen, dass sie ihren Teil übernehmen. Das ist Jockos Kernlehre - Führung beginnt damit, Verantwortung für alles in deiner Welt zu übernehmen." onclick="selectQuizAnswer(1, this)">
+                        D) Replace underperformers to signal the new standard
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 2: Multiple Choice -->
+            <div class="quiz-question" data-question="2">
+                <h3>Frage 2 von 10</h3>
+                <p class="question-text">Dein team respects du for dein technical expertise, but bemerkst du they wait for dein approval on decisions they should own. According to leadership research, this pattern indicates:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Excellent self-awareness! Du hast identifiziert the 'savior complex' trap. Wenn Führungskräfte zu gut sind at solving problems, teams stop trying. Marshall Goldsmith calls this 'adding too much value' - dein Input, auch wenn hilfreich, raubt anderen die Verantwortung. Brown Belt means recognizing wann deine Stärke wird the team's weakness. The fix: beiße auf die Zunge, let them make the call, and coache NACH dem Ergebnis (win or lose)." onclick="selectQuizAnswer(2, this)">
+                        A) Dein team lacks confidence and needs more training
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Excellent self-awareness! Du hast identifiziert the 'savior complex' trap. Wenn Führungskräfte zu gut sind at solving problems, teams stop trying. Marshall Goldsmith calls this 'adding too much value' - dein Input, auch wenn hilfreich, raubt anderen die Verantwortung. Brown Belt means recognizing wann deine Stärke wird the team's weakness. The fix: beiße auf die Zunge, let them make the call, and coache NACH dem Ergebnis (win or lose)." onclick="selectQuizAnswer(2, this)">
+                        B) Du've accidentally created dependency instead von capability
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Excellent self-awareness! Du hast identifiziert the 'savior complex' trap. Wenn Führungskräfte zu gut sind at solving problems, teams stop trying. Marshall Goldsmith calls this 'adding too much value' - dein Input, auch wenn hilfreich, raubt anderen die Verantwortung. Brown Belt means recognizing wann deine Stärke wird the team's weakness. The fix: beiße auf die Zunge, let them make the call, and coache NACH dem Ergebnis (win or lose)." onclick="selectQuizAnswer(2, this)">
+                        C) This is normal - leaders should quality-check important decisions
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Excellent self-awareness! Du hast identifiziert the 'savior complex' trap. Wenn Führungskräfte zu gut sind at solving problems, teams stop trying. Marshall Goldsmith calls this 'adding too much value' - dein Input, auch wenn hilfreich, raubt anderen die Verantwortung. Brown Belt means recognizing wann deine Stärke wird the team's weakness. The fix: beiße auf die Zunge, let them make the call, and coache NACH dem Ergebnis (win or lose)." onclick="selectQuizAnswer(2, this)">
+                        D) Dein team is being appropriately cautious and risk-averse
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 3: Multiple Choice -->
+            <div class="quiz-question" data-question="3">
+                <h3>Frage 3 von 10</h3>
+                <p class="question-text">Simon Sinek's 'Start with Why' suggests that inspiring leaders communicate in this order:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfect! Du verstehst den "Golden Circle". Inspirierende Führungskräfte beginnen mit WARUM (purpose/belief), then HOW (process/values), then WHAT (products/services). Die meisten Organisationen kommunizieren rückwärts: 'We make X (what), it has Y features (how), buy it.' Apple says: 'We challenge the status quo (why), by making beautifully designed products (how), we happen to make computers (what).' Siehst du den Unterschied? Zweck vor Produkt. Glaube vor Features. Brown Belt leaders inspirieren durch WARUM." onclick="selectQuizAnswer(3, this)">
+                        A) What we do → How we do it → Why we do it (outside-in)
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Perfect! Du verstehst den "Golden Circle". Inspirierende Führungskräfte beginnen mit WARUM (purpose/belief), then HOW (process/values), then WHAT (products/services). Die meisten Organisationen kommunizieren rückwärts: 'We make X (what), it has Y features (how), buy it.' Apple says: 'We challenge the status quo (why), by making beautifully designed products (how), we happen to make computers (what).' Siehst du den Unterschied? Zweck vor Produkt. Glaube vor Features. Brown Belt leaders inspirieren durch WARUM." onclick="selectQuizAnswer(3, this)">
+                        B) Why we do it → How we do it → What we do (inside-out)
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfect! Du verstehst den "Golden Circle". Inspirierende Führungskräfte beginnen mit WARUM (purpose/belief), then HOW (process/values), then WHAT (products/services). Die meisten Organisationen kommunizieren rückwärts: 'We make X (what), it has Y features (how), buy it.' Apple says: 'We challenge the status quo (why), by making beautifully designed products (how), we happen to make computers (what).' Siehst du den Unterschied? Zweck vor Produkt. Glaube vor Features. Brown Belt leaders inspirieren durch WARUM." onclick="selectQuizAnswer(3, this)">
+                        C) How we do it → What we do → Why we do it (process-first)
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfect! Du verstehst den "Golden Circle". Inspirierende Führungskräfte beginnen mit WARUM (purpose/belief), then HOW (process/values), then WHAT (products/services). Die meisten Organisationen kommunizieren rückwärts: 'We make X (what), it has Y features (how), buy it.' Apple says: 'We challenge the status quo (why), by making beautifully designed products (how), we happen to make computers (what).' Siehst du den Unterschied? Zweck vor Produkt. Glaube vor Features. Brown Belt leaders inspirieren durch WARUM." onclick="selectQuizAnswer(3, this)">
+                        D) What we do → Why we do it → How we do it (results-first)
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 4: Multiple Choice -->
+            <div class="quiz-question" data-question="4">
+                <h3>Frage 4 von 10</h3>
+                <p class="question-text">Du're implementing a major change. Kotter's research on change management says dein FIRST step should be:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Excellent! Du kennst Kotters 8-Schritte-Prozess. Schritt 1 ist "Dringlichkeit schaffen" - Menschen ändern sich nicht, es sei denn they feel the current state is untenable. Without urgency, dein guiding coalition will lack energy, dein vision will seem optional, and resistance will win. Brown Belt leaders understand that Logik treibt keine Veränderung an - Emotionen tun es. Dein job is to den Status quo riskanter erscheinen lassen than the change. Then momentum builds naturally." onclick="selectQuizAnswer(4, this)">
+                        A) Form a guiding coalition von key influencers
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Excellent! Du kennst Kotters 8-Schritte-Prozess. Schritt 1 ist "Dringlichkeit schaffen" - Menschen ändern sich nicht, es sei denn they feel the current state is untenable. Without urgency, dein guiding coalition will lack energy, dein vision will seem optional, and resistance will win. Brown Belt leaders understand that Logik treibt keine Veränderung an - Emotionen tun es. Dein job is to den Status quo riskanter erscheinen lassen than the change. Then momentum builds naturally." onclick="selectQuizAnswer(4, this)">
+                        B) Create a sense von urgency around the need for change
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Excellent! Du kennst Kotters 8-Schritte-Prozess. Schritt 1 ist "Dringlichkeit schaffen" - Menschen ändern sich nicht, es sei denn they feel the current state is untenable. Without urgency, dein guiding coalition will lack energy, dein vision will seem optional, and resistance will win. Brown Belt leaders understand that Logik treibt keine Veränderung an - Emotionen tun es. Dein job is to den Status quo riskanter erscheinen lassen than the change. Then momentum builds naturally." onclick="selectQuizAnswer(4, this)">
+                        C) Develop a clear vision for where du're heading
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Excellent! Du kennst Kotters 8-Schritte-Prozess. Schritt 1 ist "Dringlichkeit schaffen" - Menschen ändern sich nicht, es sei denn they feel the current state is untenable. Without urgency, dein guiding coalition will lack energy, dein vision will seem optional, and resistance will win. Brown Belt leaders understand that Logik treibt keine Veränderung an - Emotionen tun es. Dein job is to den Status quo riskanter erscheinen lassen than the change. Then momentum builds naturally." onclick="selectQuizAnswer(4, this)">
+                        D) Communicate the change vision repeatedly
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 5: Multiple Choice -->
+            <div class="quiz-question" data-question="5">
+                <h3>Frage 5 von 10</h3>
+                <p class="question-text">Dein star performer is brilliant individually but toxic to team culture. Brené Brown's research on belonging would suggest:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfect application von 'Dare to Lead' principles! Brown says: 'Choose courage over comfort... choose what is right over what is fun, fast, or easy.' Tolerating toxic brilliance signals that results matter more than people. This destroys psychological safety - dein team learns that performance excuses bad behavior. The Brown Belt move: clear expectations, clear consequences. If they can't show up as a teammate, they can't stay on the team. Period. This is what daring leadership looks like." onclick="selectQuizAnswer(5, this)">
+                        A) Coach them privately but keep them - talent trumps culture
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Perfect application von 'Dare to Lead' principles! Brown says: 'Choose courage over comfort... choose what is right over what is fun, fast, or easy.' Tolerating toxic brilliance signals that results matter more than people. This destroys psychological safety - dein team learns that performance excuses bad behavior. The Brown Belt move: clear expectations, clear consequences. If they can't show up as a teammate, they can't stay on the team. Period. This is what daring leadership looks like." onclick="selectQuizAnswer(5, this)">
+                        B) Create clear boundaries: change behavior or exit the team
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfect application von 'Dare to Lead' principles! Brown says: 'Choose courage over comfort... choose what is right over what is fun, fast, or easy.' Tolerating toxic brilliance signals that results matter more than people. This destroys psychological safety - dein team learns that performance excuses bad behavior. The Brown Belt move: clear expectations, clear consequences. If they can't show up as a teammate, they can't stay on the team. Period. This is what daring leadership looks like." onclick="selectQuizAnswer(5, this)">
+                        C) Accept this trade-vonf - high performers are always difficult
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfect application von 'Dare to Lead' principles! Brown says: 'Choose courage over comfort... choose what is right over what is fun, fast, or easy.' Tolerating toxic brilliance signals that results matter more than people. This destroys psychological safety - dein team learns that performance excuses bad behavior. The Brown Belt move: clear expectations, clear consequences. If they can't show up as a teammate, they can't stay on the team. Period. This is what daring leadership looks like." onclick="selectQuizAnswer(5, this)">
+                        D) Move them to an individual contributor role
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 6: Multiple Choice -->
+            <div class="quiz-question" data-question="6">
+                <h3>Frage 6 von 10</h3>
+                <p class="question-text">Servant leadership, as taught by Robert Greenleaf, means:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Servant leadership is about serving first to lead better. Greenleaf's philosophy: 'The servant-leader is servant first... It begins with the natural feeling that one wants to serve, to serve first. Then conscious choice brings one to aspire to lead.' This isn't abdicating leadership - it's leading by enabling others' success. Dein job is their growth, not dein comfort. Brown Belt leaders serve their teams by creating conditions for their success." onclick="selectQuizAnswer(6, this)">
+                        A) Doing whatever dein team asks du to do
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Servant leadership is about serving first to lead better. Greenleaf's philosophy: 'The servant-leader is servant first... It begins with the natural feeling that one wants to serve, to serve first. Then conscious choice brings one to aspire to lead.' This isn't abdicating leadership - it's leading by enabling others' success. Dein job is their growth, not dein comfort. Brown Belt leaders serve their teams by creating conditions for their success." onclick="selectQuizAnswer(6, this)">
+                        B) Putting dein team's needs before dein own in service von their growth
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Servant leadership is about serving first to lead better. Greenleaf's philosophy: 'The servant-leader is servant first... It begins with the natural feeling that one wants to serve, to serve first. Then conscious choice brings one to aspire to lead.' This isn't abdicating leadership - it's leading by enabling others' success. Dein job is their growth, not dein comfort. Brown Belt leaders serve their teams by creating conditions for their success." onclick="selectQuizAnswer(6, this)">
+                        C) Being humble and never making decisions dich selbst
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Servant leadership is about serving first to lead better. Greenleaf's philosophy: 'The servant-leader is servant first... It begins with the natural feeling that one wants to serve, to serve first. Then conscious choice brings one to aspire to lead.' This isn't abdicating leadership - it's leading by enabling others' success. Dein job is their growth, not dein comfort. Brown Belt leaders serve their teams by creating conditions for their success." onclick="selectQuizAnswer(6, this)">
+                        D) Leading from behind and letting the team take credit
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 7: Multiple Choice -->
+            <div class="quiz-question" data-question="7">
+                <h3>Frage 7 von 10</h3>
+                <p class="question-text">Ronald Heifetz distinguishes between 'technical' and 'adaptive' challenges. An adaptive challenge requires:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfektes Verständnis von adaptiverr Führung! Technische Herausforderungen haben bekannte Lösungen - wende Expertise an. Adaptive Herausforderungen erfordern Lernen, Experimentieren und oft Änderungen von Werten oder Verhalten. Beispiel: 'Verkäufe sind gesunken' (technisch: Preise anpassen). 'Unsere Kunden vertrauen uns nicht mehr' (adaptiv: Beziehungen wiederaufbauen, Kultur verschieben). Brown Belt Führungskräfte erkennen, dass adaptive Herausforderungen nicht allein durch Autorität gelöst werden können - sie erfordern, Menschen zu mobilisieren, die Arbeit der Veränderung zu tun." onclick="selectQuizAnswer(7, this)">
+                        A) Expert knowledge to solve - du already have the answer
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Perfektes Verständnis von adaptiverr Führung! Technische Herausforderungen haben bekannte Lösungen - wende Expertise an. Adaptive Herausforderungen erfordern Lernen, Experimentieren und oft Änderungen von Werten oder Verhalten. Beispiel: 'Verkäufe sind gesunken' (technisch: Preise anpassen). 'Unsere Kunden vertrauen uns nicht mehr' (adaptiv: Beziehungen wiederaufbauen, Kultur verschieben). Brown Belt Führungskräfte erkennen, dass adaptive Herausforderungen nicht allein durch Autorität gelöst werden können - sie erfordern, Menschen zu mobilisieren, die Arbeit der Veränderung zu tun." onclick="selectQuizAnswer(7, this)">
+                        B) Learning and experimentation - the answer isn't known yet
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfektes Verständnis von adaptiverr Führung! Technische Herausforderungen haben bekannte Lösungen - wende Expertise an. Adaptive Herausforderungen erfordern Lernen, Experimentieren und oft Änderungen von Werten oder Verhalten. Beispiel: 'Verkäufe sind gesunken' (technisch: Preise anpassen). 'Unsere Kunden vertrauen uns nicht mehr' (adaptiv: Beziehungen wiederaufbauen, Kultur verschieben). Brown Belt Führungskräfte erkennen, dass adaptive Herausforderungen nicht allein durch Autorität gelöst werden können - sie erfordern, Menschen zu mobilisieren, die Arbeit der Veränderung zu tun." onclick="selectQuizAnswer(7, this)">
+                        C) More resources or better processes
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Perfektes Verständnis von adaptiverr Führung! Technische Herausforderungen haben bekannte Lösungen - wende Expertise an. Adaptive Herausforderungen erfordern Lernen, Experimentieren und oft Änderungen von Werten oder Verhalten. Beispiel: 'Verkäufe sind gesunken' (technisch: Preise anpassen). 'Unsere Kunden vertrauen uns nicht mehr' (adaptiv: Beziehungen wiederaufbauen, Kultur verschieben). Brown Belt Führungskräfte erkennen, dass adaptive Herausforderungen nicht allein durch Autorität gelöst werden können - sie erfordern, Menschen zu mobilisieren, die Arbeit der Veränderung zu tun." onclick="selectQuizAnswer(7, this)">
+                        D) Clear authority to make decisions
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 8: Multiple Choice -->
+            <div class="quiz-question" data-question="8">
+                <h3>Frage 8 von 10</h3>
+                <p class="question-text">Jim Collins' research on 'Level 5 Leadership' found that the best leaders combine:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="true" data-explanation="Collins' research shocked the business world: the best companies had 'Level 5' leaders who were paradoxically humble AND willful. They channel ambition into the company, not themselves. They take responsibility for failures but give credit for successes. They're ambitious for the mission, not their ego. This is Brown Belt leadership - building something bigger than dich selbst through paradoxical combination von humility and resolve." onclick="selectQuizAnswer(8, this)">
+                        A) Humility and fierce resolve for results
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Collins' research shocked the business world: the best companies had 'Level 5' leaders who were paradoxically humble AND willful. They channel ambition into the company, not themselves. They take responsibility for failures but give credit for successes. They're ambitious for the mission, not their ego. This is Brown Belt leadership - building something bigger than dich selbst through paradoxical combination von humility and resolve." onclick="selectQuizAnswer(8, this)">
+                        B) Vision and execution capability
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Collins' research shocked the business world: the best companies had 'Level 5' leaders who were paradoxically humble AND willful. They channel ambition into the company, not themselves. They take responsibility for failures but give credit for successes. They're ambitious for the mission, not their ego. This is Brown Belt leadership - building something bigger than dich selbst through paradoxical combination von humility and resolve." onclick="selectQuizAnswer(8, this)">
+                        C) Charisma and strategic thinking
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Collins' research shocked the business world: the best companies had 'Level 5' leaders who were paradoxically humble AND willful. They channel ambition into the company, not themselves. They take responsibility for failures but give credit for successes. They're ambitious for the mission, not their ego. This is Brown Belt leadership - building something bigger than dich selbst through paradoxical combination von humility and resolve." onclick="selectQuizAnswer(8, this)">
+                        D) Intelligence and decisiveness
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 9: Multiple Choice -->
+            <div class="quiz-question" data-question="9">
+                <h3>Frage 9 von 10</h3>
+                <p class="question-text">Wahr oder Falsch: Vulnerability in leadership means sharing deine Schwächen with dein team.</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Brené Brown klärt auf: Verletzlichkeit ist keine Schwäche - es ist Mut. Es ist Auftreten, wenn du das Ergebnis nicht kontrollieren kannst. Es ist um Hilfe bitten, wenn du feststeckst. Es ist zuzugeben, dass du es nicht weißt. Es ist schwierige Gespräche führen. Es ist NICHT persönliche Probleme übermäßig teilen oder andere für deine Emotionen verantwortlich machen. Brown Belt Verletzlichkeit ist strategisch - sie baut Vertrauen auf, zeigt Mut, und schafft Sicherheit für andere, echt zu sein. Es ist Stärke, keine Schwäche." onclick="selectQuizAnswer(9, this)">
+                        A) Wahr - Verletzlichkeit bedeutet exposing deine Schwächen
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Brené Brown klärt auf: Verletzlichkeit ist keine Schwäche - es ist Mut. Es ist Auftreten, wenn du das Ergebnis nicht kontrollieren kannst. Es ist um Hilfe bitten, wenn du feststeckst. Es ist zuzugeben, dass du es nicht weißt. Es ist schwierige Gespräche führen. Es ist NICHT persönliche Probleme übermäßig teilen oder andere für deine Emotionen verantwortlich machen. Brown Belt Verletzlichkeit ist strategisch - sie baut Vertrauen auf, zeigt Mut, und schafft Sicherheit für andere, echt zu sein. Es ist Stärke, keine Schwäche." onclick="selectQuizAnswer(9, this)">
+                        B) Falsch - Verletzlichkeit bedeutet Mut, aufzutreten, Risiken einzugehen und gesehen zu werden, auch wenn du das Ergebnis nicht kontrollieren kannst
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+
+            <!-- Frage 10: Multiple Choice -->
+            <div class="quiz-question" data-question="10">
+                <h3>Frage 10 von 10</h3>
+                <p class="question-text">Führungspräsenz und Authentizität bedeutet:</p>
+                
+                <div class="quiz-options">
+                    <button class="quiz-option" data-correct="false" data-explanation="Authentizität ist keine starre Konsistenz - es sind konsistente Werte mit anpassbarer Ausdrucksweise. Du bist immer DU (authentisch), aber wie du auftrittst passt sich dem Kontext an (geschickt). Beispiel: Du bist immer ehrlich (authentisch), aber du drückst Feedback anders aus zu einer Junior- vs. Senior-Person (geschickt). Brown Belt Führungskräfte wissen: sei authentisch zu deinen Werten, geschickt in deiner Ausdrucksweise. Starre 'Authentizität', die den Kontext ignoriert, ist keine Führung - es ist Selbstgefälligkeit." onclick="selectQuizAnswer(10, this)">
+                        A) Immer du selbst sein, egal was
+                    </button>
+                    <button class="quiz-option" data-correct="true" data-explanation="Authentizität ist keine starre Konsistenz - es sind konsistente Werte mit anpassbarer Ausdrucksweise. Du bist immer DU (authentisch), aber wie du auftrittst passt sich dem Kontext an (geschickt). Beispiel: Du bist immer ehrlich (authentisch), aber du drückst Feedback anders aus zu einer Junior- vs. Senior-Person (geschickt). Brown Belt Führungskräfte wissen: sei authentisch zu deinen Werten, geschickt in deiner Ausdrucksweise. Starre 'Authentizität', die den Kontext ignoriert, ist keine Führung - es ist Selbstgefälligkeit." onclick="selectQuizAnswer(10, this)">
+                        B) Konsistent du selbst sein, während du deinen Stil an den Kontext anpasst
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Authentizität ist keine starre Konsistenz - es sind konsistente Werte mit anpassbarer Ausdrucksweise. Du bist immer DU (authentisch), aber wie du auftrittst passt sich dem Kontext an (geschickt). Beispiel: Du bist immer ehrlich (authentisch), aber du drückst Feedback anders aus zu einer Junior- vs. Senior-Person (geschickt). Brown Belt Führungskräfte wissen: sei authentisch zu deinen Werten, geschickt in deiner Ausdrucksweise. Starre 'Authentizität', die den Kontext ignoriert, ist keine Führung - es ist Selbstgefälligkeit." onclick="selectQuizAnswer(10, this)">
+                        C) Niemals den Ansatz ändern, unabhängig von der Situation
+                    </button>
+                    <button class="quiz-option" data-correct="false" data-explanation="Authentizität ist keine starre Konsistenz - es sind konsistente Werte mit anpassbarer Ausdrucksweise. Du bist immer DU (authentisch), aber wie du auftrittst passt sich dem Kontext an (geschickt). Beispiel: Du bist immer ehrlich (authentisch), aber du drückst Feedback anders aus zu einer Junior- vs. Senior-Person (geschickt). Brown Belt Führungskräfte wissen: sei authentisch zu deinen Werten, geschickt in deiner Ausdrucksweise. Starre 'Authentizität', die den Kontext ignoriert, ist keine Führung - es ist Selbstgefälligkeit." onclick="selectQuizAnswer(10, this)">
+                        D) Erfolgreiche Führungskräfte nachahmen, bis es natürlich wird
+                    </button>
+                </div>
+                
+                <div class="quiz-feedback" style="display: none;">
+                    <p class="feedback-text"></p>
+                </div>
+            </div>
+<div class="quiz-completion" style="display: none;">
+                <h3>Quiz Abgeschlossen! 🎉</h3>
+                <p class="quiz-score">Deine Punktzahl: <span id="quizScore">0</span>/10</p>
+                <p class="quiz-xp">+50 XP vergeben!</p>
+                <button class="btn-primary" onclick="completeQuiz(1)
+                    window.dispatchEvent(new CustomEvent(\'lessonAbgeschlossend\'));">Weiter</button>
+            </div>
+        </div>
+
+
+        <div class="nav-buttons">
+                    <button class="btn btn-secondary" id="prevBtn" onclick="previousFrage()">← Zurück</button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextFrage()" disabled>Weiter →</button>
+                </div>
+            </div>
+            
+            <div id="resultsSection" class="results-container">
+                <div class="score-display">
+                    <div class="score-number" id="finalScore">--</div>
+                    <div class="score-label" id="scoreLabel">--</div>
+                </div>
+                
+                <div class="recommendation" id="recommendation">
+                    <!-- Recommendation will be inserted here -->
+                </div>
+                
+                <div class="nav-buttons" style="margin-top: 2rem;">
+                    <a href="brown-belt-de.html" class="btn btn-secondary">← Zurück zum Brown Belt</a>
+                    <a href="brown-belt-stripe2-gamified-de.html" class="btn btn-primary">Weiter to Stripe 2 →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- ============================================================================ -->
+<!-- END OF PART 1 -->
+<!-- NEXT: Insert PART 2 (JavaScript with 37 questions array) -->
+<!-- ============================================================================ -->
+<!-- ============================================================================ -->
+<!-- PART 2: QUESTIONS ARRAY (37 Standard Fragen) -->
+<!-- Copy this AFTER Part 1, BEFORE Part 3 -->
+<!-- ============================================================================ -->
+
+    <script>
+        const questions = [
+            // SECTION 1: DIRECT FEEDBACK (Fragen 1-8)
+            {
+                question: "Wenn jemand fragt 'Wie mache ich mich?' und du Bedenken hast, tust du typischerweise...",
+                options: [
+                    { text: "Vage positives Feedback geben, um Unbehagen zu vermeiden", value: 1 },
+                    { text: "Indirekt auf Probleme hinweisen, aber nicht klar sagen", value: 2 },
+                    { text: "Positives mit vagen Bedenken mischen", value: 3 },
+                    { text: "Klares Feedback geben, aber es erheblich abschwächen", value: 4 },
+                    { text: "Sofort direktes, freundliches, spezifisches Feedback geben", value: 5 }
+                ]
+            },
+            {
+                question: "Dein Komfortniveau beim Geben von kritischem Feedback an einen Kollegen ist...",
+                options: [
+                    { text: "Extrem unangenehm - ich vermeide es vollständig", value: 1 },
+                    { text: "Sehr unangenehm - ich zögere so lange wie möglich", value: 2 },
+                    { text: "Etwas komfortabel - ich tue es, aber widerwillig", value: 3 },
+                    { text: "Meistens komfortabel - ich tue es, wenn nötig", value: 4 },
+                    { text: "Sehr komfortabel - es ist ein Geschenk, keine Belastung", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du jemandes Verhalten ansprechen musst, ist dein Ansatz...",
+                options: [
+                    { text: "Das Gespräch vollständig vermeiden", value: 1 },
+                    { text: "Um das Thema herumreden, ohne direkt zu sein", value: 2 },
+                    { text: "Es ansprechen, aber sehr sanft und indirekt", value: 3 },
+                    { text: "Es klar ansprechen, aber mit viel Abschwächung", value: 4 },
+                    { text: "Es direkt, freundlich und sofort ansprechen", value: 5 }
+                ]
+            },
+            {
+                question: "Wie oft gibst du Feedback im Moment vs. warten auf eine formelle Umgebung?",
+                options: [
+                    { text: "Nie im Moment - immer auf formelle Umgebungen warten", value: 1 },
+                    { text: "Selten im Moment - normalerweise warten", value: 2 },
+                    { text: "Manchmal im Moment - hängt von der Situation ab", value: 3 },
+                    { text: "Normalerweise im Moment - bevorzuge zeitnahes Feedback", value: 4 },
+                    { text: "Immer im Moment - Unmittelbarkeit ist der Schlüssel", value: 5 }
+                ]
+            },
+            {
+                question: "Beim Geben von hartem Feedback ist dein Standardstil...",
+                options: [
+                    { text: "Extrem indirekt - viel Polsterung und Abschwächung", value: 1 },
+                    { text: "Meistens indirekt - Hinweise und Vorschläge", value: 2 },
+                    { text: "Ausgewogen - Mischung aus direkt und sanft", value: 3 },
+                    { text: "Meistens direkt - klar, aber freundlich", value: 4 },
+                    { text: "Sehr direkt - keine Mehrdeutigkeit, nur Klarheit und Fürsorge", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du vermieden hast, jemandem Feedback zu geben, liegt es normalerweise daran...",
+                options: [
+                    { text: "Ich habe Angst vor Konflikten oder die Beziehung zu schädigen", value: 1 },
+                    { text: "Ich bin mir nicht sicher, wie sie reagieren werden", value: 2 },
+                    { text: "Ich warte auf den perfekten Moment", value: 3 },
+                    { text: "Ich möchte besonders bedacht über die Überbringung sein", value: 4 },
+                    { text: "Ich vermeide Feedback nicht - ich gebe es, wenn nötig", value: 5 }
+                ]
+            },
+            {
+                question: "Dein Glaube über Feedback ist...",
+                options: [
+                    { text: "Es macht die Dinge normalerweise schlimmer", value: 1 },
+                    { text: "Es ist notwendig, aber schmerzhaft", value: 2 },
+                    { text: "Es kann helfen, muss aber sorgfältig gemacht werden", value: 3 },
+                    { text: "Es ist wichtig für Wachstum", value: 4 },
+                    { text: "Es ist ein Geschenk, das Vertrauen und Leistung aufbaut", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du selbst Feedback erhältst, tust du typischerweise...",
+                options: [
+                    { text: "Werde defensiv und wehre dich", value: 1 },
+                    { text: "Fühle mich verletzt und ziehe mich zurück", value: 2 },
+                    { text: "Höre zu, aber diskontiere es intern", value: 3 },
+                    { text: "Höre zu und betrachte es ernst", value: 4 },
+                    { text: "Begrüße es und bitte um mehr Details", value: 5 }
+                ]
+            },
+
+            // SECTION 2: PEER ACCOUNTABILITY (Fragen 9-16)
+            {
+                question: "When a peer misses a deadline that affects du, du...",
+                options: [
+                    { text: "Nichts sagen und darum herum arbeiten", value: 1 },
+                    { text: "Bei anderen beschweren, aber nicht bei ihnen", value: 2 },
+                    { text: "Beiläufig erwähnen, ohne die Auswirkungen anzusprechen", value: 3 },
+                    { text: "Es direkt, aber sanft ansprechen", value: 4 },
+                    { text: "Es sofort und klar mit Auswirkung ansprechen", value: 5 }
+                ]
+            },
+            {
+                question: "Einen Kollegen ohne Führungsautorität anzusprechen fühlt sich an...",
+                options: [
+                    { text: "Unmöglich - nicht mein Platz", value: 1 },
+                    { text: "Sehr unangenehm - ich vermeide es", value: 2 },
+                    { text: "Unangenehm, aber manchmal notwendig", value: 3 },
+                    { text: "Natürlich, wenn respektvoll gemacht", value: 4 },
+                    { text: "Wesentlich - wir sind alle für Standards verantwortlich", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du siehst, dass ein Teammitglied faulenzt, aber das Management es nicht bemerkt hat...",
+                options: [
+                    { text: "Nichts tun - nicht meine Aufgabe", value: 1 },
+                    { text: "Hoffen, dass das Management es schließlich bemerkt", value: 2 },
+                    { text: "Es der Person vage erwähnen", value: 3 },
+                    { text: "Mit dem Management darüber sprechen", value: 4 },
+                    { text: "Es zuerst direkt mit der Person ansprechen", value: 5 }
+                ]
+            },
+            {
+                question: "Dein Ansatz zu Peer-Verantwortlichkeit ist...",
+                options: [
+                    { text: "Nicht meine Verantwortung - Manager sollten es tun", value: 1 },
+                    { text: "Nur wenn es mich direkt betrifft", value: 2 },
+                    { text: "Manchmal, abhängig von der Beziehung", value: 3 },
+                    { text: "Regelmäßig, wenn Standards sinken", value: 4 },
+                    { text: "Immer - wir alle tragen Verantwortung für Teamleistung", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du musst, um einen Kollegen zur Verantwortung zu ziehen, sorgst du dich am meisten...",
+                options: [
+                    { text: "Die Beziehung völlig zu ruinieren", value: 1 },
+                    { text: "Als schwierig oder konfrontativ gesehen zu werden", value: 2 },
+                    { text: "Wie sie emotional reagieren werden", value: 3 },
+                    { text: "Die richtigen Worte zu finden", value: 4 },
+                    { text: "Nichts - es ist Teil davon, ein Teammitglied zu sein", value: 5 }
+                ]
+            },
+            {
+                question: "If a colleague consistently misses commitments...",
+                options: [
+                    { text: "Ich arbeite um sie herum und sage nichts", value: 1 },
+                    { text: "Ich beschwere mich privat, spreche es aber nicht an", value: 2 },
+                    { text: "Ich deute auf das Muster indirekt hin", value: 3 },
+                    { text: "Ich spreche es nach mehreren Vorkommnissen an", value: 4 },
+                    { text: "Ich spreche es nach dem zweiten Vorkommnis an", value: 5 }
+                ]
+            },
+            {
+                question: "Dein belief about peer Verantwortlichkeit ist...",
+                options: [
+                    { text: "Es ist die Aufgabe des Managers, nicht meine", value: 1 },
+                    { text: "Es ist riskant und schlägt oft fehl", value: 2 },
+                    { text: "Es ist notwendig, aber unangenehm", value: 3 },
+                    { text: "Es ist wichtig für die Teamgesundheit", value: 4 },
+                    { text: "So funktionieren hochleistungsfähige Teams", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn andere dich zur Verantwortung ziehen, fühlst du...",
+                options: [
+                    { text: "Ungerechtfertigt angegriffen oder kritisiert", value: 1 },
+                    { text: "Defensiv und widerständig", value: 2 },
+                    { text: "Unangenehm, aber bereit zuzuhören", value: 3 },
+                    { text: "Wertschätzend ihrer Courage", value: 4 },
+                    { text: "Dankbar, dass sie genug kümmerten, um zu sprechen", value: 5 }
+                ]
+            },
+
+            // SECTION 3: STANDARDS MAINTENANCE (Fragen 17-24)
+            {
+                question: "Wenn dich jemand bittet lower standards 'just this once,' du...",
+                options: [
+                    { text: "Normalerweise zustimmen, um Konflikt zu vermeiden", value: 1 },
+                    { text: "Widerwillig zustimmen, während man sich unwohl fühlt", value: 2 },
+                    { text: "Einen Mittelweg aushandeln", value: 3 },
+                    { text: "Die meiste Zeit standhaft bleiben", value: 4 },
+                    { text: "Niemals Kompromisse - Standards existieren aus einem Grund", value: 5 }
+                ]
+            },
+            {
+                question: "Dein Komfort mit being the 'bad guy' who holds the line is...",
+                options: [
+                    { text: "Extrem unangenehm - ich vermeide diese Rolle", value: 1 },
+                    { text: "Sehr unangenehm - ich bevorzuge Flexibilität", value: 2 },
+                    { text: "Neutral - ich tue es, wenn absolut notwendig", value: 3 },
+                    { text: "Komfortabel - jemand muss es tun", value: 4 },
+                    { text: "Sehr komfortabel - Klarheit dient allen", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn Qualitätsstandards mit Geschwindigkeit kollidieren, priorisierst du...",
+                options: [
+                    { text: "Geschwindigkeit fast immer - schnell ausliefern", value: 1 },
+                    { text: "Geschwindigkeit normalerweise - Qualität kann warten", value: 2 },
+                    { text: "Hängt von der Situation ab", value: 3 },
+                    { text: "Qualität normalerweise - selten Kompromisse", value: 4 },
+                    { text: "Qualität immer - niemals Müll ausliefern", value: 5 }
+                ]
+            },
+            {
+                question: "Deine nicht verhandelbaren Standards are...",
+                options: [
+                    { text: "Unklar - ich bin bei den meisten Dingen flexibel", value: 1 },
+                    { text: "Locker definiert - situationsabhängig", value: 2 },
+                    { text: "Etwas definiert - ein paar harte Linien", value: 3 },
+                    { text: "Klar definiert - mehrere harte Linien", value: 4 },
+                    { text: "Klar wie Kristall - jeder kennt meine Linien", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du siehst quality slipping, du...",
+                options: [
+                    { text: "Hope someone else addresses it", value: 1 },
+                    { text: "Mention it vaguely if asked", value: 2 },
+                    { text: "Bring it up eventually", value: 3 },
+                    { text: "Address it quickly", value: 4 },
+                    { text: "Address it immediately before it spreads", value: 5 }
+                ]
+            },
+            {
+                question: "Dein reputation regarding standards is...",
+                options: [
+                    { text: "Flexible and easy-going", value: 1 },
+                    { text: "Generally accommodating", value: 2 },
+                    { text: "Moderate - firm on some things", value: 3 },
+                    { text: "Known for being clear about standards", value: 4 },
+                    { text: "Known as uncompromising on quality", value: 5 }
+                ]
+            },
+            {
+                question: "When pressure mounts, dein standards...",
+                options: [
+                    { text: "Drop significantly", value: 1 },
+                    { text: "Lower noticeably", value: 2 },
+                    { text: "Flex somewhat", value: 3 },
+                    { text: "Remain mostly stable", value: 4 },
+                    { text: "Never change - that's when they matter most", value: 5 }
+                ]
+            },
+            {
+                question: "Dein belief about standards is...",
+                options: [
+                    { text: "They're guidelines, not rules", value: 1 },
+                    { text: "They should be flexible based on context", value: 2 },
+                    { text: "They're important but negotiable", value: 3 },
+                    { text: "They define team excellence", value: 4 },
+                    { text: "They're non-negotiable - our reputation depends on them", value: 5 }
+                ]
+            },
+
+            // SECTION 4: EARLY INTERVENTION (Fragen 25-32)
+            {
+                question: "Wenn bemerkst du a small issue, spricht du an it...",
+                options: [
+                    { text: "Rarely - wait to see if it becomes a pattern", value: 1 },
+                    { text: "Occasionally - only if it persists", value: 2 },
+                    { text: "Sometimes - depends on the issue", value: 3 },
+                    { text: "Usually - prefer early intervention", value: 4 },
+                    { text: "Always - small issues become big problems", value: 5 }
+                ]
+            },
+            {
+                question: "Dein philosophy on timing for addressing issues is...",
+                options: [
+                    { text: "Wait and see - most things resolve themselves", value: 1 },
+                    { text: "Give it time - don't overreact", value: 2 },
+                    { text: "Address after a few occurrences", value: 3 },
+                    { text: "Address quickly - within days", value: 4 },
+                    { text: "Address immediately - same day when possible", value: 5 }
+                ]
+            },
+            {
+                question: "When someone is consistently 5 Minuten late to meetings...",
+                options: [
+                    { text: "Never mention it - no big deal", value: 1 },
+                    { text: "Joke about it but don't address seriously", value: 2 },
+                    { text: "Mention it if it becomes excessive", value: 3 },
+                    { text: "Address it after 2-3 occurrences", value: 4 },
+                    { text: "Address it after the first or second time", value: 5 }
+                ]
+            },
+            {
+                question: "Dein Komfort mit addressing small issues is...",
+                options: [
+                    { text: "Very uncomfortable - feels petty", value: 1 },
+                    { text: "Uncomfortable - worried about overreacting", value: 2 },
+                    { text: "Neutral - I do it when necessary", value: 3 },
+                    { text: "Comfortable - prevention beats cure", value: 4 },
+                    { text: "Very comfortable - early intervention is easier", value: 5 }
+                ]
+            },
+            {
+                question: "Wenn du ein Muster entstehen siehst, tust du...",
+                options: [
+                    { text: "Hope it goes away on its own", value: 1 },
+                    { text: "Monitor it but don't act yet", value: 2 },
+                    { text: "Mention it casually", value: 3 },
+                    { text: "Name the pattern clearly", value: 4 },
+                    { text: "Name the pattern and address it immediately", value: 5 }
+                ]
+            },
+            {
+                question: "Dein belief about early intervention is...",
+                options: [
+                    { text: "Often makes things worse", value: 1 },
+                    { text: "Risks overreacting to small things", value: 2 },
+                    { text: "Sometimes necessary", value: 3 },
+                    { text: "Usually the right approach", value: 4 },
+                    { text: "Always better - prevents escalation", value: 5 }
+                ]
+            },
+            {
+                question: "When colleagues don't address issues early, du think...",
+                options: [
+                    { text: "They're being respectful and patient", value: 1 },
+                    { text: "They're wisely avoiding conflict", value: 2 },
+                    { text: "It depends on the situation", value: 3 },
+                    { text: "They're probably letting it fester", value: 4 },
+                    { text: "They're failing their responsibility", value: 5 }
+                ]
+            },
+            {
+                question: "The speed at which spricht du an behavioral issues is...",
+                options: [
+                    { text: "Very slow - weeks or months", value: 1 },
+                    { text: "Slow - usually a week or more", value: 2 },
+                    { text: "Moderate - a few days", value: 3 },
+                    { text: "Fast - within 24-48 hours", value: 4 },
+                    { text: "Immediate - same day whenever possible", value: 5 }
+                ]
+            },
+
+            // SECTION 5: UNCOMFORTABLE TRUTH (Fragen 33-37)
+            {
+                question: "Wenn du know something important that needs to be said but feels risky...",
+                options: [
+                    { text: "I keep it to myself", value: 1 },
+                    { text: "I tell someone else privately", value: 2 },
+                    { text: "I hint at it indirectly", value: 3 },
+                    { text: "I say it but svontly", value: 4 },
+                    { text: "I say it clearly despite the risk", value: 5 }
+                ]
+            },
+            {
+                question: "Speaking uncomfortable truths to authority feels...",
+                options: [
+                    { text: "Impossible - too career-risky", value: 1 },
+                    { text: "Extremely uncomfortable - I avoid it", value: 2 },
+                    { text: "Unangenehm, aber manchmal notwendig", value: 3 },
+                    { text: "Necessary if done respectfully", value: 4 },
+                    { text: "Essential - silence serves no one", value: 5 }
+                ]
+            },
+            {
+                question: "Dein track record von speaking difficult truths is...",
+                options: [
+                    { text: "Almost never - too risky", value: 1 },
+                    { text: "Rarely - only when forced", value: 2 },
+                    { text: "Occasionally - when critical", value: 3 },
+                    { text: "Regularly - when it matters", value: 4 },
+                    { text: "Consistently - it's my responsibility", value: 5 }
+                ]
+            },
+            {
+                question: "When weighing the cost von speaking truth vs. staying silent...",
+                options: [
+                    { text: "Silence almost always wins", value: 1 },
+                    { text: "Silence usually wins - safer", value: 2 },
+                    { text: "It depends on stakes and timing", value: 3 },
+                    { text: "Truth usually wins - risks are worth it", value: 4 },
+                    { text: "Truth always wins - silence is costly", value: 5 }
+                ]
+            },
+            {
+                question: "Dein belief about uncomfortable truths is...",
+                options: [
+                    { text: "Better left unsaid - they cause damage", value: 1 },
+                    { text: "Should be said very carefully, if at all", value: 2 },
+                    { text: "Sometimes necessary but risky", value: 3 },
+                    { text: "Necessary for team health", value: 4 },
+                    { text: "Essential - withholding truth is dishonest and damaging", value: 5 }
+                ]
+            }
+        ];
+
+        // State management
+        let currentFrage = 0;
+        let answers = [];
+
+<!-- ============================================================================ -->
+<!-- END OF PART 2 -->
+<!-- NEXT: Insert PART 3 (Main functions and results) -->
+<!-- ============================================================================ -->
+<!-- ============================================================================ -->
+<!-- PART 3: MAIN FUNCTIONS & RESULTS (Final Part) -->
+<!-- Copy this AFTER Part 2 to complete the file -->
+<!-- ============================================================================ -->
+
+        function startAssessment() {
+            document.getElementById('introSection').style.display = 'none';
+            document.getElementById('questionSection').style.display = 'block';
+            showFrage(0);
+        }
+
+        function showFrage(index) {
+            currentFrage = index;
+            const q = questions[index];
+            const card = document.getElementById('questionCard');
+            
+            const selectedValue = answers[index] || null;
+            
+            card.innerHTML = `
+                <div class="question-number">QUESTION ${index + 1} OF ${questions.length}</div>
+                <div class="question-text">${q.question}</div>
+                <div class="options">
+                    ${q.options.map((opt, i) => `
+                        <label class="option ${selectedValue === opt.value ? 'selected' : ''}" onclick="selectOption(${opt.value}, this)">
+                            <input type="radio" name="q${index}" value="${opt.value}" ${selectedValue === opt.value ? 'checked' : ''}>
+                            ${opt.text}
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            
+            updateProgress();
+            updateButtons();
+        }
+
+        function selectOption(value, element) {
+            answers[currentFrage] = value;
+            
+            // Update UI
+            const options = element.parentElement.querySelectorAll('.option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            
+            updateButtons();
+        }
+
+        function nextFrage() {
+            if (currentFrage < questions.length - 1) {
+                showFrage(currentFrage + 1);
+            } else {
+                showResults();
+            }
+        }
+
+        function previousFrage() {
+            if (currentFrage > 0) {
+                showFrage(currentFrage - 1);
+            }
+        }
+
+        function updateProgress() {
+            const percent = Math.round(((currentFrage + 1) / questions.length) * 100);
+            document.getElementById('currentQ').textContent = currentFrage + 1;
+            document.getElementById('progress-percent').textContent = percent;
+            document.getElementById('progressFill').style.width = percent + '%';
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentFrage === 0;
+            prevBtn.style.opacity = currentFrage === 0 ? '0.5' : '1';
+            
+            const hasAnswer = answers[currentFrage] !== undefined;
+            nextBtn.disabled = !hasAnswer;
+            nextBtn.style.opacity = hasAnswer ? '1' : '0.5';
+            
+            if (currentFrage === questions.length - 1) {
+                nextBtn.textContent = 'View Results →';
+            } else {
+                nextBtn.textContent = 'Weiter →';
+            }
+        }
+
+        function showResults() {
+            document.getElementById('questionSection').style.display = 'none';
+            document.getElementById('resultsSection').classList.add('active');
+            
+            calculateResults();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function calculateResults() {
+            const total = answers.reduce((sum, val) => sum + val, 0);
+            const maxScore = questions.length * 5;
+            const percentage = Math.round((total / maxScore) * 100);
+            
+            document.getElementById('finalScore').textContent = percentage + '%';
+            
+            let label = '';
+            let recommendation = '';
+            
+            if (percentage >= 80) {
+                label = '🏆 Accountability Champion';
+                recommendation = `
+                    <h3>Exceptional Accountability Foundation</h3>
+                    <p>Du have mastered the fundamentals von accountability. Du give direct feedback, hold peers accountable, maintain standards under pressure, intervene early, and speak uncomfortable truths.</p>
+                    <p><strong>Weiter Step:</strong> Weiter to Stripe 2 where du'll deepen dein accountability skills and learn more advanced techniques for holding the line.</p>
+                    <p><strong>Dein Strength:</strong> Du understand that Verantwortlichkeit ist a gift, not a burden. Keep modeling this for dein team.</p>
+                `;
+            } else if (percentage >= 65) {
+                label = '✨ Strong Foundation';
+                recommendation = `
+                    <h3>Solid Accountability Skills</h3>
+                    <p>Du have good accountability fundamentals but there's room to strengthen. Du're comfortable in some areas but may hold back in others.</p>
+                    <p><strong>Focus Areas:</strong> Review dein lowest-scoring questions. Where do du still avoid difficult conversations? What prevents du from speaking up sooner?</p>
+                    <p><strong>Weiter Step:</strong> Commit to one accountability action this week - give that feedback du've been avoiding, or address that small issue before it grows.</p>
+                `;
+            } else if (percentage >= 50) {
+                label = '⚠️ Developing';
+                recommendation = `
+                    <h3>Accountability Skills Need Strengthening</h3>
+                    <p>Du have gaps in dein accountability foundation. Du likely avoid difficult conversations, wait too long to address issues, or struggle with peer accountability.</p>
+                    <p><strong>Priority Action:</strong> Start small. This week, address ONE small issue within 24 hours. Practice giving direct feedback in a low-stakes situation.</p>
+                    <p><strong>Merke:</strong> Verantwortlichkeit geht nicht darum, hart zu sein - es geht darum, genug zu kümmern, um zu sprechen. Feedback zurückzuhalten ist unfreundlich.</p>
+                `;
+            } else {
+                label = '🚨 Foundational Work Needed';
+                recommendation = `
+                    <h3>Time to Build Accountability Muscle</h3>
+                    <p>Du currently avoid accountability conversations. This limits dein leadership impact and allows problems to fester.</p>
+                    <p><strong>Start Here:</strong></p>
+                    <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                        <li>Identify one person who needs feedback</li>
+                        <li>Write down exactly what du need to say</li>
+                        <li>Schedule the conversation within 48 hours</li>
+                        <li>Keep it brief, kind, and specific</li>
+                    </ul>
+                    <p><strong>Truth:</strong> The conversation du're avoiding is probably easier than du think - and the cost von not having it is higher than du realize.</p>
+                `;
+            }
+            
+            document.getElementById('scoreLabel').textContent = label;
+            document.getElementById('recommendation').innerHTML = recommendation;
+            
+            // Save to localStorage
+            localStorage.setItem('brownBeltStripe1Abgeschlossen', 'true');
+                    window.dispatchEvent(new CustomEvent(\'lessonAbgeschlossend\'));
+            localStorage.setItem('brownBeltStripe1Score', percentage);
+        }
+    
+        function getStripeNumber() {
+            const match = window.location.pathname.match(/stripe(\d+)/);
+            return match ? parseInt(match[1]) : 1;
+        }
+        
+        function retryQuiz() {
+            quizAnswers = [];
+            quizScore = 0;
+            document.querySelectorAll('.quiz-question').forEach(question => {
+                const options = question.querySelectorAll('.quiz-option');
+                options.forEach(opt => {
+                    opt.style.pointerEvents = 'auto';
+                    opt.classList.remove('selected-correct', 'selected-incorrect');
+                });
+                const feedback = question.querySelector('.quiz-feedback');
+                if (feedback) {
+                    feedback.style.display = 'none';
+                    feedback.classList.remove('correct', 'incorrect');
+                }
+            });
+            const completionDiv = document.querySelector('.quiz-completion');
+            if (completionDiv) completionDiv.style.display = 'none';
+            const firstFrage = document.querySelector('.quiz-question');
+            if (firstFrage) firstFrage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        
+        function scrollToLessons() {
+            const lessonsSection = document.querySelector('.intro-section, .main-card, .header');
+            if (lessonsSection) {
+                lessonsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        }</script>
+
+    <!-- Gamification System -->
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script src="js/xp-level-system.js"></script>
+<script src="js/gamification-celebrations.js"></script>
+    <script src="js/gamification.js" defer></script>
+    <script src="js/stripe-completion-helper.js" defer></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+<script>
+        // Quiz functionality
+        let quizAnswers = [];
+        let quizScore = 0;
+        const totalQuizFragen = 0;
+
+        function selectQuizAnswer(questionNum, optionElement) {
+            // Disable all options for this question
+            const question = document.querySelector(`[data-question="${questionNum}"]`);
+            const options = question.querySelectorAll('.quiz-option');
+            options.forEach(opt => {
+                opt.disabled = true;
+                opt.style.pointerEvents = 'none';
+            });
+            
+            // Check if correct
+            const isCorrect = optionElement.dataset.correct === 'true';
+            
+            // Visual feedback
+            optionElement.classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
+            
+            // Show feedback
+            const feedbackDiv = question.querySelector('.quiz-feedback');
+            feedbackDiv.style.display = 'block';
+            feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+            
+            if (isCorrect) {
+                feedbackDiv.querySelector('.feedback-text').textContent = 
+                    "✅ Correct! " + (optionElement.dataset.explanation || '');
+                quizScore++;
+            } else {
+                // Highlight correct answer
+                options.forEach(opt => {
+                    if (opt.dataset.correct === 'true') {
+                        opt.classList.add('selected-correct');
+                    }
+                });
+                feedbackDiv.querySelector('.feedback-text').textContent = 
+                    "❌ Not quite. " + (optionElement.dataset.explanation || '');
+            }
+            
+            // Track answer
+            quizAnswers[questionNum - 1] = isCorrect;
+            
+            // Check if all answered
+            checkQuizCompletion();
+        }
+
+        function checkQuizCompletion() {
+            const totalFragen = document.querySelectorAll('.quiz-question').length;
+            const answered = quizAnswers.filter(a => a !== undefined).length;
+            
+            if (answered === totalFragen) {
+                const completionDiv = document.querySelector('.quiz-completion');
+                completionDiv.style.display = 'block';
+                
+                // Check if passed
+                const passingThreshold = 7;
+                const passed = quizScore >= passingThreshold;
+                
+                if (passed) {
+                    // PASSED - Show success message
+                    completionDiv.innerHTML = `
+                        <h3>Quiz Abgeschlossen! 🎉</h3>
+                        <p class="quiz-score">Deine Punktzahl: <span id="quizScore">${quizScore}</span>/10</p>
+                        <p class="quiz-xp">+${quizScore === 10 ? 75 : 50} XP awarded!</p>
+                        <button class="btn-primary" onclick="completeQuiz(getStripeNumber())">Weiter</button>
+                    `;
+                    document.getElementById('quizScore').textContent = quizScore;
+                    
+                    // Award XP
+                    const xpAmount = quizScore === 10 ? 75 : 50;
+                    awardQuizXP(xpAmount);
+                } else {
+                    // FAILED - Show belt-specific submission message
+                    const failedFragen = [];
+                    quizAnswers.forEach((isCorrect, index) => {
+                        if (!isCorrect) {
+                            const question = document.querySelector(`[data-question="${index + 1}"]`);
+                            if (question) {
+                                const questionText = question.querySelector('.question-text')?.textContent || `Frage ${index + 1}`;
+                                failedFragen.push({
+                                    num: index + 1,
+                                    text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
+                                });
+                            }
+                        }
+                    });
+                    
+                    completionDiv.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🟤</div>
+                            <h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">Du Got Submitted by a Brown Belt! 🥋</h3>
+                            <p style="color: #64748b; margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">Der Brown Belt hat Lücken aufgedeckt in dein knowledge. Das ist fortgeschrittenes Material - nimm dir Zeit zum Überprüfen, dann komm zurück, bereit.</p>
+                            
+                            <div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+                                <h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;">📚 Review These Fragen:</h4>
+                                <ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
+                                    ${failedFragen.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Frage ${q.num}:</strong> ${q.text}</li>`).join('')}
+                                </ul>
+                                <p style="color: #991b1b; margin-top: 1rem; font-size: 0.9rem;">
+                                    <strong>💡 Tipp:</strong> Scrolle nach oben, um die Lektionen zu überprüfen und Szenarien, dann wiederhole das Quiz!
+                                </p>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <button class="btn-primary" onclick="retryQuiz()" style="margin-right: 1rem; padding: 12px 24px; font-size: 1rem;">🔄 Quiz wiederholen</button>
+                                <button class="btn-secondary" onclick="scrollToLessons()" style="padding: 12px 24px; font-size: 1rem;">📖 Lektionen überprüfen</button>
+                            </div>
+                            
+                            <p style="color: #64748b; margin-top: 1.5rem; font-size: 0.9rem;">Ergebnis: ${quizScore}/10 (Benötigt ${passingThreshold}/10 zum Bestehen)</p>
+                        </div>
+                    `;
+                    
+                    // Award small XP for attempt
+                    awardQuizXP(10);
+                }
+                
+                // Scroll to completion
+                completionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }</span>/10</p>
+                        <p class="quiz-xp">+${quizScore === 10 ? 75 : 50} XP awarded!</p>
+                        <button class="btn-primary" onclick="completeQuiz(getStripeNumber())">Weiter</button>
+                    `;
+                    document.getElementById('quizScore').textContent = quizScore;
+                    
+                    // Award XP
+                    const xpAmount = quizScore === 10 ? 75 : 50;
+                    awardQuizXP(xpAmount);
+                } else {
+                    // FAILED - Show belt-specific submission message
+                    const failedFragen = [];
+                    quizAnswers.forEach((isCorrect, index) => {
+                        if (!isCorrect) {
+                            const question = document.querySelector(`[data-question="${index + 1}"]`);
+                            if (question) {
+                                const questionText = question.querySelector('.question-text')?.textContent || `Frage ${index + 1}`;
+                                failedFragen.push({
+                                    num: index + 1,
+                                    text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
+                                });
+                            }
+                        }
+                    });
+                    
+                    completionDiv.innerHTML = `
+                        <div style="text-align: center; padding: 2rem;">
+                            <div style="font-size: 4rem; margin-bottom: 1rem;">🟤</div>
+                            <h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">Du Got Submitted by a Brown Belt! 🥋</h3>
+                            <p style="color: #64748b; margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">Der Brown Belt hat Lücken aufgedeckt in dein knowledge. Das ist fortgeschrittenes Material - nimm dir Zeit zum Überprüfen, dann komm zurück, bereit.</p>
+                            
+                            <div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+                                <h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;">📚 Review These Fragen:</h4>
+                                <ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
+                                    ${failedFragen.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Frage ${q.num}:</strong> ${q.text}</li>`).join('')}
+                                </ul>
+                                <p style="color: #991b1b; margin-top: 1rem; font-size: 0.9rem;">
+                                    <strong>💡 Tipp:</strong> Scrolle nach oben, um die Lektionen zu überprüfen und Szenarien, dann wiederhole das Quiz!
+                                </p>
+                            </div>
+                            
+                            <div style="margin-top: 2rem;">
+                                <button class="btn-primary" onclick="retryQuiz()" style="margin-right: 1rem; padding: 12px 24px; font-size: 1rem;">🔄 Quiz wiederholen</button>
+                                <button class="btn-secondary" onclick="scrollToLessons()" style="padding: 12px 24px; font-size: 1rem;">📖 Lektionen überprüfen</button>
+                            </div>
+                            
+                            <p style="color: #64748b; margin-top: 1.5rem; font-size: 0.9rem;">Ergebnis: ${quizScore}/10 (Benötigt ${passingThreshold}/10 zum Bestehen)</p>
+                        </div>
+                    `;
+                    
+                    // Award small XP for attempt
+                    awardQuizXP(10);
+                }
+                
+                // Scroll to completion
+                completionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+            }
+        }
+
+        function awardQuizXP(amount) {
+            // Use existing XP system if available
+            if (typevon TapInGamification !== 'undefined' && TapInGamification.awardXP) {
+                TapInGamification.awardXP(amount, 'Quiz Completion');
+            } else {
+                // Fallback to localStorage
+                const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+                const newXP = currentXP + amount;
+                localStorage.setItem('totalXP', newXP.toString());
+            }
+        }
+
+        function completeQuiz(stripeNum) {
+            // Mark quiz complete
+            const storageKey = 'brownbeltStripe' + stripeNum + 'QuizAbgeschlossen';
+            localStorage.setItem(storageKey, 'true');
+            localStorage.setItem(storageKey + 'Score', quizScore.toString());
+            localStorage.setItem(storageKey + 'Date', new Date().toISOString());
+            
+            // Navigate to next stripe or back to hub
+            const nextStripe = stripeNum + 1;
+            if (nextStripe <= 4) {
+                if (confirm('Quiz Abgeschlossen! Weiter to Stripe ' + nextStripe + '?')) {
+                    window.location.href = 'brown-belt-stripe' + nextStripe + '-gamified-de.html';
+                } else {
+                    window.location.href = 'learning-hub.html';
+                }
+            } else {
+                alert('🎉 Brown Belt Abgeschlossen! Ready for the next level.');
+                window.location.href = 'learning-hub.html';
+            }
+        }
+</script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+</body>
+</html>
+
+<!-- ============================================================================ -->
+<!-- END OF BROWN BELT STRIPE 1 -->
+<!-- Total: ~1,050 lines when combined -->
+<!-- Assembly: Part 1 + Part 2 + Part 3 = Abgeschlossen file -->
+<!-- ============================================================================ -->

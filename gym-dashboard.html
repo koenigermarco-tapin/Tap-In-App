@@ -6,14 +6,17 @@
 
 <!-- Preconnect to Google Fonts (improves performance) -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="stylesheet" href="css/core-styles.css">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <!-- Load fonts with font-display: swap (prevents blocking) - OPTIMIZED -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'; this.onload=null;">
+    <link rel="stylesheet" href="css/core-styles.css">
 
 <!-- Fallback for no JavaScript -->
 <noscript>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/core-styles.css">
 </noscript>
 
 <!-- System font fallback CSS -->
@@ -34,6 +37,13 @@
     <!-- Avatar System -->
     <link rel="stylesheet" href="avatar-styles.css">
     <script src="js/avatar-system.js"></script>
+    
+    <!-- Gamification Systems -->
+    <link rel="stylesheet" href="css/xp-level-system.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="js/xp-level-system.js"></script>
+    <script src="js/daily-streak.js"></script>
+    <script src="js/gamification-celebrations.js"></script>
     
     <style>
         * {
@@ -1169,11 +1179,12 @@
         <div class="nav-right">
             <a href="account.html" style="color: rgba(255,255,255,0.7); text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='white';" onmouseout="this.style.background='transparent';this.style.color='rgba(255,255,255,0.7)';">🔐 Account</a>
             <a href="leaderboard.html" style="color: rgba(255,255,255,0.7); text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='white';" onmouseout="this.style.background='transparent';this.style.color='rgba(255,255,255,0.7)';">🏆 Leaderboard</a>
-            <div class="streak-badge">
-                🔥 12 Day Streak
+            <a href="achievements.html" style="color: rgba(255,255,255,0.7); text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s; font-weight: 600;" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.color='white';" onmouseout="this.style.background='transparent';this.style.color='rgba(255,255,255,0.7)';">🏅 View Achievements</a>
+            <div class="streak-badge" data-streak-display>
+                🔥 0 days
             </div>
-            <div class="xp-badge">
-                ⭐ 847 XP
+            <div class="xp-badge" id="navXPBadge">
+                ⭐ <span id="navXP">0</span> XP • <span data-level-display>Level 1: Beginner</span>
             </div>
             <div class="user-avatar">M</div>
         </div>
@@ -1181,6 +1192,9 @@
 
     <!-- Main Container -->
     <div class="main-container">
+        <!-- User Avatar Component -->
+        <div id="dashboardAvatar" style="margin-bottom: 2rem;"></div>
+        
         <!-- Welcome Section -->
         <div class="welcome-section">
             <h1 class="welcome-greeting">Welcome back, Marco 👋</h1>
@@ -1846,6 +1860,23 @@
                     </div>
                 </div>
 
+                <!-- Level Progress Card -->
+                <div class="card level-display">
+                    <div class="card-header">
+                        <div class="card-title">📊 Your Level</div>
+                    </div>
+                    <div style="text-align: center; margin-bottom: 1rem;">
+                        <div style="font-size: 2rem; font-weight: 800; color: var(--accent-gold); margin-bottom: 0.5rem;" data-level-number>1</div>
+                        <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-white); margin-bottom: 0.75rem;" data-level-title>Beginner</div>
+                    </div>
+                    <div class="level-progress-bar" style="background: var(--border-subtle); height: 8px; border-radius: 4px; overflow: hidden; margin-bottom: 0.5rem;">
+                        <div class="level-progress-fill" data-level-progress style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent-gold) 0%, #ecc94b 100%); border-radius: 4px; transition: width 0.5s ease;"></div>
+                    </div>
+                    <div style="text-align: center;">
+                        <small style="font-size: 0.85rem; color: var(--text-muted);" data-next-level-xp>100 XP to Level 2</small>
+                    </div>
+                </div>
+
                 <!-- Quick Stats - Dynamic -->
                 <div class="card">
                     <div class="card-header">
@@ -1853,7 +1884,7 @@
                     </div>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                         <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                            <div style="font-size: 1.75rem; font-weight: 700; color: var(--accent-gold);" id="streakCount">0</div>
+                            <div style="font-size: 1.75rem; font-weight: 700; color: var(--accent-gold);" data-streak-count>0</div>
                             <div style="font-size: 0.75rem; color: var(--text-muted);">Day Streak 🔥</div>
                         </div>
                         <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
@@ -2517,12 +2548,29 @@
         function updateGamificationDisplay() {
             const data = getGamificationData();
             
-            // Update streak
-            const streak = updateStreak();
-            document.getElementById('streakCount').textContent = streak;
+            // Update streak (using new daily streak system)
+            if (typeof DAILY_STREAK !== 'undefined') {
+                const streak = DAILY_STREAK.getCurrentStreak();
+                const streakCountEl = document.querySelector('[data-streak-count]');
+                if (streakCountEl) streakCountEl.textContent = streak;
+                
+                // Update streak display in nav
+                const streakDisplay = document.querySelector('[data-streak-display]');
+                if (streakDisplay) {
+                    streakDisplay.innerHTML = `🔥 ${streak} day${streak !== 1 ? 's' : ''}`;
+                }
+            } else {
+                const streak = updateStreak();
+                const streakCountEl = document.querySelector('[data-streak-count]');
+                if (streakCountEl) streakCountEl.textContent = streak;
+            }
             
             // Update XP
             document.getElementById('totalXP').textContent = data.totalXP.toLocaleString();
+            
+            // Update XP in nav
+            const navXP = document.getElementById('navXP');
+            if (navXP) navXP.textContent = data.totalXP.toLocaleString();
             
             // Update modules complete
             const modulesComplete = countCompletedModules();
@@ -2533,10 +2581,21 @@
             // Update badges
             document.getElementById('badgesEarned').textContent = data.badges.length;
             
+            // Update level displays (XP level system will handle this automatically)
+            if (typeof XP_LEVEL_SYSTEM !== 'undefined') {
+                XP_LEVEL_SYSTEM.updateLevelDisplays();
+            }
+            
             // Update XP badge in nav (if it exists)
-            const xpBadge = document.querySelector('.xp-badge');
-            if (xpBadge) {
-                xpBadge.innerHTML = `⚡ ${data.totalXP.toLocaleString()} XP`;
+            const xpBadge = document.getElementById('navXPBadge');
+            if (xpBadge && typeof XP_LEVEL_SYSTEM !== 'undefined') {
+                const levelData = XP_LEVEL_SYSTEM.getCurrentLevel(data.totalXP);
+                const navXPEl = document.getElementById('navXP');
+                const levelDisplayEl = xpBadge.querySelector('[data-level-display]');
+                if (navXPEl) navXPEl.textContent = data.totalXP.toLocaleString();
+                if (levelDisplayEl) levelDisplayEl.textContent = `Level ${levelData.level}: ${levelData.title}`;
+            } else if (xpBadge) {
+                xpBadge.innerHTML = `⭐ <span id="navXP">${data.totalXP.toLocaleString()}</span> XP`;
             }
         }
 
@@ -3134,10 +3193,46 @@ window.awardXP = async function(amount, reason) {
     <script src="js/loading-states.js" defer></script>
     <script src="js/error-handler.js" defer></script>
     
+<!-- Avatar System Loader -->
+<script>
+// Load avatar component
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarContainer = document.getElementById('dashboardAvatar');
+    if (avatarContainer) {
+        fetch('components/user-avatar.html')
+            .then(r => r.text())
+            .then(html => {
+                avatarContainer.innerHTML = html;
+                // Avatar system JS is already loaded in head, just initialize
+                setTimeout(function() {
+                    if (typeof AVATAR_SYSTEM !== 'undefined') {
+                        AVATAR_SYSTEM.init();
+                    }
+                }, 100);
+            })
+            .catch(err => {
+                console.warn('Avatar component not found, skipping:', err);
+                avatarContainer.style.display = 'none';
+            });
+    }
+});
+</script>
+
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.js"></script>
 <script src="js/storage-health.js"></script>
+<!-- Core Modules -->
+<script src="js/core-gamification.js"></script>
+<script src="js/core-progress-tracker.js"></script>
+<script src="js/storage-manager.js"></script>
+<script src="js/keyboard-nav.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
 </body>
 </html>
 

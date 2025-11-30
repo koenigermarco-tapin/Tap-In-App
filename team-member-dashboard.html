@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Dashboard | TAP-IN</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #1a1d2e;
+      color: #e2e8f0;
+      font-family: Inter, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 3rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .user-badge {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #e2e8f0;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0;
+      border-bottom: 1px solid #3d4466;
+    }
+
+    .stat-row:last-child {
+      border-bottom: none;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem;
+      background: #1a1d2e;
+      border-radius: 8px;
+      margin-bottom: 0.5rem;
+    }
+
+    .rank {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #4a7c9c;
+      min-width: 40px;
+    }
+
+    .you {
+      background: rgba(74, 124, 156, 0.2);
+      border: 2px solid #4a7c9c;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #1a1d2e;
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 0.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #4a7c9c 0%, #6fa8d8 100%);
+      transition: width 0.5s ease;
+    }
+
+    .btn {
+      display: inline-block;
+      background: white;
+      color: #1a1d2e;
+      padding: 1rem 2rem;
+      border-radius: 8px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(255, 255, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🏢 Team Dashboard</h1>
+      <div class="user-badge">
+        <div>
+          <div style="color: #94a3b8; font-size: 0.85rem;">Your Progress</div>
+          <div style="font-weight: 700;" id="userBelt">White Belt</div>
+        </div>
+        <div style="background: #4a7c9c; padding: 0.5rem 1rem; border-radius: 8px; font-weight: 700;" id="userXP">0 XP</div>
+      </div>
+    </div>
+
+    <div class="dashboard-grid">
+      <!-- Your Stats -->
+      <div class="card">
+        <div class="card-title">📊 Your Stats</div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Current Belt</span>
+          <span style="font-weight: 700;" id="currentBelt">White Belt</span>
+        </div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Stripe Progress</span>
+          <span style="font-weight: 700;" id="stripeProgress">1/4</span>
+        </div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Total XP</span>
+          <span style="color: #fbbf24; font-weight: 700;" id="totalXP">0 XP</span>
+        </div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Team Rank</span>
+          <span style="color: #4a7c9c; font-weight: 700;" id="teamRank">#1</span>
+        </div>
+      </div>
+
+      <!-- Team Overview -->
+      <div class="card">
+        <div class="card-title">👥 Team Overview</div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Total Members</span>
+          <span id="totalMembers">0</span>
+        </div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Avg XP</span>
+          <span id="avgXP">0</span>
+        </div>
+        <div class="stat-row">
+          <span style="color: #94a3b8;">Your vs Avg</span>
+          <span id="vsAvg">--</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Leaderboard -->
+    <div class="card">
+      <div class="card-title">🏆 Team Leaderboard</div>
+      <div id="leaderboard">
+        <!-- Populated by JavaScript -->
+      </div>
+    </div>
+
+    <!-- Continue Training CTA -->
+    <div class="card" style="background: linear-gradient(135deg, #4a7c9c 0%, #6fa8d8 100%); margin-top: 2rem; text-align: center;">
+      <h2 style="margin-bottom: 1rem;">Ready to level up?</h2>
+      <p style="margin-bottom: 2rem; color: rgba(255,255,255,0.9);">Continue your training to climb the leaderboard</p>
+      <a href="gym-dashboard.html" class="btn">
+        Continue Training →
+      </a>
+    </div>
+  </div>
+
+  <script>
+    // Load current user
+    let currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+    const teamCode = localStorage.getItem('userTeamCode');
+
+    if (!currentUser.id || !teamCode) {
+      alert('⚠️ Please join a team first');
+      window.location.href = 'join-team.html';
+    }
+
+    // Sync user progress from localStorage to member record
+    function syncUserProgress() {
+      const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+      const currentBelt = localStorage.getItem('currentBelt') || 'white';
+      const whiteBeltProgress = JSON.parse(localStorage.getItem('whiteBeltProgress') || '[]');
+      const stripe = whiteBeltProgress.length > 0 ? whiteBeltProgress.length : 1;
+
+      // Update current user object
+      currentUser.xp = currentXP;
+      currentUser.belt = currentBelt;
+      currentUser.stripe = stripe;
+      currentUser.lastActive = new Date().toISOString().split('T')[0];
+
+      // Update in team members array
+      const allMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+      const memberIndex = allMembers.findIndex(m => m.id === currentUser.id);
+      if (memberIndex !== -1) {
+        allMembers[memberIndex] = currentUser;
+        localStorage.setItem('teamMembers', JSON.stringify(allMembers));
+      }
+
+      // Save updated user
+      localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    }
+
+    // Sync progress on load
+    syncUserProgress();
+
+    // Load team members
+    const allMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+    const teamMembers = allMembers.filter(m => m.teamCode === teamCode);
+
+    // Update user stats
+    const beltEmoji = {
+      white: '⚪',
+      blue: '🔵',
+      purple: '🟣',
+      brown: '🟤',
+      black: '⚫'
+    };
+
+    const beltDisplay = currentUser.belt.charAt(0).toUpperCase() + currentUser.belt.slice(1) + ' Belt';
+    document.getElementById('userBelt').textContent = beltDisplay;
+    document.getElementById('userXP').textContent = currentUser.xp + ' XP';
+    document.getElementById('currentBelt').textContent = beltDisplay;
+    document.getElementById('stripeProgress').textContent = currentUser.stripe + '/4';
+    document.getElementById('totalXP').textContent = currentUser.xp + ' XP';
+
+    // Team stats
+    document.getElementById('totalMembers').textContent = teamMembers.length;
+    const avgXP = teamMembers.length > 0
+      ? Math.round(teamMembers.reduce((sum, m) => sum + (m.xp || 0), 0) / teamMembers.length)
+      : 0;
+    document.getElementById('avgXP').textContent = avgXP + ' XP';
+
+    // Your vs avg
+    const diff = currentUser.xp - avgXP;
+    const vsAvgElement = document.getElementById('vsAvg');
+    vsAvgElement.textContent = diff >= 0 ? `+${diff} XP` : `${diff} XP`;
+    vsAvgElement.style.color = diff >= 0 ? '#22c55e' : '#ef4444';
+
+    // Leaderboard - sort by XP
+    const sorted = [...teamMembers].sort((a, b) => (b.xp || 0) - (a.xp || 0));
+    const userRank = sorted.findIndex(m => m.id === currentUser.id) + 1;
+    document.getElementById('teamRank').textContent = '#' + userRank;
+
+    const leaderboardHTML = sorted.map((member, index) => {
+      const isYou = member.id === currentUser.id;
+      const memberXP = member.xp || 0;
+      const memberBelt = member.belt || 'white';
+      const memberStripe = member.stripe || 1;
+      
+      return `
+        <div class="leaderboard-item ${isYou ? 'you' : ''}">
+          <div class="rank">#${index + 1}</div>
+          <div style="flex: 1;">
+            <div style="font-weight: 700;">${member.name}${isYou ? ' (You)' : ''}</div>
+            <div style="color: #94a3b8; font-size: 0.85rem;">${memberBelt.charAt(0).toUpperCase() + memberBelt.slice(1)} Belt - Stripe ${memberStripe}</div>
+          </div>
+          <div style="color: #fbbf24; font-weight: 700;">${memberXP} XP</div>
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('leaderboard').innerHTML = leaderboardHTML || '<p style="color: #94a3b8; text-align: center; padding: 2rem;">No team members yet. Be the first!</p>';
+
+    // Auto-sync progress every 30 seconds
+    setInterval(syncUserProgress, 30000);
+  </script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+</body>
+</html>
+
