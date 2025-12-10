@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Vertrauens-Aufbau - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+        }
+        
+        .lang-switcher {
+            position: fixed;
+            top: 15px;
+            right: 100px;
+            z-index: 101;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-switcher a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .lang-switcher a.active { background: var(--green); color: var(--black); }
+        .lang-switcher a:not(.active) { background: rgba(255,255,255,0.1); color: var(--white); }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            background: linear-gradient(to bottom, var(--black), transparent);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .stat-icon { width: 18px; height: 18px; }
+        .xp-stat { color: var(--gold); }
+        .trust-stat { color: var(--green); }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 80px 20px 100px;
+        }
+        
+        .progress-section { margin-bottom: 30px; }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: var(--mid-grey);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue), var(--green));
+            transition: width 0.5s ease;
+        }
+        
+        .trust-meter {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .trust-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .trust-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--green);
+            margin-bottom: 5px;
+        }
+        
+        .trust-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .scenario-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .scenario-context {
+            font-size: 0.75rem;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-question {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        .responses {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .response-btn {
+            background: var(--mid-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            color: var(--white);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .response-btn:hover {
+            border-color: var(--blue);
+            transform: translateX(5px);
+        }
+        
+        .response-btn.selected { border-color: var(--blue); background: rgba(59, 130, 246, 0.1); }
+        .response-btn.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .response-btn.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        .response-btn.best { border-color: var(--gold); background: rgba(212, 168, 83, 0.15); }
+        
+        .feedback {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .feedback.show { display: block; }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-icon { width: 24px; height: 24px; }
+        .feedback-title { font-weight: 600; font-size: 1rem; }
+        
+        .feedback.positive .feedback-icon, .feedback.positive .feedback-title { color: var(--green); }
+        .feedback.negative .feedback-icon, .feedback.negative .feedback-title { color: var(--red); }
+        .feedback.best .feedback-icon, .feedback.best .feedback-title { color: var(--gold); }
+        
+        .feedback-text {
+            font-size: 0.95rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .trust-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .trust-change.positive { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .trust-change.negative { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        
+        .continue-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--green);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .continue-btn.show { display: block; }
+        
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .results.show { display: block; }
+        
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .results-icon svg { width: 40px; height: 40px; color: white; }
+        .results-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+        .results-subtitle { color: var(--light-grey); margin-bottom: 30px; }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .result-stat {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px 15px;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .insight-box {
+            background: var(--dark-grey);
+            border-left: 3px solid var(--gold);
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .insight-text {
+            font-style: italic;
+            color: var(--white);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .insight-author {
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+        
+        .exit-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--green);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-trust-builder.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-trust-builder-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="lang-switcher">
+        <a href="game-trust-builder.html">EN</a>
+        <a href="game-trust-builder-de.html" class="active">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="#" class="back-btn" onclick="exitGame()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Beenden
+        </a>
+        <div class="stats">
+            <div class="stat xp-stat">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span id="xpDisplay">0</span>
+            </div>
+            <div class="stat trust-stat">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span id="trustDisplay">50</span>%
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div id="gameSection">
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>Szenario <span id="currentScenario">1</span> von <span id="totalScenarios">5</span></span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="trust-meter">
+                <div class="trust-label">Team-Vertrauenslevel</div>
+                <div class="trust-value" id="trustValue">50%</div>
+                <div class="trust-desc" id="trustDesc">Fundament aufbauen</div>
+            </div>
+            
+            <div class="scenario-card" id="scenarioCard">
+                <div class="scenario-context" id="scenarioContext">Arbeitsplatz-Szenario</div>
+                <div class="scenario-text" id="scenarioText">Lade Szenario...</div>
+                <div class="scenario-question" id="scenarioQuestion">Was tust du?</div>
+                <div class="responses" id="responses"></div>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-header">
+                    <svg class="feedback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="feedback-title" id="feedbackTitle">Gute Wahl!</span>
+                </div>
+                <p class="feedback-text" id="feedbackText"></p>
+                <span class="trust-change" id="trustChange">+10% Vertrauen</span>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" onclick="nextScenario()">Weiter</button>
+        </div>
+        
+        <div class="results" id="resultsSection">
+            <div class="results-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h2 class="results-title">Vertrauens-Aufbau Abgeschlossen!</h2>
+            <p class="results-subtitle">Du hast geubt, Vertrauen durch Verletzlichkeit aufzubauen</p>
+            
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-value" id="finalTrust">75%</div>
+                    <div class="result-label">Endvertrauen</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="bestChoices">4</div>
+                    <div class="result-label">Beste Wahlen</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="xpEarned">+15</div>
+                    <div class="result-label">XP Verdient</div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <p class="insight-text">"Vertrauen wird in sehr kleinen Momenten aufgebaut. Jedes Mal, wenn wir Mut uber Komfort wahlen, starken wir das Fundament."</p>
+                <p class="insight-author">— Brene Brown</p>
+            </div>
+            
+            <button class="exit-btn" onclick="exitGame()">Zuruck zum Training</button>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = [
+            {
+                context: "Team-Meeting",
+                text: "Dein Team hat eine wichtige Deadline verpasst. Der Kunde ist verargert und dein Manager will Antworten. Du weisst, dass der wahre Grund eine Fehlkommunikation zwischen dir und einem Kollegen war, aber sie haben noch nichts gesagt.",
+                question: "Wie reagierst du im Meeting?",
+                responses: [
+                    { text: "Still bleiben und andere erklaren lassen", trust: -10, type: 'negative', feedback: "Schweigen schutzt dich kurzfristig, aber unterg Vertrauen. Dein Team braucht Ehrlichkeit um sich zu verbessern." },
+                    { text: "Den Kollegen beschuldigen, der falsch kommuniziert hat", trust: -20, type: 'negative', feedback: "Andere beschuldigen zerstort psychologische Sicherheit. Jetzt hat jeder Angst, unter den Bus geworfen zu werden." },
+                    { text: "Gemeinsame Verantwortung ubernehmen und erklaren was passiert ist", trust: +15, type: 'best', feedback: "Verantwortung ohne Schuldzuweisung zu ubernehmen zeigt Verletzlichkeit und baut Vertrauen auf. Andere werden sich sicher fuhlen, auch Fehler zuzugeben." },
+                    { text: "Entschuldigen, aber die Details nicht erklaren", trust: +5, type: 'positive', feedback: "Sich zu entschuldigen ist gut, aber ohne Transparenz kann das Team nicht lernen und sich verbessern." }
+                ]
+            },
+            {
+                context: "Einzelgesprach",
+                text: "Ein Teamkollege bittet um dein ehrliches Feedback zu seiner Prasentation. Du hast mehrere Probleme bemerkt, aber er scheint wirklich stolz auf seine Arbeit und du willst seine Gefuhle nicht verletzen.",
+                question: "Was sagst du?",
+                responses: [
+                    { text: "\"Das war toll, gute Arbeit!\"", trust: -10, type: 'negative', feedback: "Leeres Lob fuhlt sich gut an, verhindert aber Wachstum. Sie werden die Probleme irgendwann entdecken - und das Vertrauen in dein Feedback verlieren." },
+                    { text: "Auf alles hinweisen, was falsch ist", trust: -5, type: 'negative', feedback: "Brutal ehrliches Feedback ohne Fursorge schadet der Beziehung. Wahrheit ohne Mitgefuhl ist Grausamkeit." },
+                    { text: "Spezifisches Feedback mit echter Fursorge fur sein Wachstum teilen", trust: +15, type: 'best', feedback: "Sich genug zu kummern um ehrliches, spezifisches Feedback zu geben ist ein Akt des Vertrauens. Du investierst in seinen Erfolg." },
+                    { text: "Sagen, es ist gut, aber vorschlagen, jemanden mit mehr Erfahrung zu fragen", trust: 0, type: 'neutral', feedback: "Ausweichen hilft ihnen nicht. Du hast eine Gelegenheit verpasst, Vertrauen durch ehrlichen Dialog aufzubauen." }
+                ]
+            },
+            {
+                context: "Projekt-Herausforderung",
+                text: "Du kampfst mit einer Aufgabe und fallst zuruck. Du konntest es wahrscheinlich irgendwann herausfinden, aber um Hilfe zu bitten wurde bedeuten zuzugeben, dass du nicht alles weisst.",
+                question: "Was tust du?",
+                responses: [
+                    { text: "Alleine weiterkampfen - du wirst es herausfinden", trust: -10, type: 'negative', feedback: "Stolz verhindert Fortschritt. Teams mit hohem Vertrauen bitten frei um Hilfe - es ist eine Starke, keine Schwache." },
+                    { text: "Einen vertrauenswurdigen Kollegen um Rat fragen", trust: +15, type: 'best', feedback: "Um Hilfe zu bitten zeigt Verletzlichkeit und ladt andere ein, dasselbe zu tun. So wachst Vertrauen." },
+                    { text: "Leise nach Losungen googeln und hoffen, dass niemand es bemerkt", trust: -5, type: 'negative', feedback: "Um das Team herum zu arbeiten schafft Distanz. Geteilte Probleme werden zu geteilten Losungen." },
+                    { text: "Deinem Manager sagen, dass du mehr Zeit brauchst", trust: +5, type: 'positive', feedback: "Ehrlichkeit uber Zeitplne ist gut, aber du hast die Chance verpasst, dich mit Teamkollegen zu verbinden, die helfen konnten." }
+                ]
+            },
+            {
+                context: "Konfliktsituation",
+                text: "Ein Kollege trifft eine Entscheidung, der du stark widersprichst. Du hast Bedenken, dass es Probleme verursachen wird, aber er scheint selbstbewusst und das Team macht weiter.",
+                question: "Wie gehst du damit um?",
+                responses: [
+                    { text: "Schweigen und abwarten", trust: -15, type: 'negative', feedback: "Schweigen wenn du Probleme siehst ist keine Loyalitat - es ist Angst. Teams mit hohem Vertrauen sprechen sich aus." },
+                    { text: "Spater bei anderen Teamkollegen beschweren", trust: -20, type: 'negative', feedback: "Hinter jemandes Rucken zu reden zerstort Vertrauen schneller als alles andere. Sprich Bedenken direkt an." },
+                    { text: "Deine Bedenken direkt und respektvoll teilen", trust: +15, type: 'best', feedback: "Offen zu widersprechen wahrend man die Person respektiert baut Vertrauen auf. Es zeigt, dass dir das Ergebnis UND die Beziehung wichtig sind." },
+                    { text: "Eine E-Mail mit deinen Bedenken schicken", trust: 0, type: 'neutral', feedback: "Sich schriftlich abzusichern statt direkt zu reden signalisiert Misstrauen. Fuhre das Gesprach." }
+                ]
+            },
+            {
+                context: "Personlicher Moment",
+                text: "Dein Team macht Eisbrecher und teilt etwas Personliches. Du konntest etwas Sicheres und Allgemeines teilen, oder etwas Bedeutungsvolleres, das zeigt, wer du wirklich bist.",
+                question: "Was teilst du?",
+                responses: [
+                    { text: "Etwas Allgemeines wie dein Lieblingsessen", trust: 0, type: 'neutral', feedback: "Sichere Teilungen bauen keine Verbindung auf. Du hast eine Gelegenheit verpasst, Beziehungen zu vertiefen." },
+                    { text: "Eine bedeutungsvolle Herausforderung, die du uberwunden hast", trust: +15, type: 'best', feedback: "Etwas Echtes zu teilen ladt andere ein, dasselbe zu tun. Verletzlichkeit ist ansteckend - auf gute Weise." },
+                    { text: "Deinen Zug uberspringen oder einen Witz machen", trust: -10, type: 'negative', feedback: "Verletzlichkeit zu vermeiden signalisiert, dass du der Gruppe nicht vertraust. Andere werden deiner Fuhrung folgen und sich zuruckhalten." },
+                    { text: "Etwas leicht Personliches aber nicht zu tiefes", trust: +5, type: 'positive', feedback: "Ein Schritt in die richtige Richtung. Mit wachsendem Vertrauen kannst du tiefer gehen." }
+                ]
+            }
+        ];
+        
+        let currentScenario = 0;
+        let trustLevel = 50;
+        let xp = 0;
+        let bestChoices = 0;
+        
+        function init() { loadScenario(); }
+        
+        function loadScenario() {
+            const scenario = scenarios[currentScenario];
+            
+            document.getElementById('currentScenario').textContent = currentScenario + 1;
+            document.getElementById('totalScenarios').textContent = scenarios.length;
+            document.getElementById('progressPercent').textContent = Math.round((currentScenario / scenarios.length) * 100) + '%';
+            document.getElementById('progressFill').style.width = (currentScenario / scenarios.length) * 100 + '%';
+            
+            document.getElementById('scenarioContext').textContent = scenario.context;
+            document.getElementById('scenarioText').textContent = scenario.text;
+            document.getElementById('scenarioQuestion').textContent = scenario.question;
+            
+            const responsesContainer = document.getElementById('responses');
+            responsesContainer.innerHTML = scenario.responses.map((r, i) => `
+                <button class="response-btn" onclick="selectResponse(${i})">${r.text}</button>
+            `).join('');
+            
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('continueBtn').classList.remove('show');
+            updateTrustDisplay();
+        }
+        
+        function selectResponse(index) {
+            const scenario = scenarios[currentScenario];
+            const response = scenario.responses[index];
+            
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.onclick = null;
+                const resp = scenario.responses[i];
+                if (i === index) {
+                    btn.classList.add(resp.type === 'best' ? 'best' : resp.type === 'positive' ? 'correct' : 'incorrect');
+                } else if (resp.type === 'best') {
+                    btn.classList.add('best');
+                }
+            });
+            
+            trustLevel = Math.max(0, Math.min(100, trustLevel + response.trust));
+            updateTrustDisplay();
+            
+            if (response.type === 'best') { xp += 5; bestChoices++; }
+            else if (response.type === 'positive') { xp += 2; }
+            document.getElementById('xpDisplay').textContent = xp;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + (response.type === 'negative' ? 'negative' : response.type === 'best' ? 'best' : 'positive');
+            
+            document.getElementById('feedbackTitle').textContent = 
+                response.type === 'best' ? 'Ausgezeichnete Wahl!' :
+                response.type === 'positive' ? 'Gute Wahl!' :
+                response.type === 'negative' ? 'Bedenke dies...' : 'Okay Wahl';
+            
+            document.getElementById('feedbackText').textContent = response.feedback;
+            
+            const trustChange = document.getElementById('trustChange');
+            trustChange.textContent = (response.trust >= 0 ? '+' : '') + response.trust + '% Vertrauen';
+            trustChange.className = 'trust-change ' + (response.trust >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('continueBtn').classList.add('show');
+        }
+        
+        function updateTrustDisplay() {
+            document.getElementById('trustValue').textContent = trustLevel + '%';
+            document.getElementById('trustDisplay').textContent = trustLevel;
+            
+            const desc = trustLevel >= 80 ? 'Hohes Vertrauensumfeld' :
+                        trustLevel >= 60 ? 'Wachsendes Vertrauen' :
+                        trustLevel >= 40 ? 'Fundament aufbauen' :
+                        trustLevel >= 20 ? 'Vertrauen braucht Arbeit' : 'Kritisch - Vertrauen wieder aufbauen';
+            document.getElementById('trustDesc').textContent = desc;
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            if (currentScenario >= scenarios.length) { showResults(); }
+            else { loadScenario(); }
+        }
+        
+        function showResults() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('resultsSection').classList.add('show');
+            
+            document.getElementById('finalTrust').textContent = trustLevel + '%';
+            document.getElementById('bestChoices').textContent = bestChoices;
+            document.getElementById('xpEarned').textContent = '+' + (xp + 10);
+        }
+        
+        function earnXP(amount) {
+            const currentXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', (currentXP + amount).toString());
+        }
+        
+        function exitGame() {
+            earnXP(xp + 10);
+            const returnUrl = localStorage.getItem('tap_in_return_url');
+            if (returnUrl) {
+                localStorage.removeItem('tap_in_return_url');
+                window.location.href = returnUrl;
+            } else {
+                window.location.href = 'gym-focused-de.html';
+            }
+        }
+        
+        init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

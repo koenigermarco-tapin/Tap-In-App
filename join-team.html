@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Join Team - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981; --brick-red: #a93226; --blue: #4a6fa5; --purple: #6b5b95; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--black); min-height: 100vh; color: var(--white); padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .container { max-width: 450px; width: 100%; }
+        
+        .invite-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 24px; overflow: hidden; }
+        
+        .invite-header { background: linear-gradient(135deg, var(--blue), var(--purple)); padding: 40px 30px; text-align: center; }
+        .invite-icon { font-size: 3rem; margin-bottom: 15px; }
+        .invite-header h1 { font-size: 1.5rem; font-weight: 800; margin-bottom: 10px; }
+        .invite-header p { opacity: 0.9; font-size: 0.95rem; }
+        
+        .invite-body { padding: 30px; }
+        
+        .inviter-profile { background: var(--black); border-radius: 16px; padding: 20px; margin-bottom: 25px; text-align: center; }
+        .inviter-type { font-size: 1.3rem; font-weight: 700; color: var(--green); margin-bottom: 5px; }
+        .inviter-code { font-size: 0.8rem; color: var(--light-grey); font-family: monospace; }
+        .inviter-traits { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 15px; }
+        .trait-tag { background: var(--mid-grey); padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 500; }
+        
+        .team-info { text-align: center; margin-bottom: 25px; }
+        .team-code-display { font-size: 1.5rem; font-weight: 800; font-family: monospace; color: var(--blue); letter-spacing: 2px; margin-bottom: 5px; }
+        .team-label { font-size: 0.8rem; color: var(--light-grey); }
+        
+        .action-buttons { display: flex; flex-direction: column; gap: 12px; }
+        .btn { padding: 16px 24px; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; border: none; transition: all 0.2s; text-align: center; text-decoration: none; display: block; }
+        .btn-primary { background: var(--green); color: var(--black); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3); }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-secondary:hover { background: var(--light-grey); }
+        
+        .or-divider { text-align: center; color: var(--light-grey); font-size: 0.85rem; margin: 20px 0; }
+        
+        .start-fresh { text-align: center; margin-top: 20px; }
+        .start-fresh a { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; }
+        .start-fresh a:hover { color: var(--white); }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="join-team.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="join-team-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="container">
+        <div class="invite-card">
+            <div class="invite-header">
+                <div class="invite-icon">&#128101;</div>
+                <h1>You're Invited!</h1>
+                <p>A teammate wants you to join their team</p>
+            </div>
+            
+            <div class="invite-body">
+                <div class="inviter-profile" id="inviterProfile" style="display: none;">
+                    <div class="inviter-type" id="inviterType">The Explorer</div>
+                    <div class="inviter-code" id="inviterCode">From: BLUE-TIGER-4821</div>
+                    <div class="inviter-traits" id="inviterTraits"></div>
+                </div>
+                
+                <div class="team-info">
+                    <div class="team-code-display" id="teamCode">TEAM-CODE</div>
+                    <div class="team-label">Team Code</div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="joinAndStart()">
+                        Join Team & Take Assessment
+                    </button>
+                    <button class="btn btn-secondary" onclick="joinExisting()">
+                        Join with Existing Profile
+                    </button>
+                </div>
+                
+                <div style="margin-top: 20px; padding: 15px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 12px; text-align: center;">
+                    <div style="font-size: 0.85rem; color: var(--light-grey); margin-bottom: 8px;">After joining, you'll see:</div>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; font-size: 0.8rem;">
+                        <span style="padding: 6px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">Team Dynamics</span>
+                        <span style="padding: 6px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">Team Fit Analysis</span>
+                        <span style="padding: 6px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">Compatibility Scores</span>
+                        <span style="padding: 6px 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">Work Style Distribution</span>
+                    </div>
+                </div>
+                
+                <div class="or-divider">or</div>
+                
+                <div class="start-fresh">
+                    <a href="deep-dive-assessment.html">Start fresh without joining a team <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/tap-in-sync.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Parse URL parameters
+            const params = new URLSearchParams(window.location.search);
+            const profileData = params.get('profile');
+            
+            if (profileData) {
+                const profile = TapInSync.decodeSharedProfile(profileData);
+                if (profile) {
+                    // Show inviter profile
+                    document.getElementById('inviterProfile').style.display = 'block';
+                    document.getElementById('inviterType').textContent = 'The ' + (profile.leadershipType || 'Explorer');
+                    document.getElementById('inviterCode').textContent = 'From: ' + (profile.code || 'Anonymous');
+                    
+                    // Show traits if available
+                    if (profile.strengths && profile.strengths.length > 0) {
+                        const traitsContainer = document.getElementById('inviterTraits');
+                        profile.strengths.slice(0, 3).forEach(trait => {
+                            const tag = document.createElement('span');
+                            tag.className = 'trait-tag';
+                            tag.textContent = trait;
+                            traitsContainer.appendChild(tag);
+                        });
+                    }
+                    
+                    // Show team code
+                    if (profile.teamCode) {
+                        document.getElementById('teamCode').textContent = profile.teamCode;
+                        // Store for joining
+                        window.pendingTeamCode = profile.teamCode;
+                    }
+                }
+            }
+            
+            // Check for direct team code in URL
+            const directTeamCode = params.get('team');
+            if (directTeamCode) {
+                document.getElementById('teamCode').textContent = directTeamCode;
+                window.pendingTeamCode = directTeamCode;
+            }
+        });
+        
+        function joinAndStart() {
+            if (window.pendingTeamCode) {
+                TapInSync.joinTeam(window.pendingTeamCode);
+                TapInSync.showToast('Joined team: ' + window.pendingTeamCode, 'success');
+            }
+            // Redirect to assessment
+            setTimeout(() => {
+                window.location.href = 'deep-dive-assessment.html';
+            }, 500);
+        }
+        
+        function joinExisting() {
+            if (window.pendingTeamCode) {
+                TapInSync.joinTeam(window.pendingTeamCode);
+                TapInSync.showToast('Joined team: ' + window.pendingTeamCode, 'success');
+                // Redirect to hub
+                setTimeout(() => {
+                    window.location.href = 'learning-hub.html';
+                }, 500);
+            } else {
+                window.location.href = 'learning-hub.html';
+            }
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

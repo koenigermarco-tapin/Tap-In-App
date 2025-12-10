@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Black Belt Stripe 3: Andere Lehren - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --belt-color: #1a1a1a;
+            --belt-accent: #404040;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); overflow-x: hidden; }
+        
+        .header { position: fixed; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: linear-gradient(to bottom, var(--black), transparent); }
+        .back-btn { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; opacity: 0.7; }
+        .xp-display { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+        
+        .journey-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--mid-grey); z-index: 101; }
+        .journey-progress { height: 100%; background: linear-gradient(90deg, var(--belt-accent), var(--green)); width: 0%; transition: width 0.6s ease; }
+        
+        .container { max-width: 500px; margin: 0 auto; padding: 80px 24px 40px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        
+        .beat { display: none; animation: fadeIn 0.5s ease; }
+        .beat.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .beat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--belt-accent); margin-bottom: 20px; }
+        .beat-text { font-size: 1.4rem; font-weight: 500; line-height: 1.5; margin-bottom: 30px; }
+        .beat-text-small { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: rgba(255,255,255,0.9); }
+        .beat-subtext { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; margin-bottom: 25px; }
+        
+        .continue-btn { background: none; border: 1px solid var(--mid-grey); color: var(--light-grey); padding: 14px 28px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; margin-top: 10px; width: 100%; }
+        .continue-btn:hover { border-color: var(--light-grey); color: var(--white); }
+        .continue-btn.primary { background: var(--belt-accent); border-color: var(--belt-accent); color: var(--white); }
+        .continue-btn:disabled { opacity: 0.3; pointer-events: none; }
+        
+        .binary-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .binary-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.25s ease; }
+        .binary-card:hover { border-color: var(--belt-accent); transform: translateY(-2px); }
+        .binary-card.selected { border-color: var(--belt-accent); background: rgba(64, 64, 64, 0.2); }
+        .binary-card-title { font-weight: 600; margin-bottom: 6px; }
+        .binary-card-sub { font-size: 0.85rem; color: var(--light-grey); }
+        
+        .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+        .scenario-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+        .scenario-card:hover { border-color: var(--light-grey); }
+        .scenario-card.selected { border-color: var(--belt-accent); background: rgba(64, 64, 64, 0.15); }
+        .scenario-card.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .scenario-card.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        
+        .spectrum-container { margin: 30px 0; }
+        .spectrum-line { height: 8px; background: var(--mid-grey); border-radius: 4px; position: relative; cursor: pointer; }
+        .spectrum-marker { width: 24px; height: 24px; background: var(--belt-accent); border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); left: 50%; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); display: none; }
+        .spectrum-marker.visible { display: block; }
+        .spectrum-labels { display: flex; justify-content: space-between; margin-top: 12px; font-size: 0.8rem; color: var(--light-grey); }
+        
+        .pill-options { display: flex; justify-content: space-between; gap: 8px; margin: 25px 0; }
+        .pill { flex: 1; padding: 14px 8px; background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 8px; text-align: center; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .pill:hover { border-color: var(--belt-accent); }
+        .pill.selected { background: var(--belt-accent); border-color: var(--belt-accent); }
+        .pill-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--light-grey); margin-top: 8px; }
+        
+        .quote-block { border-left: 3px solid var(--gold); padding-left: 20px; margin: 30px 0; }
+        .quote-text { font-size: 1.15rem; font-style: italic; color: var(--white); line-height: 1.6; margin-bottom: 12px; }
+        .quote-author { font-size: 0.85rem; color: var(--gold); }
+        
+        .insight-reveal { background: linear-gradient(135deg, rgba(64, 64, 64, 0.2), rgba(64, 64, 64, 0.05)); border: 1px solid var(--belt-accent); border-radius: 16px; padding: 25px; margin: 25px 0; }
+        .insight-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--belt-accent); margin-bottom: 10px; }
+        .insight-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.85); }
+        
+        .stat-reveal { text-align: center; padding: 30px 20px; background: var(--dark-grey); border-radius: 16px; margin: 25px 0; }
+        .stat-number { font-size: 3.5rem; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+        .stat-label { font-size: 1.1rem; color: var(--white); font-weight: 600; }
+        
+        .retention-ladder { display: flex; flex-direction: column; gap: 8px; margin: 20px 0; }
+        .retention-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: var(--dark-grey); border-radius: 10px; }
+        .retention-bar { height: 8px; background: var(--belt-accent); border-radius: 4px; transition: width 0.5s ease; }
+        .retention-item.highlight { border: 1px solid var(--gold); }
+        .retention-item.highlight .retention-bar { background: var(--gold); }
+        .retention-label { font-size: 0.9rem; min-width: 120px; }
+        .retention-pct { font-weight: 700; color: var(--gold); min-width: 45px; }
+        
+        .quickfire-container { margin: 20px 0; }
+        .quickfire-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); }
+        .quickfire-item.answered { opacity: 0.5; }
+        .quickfire-text { font-size: 0.95rem; flex: 1; padding-right: 15px; }
+        .quickfire-btns { display: flex; gap: 8px; }
+        .quickfire-btn { padding: 8px 16px; background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 6px; color: var(--white); font-size: 0.85rem; cursor: pointer; }
+        .quickfire-btn.selected { background: var(--belt-accent); border-color: var(--belt-accent); }
+        
+        .callback-box { background: linear-gradient(135deg, rgba(64, 64, 64, 0.2), rgba(16, 185, 129, 0.1)); border: 1px solid var(--belt-accent); border-radius: 16px; padding: 25px; margin: 20px 0; }
+        .callback-text { font-size: 1rem; line-height: 1.6; }
+        .callback-highlight { color: var(--gold); font-weight: 600; }
+        
+        .mirror-reveal { margin: 30px 0; }
+        .mirror-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; }
+        .mirror-item.visible { opacity: 1; transform: translateX(0); }
+        .mirror-item:last-child { border-bottom: none; }
+        .mirror-label { color: var(--light-grey); font-size: 0.9rem; }
+        .mirror-value { font-weight: 600; font-size: 1rem; color: var(--gold); }
+        
+        .reveal-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 20px 0; opacity: 0; transform: translateY(10px); transition: all 0.4s; }
+        .reveal-box.show { opacity: 1; transform: translateY(0); }
+        .reveal-title { font-weight: 600; color: var(--green); margin-bottom: 10px; }
+        .reveal-text { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; }
+        
+        .framework-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
+        .framework-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .framework-card:hover { border-color: var(--belt-accent); }
+        .framework-card.selected { border-color: var(--gold); background: rgba(212, 168, 83, 0.1); }
+        .framework-name { font-weight: 600; margin-bottom: 6px; }
+        .framework-desc { font-size: 0.8rem; color: var(--light-grey); }
+        
+        .completion-container { text-align: center; }
+        .completion-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--belt-color), var(--belt-accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; border: 2px solid var(--gold); }
+        .completion-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .completion-subtitle { color: var(--light-grey); margin-bottom: 25px; }
+        .xp-earned-final { display: inline-block; background: rgba(212, 168, 83, 0.15); border: 1px solid rgba(212, 168, 83, 0.3); padding: 12px 24px; border-radius: 25px; margin: 20px 0; }
+        .xp-earned-final span { color: var(--gold); font-weight: 700; font-size: 1.2rem; }
+        .skills-learned { text-align: left; background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 25px 0; }
+        .skill-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--mid-grey); }
+        .skill-item:last-child { border-bottom: none; }
+        .skill-check { width: 24px; height: 24px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .unlock-reveal { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(64, 64, 64, 0.1)); border: 1px solid var(--green); border-radius: 16px; padding: 20px; margin: 20px 0; text-align: center; }
+        .unlock-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 8px; }
+        .unlock-name { font-size: 1.1rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+    <div class="journey-line"><div class="journey-progress" id="journeyProgress"></div></div>
+    <header class="header">
+        <a href="gym-dashboard-de.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Beenden</a>
+        <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+    </header>
+
+    <main class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">Black Belt · Stripe 3</div>
+            <p class="beat-text">Die letzte Stufe des Lernens: andere lehren.</p>
+            <p class="beat-subtext">Du hast die Fähigkeiten erworben. Du hast unter Druck geübt. Jetzt kommt der Multiplikator—teilen, was du gelernt hast.</p>
+            <p class="beat-subtext">Lehren geht nicht nur darum, anderen zu helfen. Es ist, wie du deine eigene Meisterschaft festigst.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 2: Binary -->
+        <div class="beat" id="beat2">
+            <p class="beat-text-small">Wenn es ums Lehren oder Mentoring geht, fühlst du dich...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(2, 'hesitant')">
+                    <div class="binary-card-title">Zögerlich</div>
+                    <div class="binary-card-sub">"Who am I to teach this? I'm still learning."</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(2, 'ready')">
+                    <div class="binary-card-title">Bereit</div>
+                    <div class="binary-card-sub">"Ich habe Dinge zu teilen, die helfen könnten."</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 3: Insight -->
+        <div class="beat" id="beat3">
+            <div class="insight-reveal">
+                <div class="insight-label">Die Wahrheit übers Lehren</div>
+                <p class="insight-text" id="insight3"></p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 4: Der Protégé-Effekt.-->
+        <div class="beat" id="beat4">
+            <p class="beat-text">Der Protégé-Effekt.</p>
+            <div class="stat-reveal">
+                <div class="stat-number">90%</div>
+                <div class="stat-label">Behaltensrate beim Lehren anderer</div>
+            </div>
+            <p class="beat-subtext">Wenn du etwas lehrst, lernst du es tiefer als durch jede andere Methode. Das ist in der Lernwissenschaft gut dokumentiert.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 5: Learning Pyramid -->
+        <div class="beat" id="beat5">
+            <p class="beat-text">Die Lernpyramide.</p>
+            <div class="retention-ladder">
+                <div class="retention-item"><span class="retention-label">Vorlesung</span><div class="retention-bar" style="width: 5%;"></div><span class="retention-pct">5%</span></div>
+                <div class="retention-item"><span class="retention-label">Lesen</span><div class="retention-bar" style="width: 10%;"></div><span class="retention-pct">10%</span></div>
+                <div class="retention-item"><span class="retention-label">Audio/visuell</span><div class="retention-bar" style="width: 20%;"></div><span class="retention-pct">20%</span></div>
+                <div class="retention-item"><span class="retention-label">Demonstration</span><div class="retention-bar" style="width: 30%;"></div><span class="retention-pct">30%</span></div>
+                <div class="retention-item"><span class="retention-label">Diskussion</span><div class="retention-bar" style="width: 50%;"></div><span class="retention-pct">50%</span></div>
+                <div class="retention-item"><span class="retention-label">Übung</span><div class="retention-bar" style="width: 75%;"></div><span class="retention-pct">75%</span></div>
+                <div class="retention-item highlight"><span class="retention-label">Andere lehren</span><div class="retention-bar" style="width: 90%;"></div><span class="retention-pct">90%</span></div>
+            </div>
+            <p class="beat-subtext">Lehren zwingt dich, Wissen zu organisieren, Lücken zu finden und wirklich zu verstehen.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 6: Feynman Technique -->
+        <div class="beat" id="beat6">
+            <p class="beat-text">Die Feynman-Technik.</p>
+            <p class="beat-subtext">Nobelpreisträger Richard Feynman hatte einen einfachen Test für wahres Verständnis:</p>
+            <div class="insight-reveal">
+                <div class="insight-label">4 Schritte zur Meisterschaft</div>
+                <p class="insight-text"><strong>1. Wähle ein Konzept</strong><br>Wähle etwas, das du tiefgehend verstehen willst<br><br><strong>2. Erkläre es einem Kind</strong><br>Erkläre es in einfachen Worten, ohne Fachjargon<br><br><strong>3. Identifiziere Lücken</strong><br>Wo fällt es dir schwer, einfach zu erklären??<br><br><strong>4. Überprüfen und vereinfachen</strong><br>Gehe zurück zum Ausgangsmaterial, dann versuche es erneut</p>
+            </div>
+            <p class="beat-subtext">Wenn du es nicht einfach erklären kannst, verstehst du es nicht gut genug.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 7: Apply Feynman -->
+        <div class="beat" id="beat7">
+            <div class="beat-label">Anwenden</div>
+            <p class="beat-text-small">Wie würdest du mit der Feynman-Technik "psychologische Sicherheit" einem 10-Jährigen erklären??</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(7, 'a')">"Es ist, wenn Menschen sich sicher fühlen, Ideen zu teilen ohne Angst"</div>
+                <div class="scenario-card" onclick="selectSzenario(7, 'b')" data-correct="true">"Es ist wie wenn dein Lehrer sagt, es gibt keine dummen Fragen, und du es wirklich glaubst"</div>
+                <div class="scenario-card" onclick="selectSzenario(7, 'c')">"Ein Teamklima, das durch zwischenmenschliches Vertrauen gekennzeichnet ist"</div>
+                <div class="scenario-card" onclick="selectSzenario(7, 'd')">"Das Fehlen von angstbasierten Verhaltensweisen"</div>
+            </div>
+            <div class="reveal-box" id="reveal7">
+                <div class="reveal-title">Einfach gewinnt</div>
+                <div class="reveal-text">Die Lehrer/Klassenzimmer-Analogie funktioniert, weil sie sich mit gelebter Erfahrung verbindet. Ein 10-Jähriger weiß, wie es sich anfühlt, Angst zu haben, Fragen zu stellen.</div>
+            </div>
+            <button class="continue-btn" id="btn7" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 8: Quote -->
+        <div class="beat" id="beat8">
+            <div class="quote-block">
+                <p class="quote-text">"Der beste Lehrer ist jemand einen Schritt vor dir—nicht zehn."</p>
+                <p class="quote-author">— Gemeinsame-Reise-Prinzip</p>
+            </div>
+            <p class="beat-subtext">Du musst kein Experte sein. Du musst nur etwas Wertvolles gelernt haben. Du hast diese Reise abgeschlossen—du hast Weisheit zu teilen mit denen, die gerade anfangen.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 9: Spectrum -->
+        <div class="beat" id="beat9">
+            <p class="beat-text-small">Wie oft teilst du derzeit, was du gelernt hast, mit anderen??</p>
+            <p class="beat-subtext">Tippe irgendwo auf die Linie.</p>
+            <div class="spectrum-container">
+                <div class="spectrum-line" id="spectrum9" onclick="selectSpectrum(event, 9)">
+                    <div class="spectrum-marker" id="marker9"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>Selten / nie</span>
+                    <span>Regelmäßig</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue9" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 10: Pick a Framework -->
+        <div class="beat" id="beat10">
+            <div class="beat-label">Deine erste Lektion</div>
+            <p class="beat-text-small">Wähle ein Konzept aus deiner TAP-IN-Reise, das du jemand anderem beibringen könntest.</p>
+            <div class="framework-grid">
+                <div class="framework-card" onclick="selectFramework(this, 'trust')">
+                    <div class="framework-name">Vertrauensgleichung</div>
+                    <div class="framework-desc">C + R + I / S</div>
+                </div>
+                <div class="framework-card" onclick="selectFramework(this, 'sbir')">
+                    <div class="framework-name">SBIR-Feedback</div>
+                    <div class="framework-desc">Situation, Verhalten, Auswirkung, Bitte</div>
+                </div>
+                <div class="framework-card" onclick="selectFramework(this, 'grow')">
+                    <div class="framework-name">GROW-Coaching</div>
+                    <div class="framework-desc">Ziel, Realität, Optionen, Wille</div>
+                </div>
+                <div class="framework-card" onclick="selectFramework(this, 'stop')">
+                    <div class="framework-name">STOP-Protokoll</div>
+                    <div class="framework-desc">Entspannen, Danken, Öffnen, Pausieren</div>
+                </div>
+            </div>
+            <button class="continue-btn" id="btn10" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 11: Quick Fire -->
+        <div class="beat" id="beat11">
+            <div class="beat-label">Schnelle Prüfung</div>
+            <p class="beat-text-small" style="margin-bottom: 25px;">Denke darüber nach, dieses Konzept zu lehren...</p>
+            <div class="quickfire-container" id="quickfire">
+                <div class="quickfire-item" id="qf1">
+                    <span class="quickfire-text">Ich könnte es in 2 Minuten oder weniger erklären</span>
+                    <div class="quickfire-btns">
+                        <button class="quickfire-btn" onclick="quickfire(1, true)">Ja</button>
+                        <button class="quickfire-btn" onclick="quickfire(1, false)">Nein</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 12: The 3-Part Lesson -->
+        <div class="beat" id="beat12">
+            <p class="beat-text">Die 3-teilige Mini-Lektion.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Einfache Lehrstruktur</div>
+                <p class="insight-text"><strong>1. Der Aufhänger</strong><br>Beginne damit, warum es wichtig ist. Ein Problem, eine Frage, ein Moment der Erkenntnis.<br><br><strong>2. Das Framework</strong><br>Teile das Konzept—halte es einfach. Ein Modell, ein Akronym, ein Prinzip.<br><br><strong>3. Die Anwendung</strong><br>Gib ein Beispiel oder bitte sie, es anzuwenden. Mache es real.</p>
+            </div>
+            <p class="beat-subtext">Du kannst fast alles in 5 Minuten mit dieser Struktur lehren.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 13: Szenario -->
+        <div class="beat" id="beat13">
+            <div class="beat-label">Anwenden</div>
+            <p class="beat-text-small">Ein Kollege hat Schwierigkeiten mit Feedback. Er bittet um deinen Rat. Mit der 3-teiligen Struktur, was ist dein bester Einstieg??</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(13, 'definition')">Mit der Definition von gutem Feedback beginnen</div>
+                <div class="scenario-card" onclick="selectSzenario(13, 'hook')" data-correct="true">Start with a question: "What makes feedback hard for you?"</div>
+                <div class="scenario-card" onclick="selectSzenario(13, 'framework')">Direkt ins SBIR-Framework einsteigen</div>
+                <div class="scenario-card" onclick="selectSzenario(13, 'story')">Eine Zeit teilen, als du schlechtes Feedback gegeben hast</div>
+            </div>
+            <div class="reveal-box" id="reveal13">
+                <div class="reveal-title">Beginne mit ihrem Problem</div>
+                <div class="reveal-text">Das beste Lehren beginnt mit der Erfahrung des Lernenden, nicht mit deinem Framework. Zu fragen, was es schwer macht, schafft Relevanz—jetzt wollen sie die Lösung. Dann führe SBIR als Antwort auf ihre spezifische Herausforderung ein.</div>
+            </div>
+            <button class="continue-btn" id="btn13" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 14: Scaffolding -->
+        <div class="beat" id="beat14">
+            <p class="beat-text">Hole sie dort ab, wo sie sind.</p>
+            <p class="beat-subtext">Gute Lehrer teilen nicht nur Informationen—sie bauen Brücken von dem, was der Lernende bereits weiß.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Scaffolding-Prinzip</div>
+                <p class="insight-text"><strong>Beginne mit ihrer Erfahrung</strong><br>Was wissen sie bereits??<br><br><strong>Baue schrittweise auf</strong><br>Füge ein neues Konzept nach dem anderen hinzu<br><br><strong>Verbinde mit dem Vertrauten</strong><br>Nutze Analogien aus ihrer Welt<br><br><strong>Überprüfe das Verständnis</strong><br>Bitte sie, es zurück zu erklären</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 15: Teaching Mistakes -->
+        <div class="beat" id="beat15">
+            <p class="beat-text">Drei Lehrfehler, die du vermeiden solltest.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Was nicht funktioniert</div>
+                <p class="insight-text"><strong>Der Daten-Dump</strong><br>Alles teilen, was du weißt, statt was sie brauchen<br><br><strong>Die Rettung</strong><br>Mit Antworten einspringen, bevor sie gekämpft haben enough<br><br><strong>Die Annahme</strong><br>Annehmen, dass sie verstanden haben, ohne zu prüfen</p>
+            </div>
+            <p class="beat-subtext">Lehren geht um ihr Lernen, nicht um deine Wissensdemonstration.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 16: Second Szenario -->
+        <div class="beat" id="beat16">
+            <div class="beat-label">Szenario</div>
+            <p class="beat-text-small">Du erklärst einem Kollegen GROW-Coaching. Er nickt, sieht aber verwirrt aus. Was ist dein bester Zug??</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(16, 'a')">Die Erklärung langsamer wiederholen</div>
+                <div class="scenario-card" onclick="selectSzenario(16, 'b')">Weitermachen—sie werden es irgendwann verstehen</div>
+                <div class="scenario-card" onclick="selectSzenario(16, 'c')" data-correct="true">Ask: "What's your understanding so far?"</div>
+                <div class="scenario-card" onclick="selectSzenario(16, 'd')">Mehr Details und Beispiele geben</div>
+            </div>
+            <div class="reveal-box" id="reveal16">
+                <div class="reveal-title">Prüfen, nicht annehmen</div>
+                <div class="reveal-text">Sie zu bitten zurückzuerklären zeigt genau, wo sie feststecken. Mehr Erklärung hilft nicht, wenn du das Falsche erklärst. Lass sie dir zeigen, worauf du dich konzentrieren sollst.</div>
+            </div>
+            <button class="continue-btn" id="btn16" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 17: Pill Rating -->
+        <div class="beat" id="beat17">
+            <p class="beat-text-small">Wie wohl fühlst du dich dabei, Konzepte zu erklären, die du gelernt hast??</p>
+            <div class="pill-options">
+                <div class="pill" onclick="selectPill(17, 1)">1</div>
+                <div class="pill" onclick="selectPill(17, 2)">2</div>
+                <div class="pill" onclick="selectPill(17, 3)">3</div>
+                <div class="pill" onclick="selectPill(17, 4)">4</div>
+                <div class="pill" onclick="selectPill(17, 5)">5</div>
+            </div>
+            <div class="pill-labels">
+                <span>Sehr unwohl</span>
+                <span>Sehr selbstbewusst</span>
+            </div>
+        </div>
+
+        <!-- Beat 18: Teaching Moments -->
+        <div class="beat" id="beat18">
+            <p class="beat-text">Lehrmomente finden.</p>
+            <p class="beat-subtext">Du brauchst keine formelle Umgebung. Lehren passiert in alltäglichen Gesprächen:</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Alltägliche Gelegenheiten</div>
+                <p class="insight-text"><strong>Wenn jemand um Rat fragt</strong><br>"Hier ist ein Framework, das mir geholfen hat..."<br><br><strong>Wenn jemand einen Kampf teilt</strong><br>"I learned something about that—want to hear it?"<br><br><strong>Beim Nachbesprechen einer Situation</strong><br>"Es gibt ein Modell, das erklärt, was passiert ist..."<br><br><strong>Beim Einarbeiten von jemandem Neuem</strong><br>"Lass mich das Nützlichste teilen, das ich hier gelernt habe..."</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 19: Quote + Insight -->
+        <div class="beat" id="beat19">
+            <div class="quote-block">
+                <p class="quote-text">"Lehren heißt zweimal lernen."</p>
+                <p class="quote-author">— Joseph Joubert</p>
+            </div>
+            <p class="beat-subtext">Jedes Mal, wenn du etwas lehrst, vertiefst du dein eigenes Verständnis. Du bemerkst Lücken. Du machst neue Verbindungen. Lehren ist die ultimative Übung.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 20: Binary + Callback -->
+        <div class="beat" id="beat20">
+            <div class="callback-box">
+                <p class="callback-text" id="callback15"></p>
+            </div>
+            <p class="beat-text-small">Was ist dein bevorzugter Lehrstil??</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(15, 'one')">
+                    <div class="binary-card-title">Eins-zu-eins</div>
+                    <div class="binary-card-sub">Einzelgespräche und Mentoring</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(15, 'group')">
+                    <div class="binary-card-title">Gruppenumgebungen</div>
+                    <div class="binary-card-sub">Teammeetings, Workshops, Präsentationen</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 21: The Mirror -->
+        <div class="beat" id="beat21">
+            <p class="beat-text">Dein Lehrprofil.</p>
+            <div class="mirror-reveal" id="mirrorReveal">
+                <div class="mirror-item" id="mirror1">
+                    <span class="mirror-label">Lehrbereitschaft</span>
+                    <span class="mirror-value" id="teachingReady">—</span>
+                </div>
+                <div class="mirror-item" id="mirror2">
+                    <span class="mirror-label">Aktuelle Teilfrequenz</span>
+                    <span class="mirror-value" id="shareFreq">—</span>
+                </div>
+                <div class="mirror-item" id="mirror3">
+                    <span class="mirror-label">Erklärungssicherheit</span>
+                    <span class="mirror-value" id="explainConf">—</span>
+                </div>
+                <div class="mirror-item" id="mirror4">
+                    <span class="mirror-label">Bevorzugtes Format</span>
+                    <span class="mirror-value" id="prefFormat">—</span>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 22: Commitment -->
+        <div class="beat" id="beat22">
+            <p class="beat-text">Eine Sache, die du diese Woche tun wirst.</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectCommitment(this, 'teach')">Ein Konzept von TAP-IN jemandem beibringen</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'offer')">Anbieten, einen Kollegen zu mentoren oder zu beraten</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'share')">Ein Framework in einem Meeting oder Gespräch teilen</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'write')">Deine "2-Minuten-Erklärung" eines Konzepts aufschreiben</div>
+            </div>
+            <button class="continue-btn primary" id="btn22" onclick="completeStripe()" disabled>Stripe Abschließen</button>
+        </div>
+
+        <!-- Beat 23: Completion -->
+        <div class="beat" id="beat23">
+            <div class="completion-container">
+                <div class="completion-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2 class="completion-title">Stripe 3 Abgeschlossen</h2>
+                <p class="completion-subtitle">Andere Lehren</p>
+                <div class="xp-earned-final"><span id="finalXP">+75 XP</span></div>
+                
+                <div class="skills-learned">
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Der Protégé-Effekt.(90% retention)</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Die Feynman-Technik./span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Die Feynman-Technik./span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>3-Teilige Mini-Lektions-Struktur</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Scaffolding-Prinzips</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Lehrmomente Finden</span>
+                    </div>
+                </div>
+
+                <div class="unlock-reveal">
+                    <div class="unlock-title">Freigeschaltet</div>
+                    <div class="unlock-name">Stripe 4: Vermächtnis Stripe 4: Legacy & Continuation Fortsetzung</div>
+                </div>
+
+                <button class="continue-btn primary" onclick="goToNext()">Reise fortsetzen</button>
+                <button class="continue-btn" style="margin-top: 10px;" onclick="goToHub()">Zurück zum Hub</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentBeat = 1;
+        const totalBeats = 23;
+        let xp = 0;
+        let responses = {};
+        let quickfireCount = 0;
+        const quickfireQuestions = [
+            "Ich könnte es in 2 Minuten oder weniger erklären",
+            "Ich könnte ein reales Beispiel geben",
+            "Ich kenne jemanden, der davon profitieren könnte"
+        ];
+
+        function updateProgress() { document.getElementById('journeyProgress').style.width = ((currentBeat - 1) / (totalBeats - 1) * 100) + '%'; }
+        function addXP(amount) { xp += amount; document.getElementById('xpDisplay').textContent = xp; }
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (currentBeat === 21) setTimeout(revealMirror, 500);
+        }
+
+        function selectBinary(beat, value) {
+            document.querySelectorAll('#beat' + beat + ' .binary-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['binary' + beat] = value;
+            addXP(5);
+            if (beat === 2) {
+                setTimeout(() => {
+                    document.getElementById('insight3').textContent = value === 'hesitant'
+                        ? "That hesitation is common—and misguided. You don't need to be an expert. Being one step ahead is often better than being ten steps ahead. You remember the struggles, the breakthroughs, the real moments of learning."
+                        : "That confidence is valuable. The key is channeling it effectively—not just sharing what you know, but helping others discover it for themselves.";
+                    nextBeat();
+                }, 600);
+            } else { setTimeout(nextBeat, 600); }
+        }
+
+        function selectSpectrum(event, beat) {
+            const line = document.getElementById('spectrum' + beat);
+            const marker = document.getElementById('marker' + beat);
+            const rect = line.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            marker.style.left = pct + '%';
+            marker.classList.add('visible');
+            responses['spectrum' + beat] = pct;
+            document.getElementById('continue' + beat).disabled = false;
+            addXP(5);
+        }
+
+        function selectFramework(card, value) {
+            document.querySelectorAll('.framework-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            responses.framework = value;
+            document.getElementById('btn8').disabled = false;
+            addXP(5);
+        }
+
+        function selectSzenario(beat, value) {
+            const cards = document.querySelectorAll('#beat' + beat + ' .scenario-card');
+            const clicked = event.currentTarget;
+            const isCorrect = clicked.dataset.correct === 'true';
+            cards.forEach(c => { c.classList.remove('selected'); if (c.dataset.correct === 'true') c.classList.add('correct'); else if (c === clicked && !isCorrect) c.classList.add('incorrect'); });
+            clicked.classList.add('selected');
+            responses['scenario' + beat] = value;
+            const reveal = document.getElementById('reveal' + beat);
+            if (reveal) reveal.classList.add('show');
+            const btn = document.getElementById('btn' + beat);
+            if (btn) btn.disabled = false;
+            addXP(isCorrect ? 10 : 5);
+        }
+
+        function quickfire(num, value) {
+            const item = document.getElementById('qf' + num);
+            item.querySelectorAll('.quickfire-btn').forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            item.classList.add('answered');
+            responses['qf' + num] = value;
+            quickfireCount++;
+            addXP(3);
+            if (quickfireCount < 3) {
+                setTimeout(() => {
+                    const container = document.getElementById('quickfire');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'quickfire-item';
+                    newItem.id = 'qf' + (quickfireCount + 1);
+                    newItem.innerHTML = `<span class="quickfire-text">${quickfireQuestions[quickfireCount]}</span><div class="quickfire-btns"><button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, true)">Ja</button><button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, false)">Nein</button></div>`;
+                    container.appendChild(newItem);
+                }, 400);
+            } else { setTimeout(nextBeat, 600); }
+        }
+
+        function selectPill(beat, value) {
+            document.querySelectorAll('#beat' + beat + ' .pill').forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['pill' + beat] = value;
+            addXP(5);
+            setTimeout(nextBeat, 500);
+        }
+
+        function selectCommitment(card, value) {
+            document.querySelectorAll('#beat17 .scenario-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            responses.commitment = value;
+            document.getElementById('btn17').disabled = false;
+            addXP(5);
+        }
+
+        function revealMirror() {
+            document.getElementById('teachingReady').textContent = responses.binary2 === 'ready' ? 'Ready to share' : 'Building confidence';
+            document.getElementById('mirror1').classList.add('visible');
+            setTimeout(() => {
+                let freq = responses.spectrum7 || 50;
+                document.getElementById('shareFreq').textContent = freq > 66 ? 'Regular sharer' : freq > 33 ? 'Occasional' : 'Opportunity to grow';
+                document.getElementById('mirror2').classList.add('visible');
+            }, 400);
+            setTimeout(() => {
+                let pill = responses.pill12 || 3;
+                document.getElementById('explainConf').textContent = pill >= 4 ? 'High confidence' : pill >= 3 ? 'Moderate' : 'Developing';
+                document.getElementById('mirror3').classList.add('visible');
+            }, 800);
+            setTimeout(() => {
+                document.getElementById('prefFormat').textContent = responses.binary15 === 'one' ? '1:1 mentoring' : 'Group facilitation';
+                document.getElementById('mirror4').classList.add('visible');
+            }, 1200);
+            
+            const frameworkNames = { trust: 'Vertrauensgleichung', sbir: 'SBIR-Feedback', grow: 'GROW-Coaching', stop: 'STOP-Protokoll' };
+            document.getElementById('callback15').innerHTML = `You chose to teach the <span class="callback-highlight">${frameworkNames[responses.framework] || 'concept'}</span>. This is now your signature framework—practice explaining it until it's second nature.`;
+        }
+
+        function completeStripe() {
+            localStorage.setItem('tap_in_black_stripe3_complete', 'true');
+            localStorage.setItem('tap_in_black_stripe3_answers', JSON.stringify(responses));
+            const totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0') + xp + 25;
+            localStorage.setItem('tap_in_xp', totalXP);
+            document.getElementById('finalXP').textContent = '+' + (xp + 25) + ' XP';
+            nextBeat();
+        }
+
+        function goToNext() { window.location.href = 'black-belt-stripe4-gamified-de.html'; }
+        function goToHub() { window.location.href = 'gym-dashboard.html'; }
+        updateProgress();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

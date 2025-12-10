@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Goal Tracker - TAP-IN Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --orange: #f97316;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --pink: #ec4899;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .tool-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .add-btn {
+            background: var(--green);
+            color: var(--black);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .container { max-width: 700px; margin: 0 auto; padding: 90px 20px 40px; }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            background: var(--dark-grey);
+            padding: 6px;
+            border-radius: 12px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--light-grey);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tab.active { background: var(--green); color: var(--black); }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value { font-size: 1.5rem; font-weight: 800; }
+        .stat-value.green { color: var(--green); }
+        .stat-value.gold { color: var(--gold); }
+        .stat-value.purple { color: var(--purple); }
+        .stat-value.red { color: var(--red); }
+        .stat-label { font-size: 0.7rem; color: var(--light-grey); text-transform: uppercase; }
+        
+        /* Goal Cards */
+        .goals-list { display: flex; flex-direction: column; gap: 15px; }
+        
+        .goal-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--mid-grey);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .goal-card:hover { border-color: var(--green); }
+        
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .goal-info { flex: 1; }
+        
+        .goal-category {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+        
+        .goal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .goal-why {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            font-style: italic;
+        }
+        
+        .goal-deadline {
+            font-size: 0.8rem;
+            color: var(--gold);
+            background: rgba(251, 191, 36, 0.1);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+        
+        .goal-deadline.overdue {
+            color: var(--red);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .goal-deadline.soon {
+            color: var(--orange);
+            background: rgba(249, 115, 22, 0.1);
+        }
+        
+        .goal-progress {
+            margin-bottom: 12px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        
+        .progress-label { font-size: 0.8rem; color: var(--light-grey); }
+        .progress-value { font-size: 0.9rem; font-weight: 700; color: var(--green); }
+        
+        .progress-bar {
+            height: 10px;
+            background: var(--mid-grey);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), #059669);
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+        
+        .goal-milestones {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .milestone-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--mid-grey);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .milestone-dot.complete {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-grey);
+        }
+        
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: var(--mid-grey);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Graveyard */
+        .graveyard-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            opacity: 0.7;
+            border-left: 4px solid var(--red);
+        }
+        
+        .graveyard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .graveyard-title {
+            font-weight: 600;
+            text-decoration: line-through;
+            color: var(--light-grey);
+        }
+        
+        .graveyard-date {
+            font-size: 0.75rem;
+            color: var(--red);
+        }
+        
+        .graveyard-reason {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            font-style: italic;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal-overlay.show { display: flex; }
+        
+        .modal {
+            background: var(--dark-grey);
+            border-radius: 20px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--mid-grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title { font-weight: 700; font-size: 1.2rem; }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light-grey);
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .modal-body { padding: 25px; }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--mid-grey);
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        /* SMART Wizard */
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .wizard-step.active { display: block; }
+        
+        .wizard-progress {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+        }
+        
+        .wizard-dot {
+            width: 40px;
+            height: 4px;
+            border-radius: 2px;
+            background: var(--mid-grey);
+        }
+        
+        .wizard-dot.active { background: var(--green); }
+        .wizard-dot.complete { background: var(--green); }
+        
+        .step-header {
+            margin-bottom: 20px;
+        }
+        
+        .step-letter {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            background: var(--green);
+            color: var(--black);
+            font-weight: 800;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        
+        .step-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 5px; }
+        .step-desc { color: var(--light-grey); font-size: 0.9rem; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 0.85rem; color: var(--light-grey); margin-bottom: 8px; }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            background: var(--black);
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 14px;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        
+        .form-textarea { min-height: 100px; resize: vertical; }
+        
+        .form-select {
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .category-btn {
+            background: var(--black);
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 15px 10px;
+            color: var(--light-grey);
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .category-btn:hover { border-color: var(--green); color: var(--white); }
+        .category-btn.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.1); color: var(--green); }
+        
+        .category-icon { font-size: 1.5rem; margin-bottom: 5px; display: block; }
+        .category-name { font-size: 0.8rem; font-weight: 600; }
+        
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary { background: var(--green); color: var(--black); }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-danger { background: transparent; border: 2px solid var(--red); color: var(--red); }
+        
+        .btn:hover { transform: translateY(-1px); }
+        
+        /* Milestones Editor */
+        .milestones-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .milestone-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .milestone-input {
+            flex: 1;
+            background: var(--black);
+            border: 2px solid var(--mid-grey);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+        
+        .milestone-remove {
+            background: none;
+            border: none;
+            color: var(--red);
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .add-milestone-btn {
+            background: transparent;
+            border: 2px dashed var(--mid-grey);
+            border-radius: 8px;
+            padding: 10px;
+            color: var(--light-grey);
+            cursor: pointer;
+            width: 100%;
+            font-size: 0.9rem;
+        }
+        
+        .add-milestone-btn:hover { border-color: var(--green); color: var(--green); }
+        
+        /* Goal Detail Modal */
+        .detail-section {
+            margin-bottom: 25px;
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .detail-value { font-size: 1rem; }
+        
+        .progress-slider-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            background: var(--mid-grey);
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .progress-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--green);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .milestone-checklist {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .milestone-check {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--black);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        
+        .milestone-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--mid-grey);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .milestone-check.complete .milestone-checkbox {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        
+        .milestone-text { flex: 1; }
+        .milestone-check.complete .milestone-text { text-decoration: line-through; color: var(--light-grey); }
+        
+        /* Success Animation */
+        .confetti {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 400;
+            display: none;
+        }
+        
+        .confetti.show { display: block; }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 500px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+            .category-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        
+        /* Insights Panel */
+        .insights-panel {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .insights-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .insight-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+        .insight-card:last-child { margin-bottom: 0; }
+        .insight-card h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+        .insight-card p {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            line-height: 1.5;
+        }
+        .insight-highlight {
+            color: var(--white);
+            font-weight: 600;
+        }
+        .insights-empty {
+            text-align: center;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="tool-goal-tracker-v2.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="tool-goal-tracker-v2-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="quick-tools.html" class="back-btn">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+        </a>
+        <div class="tool-title">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Goal Tracker
+        </div>
+        <button class="add-btn" onclick="openCreateModal()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            New Goal
+        </button>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('active')">Active Goals</button>
+            <button class="tab" onclick="switchTab('completed')">Completed</button>
+            <button class="tab" onclick="switchTab('graveyard')">Graveyard</button>
+        </div>
+        
+        <!-- Active Tab -->
+        <div class="tab-content active" id="activeTab">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value green" id="activeCount">0</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value gold" id="avgProgress">0%</div>
+                    <div class="stat-label">Avg Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value purple" id="completedCount">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value red" id="overdueCount">0</div>
+                    <div class="stat-label">Overdue</div>
+                </div>
+            </div>
+            
+            <!-- Insights Panel -->
+            <div class="insights-panel" id="insightsPanel">
+                <div class="insights-title">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    Goal Insights
+                </div>
+                <div id="insightsContent">
+                    <div class="insights-empty">Add some goals to see personalized insights</div>
+                </div>
+            </div>
+            
+            <div class="goals-list" id="activeGoals"></div>
+        </div>
+        
+        <!-- Completed Tab -->
+        <div class="tab-content" id="completedTab">
+            <div class="goals-list" id="completedGoals"></div>
+        </div>
+        
+        <!-- Graveyard Tab -->
+        <div class="tab-content" id="graveyardTab">
+            <div class="goals-list" id="graveyardGoals"></div>
+        </div>
+    </div>
+    
+    <!-- Create Goal Modal -->
+    <div class="modal-overlay" id="createModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Create SMART Goal</div>
+                <button class="modal-close" onclick="closeCreateModal()">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="wizard-progress">
+                    <div class="wizard-dot active" data-step="1"></div>
+                    <div class="wizard-dot" data-step="2"></div>
+                    <div class="wizard-dot" data-step="3"></div>
+                    <div class="wizard-dot" data-step="4"></div>
+                    <div class="wizard-dot" data-step="5"></div>
+                </div>
+                
+                <!-- S - Specific -->
+                <div class="wizard-step active" data-step="1">
+                    <div class="step-header">
+                        <div class="step-letter">S</div>
+                        <div class="step-title">Specific</div>
+                        <div class="step-desc">What exactly do you want to achieve?</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Goal Title</label>
+                        <input type="text" class="form-input" id="goalTitle" placeholder="e.g., Run a marathon, Learn Spanish, Get promoted">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <div class="category-grid">
+                            <div class="category-btn" data-category="career" onclick="selectCategory(this)">
+                                <span class="category-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>
+                                <span class="category-name">Career</span>
+                            </div>
+                            <div class="category-btn" data-category="health" onclick="selectCategory(this)">
+                                <span class="category-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg></span>
+                                <span class="category-name">Health</span>
+                            </div>
+                            <div class="category-btn" data-category="learning" onclick="selectCategory(this)">
+                                <span class="category-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/></svg></span>
+                                <span class="category-name">Learning</span>
+                            </div>
+                            <div class="category-btn" data-category="financial" onclick="selectCategory(this)">
+                                <span class="category-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>
+                                <span class="category-name">Financial</span>
+                            </div>
+                            <div class="category-btn" data-category="relationships" onclick="selectCategory(this)">
+                                <span class="category-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg></span>
+                                <span class="category-name">Relationships</span>
+                            </div>
+                            <div class="category-btn" data-category="personal" onclick="selectCategory(this)">
+                                <span class="category-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/></svg></span>
+                                <span class="category-name">Personal</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- M - Measurable -->
+                <div class="wizard-step" data-step="2">
+                    <div class="step-header">
+                        <div class="step-letter">M</div>
+                        <div class="step-title">Measurable</div>
+                        <div class="step-desc">How will you track progress?</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Milestones (break your goal into steps)</label>
+                        <div class="milestones-list" id="milestonesList">
+                            <div class="milestone-row">
+                                <input type="text" class="milestone-input" placeholder="First milestone...">
+                                <button class="milestone-remove" onclick="removeMilestone(this)">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="add-milestone-btn" onclick="addMilestone()">+ Add Milestone</button>
+                    </div>
+                </div>
+                
+                <!-- A - Achievable -->
+                <div class="wizard-step" data-step="3">
+                    <div class="step-header">
+                        <div class="step-letter">A</div>
+                        <div class="step-title">Achievable</div>
+                        <div class="step-desc">Why does this goal matter to you?</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Why This Matters (your motivation)</label>
+                        <textarea class="form-textarea" id="goalWhy" placeholder="When times get tough, this is what will keep you going..."></textarea>
+                    </div>
+                </div>
+                
+                <!-- R - Relevant -->
+                <div class="wizard-step" data-step="4">
+                    <div class="step-header">
+                        <div class="step-letter">R</div>
+                        <div class="step-title">Relevant</div>
+                        <div class="step-desc">How does this connect to your bigger picture?</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Connection to Your Life Vision</label>
+                        <textarea class="form-textarea" id="goalRelevance" placeholder="How does achieving this move you toward the life you want?"></textarea>
+                    </div>
+                </div>
+                
+                <!-- T - Time-bound -->
+                <div class="wizard-step" data-step="5">
+                    <div class="step-header">
+                        <div class="step-letter">T</div>
+                        <div class="step-title">Time-bound</div>
+                        <div class="step-desc">When will you achieve this?</div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Target Date</label>
+                        <input type="date" class="form-input" id="goalDeadline">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevStep()" style="display: none;">Back</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextStep()">Next</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Goal Detail Modal -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="detailTitle">Goal Details</div>
+                <button class="modal-close" onclick="closeDetailModal()">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body" id="detailBody">
+                <!-- Dynamic content -->
+            </div>
+            <div class="modal-footer" id="detailFooter">
+                <button class="btn btn-danger" onclick="abandonGoal()">Abandon</button>
+                <button class="btn btn-primary" onclick="saveGoalProgress()">Save Progress</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Abandon Modal -->
+    <div class="modal-overlay" id="abandonModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Abandon Goal?</div>
+                <button class="modal-close" onclick="closeAbandonModal()">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color: var(--light-grey); margin-bottom: 20px;">Goals change, and that's okay. Reflection helps you learn for next time.</p>
+                <div class="form-group">
+                    <label class="form-label">Why are you abandoning this goal?</label>
+                    <textarea class="form-textarea" id="abandonReason" placeholder="What happened? What would you do differently?"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeAbandonModal()">Cancel</button>
+                <button class="btn btn-danger" onclick="confirmAbandon()">Send to Graveyard</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let goals = [];
+        let currentStep = 1;
+        let currentGoalId = null;
+        let newGoal = { category: '' };
+        
+        const categoryIcons = {
+            career: '<path d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>',
+            health: '<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>',
+            learning: '<path d="M12 14l9-5-9-5-9 5 9 5z"/><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"/>',
+            financial: '<path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>',
+            relationships: '<path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>',
+            personal: '<path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>'
+        };
+        
+        function loadGoals() {
+            goals = JSON.parse(localStorage.getItem('tap_in_goals') || '[]');
+        }
+        
+        function saveGoals() {
+            localStorage.setItem('tap_in_goals', JSON.stringify(goals));
+        }
+        
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.tab:nth-child(${tab === 'active' ? 1 : tab === 'completed' ? 2 : 3})`).classList.add('active');
+            document.getElementById(tab + 'Tab').classList.add('active');
+            renderGoals();
+            generateInsights();
+        }
+        
+        function renderGoals() {
+            const active = goals.filter(g => g.status === 'active');
+            const completed = goals.filter(g => g.status === 'completed');
+            const graveyard = goals.filter(g => g.status === 'abandoned');
+            
+            // Stats
+            document.getElementById('activeCount').textContent = active.length;
+            document.getElementById('completedCount').textContent = completed.length;
+            
+            const avgProgress = active.length > 0 
+                ? Math.round(active.reduce((sum, g) => sum + g.progress, 0) / active.length)
+                : 0;
+            document.getElementById('avgProgress').textContent = avgProgress + '%';
+            
+            const overdue = active.filter(g => new Date(g.deadline) < new Date()).length;
+            document.getElementById('overdueCount').textContent = overdue;
+            
+            // Active goals
+            const activeList = document.getElementById('activeGoals');
+            if (active.length === 0) {
+                activeList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--light-grey)" stroke-width="2">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <p>No active goals yet.<br>Click "New Goal" to create your first SMART goal.</p>
+                    </div>
+                `;
+            } else {
+                activeList.innerHTML = active.map(g => renderGoalCard(g)).join('');
+            }
+            
+            // Completed goals
+            const completedList = document.getElementById('completedGoals');
+            if (completed.length === 0) {
+                completedList.innerHTML = '<div class="empty-state"><p>No completed goals yet. Keep pushing!</p></div>';
+            } else {
+                completedList.innerHTML = completed.map(g => renderGoalCard(g, true)).join('');
+            }
+            
+            // Graveyard
+            const graveyardList = document.getElementById('graveyardGoals');
+            if (graveyard.length === 0) {
+                graveyardList.innerHTML = '<div class="empty-state"><p>No abandoned goals. That\'s good!</p></div>';
+            } else {
+                graveyardList.innerHTML = graveyard.map(g => `
+                    <div class="graveyard-card">
+                        <div class="graveyard-header">
+                            <div class="graveyard-title">${g.title}</div>
+                            <div class="graveyard-date">Abandoned ${new Date(g.abandonedDate).toLocaleDateString()}</div>
+                        </div>
+                        <div class="graveyard-reason">"${g.abandonReason || 'No reason given'}"</div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        function renderGoalCard(g, isCompleted = false) {
+            const daysLeft = Math.ceil((new Date(g.deadline) - new Date()) / (1000 * 60 * 60 * 24));
+            let deadlineClass = '';
+            let deadlineText = '';
+            
+            if (daysLeft < 0) {
+                deadlineClass = 'overdue';
+                deadlineText = `${Math.abs(daysLeft)} days overdue`;
+            } else if (daysLeft <= 7) {
+                deadlineClass = 'soon';
+                deadlineText = `${daysLeft} days left`;
+            } else {
+                deadlineText = `${daysLeft} days left`;
+            }
+            
+            const completedMilestones = g.milestones.filter(m => m.complete).length;
+            
+            return `
+                <div class="goal-card" onclick="openGoalDetail(${g.id})">
+                    <div class="goal-header">
+                        <div class="goal-info">
+                            <div class="goal-category">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${categoryIcons[g.category]}</svg>
+                                ${g.category}
+                            </div>
+                            <div class="goal-title">${g.title}</div>
+                            ${g.why ? `<div class="goal-why">"${g.why.substring(0, 60)}${g.why.length > 60 ? '...' : ''}"</div>` : ''}
+                        </div>
+                        ${!isCompleted ? `<div class="goal-deadline ${deadlineClass}">${deadlineText}</div>` : ''}
+                    </div>
+                    <div class="goal-progress">
+                        <div class="progress-header">
+                            <div class="progress-label">${completedMilestones}/${g.milestones.length} milestones</div>
+                            <div class="progress-value">${g.progress}%</div>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${g.progress}%"></div>
+                        </div>
+                    </div>
+                    <div class="goal-milestones">
+                        ${g.milestones.map((m, i) => `
+                            <div class="milestone-dot ${m.complete ? 'complete' : ''}">${i + 1}</div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function openCreateModal() {
+            currentStep = 1;
+            newGoal = { category: '' };
+            document.getElementById('goalTitle').value = '';
+            document.getElementById('goalWhy').value = '';
+            document.getElementById('goalRelevance').value = '';
+            document.getElementById('goalDeadline').value = '';
+            document.getElementById('milestonesList').innerHTML = `
+                <div class="milestone-row">
+                    <input type="text" class="milestone-input" placeholder="First milestone...">
+                    <button class="milestone-remove" onclick="removeMilestone(this)">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            `;
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            updateWizardUI();
+            document.getElementById('createModal').classList.add('show');
+        }
+        
+        function closeCreateModal() {
+            document.getElementById('createModal').classList.remove('show');
+        }
+        
+        function selectCategory(btn) {
+            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            newGoal.category = btn.dataset.category;
+        }
+        
+        function addMilestone() {
+            const list = document.getElementById('milestonesList');
+            const row = document.createElement('div');
+            row.className = 'milestone-row';
+            row.innerHTML = `
+                <input type="text" class="milestone-input" placeholder="Next milestone...">
+                <button class="milestone-remove" onclick="removeMilestone(this)">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            `;
+            list.appendChild(row);
+        }
+        
+        function removeMilestone(btn) {
+            const list = document.getElementById('milestonesList');
+            if (list.children.length > 1) {
+                btn.parentElement.remove();
+            }
+        }
+        
+        function updateWizardUI() {
+            document.querySelectorAll('.wizard-step').forEach(s => s.classList.remove('active'));
+            document.querySelector(`.wizard-step[data-step="${currentStep}"]`).classList.add('active');
+            
+            document.querySelectorAll('.wizard-dot').forEach((d, i) => {
+                d.classList.remove('active', 'complete');
+                if (i + 1 === currentStep) d.classList.add('active');
+                else if (i + 1 < currentStep) d.classList.add('complete');
+            });
+            
+            document.getElementById('prevBtn').style.display = currentStep > 1 ? 'inline-flex' : 'none';
+            document.getElementById('nextBtn').textContent = currentStep === 5 ? 'Create Goal' : 'Next';
+        }
+        
+        function nextStep() {
+            if (currentStep === 1) {
+                if (!document.getElementById('goalTitle').value.trim()) {
+                    alert('Please enter a goal title');
+                    return;
+                }
+                if (!newGoal.category) {
+                    alert('Please select a category');
+                    return;
+                }
+            }
+            
+            if (currentStep < 5) {
+                currentStep++;
+                updateWizardUI();
+            } else {
+                createGoal();
+            }
+        }
+        
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizardUI();
+            }
+        }
+        
+        function createGoal() {
+            const milestoneInputs = document.querySelectorAll('.milestone-input');
+            const milestones = Array.from(milestoneInputs)
+                .map(input => input.value.trim())
+                .filter(text => text)
+                .map(text => ({ text, complete: false }));
+            
+            const goal = {
+                id: Date.now(),
+                title: document.getElementById('goalTitle').value.trim(),
+                category: newGoal.category,
+                why: document.getElementById('goalWhy').value.trim(),
+                relevance: document.getElementById('goalRelevance').value.trim(),
+                deadline: document.getElementById('goalDeadline').value,
+                milestones: milestones.length > 0 ? milestones : [{ text: 'Complete goal', complete: false }],
+                progress: 0,
+                status: 'active',
+                createdDate: new Date().toISOString()
+            };
+            
+            goals.push(goal);
+            saveGoals();
+            renderGoals();
+            generateInsights();
+            closeCreateModal();
+            
+            // Award XP
+            let totalXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', totalXP + 20);
+        }
+        
+        function openGoalDetail(id) {
+            const goal = goals.find(g => g.id === id);
+            if (!goal) return;
+            
+            currentGoalId = id;
+            document.getElementById('detailTitle').textContent = goal.title;
+            
+            const body = document.getElementById('detailBody');
+            body.innerHTML = `
+                <div class="detail-section">
+                    <div class="detail-label">Why This Matters</div>
+                    <div class="detail-value">${goal.why || 'Not specified'}</div>
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">Connection to Life Vision</div>
+                    <div class="detail-value">${goal.relevance || 'Not specified'}</div>
+                </div>
+                
+                <div class="progress-slider-container">
+                    <div class="detail-label">Overall Progress: <span id="progressDisplay">${goal.progress}%</span></div>
+                    <input type="range" class="progress-slider" id="progressSlider" min="0" max="100" value="${goal.progress}" oninput="updateProgressDisplay()">
+                </div>
+                
+                <div class="detail-section">
+                    <div class="detail-label">Milestones</div>
+                    <div class="milestone-checklist" id="milestoneChecklist">
+                        ${goal.milestones.map((m, i) => `
+                            <div class="milestone-check ${m.complete ? 'complete' : ''}" onclick="toggleMilestone(${i})">
+                                <div class="milestone-checkbox">
+                                    ${m.complete ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>' : ''}
+                                </div>
+                                <div class="milestone-text">${m.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // Update footer based on status
+            const footer = document.getElementById('detailFooter');
+            if (goal.status === 'completed') {
+                footer.innerHTML = '<button class="btn btn-secondary" onclick="closeDetailModal()">Close</button>';
+            } else {
+                footer.innerHTML = `
+                    <button class="btn btn-danger" onclick="abandonGoal()">Abandon</button>
+                    <button class="btn btn-primary" onclick="saveGoalProgress()">Save Progress</button>
+                `;
+            }
+            
+            document.getElementById('detailModal').classList.add('show');
+        }
+        
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('show');
+            currentGoalId = null;
+        }
+        
+        function updateProgressDisplay() {
+            const value = document.getElementById('progressSlider').value;
+            document.getElementById('progressDisplay').textContent = value + '%';
+        }
+        
+        function toggleMilestone(index) {
+            const goal = goals.find(g => g.id === currentGoalId);
+            if (!goal) return;
+            
+            goal.milestones[index].complete = !goal.milestones[index].complete;
+            
+            // Recalculate progress
+            const completed = goal.milestones.filter(m => m.complete).length;
+            goal.progress = Math.round((completed / goal.milestones.length) * 100);
+            document.getElementById('progressSlider').value = goal.progress;
+            document.getElementById('progressDisplay').textContent = goal.progress + '%';
+            
+            // Re-render checklist
+            const checklist = document.getElementById('milestoneChecklist');
+            checklist.innerHTML = goal.milestones.map((m, i) => `
+                <div class="milestone-check ${m.complete ? 'complete' : ''}" onclick="toggleMilestone(${i})">
+                    <div class="milestone-checkbox">
+                        ${m.complete ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--black)" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>' : ''}
+                    </div>
+                    <div class="milestone-text">${m.text}</div>
+                </div>
+            `).join('');
+        }
+        
+        function saveGoalProgress() {
+            const goal = goals.find(g => g.id === currentGoalId);
+            if (!goal) return;
+            
+            goal.progress = parseInt(document.getElementById('progressSlider').value);
+            
+            if (goal.progress === 100) {
+                goal.status = 'completed';
+                goal.completedDate = new Date().toISOString();
+                
+                // Award XP
+                let totalXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+                localStorage.setItem('tap_in_total_xp', totalXP + 100);
+                
+                alert('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg> Congratulations! Goal completed! +100 XP');
+            }
+            
+            saveGoals();
+            renderGoals();
+            generateInsights();
+            closeDetailModal();
+        }
+        
+        function abandonGoal() {
+            document.getElementById('abandonReason').value = '';
+            document.getElementById('abandonModal').classList.add('show');
+        }
+        
+        function closeAbandonModal() {
+            document.getElementById('abandonModal').classList.remove('show');
+        }
+        
+        function confirmAbandon() {
+            const goal = goals.find(g => g.id === currentGoalId);
+            if (!goal) return;
+            
+            goal.status = 'abandoned';
+            goal.abandonedDate = new Date().toISOString();
+            goal.abandonReason = document.getElementById('abandonReason').value.trim();
+            
+            saveGoals();
+            renderGoals();
+            generateInsights();
+            closeAbandonModal();
+            closeDetailModal();
+        }
+        
+        function generateInsights() {
+            const container = document.getElementById('insightsContent');
+            const insights = [];
+            
+            const activeGoals = goals.filter(g => g.status === 'active');
+            const completedGoals = goals.filter(g => g.status === 'completed');
+            const abandonedGoals = goals.filter(g => g.status === 'abandoned');
+            
+            // No goals yet
+            if (goals.length === 0) {
+                container.innerHTML = '<div class="insights-empty">Add some goals to see personalized insights</div>';
+                return;
+            }
+            
+            // Completion rate insight
+            if (completedGoals.length + abandonedGoals.length > 0) {
+                const completionRate = Math.round((completedGoals.length / (completedGoals.length + abandonedGoals.length)) * 100);
+                if (completionRate >= 70) {
+                    insights.push({
+                        title: 'Strong Follow-Through',
+                        text: `You've completed <span class="insight-highlight">${completionRate}%</span> of your goals. That's excellent commitment!`
+                    });
+                } else if (completionRate < 50 && abandonedGoals.length >= 2) {
+                    insights.push({
+                        title: 'Consider Goal Size',
+                        text: `With <span class="insight-highlight">${abandonedGoals.length}</span> abandoned goals, try breaking future goals into smaller milestones.`
+                    });
+                }
+            }
+            
+            // Category patterns
+            const categoryCounts = {};
+            goals.forEach(g => {
+                categoryCounts[g.category] = (categoryCounts[g.category] || 0) + 1;
+            });
+            const topCategory = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0];
+            if (topCategory && topCategory[1] >= 2) {
+                const categoryNames = {
+                    career: 'Career', health: 'Health', learning: 'Learning',
+                    finance: 'Finance', relationships: 'Relationships', personal: 'Personal'
+                };
+                insights.push({
+                    title: 'Focus Area Pattern',
+                    text: `Most of your goals are in <span class="insight-highlight">${categoryNames[topCategory[0]] || topCategory[0]}</span>. Consider balancing with other life areas.`
+                });
+            }
+            
+            // Overdue goals
+            const today = new Date();
+            const overdueGoals = activeGoals.filter(g => g.deadline && new Date(g.deadline) < today);
+            if (overdueGoals.length > 0) {
+                insights.push({
+                    title: 'Deadline Alert',
+                    text: `<span class="insight-highlight">${overdueGoals.length}</span> goal${overdueGoals.length > 1 ? 's are' : ' is'} past deadline. Consider resetting timelines or abandoning if no longer relevant.`
+                });
+            }
+            
+            // High progress goals
+            const almostDone = activeGoals.filter(g => g.progress >= 75);
+            if (almostDone.length > 0) {
+                insights.push({
+                    title: 'Almost There!',
+                    text: `<span class="insight-highlight">${almostDone.length}</span> goal${almostDone.length > 1 ? 's are' : ' is'} at 75%+ progress. A final push could complete them!`
+                });
+            }
+            
+            // Stalled goals (low progress, old)
+            const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+            const stalled = activeGoals.filter(g => g.progress < 25 && new Date(g.createdAt) < oneWeekAgo);
+            if (stalled.length > 0) {
+                insights.push({
+                    title: 'Momentum Check',
+                    text: `<span class="insight-highlight">${stalled.length}</span> goal${stalled.length > 1 ? 's have' : ' has'} low progress after a week. What's blocking you?`
+                });
+            }
+            
+            // Milestone usage
+            const goalsWithMilestones = goals.filter(g => g.milestones && g.milestones.length > 0);
+            if (goalsWithMilestones.length > 0 && completedGoals.length > 0) {
+                const completedWithMilestones = completedGoals.filter(g => g.milestones && g.milestones.length > 0);
+                if (completedWithMilestones.length > completedGoals.length * 0.5) {
+                    insights.push({
+                        title: 'Milestones Work',
+                        text: `Goals with milestones have a higher completion rate. Keep using them!`
+                    });
+                }
+            }
+            
+            // Weekly momentum
+            const lastWeekCompleted = completedGoals.filter(g => 
+                g.completedDate && new Date(g.completedDate) > oneWeekAgo
+            );
+            if (lastWeekCompleted.length > 0) {
+                insights.push({
+                    title: 'Recent Wins',
+                    text: `You completed <span class="insight-highlight">${lastWeekCompleted.length}</span> goal${lastWeekCompleted.length > 1 ? 's' : ''} in the last week. Great momentum!`
+                });
+            }
+            
+            // No insights generated
+            if (insights.length === 0) {
+                insights.push({
+                    title: 'Keep Going',
+                    text: `You have <span class="insight-highlight">${activeGoals.length}</span> active goal${activeGoals.length !== 1 ? 's' : ''}. Stay consistent and insights will appear as patterns emerge.`
+                });
+            }
+            
+            container.innerHTML = insights.map(i => `
+                <div class="insight-card">
+                    <h4>${i.title}</h4>
+                    <p>${i.text}</p>
+                </div>
+            `).join('');
+        }
+        
+        // Initialize
+        loadGoals();
+        renderGoals();
+            generateInsights();
+        generateInsights();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

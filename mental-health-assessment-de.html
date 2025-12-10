@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta property="og:title" content="Mental Health & Wellness Assessment | TAP-IN">
+    <meta property="og:description" content="Entdecke deinen Wellness-Score across energy, boundaries, recovery, and sustainable performance.">
+    <meta name="theme-color" content="#0d0d14">
+    <title>Mental Health & Wellness Assessment - TAP-IN</title>
+    <style>
+        :root {
+            --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff;
+            --green: #10b981; --green-glow: rgba(16, 185, 129, 0.3); --gold: #fbbf24; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444;
+            --energy-color: #f59e0b; --boundary-color: #8b5cf6; --recovery-color: #10b981; --integration-color: #3b82f6; --performance-color: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%); border-bottom: 1px solid var(--mid-grey); margin-bottom: 30px; }
+        .header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 15px; background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: var(--light-grey); font-size: 1.1rem; max-width: 500px; margin: 0 auto 25px; }
+        .category-preview { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin: 30px 0; }
+        .category-pill { background: var(--mid-grey); padding: 10px 20px; border-radius: 25px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .category-pill .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .category-pill.energy .dot { background: var(--energy-color); }
+        .category-pill.boundary .dot { background: var(--boundary-color); }
+        .category-pill.recovery .dot { background: var(--recovery-color); }
+        .category-pill.integration .dot { background: var(--integration-color); }
+        .category-pill.performance .dot { background: var(--performance-color); }
+        .start-btn { background: linear-gradient(135deg, var(--green) 0%, #059669 100%); color: white; border: none; padding: 18px 50px; font-size: 1.2rem; font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 20px var(--green-glow); }
+        .start-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 30px var(--green-glow); }
+        .progress-container { position: sticky; top: 0; background: var(--dark-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--mid-grey); z-index: 100; display: none; }
+        .progress-container.show { display: block; }
+        .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .progress-label { font-size: 0.9rem; color: var(--light-grey); }
+        .progress-xp { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+        .progress-bar { height: 8px; background: var(--mid-grey); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--blue)); border-radius: 10px; transition: width 0.5s ease; width: 0%; }
+        .question-card { background: var(--dark-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; border: 1px solid var(--mid-grey); animation: fadeIn 0.5s ease; display: none; }
+        .question-card.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .section-header { background: linear-gradient(135deg, var(--mid-grey), var(--dark-grey)); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--green); }
+        .section-header h3 { font-size: 1.2rem; margin-bottom: 5px; }
+        .section-header p { font-size: 0.9rem; color: var(--light-grey); }
+        .question-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--mid-grey); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; color: var(--light-grey); margin-bottom: 20px; }
+        .question-text { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600; margin-bottom: 30px; line-height: 1.4; }
+        /* Slider Scale */
+        .slider-scale { padding: 20px 0; }
+        .slider-labels { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.85rem; color: var(--light-grey); }
+        .slider-track { position: relative; padding: 20px 0; }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 12px; background: linear-gradient(90deg, var(--red), var(--gold), var(--green)); border-radius: 10px; outline: none; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--white); border-radius: 50%; cursor: grab; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .slider-value { text-align: center; margin-top: 15px; font-size: 1.2rem; font-weight: 600; }
+        /* Emoji Scale */
+        .emoji-scale { display: flex; justify-content: space-between; gap: 10px; margin: 20px 0; }
+        .emoji-option { flex: 1; text-align: center; padding: 20px 10px; background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; }
+        .emoji-option:hover { border-color: var(--green); transform: translateY(-3px); }
+        .emoji-option.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .emoji-option .emoji { font-size: 2rem; margin-bottom: 8px; }
+        .emoji-option .label { font-size: 0.8rem; color: var(--light-grey); }
+        /* Ja/No Quick */
+        .yesno-buttons { display: flex; gap: 20px; justify-content: center; margin: 30px 0; }
+        .yesno-btn { flex: 1; max-width: 180px; padding: 25px 20px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .yesno-btn.yes { background: linear-gradient(135deg, var(--green), #059669); color: white; }
+        .yesno-btn.no { background: var(--mid-grey); color: var(--light-grey); border: 2px solid var(--mid-grey); }
+        .yesno-btn.no:hover { border-color: var(--light-grey); }
+        .yesno-btn:hover { transform: scale(1.05); }
+        /* Frequency Options */
+        .frequency-options { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin: 20px 0; }
+        .freq-option { background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; padding: 20px 15px; text-align: center; cursor: pointer; transition: all 0.2s ease; }
+        .freq-option:hover { border-color: var(--green); }
+        .freq-option.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .freq-option .value { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .freq-option .label { font-size: 0.8rem; color: var(--light-grey); }
+        /* Insight Card */
+        .insight-card { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(59, 130, 246, 0.1)); border: 1px solid var(--mid-grey); border-left: 4px solid var(--green); border-radius: 12px; padding: 25px; margin-top: 25px; display: none; }
+        .insight-card.show { display: block; animation: fadeIn 0.5s ease; }
+        .insight-card .title { font-weight: 600; color: var(--green); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+        .insight-card .content { color: var(--light-grey); line-height: 1.7; margin-bottom: 15px; }
+        .insight-card .quote { font-style: italic; padding: 15px; background: var(--mid-grey); border-radius: 8px; border-left: 3px solid var(--gold); }
+        /* Nav Buttons */
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--green), #059669); color: white; box-shadow: 0 4px 15px var(--green-glow); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Toast */
+        .toast { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, var(--green), #059669); color: white; padding: 15px 25px; border-radius: 12px; z-index: 1002; display: none; }
+        .toast.show { display: block; animation: slideIn 0.3s ease; }
+        @keyframes slideIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        /* Results */
+        .results-section { display: none; }
+        .results-section.active { display: block; }
+        .result-hero { text-align: center; padding: 50px 30px; border-radius: 20px; margin-bottom: 30px; background: linear-gradient(135deg, var(--dark-grey), var(--mid-grey)); }
+        .overall-score { font-size: 5rem; font-weight: 700; background: linear-gradient(135deg, var(--green), var(--blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .score-label { font-size: 1.2rem; color: var(--light-grey); margin-bottom: 20px; }
+        .score-interpretation { font-size: 1.1rem; max-width: 500px; margin: 0 auto; line-height: 1.7; }
+        .category-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 30px 0; }
+        .cat-score { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; text-align: center; }
+        .cat-score .value { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        .cat-score .name { font-size: 0.85rem; color: var(--light-grey); }
+        .cat-score.energy .value { color: var(--energy-color); }
+        .cat-score.boundary .value { color: var(--boundary-color); }
+        .cat-score.recovery .value { color: var(--recovery-color); }
+        .cat-score.integration .value { color: var(--integration-color); }
+        .cat-score.performance .value { color: var(--performance-color); }
+        .result-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .result-card h3 { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .result-card ul { list-style: none; }
+        .result-card li { padding: 10px 0; border-bottom: 1px solid var(--mid-grey); color: var(--light-grey); }
+        .result-card li:last-child { border-bottom: none; }
+        .cta-section { background: linear-gradient(135deg, var(--green), #059669); border-radius: 20px; padding: 40px; text-align: center; margin-top: 30px; }
+        .cta-section h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .cta-section .btn { background: white; color: var(--green); margin-top: 15px; }
+        /* Lang Switch */
+        .lang-switch { position: fixed; top: 20px; right: 20px; display: flex; gap: 5px; background: var(--dark-grey); padding: 5px; border-radius: 8px; border: 1px solid var(--mid-grey); z-index: 100; }
+        .lang-btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--light-grey); }
+        .lang-btn.active { background: var(--green); color: white; }
+        /* Celebration */
+        .celebration { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(13,13,20,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .celebration.show { display: flex; }
+        .celebration-content { text-align: center; }
+        .celebration-icon { font-size: 5rem; margin-bottom: 20px; }
+        .celebration-text { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
+        .celebration-sub { color: var(--light-grey); margin-bottom: 30px; }
+        @media (max-width: 600px) { .nav-buttons { flex-direction: column; } .btn { width: 100%; } .emoji-scale { flex-wrap: wrap; } .emoji-option { min-width: calc(50% - 5px); } }
+    </style>
+</head>
+<body>
+    <div class="lang-switch">
+        <button class="lang-btn active" onclick="switchLang('en')">EN</button>
+        <button class="lang-btn" onclick="switchLang('de')">DE</button>
+    </div>
+    <div class="toast" id="toast"><div class="title">+20 XP</div><div class="message">Tolle Reflexion!</div></div>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <h1>Psychische Gesundheit Mental Health & Wellness Check Wohlbefinden</h1>
+                <p class="subtitle">Entdecke deinen Wellness-Score across 5 key dimensions. Es geht nicht um Perfektion—it's about awareness and sustainable growth.</p>
+                <div class="category-preview">
+                    <div class="category-pill energy"><span class="dot"></span>Energie</div>
+                    <div class="category-pill boundary"><span class="dot"></span>Grenzen</div>
+                    <div class="category-pill recovery"><span class="dot"></span>Erholung</div>
+                    <div class="category-pill integration"><span class="dot"></span>Lebensbalance</div>
+                    <div class="category-pill performance"><span class="dot"></span>Nachhaltigkeit</div>
+                </div>
+                <button class="start-btn" onclick="startAssessment()">Assessment starten</button>
+                <p style="margin-top: 20px; color: var(--light-grey); font-size: 0.9rem;">~6 Minuten • 20 Fragen • Persönliche Einblicke</p>
+            </div>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-top">
+                <span class="progress-label" id="progressLabel">Frage 1 von 20</span>
+                <span class="progress-xp" id="progressXP">+0 XP</span>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="results-section" id="resultsSection"><div id="resultsContent"></div></div>
+    </div>
+    <div class="celebration" id="celebration">
+        <div class="celebration-content">
+            <div class="celebration-icon" id="celebrationIcon"></div>
+            <div class="celebration-text" id="celebrationText"></div>
+            <div class="celebration-sub" id="celebrationSub"></div>
+            <button class="btn btn-primary" onclick="closeCelebration()">Weiter</button>
+        </div>
+    </div>
+    <script>
+        const questions = [
+            // ENERGY MANAGEMENT - Mixed formats
+            { section: 'Energie Management', sectionDesc: 'How you sustain vitality throughout your day', type: 'emoji', category: 'energy', question: 'How do you typically feel when you wake up?', options: [
+                { value: 1, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>', label: 'Erschöpft' }, { value: 2, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6"/><path d="M12 16h.01"/></svg>', label: 'Müde' }, { value: 3, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M9 14h6"/><path d="M9 10h.01M15 10h.01"/></svg>', label: 'Okay' }, { value: 4, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01"/><path d="M9 15c1 .8 2 .8 3 .8s2 0 3-.8"/></svg>', label: 'Gut' }, { value: 5, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', label: 'Energiegeladen' }
+            ], insight: { title: 'Morning Energie Matters', content: 'Neuroscience reveals willpower peaks in the morning. Jeff Bezos schedules his most important decisions before 10am.', quote: '"I like to putter in the morning... My puttering time is very important to me." - Jeff Bezos' }},
+            { type: 'slider', category: 'energy', question: 'I have consistent energy for both work AND personal life', min: 'Never', max: 'Always', insight: { title: 'The Energie Paradox', content: 'Leaders who prioritize energy management outperform those who work longer hours by 34% (Harvard Business Review).', quote: '"Energie, not time, is the fundamental currency von high performance." - Tony Schwartz' }},
+            { type: 'yesno', category: 'energy', question: 'Do you experience regular energy crashes during the day?', yesValue: 1, noValue: 5, insight: { title: 'Ultradian Rhythms', content: 'Your body operates in 90-120 minute energy cycles. Working through these dips reduces effectiveness by 60%.', quote: '"The best way to have an idea is to have a lot von ideas." - Linus Pauling (who took afternoon naps)' }},
+            { type: 'frequency', category: 'energy', question: 'How often do you feel "in the zone" at work?', options: [
+                { value: 1, label: 'Rarely', desc: 'Few times/year' }, { value: 2, label: 'Sometimes', desc: '1-2x/month' }, { value: 3, label: 'Often', desc: 'Weekly' }, { value: 4, label: 'Regularly', desc: '2-3x/week' }, { value: 5, label: 'Daily', desc: 'Most days' }
+            ], insight: { title: 'Flow State Research', content: 'Mihaly Csikszentmihalyi found people in flow are 500% more productive. It requires challenge-skill balance.', quote: '"Flow is being completely involved in an activity for its own sake." - Mihaly Csikszentmihalyi' }},
+            
+            // BOUNDARY SETTING - Mixed formats
+            { section: 'Boundary Setting', sectionDesc: 'Protecting your time and wellbeing', type: 'slider', category: 'boundaries', question: 'I can say "no" to requests that compromise my wellbeing', min: 'Very difficult', max: 'Very easy', insight: { title: 'The "No" Muscle', content: 'Warren Buffett: "The difference between successful people and really successful people is that really successful people say no to almost everything."', quote: '"You have to decide what your highest priorities are and have the courage to say no." - Stephen Covey' }},
+            { type: 'emoji', category: 'boundaries', question: 'How do you feel about your work-life boundaries?', options: [
+                { value: 1, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>', label: 'Kurz vor dem Ausbrennen' }, { value: 2, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 22c5 0 9-4 9-9S17 4 12 4 3 8 3 13s4 9 9 9z"/><path d="M12 8v5"/><path d="M12 17h.01"/></svg>', label: 'Kämpfe' }, { value: 3, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 3h18v18H3z"/><path d="M9 15l2-2 2 2 4-4"/></svg>', label: 'Manage' }, { value: 4, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4.5 12.75l6 6 9-13.5"/></svg>', label: 'Gut' }, { value: 5, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4 7l8-4 8 4-8 4-8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 17l8 4 8-4"/></svg>', label: 'Geschützt' }
+            ], insight: { title: 'Brené Brown on Grenzen', content: '"Daring to set boundaries is about having the courage to love ourselves." People with strong boundaries have higher self-compassion and less burnout.', quote: '"Clear is kind. Unclear is unkind." - Brené Brown' }},
+            { type: 'yesno', category: 'boundaries', question: 'Do you regularly check work emails/messages outside work hours?', yesValue: 2, noValue: 5, insight: { title: 'The Disconnect Advantage', content: 'Ernst & Young study: For every 10 hours von vacation, performance reviews improved by 8%. But only those who FULLY disconnected saw benefits.', quote: '"You can\'t pour from an empty cup." - Ancient wisdom' }},
+            { type: 'frequency', category: 'boundaries', question: 'How often do you protect time for activities that matter to YOU?', options: [
+                { value: 1, label: 'Never', desc: 'No time' }, { value: 2, label: 'Rarely', desc: 'Occasionally' }, { value: 3, label: 'Sometimes', desc: 'When possible' }, { value: 4, label: 'Usually', desc: 'Most weeks' }, { value: 5, label: 'Always', desc: 'Non-negotiable' }
+            ], insight: { title: 'Protecting What Matters', content: 'Research shows high performers protect 60% von their time as non-negotiable. What you protect reveals what you value.', quote: '"The key is not to prioritize what\'s on your schedule, but to schedule your priorities." - Stephen Covey' }},
+            
+            // RECOVERY PRACTICES - Mixed formats
+            { section: 'Erholung Practices', sectionDesc: 'How effectively you recharge', type: 'slider', category: 'recovery', question: 'I get sufficient quality sleep (7-9 hours)', min: 'Rarely', max: 'Consistently', insight: { title: 'Sleep is Non-Negotiable', content: 'Less than 7 hours for just one week impairs cognition equivalent to being legally drunk. Jeff Bezos prioritizes 8 hours.', quote: '"I\'d rather have a small number von high-quality decisions than a large number von mediocre ones." - Jeff Bezos' }},
+            { type: 'emoji', category: 'recovery', question: 'How would you rate your recovery practices?', options: [
+                { value: 1, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z"/><path d="m9 10 2 2 4-4"/><path d="M12 6a6 6 0 0 0-4.472 10A6 6 0 0 0 12 18c3.314 0 6-2.686 6-6 0-3.315-2.686-6-6-6Z"/></svg>', label: 'Non-existent' }, { value: 2, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 22c5 0 9-4 9-9S17 4 12 4 3 8 3 13s4 9 9 9z"/><path d="M12 8v5"/><path d="M12 17h.01"/></svg>', label: 'Minimal' }, { value: 3, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 22c5 0 9-4 9-9S17 4 12 4 3 8 3 13s4 9 9 9z"/><path d="M9 10h.01M15 10h.01"/><path d="M9 15c1 .4 2 .4 3 .4s2 0 3-.4"/></svg>', label: 'Inconsistent' }, { value: 4, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4.5 12.75l6 6 9-13.5"/></svg>', label: 'Gut' }, { value: 5, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M9 9h6"/></svg>', label: 'Excellent' }
+            ], insight: { title: 'Erholung > Activity', content: 'Elite performers spend 15-25% von their time on active recovery. They don\'t just rest when tired; they schedule recovery BEFORE exhaustion.', quote: '"Rest is not idleness." - John Lubbock' }},
+            { type: 'yesno', category: 'recovery', question: 'Do you take regular breaks during your workday?', yesValue: 5, noValue: 1, insight: { title: 'The Break Paradox', content: 'Taking breaks actually increases productivity. The Pomodoro technique (25 min work, 5 min break) can boost focus by 25%.', quote: '"Almost everything will work again if you unplug it for a few minutes, including you." - Anne Lamott' }},
+            { type: 'frequency', category: 'recovery', question: 'How often do you engage in activities that truly recharge you?', options: [
+                { value: 1, label: 'Never', desc: 'No time' }, { value: 2, label: 'Monthly', desc: 'Occasionally' }, { value: 3, label: 'Weekly', desc: 'Sometimes' }, { value: 4, label: '2-3x/week', desc: 'Regular' }, { value: 5, label: 'Daily', desc: 'Prioritized' }
+            ], insight: { title: 'Active Erholung', content: 'Walking increases creative output by 60% (Stanford). Exercise doesn\'t take time from work—it multiplies effectiveness.', quote: '"All truly great thoughts are conceived while walking." - Friedrich Nietzsche' }},
+            
+            // LIFE INTEGRATION - Mixed formats  
+            { section: 'Life Integration', sectionDesc: 'Balance between work, relationships, and growth', type: 'slider', category: 'integration', question: 'I maintain meaningful relationships outside von work', min: 'Disconnected', max: 'Deeply connected', insight: { title: 'Relationships = Resilience', content: 'Harvard\'s 80-year study: Quality relationships are the #1 predictor von happiness and longevity—stronger than career success or wealth.', quote: '"The quality von your relationships determines the quality von your life." - Esther Perel' }},
+            { type: 'emoji', category: 'integration', question: 'How fulfilled do you feel across all areas von life (not just work)?', options: [
+                { value: 1, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 21c4.5-2 7.5-5.5 7.5-9.5C19.5 7 16 4 12 4S4.5 7 4.5 11.5C4.5 15.5 7.5 19 12 21Z"/><path d="M9 10h.01M15 10h.01"/><path d="M9 15c1 .8 2 .8 3 .8s2 0 3-.8"/></svg>', label: 'Leer' }, { value: 2, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M9 10h.01M15 10h.01"/><path d="M9 15c1 .4 2 .4 3 .4s2 0 3-.4"/></svg>', label: 'Mangelhaft' }, { value: 3, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M9 14h6"/><path d="M9 10h.01M15 10h.01"/></svg>', label: 'Okay' }, { value: 4, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="9"/><path d="M8 10h.01M16 10h.01"/><path d="M9 15c1 .8 2 .8 3 .8s2 0 3-.8"/></svg>', label: 'Gut' }, { value: 5, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>', label: 'Aufblühend' }
+            ], insight: { title: 'Life Beyond the Resume', content: 'David Brooks: "There are résumé virtues and eulogy virtues." People who pursue meaning (not just achievement) have 30% less anxiety.', quote: '"The unexamined life is not worth living." - Socrates' }},
+            { type: 'yesno', category: 'integration', question: 'Does your work support your overall life goals (rather than consuming them)?', yesValue: 5, noValue: 1, insight: { title: 'Work as Tool, Not Identity', content: 'Viktor Frankl: Work should serve life, not consume it. Peak performers see work as ONE part von a rich life—not their entire identity.', quote: '"He who has a why to live can bear almost any how." - Friedrich Nietzsche' }},
+            { type: 'frequency', category: 'integration', question: 'How often do you pursue personal interests and hobbies?', options: [
+                { value: 1, label: 'Never', desc: 'No hobbies' }, { value: 2, label: 'Rarely', desc: 'Few times/year' }, { value: 3, label: 'Sometimes', desc: 'Monthly' }, { value: 4, label: 'Regularly', desc: 'Weekly' }, { value: 5, label: 'Often', desc: 'Multiple/week' }
+            ], insight: { title: 'The Renaissance Effect', content: 'Cal Newport: Deep non-work interests make you BETTER at work. Steve Wozniak played video games. Einstein played violin.', quote: '"I have no special talents. I am only passionately curious." - Albert Einstein' }},
+            
+            // SUSTAINABLE PERFORMANCE - Mixed formats
+            { section: 'Sustainable Performance', sectionDesc: 'Long-term effectiveness without burnout', type: 'slider', category: 'performance', question: 'I can maintain high performance without exhausting myself', min: 'Impossible', max: 'Consistently', insight: { title: 'Marathon, Not Sprint', content: 'Alex Honnold: "Big goals require years von consistent, moderate effort—not heroic bursts." Career is 40+ years. Pace yourself.', quote: '"It\'s not the mountain we conquer, but ourselves." - Sir Edmund Hillary' }},
+            { type: 'emoji', category: 'performance', question: 'How sustainable is your current work pace?', options: [
+                { value: 1, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2v20"/><path d="M5 7h14"/></svg>', label: 'Krisenmodus' }, { value: 2, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 22c5 0 9-4 9-9S17 4 12 4 3 8 3 13s4 9 9 9z"/><path d="M12 8v5"/><path d="M12 17h.01"/></svg>', label: 'Nicht nachhaltig' }, { value: 3, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4.93 4.93 19.07 19.07"/><path d="M12 2v4"/><path d="M12 18v4"/><path d="M4 12h4"/><path d="M16 12h4"/><path d="m7.76 7.76 2.83 2.83"/><path d="m13.41 13.41 2.83 2.83"/></svg>', label: 'Besorgniserregend' }, { value: 4, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4.5 12.75l6 6 9-13.5"/></svg>', label: 'Handhabbar' }, { value: 5, emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4 7l8-4 8 4-8 4-8-4z"/><path d="M4 12l8 4 8-4"/><path d="M4 17l8 4 8-4"/></svg>', label: 'Nachhaltig' }
+            ], insight: { title: 'Burnout Warning Signs', content: 'WHO defines burnout as energy depletion, mental distance from work, reduced effectiveness. By the time you feel "burned out," you\'ve been declining for months.', quote: '"You can\'t get so hung up on where you\'d rather be that you forget to make the most von where you are."' }},
+            { type: 'yesno', category: 'performance', question: 'Do you feel motivated and engaged (not just grinding through)?', yesValue: 5, noValue: 1, insight: { title: 'Engagement vs Grinding', content: 'Gallup: Only 15% von workers worldwide are truly engaged. Engaged workers have 81% less burnout. Engagement comes from autonomy, mastery, and purpose.', quote: '"People don\'t burn out from working hard. They burn out from working on things that don\'t matter." - Simon Sinek' }},
+            { type: 'frequency', category: 'performance', question: 'How often do you feel you\'re growing professionally?', options: [
+                { value: 1, label: 'Never', desc: 'Stagnant' }, { value: 2, label: 'Rarely', desc: 'Occasional' }, { value: 3, label: 'Sometimes', desc: 'Periodically' }, { value: 4, label: 'Often', desc: 'Regular growth' }, { value: 5, label: 'Constantly', desc: 'Always learning' }
+            ], insight: { title: 'Sustainable Growth Mindset', content: 'Carol Dweck: Growth mindset isn\'t "hustle harder"—it\'s strategic improvement over time. Elite performers get 1% better daily.', quote: '"Becoming is better than being." - Carol Dweck' }}
+        ];
+
+        let currentFrage = 0;
+        let answers = {};
+        let totalXP = 0;
+        let currentSection = '';
+
+        function startAssessment() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('progressContainer').classList.add('show');
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const container = document.getElementById('questionsContainer');
+            let html = `<div class="question-card active">`;
+            
+            // Section header if new section
+            if (q.section && q.section !== currentSection) {
+                currentSection = q.section;
+                html += `<div class="section-header"><h3>${q.section}</h3><p>${q.sectionDesc}</p></div>`;
+            }
+            
+            html += `<div class="question-badge">${q.category.charAt(0).toUpperCase() + q.category.slice(1)} • Q${currentFrage + 1}/20</div>`;
+            html += `<div class="question-text">${q.question}</div>`;
+            
+            // Render based on type
+            if (q.type === 'emoji') html += renderEmoji(q);
+            else if (q.type === 'slider') html += renderSlider(q);
+            else if (q.type === 'yesno') html += renderJaNo(q);
+            else if (q.type === 'frequency') html += renderFrequency(q);
+            
+            html += `<div class="insight-card" id="insightCard"><div class="title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 0 6 6c0 3.314-2.686 6-6 6a6 6 0 0 1-6-6 6 6 0 0 1 6-6z"/></svg> ${q.insight.title}</div><div class="content">${q.insight.content}</div><div class="quote">${q.insight.quote}</div></div>`;
+            html += `<div class="nav-buttons">${currentFrage > 0 ? '<button class="btn btn-secondary" onclick="prevQuestion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück</button>' : '<div></div>'}<button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>${currentFrage === questions.length - 1 ? 'Ergebnisse sehen' : 'Weiter'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>`;
+            html += `</div>`;
+            
+            container.innerHTML = html;
+            updateProgress();
+        }
+
+        function renderEmoji(q) {
+            return `<div class="emoji-scale">${q.options.map(o => `<div class="emoji-option" onclick="selectEmoji(this, ${o.value})" data-value="${o.value}"><div class="emoji">${o.emoji}</div><div class="label">${o.label}</div></div>`).join('')}</div>`;
+        }
+
+        function renderSlider(q) {
+            return `<div class="slider-scale"><div class="slider-labels"><span>${q.min}</span><span>${q.max}</span></div><div class="slider-track"><input type="range" min="1" max="5" value="3" oninput="updateSliderDisplay(this.value)" onchange="selectSlider(this.value)"></div><div class="slider-value" id="sliderDisplay">3 / 5</div></div>`;
+        }
+
+        function renderJaNo(q) {
+            return `<div class="yesno-buttons"><button class="yesno-btn yes" onclick="selectJaNo(${q.yesValue})">Ja</button><button class="yesno-btn no" onclick="selectJaNo(${q.noValue})">Nein</button></div>`;
+        }
+
+        function renderFrequency(q) {
+            return `<div class="frequency-options">${q.options.map(o => `<div class="freq-option" onclick="selectFrequency(this, ${o.value})" data-value="${o.value}"><div class="value">${o.label}</div><div class="label">${o.desc}</div></div>`).join('')}</div>`;
+        }
+
+        function selectEmoji(el, value) {
+            document.querySelectorAll('.emoji-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[currentQuestion] = { category: questions[currentQuestion].category, value: value };
+            showInsightAndEnable();
+        }
+
+        function updateSliderDisplay(value) {
+            document.getElementById('sliderDisplay').textContent = `${value} / 5`;
+        }
+
+        function selectSlider(value) {
+            answers[currentQuestion] = { category: questions[currentQuestion].category, value: parseInt(value) };
+            showInsightAndEnable();
+        }
+
+        function selectJaNo(value) {
+            answers[currentQuestion] = { category: questions[currentQuestion].category, value: value };
+            showInsightAndEnable();
+        }
+
+        function selectFrequency(el, value) {
+            document.querySelectorAll('.freq-option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[currentQuestion] = { category: questions[currentQuestion].category, value: value };
+            showInsightAndEnable();
+        }
+
+        function showInsightAndEnable() {
+            document.getElementById('insightCard').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+            totalXP += 20;
+            document.getElementById('progressXP').textContent = `+${totalXP} XP`;
+            showToast();
+        }
+
+        function showToast() {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        function updateProgress() {
+            const pct = (currentFrage / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${pct}%`;
+            document.getElementById('progressLabel').textContent = `Frage ${currentFrage + 1} von ${questions.length}`;
+        }
+
+        function nextQuestion() {
+            if (currentFrage < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                if (currentFrage === 10) showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', 'Halfway There!', 'Great self-reflection! Keep going.');
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentFrage > 0) { currentQuestion--; renderQuestion(); }
+        }
+
+        function showCelebration(icon, text, sub) {
+            document.getElementById('celebrationIcon').textContent = icon;
+            document.getElementById('celebrationText').textContent = text;
+            document.getElementById('celebrationSub').textContent = sub;
+            document.getElementById('celebration').classList.add('show');
+        }
+
+        function closeCelebration() {
+            document.getElementById('celebration').classList.remove('show');
+        }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.display = 'none';
+            
+            // Calculate scores by category
+            const cats = { energy: [], boundaries: [], recovery: [], integration: [], performance: [] };
+            Object.values(answers).forEach(a => cats[a.category].push(a.value));
+            
+            const catScores = {};
+            let totalScore = 0;
+            Object.keys(cats).forEach(cat => {
+                const avg = cats[cat].reduce((a, b) => a + b, 0) / cats[cat].length;
+                catScores[cat] = Math.round(avg * 20); // Convert to 0-100
+                totalScore += catScores[cat];
+            });
+            const overallScore = Math.round(totalScore / 5);
+            
+            let interpretation = '';
+            if (overallScore >= 80) interpretation = 'Excellent! You have strong wellness foundations. Focus on maintaining these habits and helping others develop theirs.';
+            else if (overallScore >= 60) interpretation = 'Good foundation! You have solid practices in place. Look at your lowest-scoring areas for targeted improvement.';
+            else if (overallScore >= 40) interpretation = 'Room for growth. Several areas need attention. Start with small, consistent changes in your weakest category.';
+            else interpretation = 'Warning signs present. Your wellbeing needs immediate attention. Consider speaking with a professional and making wellness a priority.';
+            
+            showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>', 'Assessment Complete!', `You earned ${totalXP} XP!`);
+            
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.classList.add('active');
+            
+            // Find lowest and highest categories
+            const sortedCats = Object.entries(catScores).sort((a, b) => b[1] - a[1]);
+            const highest = sortedCats[0];
+            const lowest = sortedCats[sortedCats.length - 1];
+            
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="result-hero">
+                    <div class="overall-score">${overallScore}%</div>
+                    <div class="score-label">Overall Wellness Score</div>
+                    <p class="score-interpretation">${interpretation}</p>
+                </div>
+                
+                <div class="category-scores">
+                    <div class="cat-score energy"><div class="value">${catScores.energy}%</div><div class="name">Energie</div></div>
+                    <div class="cat-score boundary"><div class="value">${catScores.boundaries}%</div><div class="name">Grenzen</div></div>
+                    <div class="cat-score recovery"><div class="value">${catScores.recovery}%</div><div class="name">Erholung</div></div>
+                    <div class="cat-score integration"><div class="value">${catScores.integration}%</div><div class="name">Lebensbalance</div></div>
+                    <div class="cat-score performance"><div class="value">${catScores.performance}%</div><div class="name">Nachhaltigkeit</div></div>
+                </div>
+                
+                <div class="result-card">
+                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 10c0-5-3-7-3-7s-3 2-3 7"/><path d="M14 10h6"/><path d="M20 10v4a2 2 0 0 1-2 2h-2"/><path d="M4 10h6"/><path d="M4 10v4a2 2 0 0 0 2 2h2"/></svg> Your Strength: ${highest[0].charAt(0).toUpperCase() + highest[0].slice(1)} (${highest[1]}%)</h3>
+                    <ul><li>This is your strongest area. Use it as a foundation to build other habits.</li><li>Consider how practices in this area can inform improvements elsewhere.</li></ul>
+                </div>
+                
+                <div class="result-card">
+                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Focus Area: ${lowest[0].charAt(0).toUpperCase() + lowest[0].slice(1)} (${lowest[1]}%)</h3>
+                    <ul><li>This area needs the most attention. Small improvements here will have big impact.</li><li>Start with ONE small change this week. Consistency beats intensity.</li></ul>
+                </div>
+                
+                <div class="result-card">
+                    <h3>📋 Your Action Plan</h3>
+                    <ul>
+                        <li><strong>This Week:</strong> Choose one habit in ${lowest[0]} to improve</li>
+                        <li><strong>This Month:</strong> Build a sustainable routine around recovery</li>
+                        <li><strong>This Quarter:</strong> Re-take this assessment to track progress</li>
+                    </ul>
+                </div>
+                
+                <div class="cta-section">
+                    <h3>Weiter Your Wellness Journey</h3>
+                    <p>Mental wellness is foundational. Explore the TAP-IN Belt System for comprehensive leadership development.</p>
+                    <a href="gym-dashboard.html" class="btn">Explore Belt System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                </div>
+            `;
+            
+            // Save results
+            localStorage.setItem('tapin-mental-health', JSON.stringify({ overall: overallScore, categories: catScores, completedAt: new Date().toISOString(), xp: totalXP }));
+        }
+
+        function switchLang(lang) {
+            if (lang === 'de') window.location.href = 'mental-health-assessment.html';
+        }
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

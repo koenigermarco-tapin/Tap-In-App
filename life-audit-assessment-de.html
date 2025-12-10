@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Audit Assessment - TAP-IN</title>
+    <style>
+        :root { --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981; --gold: #fbbf24; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%); margin-bottom: 30px; }
+        .header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 15px; background: linear-gradient(135deg, var(--gold) 0%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: var(--light-grey); font-size: 1.1rem; max-width: 500px; margin: 0 auto 25px; }
+        .start-btn { background: linear-gradient(135deg, var(--green), #059669); color: white; border: none; padding: 18px 50px; font-size: 1.2rem; font-weight: 600; border-radius: 12px; cursor: pointer; }
+        .progress-container { position: sticky; top: 0; background: var(--dark-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--mid-grey); z-index: 100; display: none; }
+        .progress-container.show { display: block; }
+        .progress-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .progress-bar { height: 8px; background: var(--mid-grey); border-radius: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--purple)); border-radius: 10px; transition: width 0.5s; }
+        .question-card { background: var(--dark-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; border: 1px solid var(--mid-grey); display: none; }
+        .question-card.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 15px; }
+        .question-sub { color: var(--light-grey); margin-bottom: 25px; }
+        .scale-container { margin: 25px 0; }
+        .scale-labels { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 0.85rem; color: var(--light-grey); }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 12px; background: linear-gradient(90deg, var(--red), var(--gold), var(--green)); border-radius: 10px; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: white; border-radius: 50%; cursor: grab; }
+        .scale-value { text-align: center; margin-top: 15px; font-size: 2rem; font-weight: 700; }
+        .reflection-box { background: var(--mid-grey); border-radius: 12px; padding: 20px; margin-top: 20px; }
+        .reflection-box label { display: block; margin-bottom: 10px; color: var(--gold); font-size: 0.9rem; }
+        .reflection-box textarea { width: 100%; background: var(--black); border: 1px solid var(--light-grey); border-radius: 8px; padding: 15px; color: var(--white); font-size: 1rem; resize: vertical; min-height: 80px; }
+        .reflection-box textarea:focus { outline: none; border-color: var(--green); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--green), #059669); color: white; }
+        .toast { position: fixed; top: 20px; right: 20px; background: var(--green); color: white; padding: 15px 25px; border-radius: 12px; z-index: 1002; display: none; }
+        .toast.show { display: block; }
+        .results-section { display: none; }
+        .results-section.active { display: block; }
+        .result-hero { text-align: center; padding: 50px 30px; border-radius: 20px; margin-bottom: 30px; background: linear-gradient(135deg, var(--dark-grey), var(--mid-grey)); }
+        .life-score { font-size: 5rem; font-weight: 700; background: linear-gradient(135deg, var(--gold), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .area-scores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; }
+        .area-score { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; }
+        .area-score .header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .area-score .name { font-weight: 600; }
+        .area-score .value { font-weight: 700; }
+        .area-score .bar { height: 6px; background: var(--mid-grey); border-radius: 10px; }
+        .area-score .bar-fill { height: 100%; border-radius: 10px; }
+        .result-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .result-card h3 { margin-bottom: 15px; }
+        .result-card ul { list-style: none; }
+        .result-card li { padding: 10px 0; border-bottom: 1px solid var(--mid-grey); color: var(--light-grey); }
+        .result-card li:last-child { border-bottom: none; }
+        .cta-section { background: linear-gradient(135deg, var(--green), #059669); border-radius: 20px; padding: 40px; text-align: center; }
+        .cta-section .btn { background: white; color: var(--green); margin-top: 15px; }
+        .lang-switch { position: fixed; top: 20px; right: 20px; display: flex; gap: 5px; background: var(--dark-grey); padding: 5px; border-radius: 8px; z-index: 100; }
+        .lang-btn { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; background: transparent; color: var(--light-grey); }
+        .lang-btn.active { background: var(--green); color: white; }
+        .celebration { position: fixed; inset: 0; background: rgba(13,13,20,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .celebration.show { display: flex; }
+        .celebration-content { text-align: center; }
+        .celebration-icon { font-size: 5rem; margin-bottom: 20px; }
+        .celebration-text { font-size: 1.5rem; font-weight: 600; margin-bottom: 30px; }
+        @media (max-width: 600px) { .nav-buttons { flex-direction: column; } .btn { width: 100%; } .area-scores { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="lang-switch"><button class="lang-btn active">EN</button><button class="lang-btn" onclick="switchLang('de')">DE</button></div>
+    <div class="toast" id="toast">+25 XP</div>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <h1>Life Audit</h1>
+                <p class="subtitle">A comprehensive check-in across all life dimensions. Rate where you are today and identify where to focus next.</p>
+                <button class="start-btn" onclick="startAssessment()">Beginnen Life Audit</button>
+                <p style="margin-top: 20px; color: var(--light-grey);">~8 minutes - 10 dimensions - Reflection prompts</p>
+            </div>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-top"><span id="progressLabel">Bereich 1 von 10</span><span id="progressXP" style="color: var(--gold);">+0 XP</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="results-section" id="resultsSection"><div id="resultsContent"></div></div>
+    </div>
+    <div class="celebration" id="celebration"><div class="celebration-content"><div class="celebration-icon" id="celebrationIcon"></div><div class="celebration-text" id="celebrationText"></div><button class="btn btn-primary" onclick="closeCelebration()">Weiter</button></div></div>
+    <script>
+        const areas = [
+            { id: 'career', name: 'Career & Work', color: '#3b82f6', question: 'How satisfied are you with your career?', reflection: 'What would make your work more fulfilling?' },
+            { id: 'finance', name: 'Money & Finance', color: '#10b981', question: 'How satisfied are you with your finances?', reflection: 'What financial goal would give you peace von mind?' },
+            { id: 'health', name: 'Physical Health', color: '#f59e0b', question: 'How satisfied are you with your physical health?', reflection: 'What habit would most improve your health?' },
+            { id: 'mental', name: 'Mental Wellbeing', color: '#8b5cf6', question: 'How satisfied are you with your mental health?', reflection: 'What helps you feel most at peace?' },
+            { id: 'relationships', name: 'Relationships', color: '#ef4444', question: 'How satisfied are you with close relationships?', reflection: 'Who deserves more von your time?' },
+            { id: 'social', name: 'Social Life', color: '#ec4899', question: 'How satisfied are you with your social connections?', reflection: 'What community do you want to build?' },
+            { id: 'growth', name: 'Personal Growth', color: '#06b6d4', question: 'How satisfied are you with your development?', reflection: 'What skill would expand your possibilities?' },
+            { id: 'fun', name: 'Fun & Recreation', color: '#84cc16', question: 'How satisfied are you with fun in your life?', reflection: 'What brings you joy that you have neglected?' },
+            { id: 'environment', name: 'Physical Environment', color: '#f97316', question: 'How satisfied are you with your living space?', reflection: 'What change would improve daily life?' },
+            { id: 'purpose', name: 'Purpose & Meaning', color: '#a855f7', question: 'How satisfied are you with your sense von purpose?', reflection: 'What legacy do you want to create?' }
+        ];
+        const scores = {}, reflections = {};
+        let currentQ = 0, totalXP = 0;
+
+        function startAssessment() { document.getElementById('introScreen').style.display = 'none'; document.getElementById('progressContainer').classList.add('show'); renderQ(); }
+        
+        function renderQ() {
+            const a = areas[currentQ];
+            document.getElementById('questionsContainer').innerHTML = '<div class="question-card active"><div class="question-text" style="color: ' + a.color + ';">' + a.name + '</div><div class="question-sub">' + a.question + '</div><div class="scale-container"><div class="scale-labels"><span>Very Unsatisfied</span><span>Very Satisfied</span></div><input type="range" min="1" max="10" value="' + (scores[a.id] || 5) + '" oninput="updateValue(this.value)" onchange="saveScore(this.value)"><div class="scale-value" id="scaleValue" style="color: ' + a.color + ';">' + (scores[a.id] || 5) + '</div></div><div class="reflection-box"><label>' + a.reflection + '</label><textarea id="reflectionInput" placeholder="Take a moment to reflect..." oninput="saveReflection(this.value)">' + (reflections[a.id] || '') + '</textarea></div><div class="nav-buttons">' + (currentQ > 0 ? '<button class="btn btn-secondary" onclick="prev()">Zurück</button>' : '<div></div>') + '<button class="btn btn-primary" onclick="next()">' + (currentQ === areas.length - 1 ? 'Ergebnisse sehen' : 'Weiter') + '</button></div></div>';
+            document.getElementById('progressFill').style.width = (currentQ / areas.length * 100) + '%';
+            document.getElementById('progressLabel').textContent = 'Bereich ' + (currentQ + 1) + ' von ' + areas.length;
+        }
+
+        function updateValue(v) { document.getElementById('scaleValue').textContent = v; }
+        function saveScore(v) { scores[areas[currentQ].id] = parseInt(v); totalXP += 25; document.getElementById('progressXP').textContent = '+' + totalXP + ' XP'; var t = document.getElementById('toast'); t.classList.add('show'); setTimeout(function() { t.classList.remove('show'); }, 1500); }
+        function saveReflection(v) { reflections[areas[currentQ].id] = v; }
+
+        function next() { 
+            if (!scores[areas[currentQ].id]) scores[areas[currentQ].id] = 5;
+            if (currentQ < areas.length - 1) { currentQ++; renderQ(); if (currentQ === 5) showCelebration('Halfway!'); } 
+            else showResults(); 
+        }
+        function prev() { if (currentQ > 0) { currentQ--; renderQ(); } }
+        function showCelebration(text) { document.getElementById('celebrationIcon').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>'; document.getElementById('celebrationText').textContent = text; document.getElementById('celebration').classList.add('show'); }
+        function closeCelebration() { document.getElementById('celebration').classList.remove('show'); }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.display = 'none';
+            var areaScores = areas.map(function(a) { return { name: a.name, color: a.color, score: (scores[a.id] || 5) * 10, reflection: reflections[a.id] || '' }; });
+            var overall = Math.round(areaScores.reduce(function(sum, a) { return sum + a.score; }, 0) / areas.length);
+            var sorted = areaScores.slice().sort(function(a, b) { return a.score - b.score; });
+            var lowest = sorted[0], highest = sorted[sorted.length - 1];
+            document.getElementById('celebrationIcon').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>';
+            document.getElementById('celebrationText').textContent = 'Life Audit complete! +' + totalXP + ' XP';
+            document.getElementById('celebration').classList.add('show');
+            document.getElementById('resultsSection').classList.add('active');
+            var html = '<div class="result-hero"><div class="life-score">' + overall + '%</div><p style="color: var(--light-grey);">Overall Life Satisfaction</p></div><div class="area-scores">';
+            areaScores.forEach(function(a) { html += '<div class="area-score"><div class="header"><span class="name">' + a.name + '</span><span class="value" style="color: ' + a.color + ';">' + a.score + '%</span></div><div class="bar"><div class="bar-fill" style="width: ' + a.score + '%; background: ' + a.color + ';"></div></div></div>'; });
+            html += '</div><div class="result-card"><h3 style="color: var(--green);">Thriving: ' + highest.name + ' (' + highest.score + '%)</h3><ul><li>This is your strongest area. What is working here?</li></ul></div>';
+            html += '<div class="result-card"><h3 style="color: var(--red);">Priority: ' + lowest.name + ' (' + lowest.score + '%)</h3><ul><li>Small improvements here will boost overall satisfaction.</li></ul></div>';
+            html += '<div class="cta-section"><h3>Build Better Balance</h3><p>The TAP-IN Belt System includes tools for every life dimension.</p><a href="gym-dashboard.html" class="btn">Explore Belt System</a></div>';
+            document.getElementById('resultsContent').innerHTML = html;
+            localStorage.setItem('tapin-life-audit', JSON.stringify({ overall: overall, areas: areaScores, completedAt: new Date().toISOString(), xp: totalXP }));
+        }
+        function switchLang(lang) { if (lang === 'de') window.location.href = 'life-audit-assessment-de.html'; }
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+</body>
+</html>

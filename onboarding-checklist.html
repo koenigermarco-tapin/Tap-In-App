@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Onboarding Checklist | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Progress Overview */
+        .progress-overview {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border: 2px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .progress-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .progress-percent {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        /* Checklist Sections */
+        .checklist-section {
+            margin-bottom: 30px;
+        }
+        
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .section-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .section-icon.setup { background: var(--green-dim); }
+        .section-icon.setup svg { color: var(--green); }
+        .section-icon.invite { background: rgba(59, 130, 246, 0.2); }
+        .section-icon.invite svg { color: var(--blue); }
+        .section-icon.engage { background: rgba(139, 92, 246, 0.2); }
+        .section-icon.engage svg { color: var(--purple); }
+        .section-icon.monitor { background: rgba(251, 191, 36, 0.2); }
+        .section-icon.monitor svg { color: var(--gold); }
+        
+        .section-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .section-progress {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Checklist Items */
+        .checklist-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .checklist-item:hover {
+            border-color: var(--green);
+        }
+        
+        .checklist-item.completed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--dark-grey) 100%);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+        
+        .check-circle {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--mid-grey);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s;
+        }
+        
+        .check-circle svg {
+            width: 14px;
+            height: 14px;
+            color: var(--black);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .checklist-item.completed .check-circle {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        
+        .checklist-item.completed .check-circle svg {
+            opacity: 1;
+        }
+        
+        .item-content {
+            flex: 1;
+        }
+        
+        .item-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .checklist-item.completed .item-title {
+            text-decoration: line-through;
+            color: var(--light-grey);
+        }
+        
+        .item-desc {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .item-action {
+            margin-top: 10px;
+        }
+        
+        .action-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .action-link:hover {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .action-link svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        /* XP Reward */
+        .xp-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: var(--green-dim);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--green);
+        }
+        
+        .xp-reward svg {
+            width: 12px;
+            height: 12px;
+        }
+        
+        /* Completion Celebration */
+        .celebration {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .celebration.active {
+            display: flex;
+        }
+        
+        .celebration-content {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .celebration-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .celebration-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--green), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .celebration-desc {
+            color: var(--light-grey);
+            margin-bottom: 24px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            border-radius: 2px;
+            animation: confetti-fall 3s ease-out forwards;
+            pointer-events: none;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            .checklist-item { flex-direction: column; }
+            .check-circle { order: -1; }
+        }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="business-portal.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Portal
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+                Onboarding Checklist
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Team Onboarding Checklist</h1>
+            <p class="page-desc">Complete these steps to get your team set up for success with TAP-IN.</p>
+        </div>
+        
+        <!-- Progress Overview -->
+        <div class="progress-overview">
+            <div class="progress-header">
+                <div class="progress-title">Overall Progress</div>
+                <div class="progress-percent" id="overallPercent">0%</div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-stats">
+                <span><span id="completedCount">0</span> of <span id="totalCount">12</span> tasks completed</span>
+                <span class="xp-reward">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span id="earnedXP">0</span> / 500 XP earned
+                </span>
+            </div>
+        </div>
+        
+        <!-- Setup Section -->
+        <div class="checklist-section">
+            <div class="section-header">
+                <div class="section-icon setup">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div>
+                    <div class="section-title">Setup Your Team</div>
+                    <div class="section-progress" id="setupProgress">0 of 3 complete</div>
+                </div>
+            </div>
+            <div class="checklist-items" data-section="setup">
+                <div class="checklist-item" data-id="setup-1" data-xp="25" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Name your team</div>
+                        <div class="item-desc">Give your team a memorable name that reflects your group identity.</div>
+                        <div class="item-action">
+                            <a href="team-settings.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35"/></svg>
+                                Team Settings
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+25 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="setup-2" data-xp="25" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Generate team invite code</div>
+                        <div class="item-desc">Create a unique code that team members can use to join.</div>
+                        <div class="item-action">
+                            <a href="team-settings.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                                Generate Code
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+25 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="setup-3" data-xp="50" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Complete your own assessment</div>
+                        <div class="item-desc">Lead by example - complete the Combined Profile Assessment yourself first.</div>
+                        <div class="item-action">
+                            <a href="combined-profile-carousel.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Start Assessment
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Invite Section -->
+        <div class="checklist-section">
+            <div class="section-header">
+                <div class="section-icon invite">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <div>
+                    <div class="section-title">Invite Your Team</div>
+                    <div class="section-progress" id="inviteProgress">0 of 3 complete</div>
+                </div>
+            </div>
+            <div class="checklist-items" data-section="invite">
+                <div class="checklist-item" data-id="invite-1" data-xp="25" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Add your first team member</div>
+                        <div class="item-desc">Invite at least one person to join your team.</div>
+                        <div class="item-action">
+                            <a href="business-portal.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+                                Add Member
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+25 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="invite-2" data-xp="50" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Reach 5 team members</div>
+                        <div class="item-desc">Build momentum with a core group of 5 team members.</div>
+                        <div class="item-action">
+                            <a href="business-portal.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0"/></svg>
+                                View Team
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="invite-3" data-xp="50" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Send welcome reminder</div>
+                        <div class="item-desc">Send a reminder email to get everyone started.</div>
+                        <div class="item-action">
+                            <a href="team-send-reminders.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                Send Reminders
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Engage Section -->
+        <div class="checklist-section">
+            <div class="section-header">
+                <div class="section-icon engage">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div>
+                    <div class="section-title">Drive Engagement</div>
+                    <div class="section-progress" id="engageProgress">0 of 3 complete</div>
+                </div>
+            </div>
+            <div class="checklist-items" data-section="engage">
+                <div class="checklist-item" data-id="engage-1" data-xp="50" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">First team member completes assessment</div>
+                        <div class="item-desc">Celebrate when someone on your team finishes their first assessment.</div>
+                        <div class="item-action">
+                            <a href="team-aggregation-dashboard.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2z"/></svg>
+                                View Dashboard
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="engage-2" data-xp="75" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">50% team completion</div>
+                        <div class="item-desc">Half of your team has completed at least one assessment.</div>
+                        <div class="item-action">
+                            <a href="team-aggregation-dashboard.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8v8m-4-5v5m-4-2v2"/></svg>
+                                Check Progress
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+75 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="engage-3" data-xp="50" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Set team goals</div>
+                        <div class="item-desc">Define quarterly objectives for your team's development.</div>
+                        <div class="item-action">
+                            <a href="team-goals.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                Set Goals
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Monitor Section -->
+        <div class="checklist-section">
+            <div class="section-header">
+                <div class="section-icon monitor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                </div>
+                <div>
+                    <div class="section-title">Monitor & Report</div>
+                    <div class="section-progress" id="monitorProgress">0 of 3 complete</div>
+                </div>
+            </div>
+            <div class="checklist-items" data-section="monitor">
+                <div class="checklist-item" data-id="monitor-1" data-xp="25" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">View team health score</div>
+                        <div class="item-desc">Check your team's overall health score on the dashboard.</div>
+                        <div class="item-action">
+                            <a href="team-aggregation-dashboard.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                View Health
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+25 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="monitor-2" data-xp="50" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Generate first health report</div>
+                        <div class="item-desc">Create a PDF report to share with leadership.</div>
+                        <div class="item-action">
+                            <a href="team-health-report.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                Generate Report
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+50 XP</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="checklist-item" data-id="monitor-3" data-xp="25" onclick="toggleItem(this)">
+                    <div class="check-circle">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <div class="item-content">
+                        <div class="item-title">Get AI insights</div>
+                        <div class="item-desc">Review AI-powered recommendations for your team.</div>
+                        <div class="item-action">
+                            <a href="ai-team-insights.html" class="action-link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                                View Insights
+                            </a>
+                            <span class="xp-reward" style="margin-left: 8px;">+25 XP</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Celebration Modal -->
+    <div class="celebration" id="celebration" onclick="closeCelebration()">
+        <div class="celebration-content">
+            <div class="celebration-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg></div>
+            <h2 class="celebration-title">Onboarding Complete!</h2>
+            <p class="celebration-desc">Congratulations! You've completed all onboarding tasks and earned 500 XP.</p>
+            <button class="btn btn-primary" onclick="closeCelebration()">Continue to Dashboard</button>
+        </div>
+    </div>
+    
+    <script>
+        const storageKey = 'tapin_onboarding_progress';
+        
+        function loadProgress() {
+            const saved = localStorage.getItem(storageKey);
+            if (saved) {
+                const completed = JSON.parse(saved);
+                completed.forEach(id => {
+                    const item = document.querySelector(`[data-id="${id}"]`);
+                    if (item) item.classList.add('completed');
+                });
+            }
+            updateProgress();
+        }
+        
+        function saveProgress() {
+            const completed = [];
+            document.querySelectorAll('.checklist-item.completed').forEach(item => {
+                completed.push(item.dataset.id);
+            });
+            localStorage.setItem(storageKey, JSON.stringify(completed));
+        }
+        
+        function toggleItem(item) {
+            item.classList.toggle('completed');
+            saveProgress();
+            updateProgress();
+            
+            // Check if all complete
+            const total = document.querySelectorAll('.checklist-item').length;
+            const completed = document.querySelectorAll('.checklist-item.completed').length;
+            if (completed === total) {
+                showCelebration();
+            }
+        }
+        
+        function updateProgress() {
+            const sections = ['setup', 'invite', 'engage', 'monitor'];
+            let totalCompleted = 0;
+            let totalItems = 0;
+            let totalXP = 0;
+            
+            sections.forEach(section => {
+                const items = document.querySelectorAll(`[data-section="${section}"] .checklist-item`);
+                const completed = document.querySelectorAll(`[data-section="${section}"] .checklist-item.completed`);
+                document.getElementById(`${section}Progress`).textContent = `${completed.length} of ${items.length} complete`;
+                totalCompleted += completed.length;
+                totalItems += items.length;
+                
+                completed.forEach(item => {
+                    totalXP += parseInt(item.dataset.xp) || 0;
+                });
+            });
+            
+            const percent = totalItems > 0 ? Math.round((totalCompleted / totalItems) * 100) : 0;
+            document.getElementById('overallPercent').textContent = percent + '%';
+            document.getElementById('progressFill').style.width = percent + '%';
+            document.getElementById('completedCount').textContent = totalCompleted;
+            document.getElementById('totalCount').textContent = totalItems;
+            document.getElementById('earnedXP').textContent = totalXP;
+        }
+        
+        function showCelebration() {
+            document.getElementById('celebration').classList.add('active');
+            createConfetti();
+        }
+        
+        function closeCelebration() {
+            document.getElementById('celebration').classList.remove('active');
+        }
+        
+        function createConfetti() {
+            const colors = ['#10b981', '#3b82f6', '#fbbf24', '#8b5cf6', '#ef4444'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 50);
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadProgress);
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

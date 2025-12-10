@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Purple Belt Earned! - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --purple-dark: #7c3aed;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white); 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+        
+        .container { 
+            max-width: 500px; 
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Belt Display */
+        .belt-display {
+            margin-bottom: 30px;
+            animation: beltReveal 1s ease-out forwards;
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        @keyframes beltReveal {
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .belt-visual {
+            width: 200px;
+            height: 150px;
+            margin: 0 auto 20px;
+            position: relative;
+            background-image: url('icons/belt-purple.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(0 0 40px rgba(139, 92, 246, 0.5));
+        }
+        
+        .rank-label {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple);
+            margin-bottom: 8px;
+        }
+        
+        .rank-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--purple), #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .rank-subtitle {
+            color: var(--light-grey);
+            font-size: 1rem;
+        }
+        
+        /* Journey Card */
+        .journey-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            animation: slideUp 0.8s ease-out 0.3s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .journey-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 15px;
+        }
+        
+        .journey-path {
+            display: flex;
+            
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .belt-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .belt-mini {
+            width: 60px;
+            height: 45px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            opacity: 0.4;
+        }
+        .belt-mini.white { background-image: url('icons/belt-white.png'); }
+        .belt-mini.blue { background-image: url('icons/belt-blue.png'); }
+        .belt-mini.purple { background-image: url('icons/belt-purple.png'); opacity: 1; filter: drop-shadow(0 0 10px rgba(139, 92, 246, 0.5)); }
+        .belt-mini.brown { background-image: url('icons/belt-brown.png'); }
+        .belt-mini.black { background-image: url('icons/belt-black.png'); }
+        
+        .belt-mini.complete {
+            opacity: 1;
+        }
+        
+        .belt-label {
+            font-size: 0.65rem;
+            color: var(--light-grey);
+        }
+        .belt-step.current .belt-label {
+            color: var(--purple);
+            font-weight: 600;
+        }
+        
+        .arrow {
+            color: var(--mid-grey);
+            font-size: 0.8rem;
+        }
+        
+        /* Mastery Card */
+        .mastery-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: left;
+            animation: slideUp 0.8s ease-out 0.5s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .mastery-title {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--purple);
+        }
+        
+        .mastery-list {
+            list-style: none;
+        }
+        
+        .mastery-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .mastery-icon {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        /* Quote */
+        .quote-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+            border: 1px solid var(--purple);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            animation: slideUp 0.8s ease-out 0.7s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .quote-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .quote-author {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Next Steps */
+        .next-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            animation: slideUp 0.8s ease-out 0.9s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        .next-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 12px;
+        }
+        
+        .next-belt {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .next-belt-icon {
+            width: 50px;
+            height: 14px;
+            background: #8B4513;
+            border-radius: 3px;
+        }
+        
+        .next-belt-info h4 {
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+        
+        .next-belt-info p {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+        
+        /* Button */
+        .btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            animation: slideUp 0.8s ease-out 1.1s forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .btn-primary {
+            background: var(--purple);
+            color: white;
+        }
+        .btn-primary:hover { 
+            background: var(--purple-dark);
+            box-shadow: 0 0 30px rgba(139, 92, 246, 0.3);
+        }
+        
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            top: -10px;
+            animation: confettiFall linear forwards;
+        }
+        @keyframes confettiFall {
+            to {
+                top: 100vh;
+                transform: rotate(720deg);
+            }
+        }
+        
+        /* Glow effect */
+        .glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+            border-radius: 50%;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.8; transform: translateX(-50%) scale(1.1); }
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="brown-belt-stripe1-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="purple-belt-ceremony-de.html" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="glow"></div>
+    
+    <div class="container">
+        <!-- Belt Display -->
+        <div class="belt-display">
+            <div class="belt-visual"></div>
+            <div class="rank-label">Congratulations</div>
+            <h1 class="rank-title">Purple Belt</h1>
+            <p class="rank-subtitle">Conflict Resolution Master</p>
+        </div>
+        
+        <!-- Journey Path -->
+        <div class="journey-card">
+            <div class="journey-title">Your Journey</div>
+            <div class="journey-path">
+                <div class="belt-step">
+                    <div class="belt-mini white complete"></div>
+                    <span class="belt-label">White</span>
+                </div>
+                <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                <div class="belt-step">
+                    <div class="belt-mini blue complete"></div>
+                    <span class="belt-label">Blue</span>
+                </div>
+                <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                <div class="belt-step current">
+                    <div class="belt-mini purple"></div>
+                    <span class="belt-label">Purple</span>
+                </div>
+                <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                <div class="belt-step">
+                    <div class="belt-mini brown"></div>
+                    <span class="belt-label">Brown</span>
+                </div>
+                <span class="arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+                <div class="belt-step">
+                    <div class="belt-mini black"></div>
+                    <span class="belt-label">Black</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mastery Card -->
+        <div class="mastery-card">
+            <h3 class="mastery-title">Skills You've Mastered</h3>
+            <ul class="mastery-list">
+                <li class="mastery-item">
+                    <svg class="mastery-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>STATE Method</strong> — Navigate difficult conversations with facts before stories</span>
+                </li>
+                <li class="mastery-item">
+                    <svg class="mastery-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>Active Listening</strong> — Reflect before responding, understand before advising</span>
+                </li>
+                <li class="mastery-item">
+                    <svg class="mastery-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>SBIR Feedback</strong> — Give and receive feedback that drives growth</span>
+                </li>
+                <li class="mastery-item">
+                    <svg class="mastery-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span><strong>Healthy Boundaries</strong> — Protect your energy without damaging relationships</span>
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Quote -->
+        <div class="quote-card">
+            <p class="quote-text">"The quality of your life is the quality of your relationships. The quality of your relationships is the quality of your communication."</p>
+            <p class="quote-author">— Tony Robbins</p>
+        </div>
+        
+        <!-- Next Steps -->
+        <div class="next-card">
+            <div class="next-title">Coming Up Next</div>
+            <div class="next-belt">
+                <div class="next-belt-icon"></div>
+                <div class="next-belt-info">
+                    <h4>Brown Belt: Accountability</h4>
+                    <p>Creating clarity, measuring results, having hard conversations</p>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn btn-primary" onclick="beginNextBelt()">Continue Training</button>
+    </div>
+    
+    <script>
+        function beginNextBelt() {
+            // Trigger Oracle rest (2 hours) before next belt content
+            const restDuration = 2 * 60 * 60 * 1000;
+            localStorage.setItem('tap_in_oracle_until', Date.now() + restDuration);
+            window.location.href = 'brown-belt-stripe1-gamified.html';
+        }
+        
+        // Save progress
+        localStorage.setItem('tap_in_purple_belt_earned', 'true');
+        
+        // Update XP
+        let xp = parseInt(localStorage.getItem('tap_in_xp') || '0');
+        xp += 100; // Bonus for earning Purple Belt
+        localStorage.setItem('tap_in_xp', xp);
+        
+        // Confetti celebration
+        function createConfetti() {
+            const colors = ['#8b5cf6', '#a78bfa', '#c4b5fd', '#d4a853', '#10b981', '#ffffff'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    
+                    if (Math.random() > 0.5) {
+                        confetti.style.borderRadius = '50%';
+                    }
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 50);
+            }
+        }
+        
+        // Launch confetti on load
+        setTimeout(createConfetti, 500);
+        setTimeout(createConfetti, 2000);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

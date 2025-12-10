@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- CACHE BUSTER - Load FIRST, before anything else -->
+    <script src="cache-buster.js"></script>
+
+  <title>Business Portal | Tap-In Team-Dashboard</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      background: #1a1d2e;
+      color: #e2e8f0;
+      font-family: Inter, -apple-system, sans-serif;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .header {
+      margin-bottom: 3rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 1rem;
+    }
+
+    /* Simple auth gate overlay for demo/prototype */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 12, 24, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1.5rem;
+    }
+
+    .auth-modal {
+      background: #252940;
+      border: 1px solid #3d4466;
+      border-radius: 16px;
+      padding: 1.75rem;
+      max-width: 420px;
+      width: 100%;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+    }
+
+    .auth-modal h2 {
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .auth-modal p {
+      color: #94a3b8;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .auth-modal label {
+      color: #cbd5f5;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+
+    .auth-modal input {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border-radius: 10px;
+      border: 1px solid #3d4466;
+      background: #1a1d2e;
+      color: #e2e8f0;
+      margin-bottom: 0.9rem;
+      font-size: 0.95rem;
+    }
+
+    .auth-modal input:focus {
+      outline: none;
+      border-color: #4a7c9c;
+    }
+
+    .auth-error {
+      color: #f87171;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      min-height: 1.2rem;
+    }
+
+    .hidden { display: none !important; }
+
+    .breadcrumb {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .breadcrumb a {
+      color: #4a7c9c;
+      text-decoration: none;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      color: #e2e8f0;
+    }
+
+    .subtitle {
+      color: #94a3b8;
+      font-size: 1.1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .stat-card {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      border-color: #4a7c9c;
+      transform: translateY(-4px);
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #4a7c9c;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+
+    .card {
+      background: #252940;
+      border: 2px solid #3d4466;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .combined-card {
+      background: linear-gradient(135deg, #1a365d 0%, #131b2f 100%);
+      border-color: #4a5568;
+      box-shadow: 0 12px 30px rgba(10, 15, 35, 0.5);
+    }
+
+    .combined-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 0.5rem;
+    }
+
+    .combined-subtitle {
+      color: #cbd5f5;
+      margin-bottom: 1.25rem;
+      line-height: 1.6;
+    }
+
+    .combined-meta {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: #9ca3af;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    .card-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .btn {
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      font-size: 0.95rem;
+    }
+
+    .btn-primary {
+      background: #4a7c9c;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #5a8cac;
+      transform: translateY(-2px);
+    }
+
+    .btn-secondary {
+      background: #3d4466;
+      color: #e2e8f0;
+    }
+
+    .btn-secondary:hover {
+      background: #4d5476;
+    }
+
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #dc2626;
+    }
+
+    .team-code-box {
+      background: #1a1d2e;
+      border: 2px solid #4a7c9c;
+      border-radius: 8px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 2rem;
+    }
+
+    .team-code-text {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #4a7c9c;
+      letter-spacing: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      text-align: left;
+      padding: 1rem;
+      color: #94a3b8;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid #3d4466;
+    }
+
+    td {
+      padding: 1rem;
+      border-bottom: 1px solid #3d4466;
+    }
+
+    tr:hover {
+      background: rgba(74, 124, 156, 0.05);
+    }
+
+    .belt-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .belt-white { background: rgba(226, 232, 240, 0.2); color: #e2e8f0; }
+    .belt-blue { background: rgba(74, 124, 156, 0.2); color: #4a7c9c; }
+    .belt-purple { background: rgba(168, 85, 247, 0.2); color: #a855f7; }
+    .belt-brown { background: rgba(217, 119, 6, 0.2); color: #d97706; }
+    .belt-black { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+
+    .add-member-form {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      gap: 1rem;
+      align-items: end;
+      margin-bottom: 2rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .form-input {
+      padding: 0.75rem 1rem;
+      background: #1a1d2e;
+      border: 2px solid #3d4466;
+      border-radius: 8px;
+      color: #e2e8f0;
+      font-size: 1rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #4a7c9c;
+    }
+
+    .action-btn {
+      padding: 0.5rem 1rem;
+      background: transparent;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:hover {
+      color: #dc2626;
+      transform: scale(1.1);
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .add-member-form {
+        grid-template-columns: 1fr;
+      }
+      table {
+        font-size: 0.85rem;
+      }
+      th, td {
+        padding: 0.75rem 0.5rem;
+      }
+    }
+  
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+  <div class="container">
+    
+    <div class="header">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> / Business Portal
+      </div>
+      <div>
+        <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Business Portal</h1>
+        <p class="subtitle">Manage your team's leadership development journey</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-secondary" onclick="window.location.href='gym-dashboard-de.html'">Zurück zum Gym</button>
+        <button class="btn btn-secondary" onclick="window.location.href='manager-quick-start-de.html'">Schnellstart-Anleitung</button>
+        <button class="btn btn-secondary" onclick="window.location.href='learning-hub-de.html'">Zum Hub</button>
+      </div>
+    </div>
+
+    <!-- Auth Gate -->
+    <div class="auth-overlay hidden" id="authOverlay" aria-modal="true" role="dialog">
+      <div class="auth-modal">
+        <h2>Admin Access Required</h2>
+        <p>Use the provided credentials to view the Business Portal. (Demo data only)</p>
+        <form id="authForm">
+          <label for="authUser">Benutzername</label>
+          <input id="authUser" name="authUser" type="text" autocomplete="username" placeholder="admin">
+          <label for="authPass">Passwort</label>
+          <input id="authPass" name="authPass" type="password" autocomplete="current-password" placeholder="tapinmk1992">
+          <div class="auth-error" id="authError"></div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Unlock Portal</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Demo notice / credentials for stakeholders -->
+    <div class="card" style="border: 1px dashed #4a7c9c; background: rgba(74,124,156,0.08);">
+      <div class="card-header">
+        <div class="card-title"> Demo & Credentials</div>
+        <span style="color:#94a3b8; font-size:0.9rem;">Sample data for review</span>
+      </div>
+      <p style="color:#cbd5f5; margin-bottom:0.75rem;">This environment uses demo data. Use these credentials for the admin view:</p>
+      <div style="display:flex; flex-wrap:wrap; gap:1rem; align-items:center; margin-bottom:1rem;">
+        <span style="background:#1a365d; border:1px solid #3d4466; border-radius:8px; padding:0.5rem 0.75rem; color:#e2e8f0; font-weight:600;">Benutzername: admin</span>
+        <span style="background:#1a365d; border:1px solid #3d4466; border-radius:8px; padding:0.5rem 0.75rem; color:#e2e8f0; font-weight:600;">Passwort: tapinmk1992</span>
+        <span style="background:#3d4466; border-radius:8px; padding:0.35rem 0.6rem; color:#e2e8f0; font-size:0.9rem;">Demo data only</span>
+      </div>
+      <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+        <button class="btn btn-primary" onclick="window.location.href='contact-card-blackbelt-de.html'">QR-Visitenkarte ansehen</button>
+        <button class="btn btn-secondary" onclick="window.location.href='combined-profile-carousel.de.html'">Launch Combined Assessment</button>
+      </div>
+    </div>
+
+    <!-- Team Access Code -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Your Team Access Code</div>
+        <button class="btn btn-secondary" onclick="generateNewCode()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Neuen Code generieren
+        </button>
+      </div>
+      <div class="team-code-box">
+        <div>
+          <div style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 0.5rem;">Teile diesen Code mit deinem Team:</div>
+          <div class="team-code-text" id="teamCode">TEAM-LOADING</div>
+        </div>
+        <button class="btn btn-primary" onclick="copyTeamCode()">
+           Code kopieren
+        </button>
+      </div>
+      <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+        Teammitglieder können diesen Code bei der Anmeldung eingeben, um automatisch deinem Team beizutreten.
+      </p>
+    </div>
+
+    <!-- Shareable Link Section -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"> Einladungslink</div>
+      </div>
+      
+      <p style="color: #94a3b8; margin-bottom: 1rem; line-height: 1.6;">
+        Teile diesen Link mit Teammitgliedern für automatischen Beitritt:
+      </p>
+      
+      <div class="team-code-box">
+        <div>
+          <div class="team-code-text" style="font-size: 1rem; word-break: break-all;" id="inviteLink">Loading...</div>
+        </div>
+        <button class="btn btn-primary" onclick="copyInviteLink()">
+           Link kopieren
+        </button>
+      </div>
+      
+      <p style="color: #94a3b8; font-size: 0.9rem; line-height: 1.6; margin-top: 1rem;">
+        Teammitglieder, die diesen Link anklicken, haben den Code automatisch ausgefüllt.
+      </p>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="totalMembers">0</div>
+        <div class="stat-label">Teammitglieder</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="avgXP">0</div>
+        <div class="stat-label">Durchschn. XP</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="completionRate">0%</div>
+        <div class="stat-label">Abschlussrate</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activeMembers">0</div>
+        <div class="stat-label">Diese Woche aktiv</div>
+      </div>
+    </div>
+
+    <!-- Team Dashboard Link -->
+    <div class="card" style="background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(59, 130, 246, 0.1) 100%); border: 2px solid rgba(16, 185, 129, 0.3);">
+      <div class="card-header" style="border-bottom: none;">
+        <div class="card-title" style="color: #10b981; font-size: 1.2rem;">
+          <svg style="width: 24px; height: 24px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          Team-Aggregations-Dashboard
+        </div>
+        <button class="btn btn-primary" onclick="window.location.href='team-aggregation-dashboard-de.html'" style="background: #10b981;">
+          Dashboard öffnen
+        </button>
+      </div>
+      <p style="color: #94a3b8; line-height: 1.6;">
+        Sieh den Gesundheitswert deines Teams, Five Dysfunctions Radar-Diagramm, Mitglieder-Fortschritt und Teamzusammensetzung auf einen Blick.
+      </p>
+      <div style="display: flex; gap: 1rem; margin-top: 1rem; flex-wrap: wrap;">
+        <span style="color: #10b981; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Team-Gesundheitswert
+        </span>
+        <span style="color: #10b981; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Five Dysfunctions Radar
+        </span>
+        <span style="color: #10b981; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Mitglieder-Fortschritt
+        </span>
+        <span style="color: #10b981; font-size: 0.85rem; display: flex; align-items: center; gap: 4px;">
+          <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Team-Verteilungsdiagramme
+        </span>
+      </div>
+    </div>
+
+    <!-- Business Tools Grid -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+      <!-- AI Insights -->
+      <div class="card" style="border: 2px solid rgba(139, 92, 246, 0.3); background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(59, 130, 246, 0.05) 100%);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(139, 92, 246, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #8b5cf6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: #e2e8f0;">KI Team-Einblicke</div>
+            <div style="font-size: 0.8rem; color: #8b5cf6;">BETA</div>
+          </div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Erhalte KI-gestützte Empfehlungen basierend auf deinen Team-Daten.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='ai-team-insights-de.html'" style="width: 100%;">Einblicke öffnen</button>
+      </div>
+      
+      <!-- Team Comparison -->
+      <div class="card" style="border: 2px solid rgba(59, 130, 246, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(59, 130, 246, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #3b82f6;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Team-Vergleich</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Vergleiche Gesundheitswerte und Dynamiken über mehrere Teams.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='team-comparison-de.html'" style="width: 100%;">Teams vergleichen</button>
+      </div>
+      
+      <!-- Health Report -->
+      <div class="card" style="border: 2px solid rgba(16, 185, 129, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(16, 185, 129, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #10b981;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">PDF Gesundheitsbericht</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Erstelle herunterladbare PDF-Berichte für die Führungsebene.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='team-health-report-de.html'" style="width: 100%;">Bericht erstellen</button>
+      </div>
+      
+      <!-- Send Reminders -->
+      <div class="card" style="border: 2px solid rgba(251, 191, 36, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(251, 191, 36, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #fbbf24;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Erinnerungen senden</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Erinnere inaktive Mitglieder an ihre Assessments.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='team-send-reminders-de.html'" style="width: 100%;">Erinnerungen senden</button>
+      </div>
+      
+      <!-- Role Management -->
+      <div class="card" style="border: 2px solid rgba(239, 68, 68, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(239, 68, 68, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #ef4444;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Rollenverwaltung</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Steuere Zugriffsebenen und Berechtigungen für Teammitglieder.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='role-management-de.html'" style="width: 100%;">Rollen verwalten</button>
+      </div>
+      
+      <!-- Pricing -->
+      <div class="card" style="border: 2px solid rgba(6, 182, 212, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(6, 182, 212, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #06b6d4;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Preispläne</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Abonnement-Optionen ansehen und Plan upgraden.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='pricing-de.html'" style="width: 100%;">Preise ansehen</button>
+      </div>
+      
+      <!-- Export Center -->
+      <div class="card" style="border: 2px solid rgba(249, 115, 22, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(249, 115, 22, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #f97316;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Export-Center</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Team-Daten als CSV, PDF, JSON oder Excel herunterladen.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='export-center-de.html'" style="width: 100%;">Daten exportieren</button>
+      </div>
+      
+      <!-- Team Goals -->
+      <div class="card" style="border: 2px solid rgba(168, 85, 247, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(168, 85, 247, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #a855f7;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Team-Ziele & OKRs</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Vierteljährliche Ziele und Ergebnisse für dein Team verfolgen.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='team-goals-de.html'" style="width: 100%;">Ziele verwalten</button>
+      </div>
+      
+      <!-- Onboarding Checklist -->
+      <div class="card" style="border: 2px solid rgba(34, 197, 94, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(34, 197, 94, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #22c55e;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Onboarding-Checkliste</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Schritt-für-Schritt-Anleitung für erfolgreiche Team-Einrichtung.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='onboarding-checklist-de.html'" style="width: 100%;">Checkliste ansehen</button>
+      </div>
+      
+      <!-- Team Benchmarks -->
+      <div class="card" style="border: 2px solid rgba(14, 165, 233, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(14, 165, 233, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #0ea5e9;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Branchen-Benchmarks</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Vergleiche dein Team mit Branchenstandards und Top-Performern.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='team-benchmarks-de.html'" style="width: 100%;">Benchmarks ansehen</button>
+      </div>
+      
+      <!-- Integrations -->
+      <div class="card" style="border: 2px solid rgba(236, 72, 153, 0.3);">
+        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+          <div style="width: 40px; height: 40px; background: rgba(236, 72, 153, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+            <svg style="width: 20px; height: 20px; color: #ec4899;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+          </div>
+          <div style="font-weight: 700; color: #e2e8f0;">Integrationen</div>
+        </div>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 16px;">Verbinde Slack, Teams und andere Tools mit deinem Workflow.</p>
+        <button class="btn btn-secondary" onclick="window.location.href='integrations-de.html'" style="width: 100%;">Integrationen verwalten</button>
+      </div>
+    </div>
+
+    <div class="card combined-card">
+      <div class="card-header" style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+        <div class="combined-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Kombiniertes Leadership Assessment</div>
+        <button class="btn btn-primary" onclick="window.location.href='combined-profile-carousel.de.html'">
+          Assessment starten
+        </button>
+      </div>
+      <p class="combined-subtitle">
+        Eine Reise. Worker Type + Leadership Style + Team Dynamics in einem einzigen 46-Fragen
+        Impact-Profil mit spielerischen Belohnungen und Erkenntnissen. Perfekt für Vertrieb, Operations und Führungsteams.
+      </p>
+      <div class="combined-meta">
+        <span>46 Fragen</span>
+        <span>+150 XP unlock</span>
+        <span>Team-relevante Erkenntnisse</span>
+        <span>Deutsche & Englische Version</span>
+      </div>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <button class="btn btn-secondary" onclick="window.location.href='combined-profile-carousel.de.html'">
+          Jetzt starten
+        </button>
+        <button class="btn btn-secondary" onclick="window.location.href='combined-profile-carousel.de.html'">
+          Deutsche Version
+        </button>
+      </div>
+    </div>
+
+    <!-- Teammitglied hinzufügen -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Teammitglied hinzufügen</div>
+        <button class="btn btn-secondary" onclick="exportCSV()">
+           CSV exportieren
+        </button>
+      </div>
+      
+      <div class="add-member-form">
+        <div class="form-group">
+          <label class="form-label">Name</label>
+          <input type="text" id="memberName" class="form-input" placeholder="Max Mustermann" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">E-Mail</label>
+          <input type="email" id="memberEmail" class="form-input" placeholder="max@firma.de" />
+        </div>
+        <button class="btn btn-primary" onclick="addMember()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Mitglied hinzufügen
+        </button>
+      </div>
+    </div>
+
+    <!-- Teammitglieder Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Teammitglieder</div>
+        <div style="color: #94a3b8; font-size: 0.9rem;" id="memberCount">0 Mitglieder</div>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>E-Mail</th>
+              <th>Belt</th>
+              <th>Stripe</th>
+              <th>XP</th>
+              <th>Beigetreten</th>
+              <th>Aktionen</th>
+            </tr>
+          </thead>
+          <tbody id="teamMembersTable">
+            <!-- Members will be dynamically inserted -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Simple front-end auth gate (prototype)
+    (function() {
+      const ADMIN_USER = 'admin';
+      const ADMIN_PASS = 'tapinmk1992';
+
+      function initAuthGate() {
+        const overlay = document.getElementById('authOverlay');
+        const form = document.getElementById('authForm');
+        const err = document.getElementById('authError');
+        const userInput = document.getElementById('authUser');
+        const passInput = document.getElementById('authPass');
+
+        if (!overlay || !form || !err) return;
+
+        const hasSession = localStorage.getItem('adminSession') === 'true';
+        if (!hasSession) {
+          overlay.classList.remove('hidden');
+        }
+
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          const user = (userInput.value || '').trim();
+          const pass = (passInput.value || '').trim();
+          if (user === ADMIN_USER && pass === ADMIN_PASS) {
+            localStorage.setItem('adminSession', 'true');
+            overlay.classList.add('hidden');
+            err.textContent = '';
+          } else {
+            err.textContent = 'Ungültige Zugangsdaten. Bitte versuche es erneut.';
+          }
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', initAuthGate);
+    })();
+
+    // Team management system
+    const TeamPortal = {
+      
+      // Get team code
+      getTeamCode() {
+        let code = localStorage.getItem('teamCode');
+        if (!code) {
+          code = this.generateCode();
+          localStorage.setItem('teamCode', code);
+        }
+        return code;
+      },
+      
+      // Generate new team code
+      generateCode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let code = 'TEAM-';
+        for (let i = 0; i < 6; i++) {
+          code += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        return code;
+      },
+      
+      // Get team Mitglieder
+      getTeamMembers() {
+        const stored = localStorage.getItem('teamMembers');
+        return stored ? JSON.parse(stored) : [];
+      },
+      
+      // Save team Mitglieder
+      saveTeamMembers(Mitglieder) {
+        localStorage.setItem('teamMembers', JSON.stringify(Mitglieder));
+        this.renderTable();
+        this.updateStats();
+      },
+      
+      // Add team member
+      addMember(name, email) {
+        const Mitglieder = this.getTeamMembers();
+        const newMember = {
+          id: Date.now(),
+          name: name,
+          email: email,
+          belt: 'white',
+          stripe: 1,
+          xp: 0,
+          joinedDate: new Date().toISOString().split('T')[0],
+          lastActive: new Date().toISOString().split('T')[0]
+        };
+        Mitglieder.push(newMember);
+        this.saveTeamMembers(Mitglieder);
+        return newMember;
+      },
+      
+      // Remove team member
+      removeMember(id) {
+        const Mitglieder = this.getTeamMembers();
+        const filtered = Mitglieder.filter(m => m.id !== id);
+        this.saveTeamMembers(filtered);
+      },
+      
+      // Render table
+      renderTable() {
+        const Mitglieder = this.getTeamMembers();
+        const tbody = document.getElementById('teamMembersTable');
+        
+        if (Mitglieder.length === 0) {
+          tbody.innerHTML = `
+            <tr>
+              <td colspan="7" style="text-align: center; color: #94a3b8; padding: 3rem;">
+                Noch keine Teammitglieder. Füge oben dein erstes Mitglied hinzu!
+              </td>
+            </tr>
+          `;
+          return;
+        }
+        
+        tbody.innerHTML = Mitglieder.map(member => `
+          <tr>
+            <td style="font-weight: 600;">${member.name}</td>
+            <td style="color: #94a3b8;">${member.email}</td>
+            <td>
+              <span class="belt-badge belt-${member.belt}">
+                ${this.getBeltEmoji(member.belt)} ${this.capitalize(member.belt)}
+              </span>
+            </td>
+            <td style="color: #4a7c9c; font-weight: 600;">${member.stripe}/4</td>
+            <td style="color: #fbbf24; font-weight: 600;">${member.xp} XP</td>
+            <td style="color: #94a3b8; font-size: 0.85rem;">${this.formatDate(member.joinedDate)}</td>
+            <td>
+              <button class="action-btn" onclick="TeamPortal.removeMember(${member.id})" title="Remove member">
+                ️
+              </button>
+            </td>
+          </tr>
+        `).join('');
+        
+        document.getElementById('memberCount').textContent = `${Mitglieder.length} member${Mitglieder.length !== 1 ? 's' : ''}`;
+      },
+      
+      // Update stats
+      updateStats() {
+        const Mitglieder = this.getTeamMembers();
+        
+        // Total Mitglieder
+        document.getElementById('totalMembers').textContent = Mitglieder.length;
+        
+        // Average XP
+        const avgXP = Mitglieder.length > 0 
+          ? Math.round(Mitglieder.reduce((sum, m) => sum + m.xp, 0) / Mitglieder.length)
+          : 0;
+        document.getElementById('avgXP').textContent = avgXP;
+        
+        // Completion rate (Mitglieder who completed at least 1 belt)
+        const completedMembers = Mitglieder.filter(m => m.belt !== 'white' || m.stripe > 1).length;
+        const completionRate = Mitglieder.length > 0
+          ? Math.round((completedMembers / Mitglieder.length) * 100)
+          : 0;
+        document.getElementById('completionRate').textContent = completionRate + '%';
+        
+        // Active this week (placeholder - would check lastActive date)
+        const activeCount = Mitglieder.filter(m => {
+          const lastActive = new Date(m.lastActive);
+          const weekAgo = new Date();
+          weekAgo.setDate(weekAgo.getDate() - 7);
+          return lastActive >= weekAgo;
+        }).length;
+        document.getElementById('activeMembers').textContent = activeCount;
+      },
+      
+      // Export to CSV
+      exportToCSV() {
+        const Mitglieder = this.getTeamMembers();
+        
+        if (Mitglieder.length === 0) {
+          alert('No Mitglieder to export');
+          return;
+        }
+        
+        // CSV header
+        let csv = 'Name,Email,Belt,Stripe,XP,Joined Date,Last Active\n';
+        
+        // CSV rows
+        Mitglieder.forEach(member => {
+          csv += `"${member.name}","${member.email}","${member.belt}",${member.stripe},${member.xp},"${member.joinedDate}","${member.lastActive}"\n`;
+        });
+        
+        // Download
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `tap-in-team-${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
+        URL.revokeObjectURL(url);
+        
+        alert('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Team data exported successfully!');
+      },
+      
+      // Helper functions
+      getBeltEmoji(belt) {
+        const emojis = {
+          white: '<span class="belt-indicator white"></span>',
+          blue: '<span class="belt-indicator blue"></span>',
+          purple: '<span class="belt-indicator purple"></span>',
+          brown: '<span class="belt-indicator brown"></span>',
+          black: '<span class="belt-indicator black"></span>'
+        };
+        return emojis[belt] || '<span class="belt-indicator white"></span>';
+      },
+      
+      capitalize(str) {
+        return str.charAt(0).toUpperCase() + str.slice(1);
+      },
+      
+      formatDate(dateStr) {
+        const date = new Date(dateStr);
+        const options = { month: 'short', day: 'numeric', year: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+      },
+      
+      // Generate invite link
+      updateInviteLink() {
+        const teamCode = this.getTeamCode();
+        const baseURL = window.location.origin;
+        const inviteLink = `${baseURL}/join-team.html?code=${teamCode}`;
+        const inviteLinkElement = document.getElementById('inviteLink');
+        if (inviteLinkElement) {
+          inviteLinkElement.textContent = inviteLink;
+        }
+        
+        // Store valid codes for validation
+        const validCodes = JSON.parse(localStorage.getItem('validTeamCodes') || '[]');
+        if (!validCodes.includes(teamCode)) {
+          validCodes.push(teamCode);
+          localStorage.setItem('validTeamCodes', JSON.stringify(validCodes));
+        }
+      },
+      
+      // Initialize
+      init() {
+        // Load team code
+        document.getElementById('teamCode').textContent = this.getTeamCode();
+        
+        // Update invite link
+        this.updateInviteLink();
+        
+        // Render table
+        this.renderTable();
+        this.updateStats();
+      }
+    };
+
+    // Global functions for buttons
+    function addMember() {
+      const nameInput = document.getElementById('memberName');
+      const emailInput = document.getElementById('memberEmail');
+      
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      
+      if (!name || !email) {
+        alert('Please enter both name and email');
+        return;
+      }
+      
+      if (!email.includes('@')) {
+        alert('Please enter a valid email address');
+        return;
+      }
+      
+      TeamPortal.addMember(name, email);
+      
+      // Clear inputs
+      nameInput.value = '';
+      emailInput.value = '';
+      
+      alert(`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${name} added to team!`);
+    }
+
+    function generateNewCode() {
+      if (confirm('Are you sure? This will invalidate the old code.')) {
+        const newCode = TeamPortal.generateCode();
+        localStorage.setItem('teamCode', newCode);
+        document.getElementById('teamCode').textContent = newCode;
+        TeamPortal.updateInviteLink(); // Update invite link with new code
+        alert('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> New team code generated!');
+      }
+    }
+
+    function copyInviteLink() {
+      const link = document.getElementById('inviteLink').textContent;
+      navigator.clipboard.writeText(link).then(() => {
+        alert('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Invite link copied! Share this with your team.');
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = link;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Invite link copied! Share this with your team.');
+      });
+    }
+
+    function copyTeamCode() {
+      const code = TeamPortal.getTeamCode();
+      navigator.clipboard.writeText(code).then(() => {
+        alert('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Team code copied to clipboard!');
+      });
+    }
+
+    function exportCSV() {
+      TeamPortal.exportToCSV();
+    }
+
+    // Initialize on load
+    TeamPortal.init();
+  </script>
+
+<!-- Wisdom Tracker & Hub Unlock Systems -->
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+
+    <script src="js/wisdom-tracker.js" defer></script>
+<script src="js/hub-unlock-system.js" defer></script>
+<script src="js/progress-sync-init.js" defer></script>
+
+<!-- Initialize Systems -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Wisdom Tracker
+    if (typeof WisdomTracker !== 'undefined') {
+      WisdomTracker.init();
+      console.log('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Wisdom Tracker initialized');
+    }
+    
+    // Initialize Hub Unlock System  
+    if (typeof HubUnlockSystem !== 'undefined') {
+      HubUnlockSystem.init();
+      console.log('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Hub Unlock System initialized');
+    }
+  });
+</script>
+
+
+<!-- Team Composition Analyzer -->
+<section id="team-analyzer" style="margin-top: 3rem; padding: 2rem; background: rgba(255,255,255,0.03); border-radius: 16px;">
+  <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Team Composition Analyzer</h2>
+  <p>Analyze your team's talent distribution based on Sprinters/Joggers/Ultrarunners framework</p>
+  
+  <button onclick="analyzeTeam()" style="padding: 1rem 2rem; background: linear-gradient(135deg, #4a7c9c 0%, #6fa8d8 100%); border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; margin: 1rem 0; font-size: 1rem;">
+    Analyze Team Composition
+  </button>
+  
+  <div id="composition-results" style="margin-top: 2rem;"></div>
+</section>
+
+<style>
+  .composition-chart {
+    background: rgba(255,255,255,0.05);
+    padding: 2rem;
+    border-radius: 16px;
+    margin: 2rem 0;
+  }
+  
+  .comp-bar {
+    height: 50px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 25px;
+    margin: 1rem 0;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .comp-fill {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: width 1s ease-out;
+  }
+  
+  .comp-fill.sprinter { background: linear-gradient(90deg, #ff6b6b 0%, #ff8787 100%); }
+  .comp-fill.jogger { background: linear-gradient(90deg, #51cf66 0%, #69db7c 100%); }
+  .comp-fill.ultrarunner { background: linear-gradient(90deg, #4a7c9c 0%, #6fa8d8 100%); }
+  
+  .recommendation {
+    background: rgba(255,215,0,0.1);
+    border-left: 3px solid #ffd700;
+    padding: 1rem;
+    margin: 0.5rem 0;
+    border-radius: 8px;
+  }
+</style>
+
+<script>
+function analyzeTeam() {
+  const teamMembers = JSON.parse(localStorage.getItem('mockTeamMembers') || '[]');
+  
+  if (teamMembers.length === 0) {
+    const demoTeam = [
+      { name: 'Alex M.', talentType: 'sprinter' },
+      { name: 'Sarah K.', talentType: 'jogger' },
+      { name: 'Mike R.', talentType: 'jogger' },
+      { name: 'Lisa T.', talentType: 'ultrarunner' },
+      { name: 'Tom B.', talentType: 'sprinter' },
+      { name: 'Emma W.', talentType: 'jogger' },
+      { name: 'David L.', talentType: 'jogger' },
+      { name: 'Nina P.', talentType: 'ultrarunner' },
+      { name: 'Chris H.', talentType: 'sprinter' },
+      { name: 'Sofia G.', talentType: 'jogger' }
+    ];
+    localStorage.setItem('mockTeamMembers', JSON.stringify(demoTeam));
+    analyzeTeam();
+    return;
+  }
+  
+  const composition = { sprinters: 0, joggers: 0, ultrarunners: 0 };
+  teamMembers.forEach(member => {
+    const type = member.talentType;
+    if (composition[type + 's'] !== undefined) {
+      composition[type + 's']++;
+    }
+  });
+  
+  const total = teamMembers.length;
+  const percentages = {
+    sprinters: Math.round((composition.sprinters / total) * 100),
+    joggers: Math.round((composition.joggers / total) * 100),
+    ultrarunners: Math.round((composition.ultrarunners / total) * 100)
+  };
+  
+  const ideal = {
+    sprinters: Math.round(total * 0.3),
+    joggers: Math.round(total * 0.4),
+    ultrarunners: Math.round(total * 0.3)
+  };
+  
+  const gaps = {
+    sprinters: ideal.sprinters - composition.sprinters,
+    joggers: ideal.joggers - composition.joggers,
+    ultrarunners: ideal.ultrarunners - composition.ultrarunners
+  };
+  
+  let resultsHTML = `
+    <div class="composition-chart">
+      <h3>Current Team Composition (${total} Mitglieder)</h3>
+      <div style="margin: 2rem 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span><strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Sprinters:</strong> ${composition.sprinters} (${percentages.sprinters}%)</span>
+          <span style="color: rgba(255,255,255,0.6);">Ideal: ${ideal.sprinters} (30%)</span>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-fill sprinter" style="width: ${percentages.sprinters}%;">${composition.sprinters} Sprinters</div>
+        </div>
+      </div>
+      <div style="margin: 2rem 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span><strong> Joggers:</strong> ${composition.joggers} (${percentages.joggers}%)</span>
+          <span style="color: rgba(255,255,255,0.6);">Ideal: ${ideal.joggers} (40%)</span>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-fill jogger" style="width: ${percentages.joggers}%;">${composition.joggers} Joggers</div>
+        </div>
+      </div>
+      <div style="margin: 2rem 0;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+          <span><strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Ultrarunners:</strong> ${composition.ultrarunners} (${percentages.ultrarunners}%)</span>
+          <span style="color: rgba(255,255,255,0.6);">Ideal: ${ideal.ultrarunners} (30%)</span>
+        </div>
+        <div class="comp-bar">
+          <div class="comp-fill ultrarunner" style="width: ${percentages.ultrarunners}%;">${composition.ultrarunners} Ultrarunners</div>
+        </div>
+      </div>
+    </div>
+    <div class="composition-chart">
+      <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Hiring Recommendations</h3>`;
+  
+  if (gaps.sprinters > 0) {
+    resultsHTML += `<div class="recommendation"><strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Hire ${gaps.sprinters} more Sprinter${gaps.sprinters > 1 ? 's' : ''}</strong><p>Your team needs more high-intensity performers who can deliver quick wins and handle crisis situations.</p></div>`;
+  }
+  if (gaps.joggers > 0) {
+    resultsHTML += `<div class="recommendation"><strong> Hire ${gaps.joggers} more Jogger${gaps.joggers > 1 ? 's' : ''}</strong><p>You need more steady, reliable performers who provide operational stability.</p></div>`;
+  }
+  if (gaps.ultrarunners > 0) {
+    resultsHTML += `<div class="recommendation"><strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Hire ${gaps.ultrarunners} more Ultrarunner${gaps.ultrarunners > 1 ? 's' : ''}</strong><p>Your team lacks strategic thinkers with long-term focus.</p></div>`;
+  }
+  if (gaps.sprinters === 0 && gaps.joggers === 0 && gaps.ultrarunners === 0) {
+    resultsHTML += `<div class="recommendation" style="border-left-color: #51cf66; background: rgba(81,207,102,0.1);"><strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Perfect Balance!</strong><p>Your team has the ideal composition.</p></div>`;
+  }
+  
+  resultsHTML += `</div>`;
+  document.getElementById('composition-results').innerHTML = resultsHTML;
+  
+  setTimeout(() => {
+    document.querySelectorAll('.comp-fill').forEach(el => {
+      el.style.width = el.style.width;
+    });
+  }, 100);
+}
+</script>
+
+
+<script src="js/loading-states.js" defer></script>
+<script src="js/error-handler.js" defer></script>
+
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

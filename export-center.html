@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Export Center | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Export Cards */
+        .export-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .export-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        
+        .export-card:hover {
+            border-color: var(--green);
+        }
+        
+        .export-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        
+        .export-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .export-icon.csv { background: var(--green-dim); }
+        .export-icon.csv svg { color: var(--green); }
+        .export-icon.pdf { background: rgba(239, 68, 68, 0.2); }
+        .export-icon.pdf svg { color: var(--red); }
+        .export-icon.json { background: rgba(251, 191, 36, 0.2); }
+        .export-icon.json svg { color: var(--gold); }
+        .export-icon.xlsx { background: rgba(59, 130, 246, 0.2); }
+        .export-icon.xlsx svg { color: var(--blue); }
+        
+        .export-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .export-desc {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        .export-includes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .include-tag {
+            padding: 4px 10px;
+            background: var(--mid-grey);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--mid-grey);
+            color: var(--white);
+        }
+        
+        .btn-secondary:hover {
+            background: #3a3a4a;
+        }
+        
+        /* Schedule Section */
+        .schedule-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        .schedule-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 16px;
+            align-items: end;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .form-select {
+            padding: 12px 16px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .form-select option {
+            background: var(--dark-grey);
+        }
+        
+        /* Export History */
+        .history-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background: var(--black);
+            border-radius: 10px;
+            gap: 16px;
+        }
+        
+        .history-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .history-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .history-info {
+            flex: 1;
+        }
+        
+        .history-name {
+            font-weight: 600;
+        }
+        
+        .history-meta {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            display: flex;
+            gap: 16px;
+        }
+        
+        .history-download {
+            padding: 8px 16px;
+            background: var(--mid-grey);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .history-download:hover {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .history-download svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-ready { background: var(--green-dim); color: var(--green); }
+        .status-processing { background: rgba(251, 191, 36, 0.2); color: var(--gold); }
+        .status-scheduled { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--green);
+            color: var(--black);
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .toast svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--light-grey);
+        }
+        
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        @media (max-width: 768px) {
+            .schedule-form { grid-template-columns: 1fr; }
+            .history-item { flex-direction: column; text-align: center; gap: 12px; }
+            .history-meta { flex-direction: column; gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="business-portal.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Portal
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export Center
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Export Center</h1>
+            <p class="page-desc">Download your team data in various formats for reporting, analysis, or backup.</p>
+        </div>
+        
+        <!-- Export Options -->
+        <div class="export-grid">
+            <!-- Team Members CSV -->
+            <div class="export-card">
+                <div class="export-icon csv">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+                </div>
+                <h3 class="export-title">Team Members (CSV)</h3>
+                <p class="export-desc">Export all team member data including progress, XP, and belt levels.</p>
+                <div class="export-includes">
+                    <span class="include-tag">Names</span>
+                    <span class="include-tag">Email</span>
+                    <span class="include-tag">XP</span>
+                    <span class="include-tag">Belt Level</span>
+                    <span class="include-tag">Last Active</span>
+                </div>
+                <button class="btn btn-primary" onclick="exportData('members', 'csv')">
+                    <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download CSV
+                </button>
+            </div>
+            
+            <!-- Health Report PDF -->
+            <div class="export-card">
+                <div class="export-icon pdf">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M9 15v2m3-4v4m3-6v6"/></svg>
+                </div>
+                <h3 class="export-title">Health Report (PDF)</h3>
+                <p class="export-desc">Generate a comprehensive team health report with charts and insights.</p>
+                <div class="export-includes">
+                    <span class="include-tag">Health Score</span>
+                    <span class="include-tag">Radar Chart</span>
+                    <span class="include-tag">Team Composition</span>
+                    <span class="include-tag">Recommendations</span>
+                </div>
+                <button class="btn btn-primary" onclick="window.location.href='team-health-report.html'">
+                    <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    Generate Report
+                </button>
+            </div>
+            
+            <!-- Assessment Data JSON -->
+            <div class="export-card">
+                <div class="export-icon json">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"/></svg>
+                </div>
+                <h3 class="export-title">Assessment Data (JSON)</h3>
+                <p class="export-desc">Export raw assessment responses and scores for custom analysis.</p>
+                <div class="export-includes">
+                    <span class="include-tag">Worker Types</span>
+                    <span class="include-tag">Leadership Styles</span>
+                    <span class="include-tag">Dysfunctions</span>
+                    <span class="include-tag">Raw Scores</span>
+                </div>
+                <button class="btn btn-primary" onclick="exportData('assessments', 'json')">
+                    <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download JSON
+                </button>
+            </div>
+            
+            <!-- Activity Log XLSX -->
+            <div class="export-card">
+                <div class="export-icon xlsx">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h2m4 0h2M8 17h2m4 0h2"/></svg>
+                </div>
+                <h3 class="export-title">Activity Log (XLSX)</h3>
+                <p class="export-desc">Export detailed activity history with timestamps and XP changes.</p>
+                <div class="export-includes">
+                    <span class="include-tag">Timestamps</span>
+                    <span class="include-tag">Actions</span>
+                    <span class="include-tag">XP Earned</span>
+                    <span class="include-tag">Badges</span>
+                </div>
+                <button class="btn btn-primary" onclick="exportData('activity', 'xlsx')">
+                    <svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                    Download Excel
+                </button>
+            </div>
+        </div>
+        
+        <!-- Scheduled Exports -->
+        <div class="schedule-section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Schedule Automatic Exports
+            </h2>
+            <div class="schedule-form">
+                <div class="form-group">
+                    <label class="form-label">Export Type</label>
+                    <select class="form-select" id="scheduleType">
+                        <option value="members">Team Members (CSV)</option>
+                        <option value="health">Health Report (PDF)</option>
+                        <option value="activity">Activity Log (XLSX)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Frequency</label>
+                    <select class="form-select" id="scheduleFrequency">
+                        <option value="weekly">Weekly (Monday)</option>
+                        <option value="biweekly">Bi-weekly</option>
+                        <option value="monthly">Monthly (1st)</option>
+                        <option value="quarterly">Quarterly</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" onclick="scheduleExport()">
+                    Schedule
+                </button>
+            </div>
+        </div>
+        
+        <!-- Export History -->
+        <div class="history-section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Recent Exports
+            </h2>
+            <div class="history-list" id="historyList">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        <span id="toastMessage">Export started</span>
+    </div>
+    
+    <script>
+        // Demo export history
+        const exportHistory = [
+            { id: 1, name: 'Team Members Export', type: 'csv', date: 'Dec 8, 2025 10:30 AM', size: '12 KB', status: 'ready' },
+            { id: 2, name: 'Health Report Q4', type: 'pdf', date: 'Dec 5, 2025 2:15 PM', size: '245 KB', status: 'ready' },
+            { id: 3, name: 'Activity Log November', type: 'xlsx', date: 'Dec 1, 2025 9:00 AM', size: '89 KB', status: 'ready' },
+            { id: 4, name: 'Assessment Data Backup', type: 'json', date: 'Nov 28, 2025 4:45 PM', size: '156 KB', status: 'ready' }
+        ];
+        
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            
+            if (exportHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                        <p>No exports yet. Generate your first export above.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = exportHistory.map(item => {
+                const iconClass = getIconClass(item.type);
+                return `
+                    <div class="history-item">
+                        <div class="history-icon ${iconClass}">
+                            ${getFileIcon(item.type)}
+                        </div>
+                        <div class="history-info">
+                            <div class="history-name">${item.name}</div>
+                            <div class="history-meta">
+                                <span>${item.date}</span>
+                                <span>${item.size}</span>
+                                <span class="status-badge status-${item.status}">${item.status}</span>
+                            </div>
+                        </div>
+                        <button class="history-download" onclick="downloadExport(${item.id})">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                            Download
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getIconClass(type) {
+            const classes = {
+                'csv': 'export-icon csv',
+                'pdf': 'export-icon pdf',
+                'json': 'export-icon json',
+                'xlsx': 'export-icon xlsx'
+            };
+            return classes[type] || 'export-icon csv';
+        }
+        
+        function getFileIcon(type) {
+            const icons = {
+                'csv': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
+                'pdf': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
+                'json': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>',
+                'xlsx': '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></svg>'
+            };
+            return icons[type] || icons.csv;
+        }
+        
+        function exportData(type, format) {
+            showToast(`Generating ${type} export...`);
+            
+            // Simulate export generation
+            setTimeout(() => {
+                let data, filename, mimeType;
+                
+                // Get team data from localStorage
+                const teamMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+                const teamName = localStorage.getItem('teamName') || 'Team';
+                
+                // Use demo data if no real data
+                const members = teamMembers.length > 0 ? teamMembers : [
+                    { name: 'Sarah Johnson', email: 'sarah@company.com', xp: 450, belt: 'Blue', stripe: 2, lastActive: '2 hours ago' },
+                    { name: 'Mike Chen', email: 'mike@company.com', xp: 280, belt: 'White', stripe: 4, lastActive: '1 day ago' },
+                    { name: 'Lisa Park', email: 'lisa@company.com', xp: 620, belt: 'Purple', stripe: 1, lastActive: '5 hours ago' }
+                ];
+                
+                if (type === 'members' && format === 'csv') {
+                    // Generate CSV
+                    const headers = ['Name', 'Email', 'XP', 'Belt', 'Stripe', 'Last Active'];
+                    const rows = members.map(m => [
+                        m.name,
+                        m.email || '',
+                        m.xp || 0,
+                        m.belt || 'White',
+                        m.stripe || 0,
+                        m.lastActive || 'Unknown'
+                    ]);
+                    data = [headers, ...rows].map(row => row.join(',')).join('\n');
+                    filename = `${teamName}-members-${new Date().toISOString().split('T')[0]}.csv`;
+                    mimeType = 'text/csv';
+                } else if (type === 'assessments' && format === 'json') {
+                    // Generate JSON
+                    data = JSON.stringify({
+                        exportDate: new Date().toISOString(),
+                        teamName: teamName,
+                        members: members.map(m => ({
+                            name: m.name,
+                            workerType: m.workerType || 'Unknown',
+                            leadershipStyle: m.leadershipStyle || 'Unknown',
+                            xp: m.xp || 0,
+                            completion: m.completion || 0
+                        })),
+                        teamDysfunctions: JSON.parse(localStorage.getItem('teamDysfunctions') || '{"trust":75,"conflict":65,"commitment":70,"accountability":68,"results":72}')
+                    }, null, 2);
+                    filename = `${teamName}-assessments-${new Date().toISOString().split('T')[0]}.json`;
+                    mimeType = 'application/json';
+                } else if (type === 'activity' && format === 'xlsx') {
+                    // For XLSX, we'll generate CSV (would need library for real XLSX)
+                    const headers = ['Date', 'Member', 'Action', 'XP Earned', 'Badge'];
+                    const rows = [
+                        ['2025-12-08', 'Sarah Johnson', 'Completed Assessment', 25, ''],
+                        ['2025-12-07', 'Mike Chen', 'Belt Advancement', 100, 'Blue Belt'],
+                        ['2025-12-06', 'Lisa Park', 'Daily Login', 10, '7-Day Streak']
+                    ];
+                    data = [headers, ...rows].map(row => row.join(',')).join('\n');
+                    filename = `${teamName}-activity-${new Date().toISOString().split('T')[0]}.csv`;
+                    mimeType = 'text/csv';
+                }
+                
+                // Download file
+                const blob = new Blob([data], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Add to history
+                exportHistory.unshift({
+                    id: Date.now(),
+                    name: `${type.charAt(0).toUpperCase() + type.slice(1)} Export`,
+                    type: format,
+                    date: new Date().toLocaleString(),
+                    size: `${Math.round(data.length / 1024)} KB`,
+                    status: 'ready'
+                });
+                renderHistory();
+                
+                showToast('Export downloaded successfully!');
+            }, 1500);
+        }
+        
+        function scheduleExport() {
+            const type = document.getElementById('scheduleType').value;
+            const frequency = document.getElementById('scheduleFrequency').value;
+            showToast(`Scheduled ${type} export (${frequency})`);
+        }
+        
+        function downloadExport(id) {
+            showToast('Downloading export...');
+            // In production, this would fetch the saved export
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', renderHistory);
+    </script>
+</body>
+</html>

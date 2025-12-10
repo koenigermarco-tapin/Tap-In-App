@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Team Health Report | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--mid-grey);
+            color: var(--white);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        /* Report Preview */
+        .report-preview {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        .report-content {
+            padding: 40px;
+            color: #1a1a2e;
+        }
+        
+        /* Report Styles */
+        .report-header {
+            text-align: center;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 30px;
+        }
+        
+        .report-logo {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #10b981;
+            margin-bottom: 8px;
+        }
+        
+        .report-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 8px;
+        }
+        
+        .report-subtitle {
+            color: #6b7280;
+            font-size: 1rem;
+        }
+        
+        .report-meta {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .report-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        /* Executive Summary */
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #10b981;
+            display: inline-block;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #10b981;
+        }
+        
+        .summary-value.warning { color: #f59e0b; }
+        .summary-value.danger { color: #ef4444; }
+        
+        .summary-label {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        /* Insights Box */
+        .insights-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .insight-item {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+            border-left: 4px solid #10b981;
+        }
+        
+        .insight-item.warning {
+            border-left-color: #f59e0b;
+        }
+        
+        .insight-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #6b7280;
+            margin-bottom: 4px;
+        }
+        
+        .insight-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #1a1a2e;
+        }
+        
+        .insight-desc {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+        
+        /* Radar Chart Section */
+        .chart-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        
+        .radar-wrapper {
+            width: 350px;
+            height: 300px;
+            flex-shrink: 0;
+        }
+        
+        .dysfunction-breakdown {
+            flex: 1;
+        }
+        
+        .dysfunction-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .dysfunction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .dysfunction-name {
+            width: 120px;
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        
+        .dysfunction-bar {
+            flex: 1;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .dysfunction-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s;
+        }
+        
+        .dysfunction-fill.excellent { background: #10b981; }
+        .dysfunction-fill.good { background: #3b82f6; }
+        .dysfunction-fill.moderate { background: #f59e0b; }
+        .dysfunction-fill.poor { background: #ef4444; }
+        
+        .dysfunction-score {
+            width: 50px;
+            text-align: right;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        
+        /* Team Composition */
+        .composition-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+        
+        .composition-card {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .composition-title {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .composition-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .comp-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .comp-label {
+            width: 80px;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+        
+        .comp-bar {
+            flex: 1;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .comp-fill {
+            height: 100%;
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        .comp-count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1a1a2e;
+            width: 20px;
+            text-align: right;
+        }
+        
+        /* Recommendations */
+        .recommendations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            gap: 12px;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 12px;
+        }
+        
+        .rec-number {
+            width: 28px;
+            height: 28px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        
+        .rec-content h4 {
+            font-weight: 600;
+            color: #1a1a2e;
+            margin-bottom: 4px;
+        }
+        
+        .rec-content p {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        /* Member Table */
+        .member-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        
+        .member-table th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #1a1a2e;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .member-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #374151;
+        }
+        
+        .member-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.active { background: #dcfce7; color: #166534; }
+        .status-badge.inactive { background: #fef3c7; color: #92400e; }
+        .status-badge.new { background: #dbeafe; color: #1e40af; }
+        
+        /* Footer */
+        .report-footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #e5e7eb;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        /* Generation Controls */
+        .controls {
+            margin-bottom: 24px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .control-label {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        .control-select {
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--mid-grey);
+            background: var(--dark-grey);
+            color: var(--white);
+            font-size: 0.9rem;
+        }
+        
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 13, 20, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--mid-grey);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            color: var(--white);
+            font-weight: 600;
+        }
+        
+        /* Print Styles */
+        @media print {
+            body { background: white; }
+            .header, .controls, .loading-overlay { display: none; }
+            .report-preview { box-shadow: none; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-grid { grid-template-columns: 1fr; }
+            .chart-container { flex-direction: column; }
+            .radar-wrapper { width: 100%; }
+            .composition-grid { grid-template-columns: 1fr; }
+            .insights-box { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <a href="team-aggregation-dashboard.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                Team Health Report
+            </div>
+            <button class="btn btn-primary" onclick="downloadPDF()">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download PDF
+            </button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Controls -->
+        <div class="controls">
+            <div class="control-group">
+                <span class="control-label">Report Period:</span>
+                <select class="control-select" id="reportPeriod" onchange="updateReport()">
+                    <option value="current">Current Snapshot</option>
+                    <option value="month">Last 30 Days</option>
+                    <option value="quarter">Last Quarter</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <span class="control-label">Include:</span>
+                <label style="display:flex;align-items:center;gap:6px;color:var(--light-grey)">
+                    <input type="checkbox" id="includeMembers" checked onchange="updateReport()"> Member Details
+                </label>
+            </div>
+        </div>
+        
+        <!-- Report Preview -->
+        <div class="report-preview" id="reportPreview">
+            <div class="report-content" id="reportContent">
+                <!-- Report Header -->
+                <div class="report-header">
+                    <div class="report-logo">TAP-IN</div>
+                    <h1 class="report-title">Team Health Report</h1>
+                    <p class="report-subtitle" id="teamNameReport">Marketing Squad</p>
+                    <div class="report-meta">
+                        <span id="reportDate">Generated: December 8, 2024</span>
+                        <span id="reportPeriodDisplay">Period: Current Snapshot</span>
+                    </div>
+                </div>
+                
+                <!-- Executive Summary -->
+                <div class="section">
+                    <h2 class="section-title">Executive Summary</h2>
+                    
+                    <div class="summary-grid">
+                        <div class="summary-card">
+                            <div class="summary-value" id="summaryHealth">72</div>
+                            <div class="summary-label">Team Health Score</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-value" id="summaryMembers">12</div>
+                            <div class="summary-label">Team Members</div>
+                        </div>
+                        <div class="summary-card">
+                            <div class="summary-value" id="summaryCompletion">67%</div>
+                            <div class="summary-label">Assessment Completion</div>
+                        </div>
+                    </div>
+                    
+                    <div class="insights-box">
+                        <div class="insight-item">
+                            <div class="insight-label">Top Strength</div>
+                            <div class="insight-value" id="insightStrength">Trust</div>
+                            <div class="insight-desc" id="insightStrengthDesc">Team members feel safe being vulnerable with each other</div>
+                        </div>
+                        <div class="insight-item warning">
+                            <div class="insight-label">Primary Opportunity</div>
+                            <div class="insight-value" id="insightOpportunity">Conflict</div>
+                            <div class="insight-desc" id="insightOpportunityDesc">Team tends to avoid difficult conversations</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Five Dysfunctions Analysis -->
+                <div class="section">
+                    <h2 class="section-title">Five Dysfunctions Analysis</h2>
+                    
+                    <div class="chart-container">
+                        <div class="radar-wrapper">
+                            <canvas id="reportRadar"></canvas>
+                        </div>
+                        <div class="dysfunction-breakdown">
+                            <div class="dysfunction-item">
+                                <span class="dysfunction-name">Trust</span>
+                                <div class="dysfunction-bar"><div class="dysfunction-fill excellent" id="barTrust" style="width:78%"></div></div>
+                                <span class="dysfunction-score" id="scoreTrust">78</span>
+                            </div>
+                            <div class="dysfunction-item">
+                                <span class="dysfunction-name">Conflict</span>
+                                <div class="dysfunction-bar"><div class="dysfunction-fill moderate" id="barConflict" style="width:62%"></div></div>
+                                <span class="dysfunction-score" id="scoreConflict">62</span>
+                            </div>
+                            <div class="dysfunction-item">
+                                <span class="dysfunction-name">Commitment</span>
+                                <div class="dysfunction-bar"><div class="dysfunction-fill good" id="barCommitment" style="width:70%"></div></div>
+                                <span class="dysfunction-score" id="scoreCommitment">70</span>
+                            </div>
+                            <div class="dysfunction-item">
+                                <span class="dysfunction-name">Accountability</span>
+                                <div class="dysfunction-bar"><div class="dysfunction-fill moderate" id="barAccountability" style="width:68%"></div></div>
+                                <span class="dysfunction-score" id="scoreAccountability">68</span>
+                            </div>
+                            <div class="dysfunction-item">
+                                <span class="dysfunction-name">Results</span>
+                                <div class="dysfunction-bar"><div class="dysfunction-fill excellent" id="barResults" style="width:75%"></div></div>
+                                <span class="dysfunction-score" id="scoreResults">75</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Composition -->
+                <div class="section">
+                    <h2 class="section-title">Team Composition</h2>
+                    
+                    <div class="composition-grid">
+                        <div class="composition-card">
+                            <div class="composition-title">Worker Types</div>
+                            <div class="composition-items" id="compWorker">
+                                <div class="comp-row">
+                                    <span class="comp-label">Sprinter</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:25%;background:#ef4444"></div></div>
+                                    <span class="comp-count">3</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Jogger</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:50%;background:#3b82f6"></div></div>
+                                    <span class="comp-count">6</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Ultrarunner</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:25%;background:#10b981"></div></div>
+                                    <span class="comp-count">3</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="composition-card">
+                            <div class="composition-title">Leadership Styles</div>
+                            <div class="composition-items" id="compLeadership">
+                                <div class="comp-row">
+                                    <span class="comp-label">Commander</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:17%;background:#ef4444"></div></div>
+                                    <span class="comp-count">2</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Collaborator</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:42%;background:#3b82f6"></div></div>
+                                    <span class="comp-count">5</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Catalyst</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:25%;background:#f59e0b"></div></div>
+                                    <span class="comp-count">3</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Coach</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:17%;background:#10b981"></div></div>
+                                    <span class="comp-count">2</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="composition-card">
+                            <div class="composition-title">Communication Styles</div>
+                            <div class="composition-items" id="compComm">
+                                <div class="comp-row">
+                                    <span class="comp-label">Direct</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:25%;background:#ef4444"></div></div>
+                                    <span class="comp-count">3</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Analytical</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:33%;background:#3b82f6"></div></div>
+                                    <span class="comp-count">4</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Supportive</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:25%;background:#10b981"></div></div>
+                                    <span class="comp-count">3</span>
+                                </div>
+                                <div class="comp-row">
+                                    <span class="comp-label">Expressive</span>
+                                    <div class="comp-bar"><div class="comp-fill" style="width:17%;background:#f59e0b"></div></div>
+                                    <span class="comp-count">2</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recommendations -->
+                <div class="section">
+                    <h2 class="section-title">Recommendations</h2>
+                    
+                    <div class="recommendations-list" id="recommendationsList">
+                        <div class="recommendation-item">
+                            <div class="rec-number">1</div>
+                            <div class="rec-content">
+                                <h4>Address Conflict Avoidance</h4>
+                                <p>Schedule weekly "productive conflict" sessions where team members practice sharing dissenting opinions in a structured format. Consider using the Disagree & Commit exercise.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="rec-number">2</div>
+                            <div class="rec-content">
+                                <h4>Strengthen Accountability</h4>
+                                <p>Implement peer accountability partnerships. Pair team members to check in on each other's commitments weekly using the Accountability Arena game.</p>
+                            </div>
+                        </div>
+                        <div class="recommendation-item">
+                            <div class="rec-number">3</div>
+                            <div class="rec-content">
+                                <h4>Leverage Trust Foundation</h4>
+                                <p>Your team's strong trust score is an asset. Use this foundation to have deeper conversations about performance expectations and career growth.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Member Details (optional) -->
+                <div class="section" id="memberSection">
+                    <h2 class="section-title">Member Progress</h2>
+                    
+                    <table class="member-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Belt Level</th>
+                                <th>XP</th>
+                                <th>Completion</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="memberTableBody">
+                            <tr>
+                                <td>Sarah Johnson</td>
+                                <td>Blue Belt - Stripe 3</td>
+                                <td>450 XP</td>
+                                <td>80%</td>
+                                <td><span class="status-badge active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Mike Chen</td>
+                                <td>White Belt - Stripe 4</td>
+                                <td>280 XP</td>
+                                <td>60%</td>
+                                <td><span class="status-badge active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Lisa Park</td>
+                                <td>Purple Belt - Stripe 1</td>
+                                <td>620 XP</td>
+                                <td>90%</td>
+                                <td><span class="status-badge active">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Tom Wilson</td>
+                                <td>White Belt - Stripe 2</td>
+                                <td>120 XP</td>
+                                <td>40%</td>
+                                <td><span class="status-badge inactive">Inactive</span></td>
+                            </tr>
+                            <tr>
+                                <td>Emma Davis</td>
+                                <td>White Belt - Stripe 1</td>
+                                <td>0 XP</td>
+                                <td>0%</td>
+                                <td><span class="status-badge new">Not Started</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Footer -->
+                <div class="report-footer">
+                    <p>Generated by TAP-IN Leadership Development Platform</p>
+                    <p>For questions or support, contact support@tap-in-academy.com</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Generating PDF...</div>
+    </div>
+    
+    <script>
+        // Initialize radar chart
+        let radarChart;
+        
+        function initRadarChart(data) {
+            const ctx = document.getElementById('reportRadar').getContext('2d');
+            
+            if (radarChart) radarChart.destroy();
+            
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Trust', 'Conflict', 'Commitment', 'Accountability', 'Results'],
+                    datasets: [{
+                        label: 'Team Score',
+                        data: data,
+                        backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                        borderColor: '#10b981',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#10b981'
+                    }]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { stepSize: 20 },
+                            grid: { color: '#e5e7eb' },
+                            angleLines: { color: '#e5e7eb' },
+                            pointLabels: {
+                                font: { size: 11, weight: '600' },
+                                color: '#374151'
+                            }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
+            });
+        }
+        
+        // Get team data
+        function getTeamData() {
+            const stored = localStorage.getItem('teamMembers');
+            const dysfunctions = localStorage.getItem('teamDysfunctions');
+            
+            // Demo data if nothing stored
+            if (!stored) {
+                return {
+                    name: localStorage.getItem('teamName') || 'Your Team',
+                    members: [
+                        { name: 'Sarah Johnson', belt: 'blue', stripe: 3, xp: 450, completion: 80, workerType: 'Jogger', leadershipStyle: 'Collaborator', commStyle: 'Supportive', lastActive: new Date().toISOString() },
+                        { name: 'Mike Chen', belt: 'white', stripe: 4, xp: 280, completion: 60, workerType: 'Sprinter', leadershipStyle: 'Commander', commStyle: 'Direct', lastActive: new Date().toISOString() },
+                        { name: 'Lisa Park', belt: 'purple', stripe: 1, xp: 620, completion: 90, workerType: 'Ultrarunner', leadershipStyle: 'Coach', commStyle: 'Analytical', lastActive: new Date().toISOString() },
+                        { name: 'Tom Wilson', belt: 'white', stripe: 2, xp: 120, completion: 40, workerType: 'Jogger', leadershipStyle: 'Catalyst', commStyle: 'Expressive', lastActive: '2024-11-01' },
+                        { name: 'Emma Davis', belt: 'white', stripe: 1, xp: 0, completion: 0, workerType: null, leadershipStyle: null, commStyle: null, lastActive: '2024-12-01' }
+                    ],
+                    dysfunctions: { trust: 78, conflict: 62, commitment: 70, accountability: 68, results: 75 }
+                };
+            }
+            
+            return {
+                name: localStorage.getItem('teamName') || 'Your Team',
+                members: JSON.parse(stored),
+                dysfunctions: dysfunctions ? JSON.parse(dysfunctions) : { trust: 78, conflict: 62, commitment: 70, accountability: 68, results: 75 }
+            };
+        }
+        
+        // Update report with data
+        function updateReport() {
+            const data = getTeamData();
+            const includeMembers = document.getElementById('includeMembers').checked;
+            const period = document.getElementById('reportPeriod').value;
+            
+            // Update header
+            document.getElementById('teamNameReport').textContent = data.name;
+            document.getElementById('reportDate').textContent = 'Generated: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            
+            const periodLabels = { current: 'Current Snapshot', month: 'Last 30 Days', quarter: 'Last Quarter' };
+            document.getElementById('reportPeriodDisplay').textContent = 'Period: ' + periodLabels[period];
+            
+            // Calculate health score
+            const d = data.dysfunctions;
+            const healthScore = Math.round((d.trust + d.conflict + d.commitment + d.accountability + d.results) / 5);
+            document.getElementById('summaryHealth').textContent = healthScore;
+            
+            // Update summary
+            document.getElementById('summaryMembers').textContent = data.members.length;
+            const completed = data.members.filter(m => m.xp > 0).length;
+            const completionRate = Math.round((completed / data.members.length) * 100);
+            document.getElementById('summaryCompletion').textContent = completionRate + '%';
+            
+            // Find top/bottom dysfunctions
+            const scores = [
+                { name: 'Trust', score: d.trust, desc: 'Team members feel safe being vulnerable with each other' },
+                { name: 'Conflict', score: d.conflict, desc: 'Team engages in productive debate around ideas' },
+                { name: 'Commitment', score: d.commitment, desc: 'Team commits to decisions even when disagreeing' },
+                { name: 'Accountability', score: d.accountability, desc: 'Team members hold each other accountable' },
+                { name: 'Results', score: d.results, desc: 'Team prioritizes collective results over individual goals' }
+            ];
+            
+            scores.sort((a, b) => b.score - a.score);
+            const top = scores[0];
+            const bottom = scores[scores.length - 1];
+            
+            document.getElementById('insightStrength').textContent = top.name;
+            document.getElementById('insightStrengthDesc').textContent = top.desc;
+            document.getElementById('insightOpportunity').textContent = bottom.name;
+            document.getElementById('insightOpportunityDesc').textContent = getOpportunityDesc(bottom.name);
+            
+            // Update dysfunction bars
+            updateDysfunctionBars(d);
+            
+            // Update radar chart
+            initRadarChart([d.trust, d.conflict, d.commitment, d.accountability, d.results]);
+            
+            // Update recommendations based on data
+            updateRecommendations(bottom.name, d);
+            
+            // Show/hide member section
+            document.getElementById('memberSection').style.display = includeMembers ? 'block' : 'none';
+            
+            // Update member table
+            if (includeMembers) {
+                updateMemberTable(data.members);
+            }
+        }
+        
+        function getOpportunityDesc(name) {
+            const descs = {
+                'Trust': 'Team needs to build psychological safety first',
+                'Conflict': 'Team tends to avoid difficult conversations',
+                'Commitment': 'Decisions lack full buy-in from team members',
+                'Accountability': 'Standards slip without peer pushback',
+                'Results': 'Individual goals sometimes override team goals'
+            };
+            return descs[name] || '';
+        }
+        
+        function getBarClass(score) {
+            if (score >= 75) return 'excellent';
+            if (score >= 65) return 'good';
+            if (score >= 50) return 'moderate';
+            return 'poor';
+        }
+        
+        function updateDysfunctionBars(d) {
+            const items = ['Trust', 'Conflict', 'Commitment', 'Accountability', 'Results'];
+            items.forEach(item => {
+                const score = d[item.toLowerCase()];
+                const bar = document.getElementById('bar' + item);
+                const scoreEl = document.getElementById('score' + item);
+                
+                bar.style.width = score + '%';
+                bar.className = 'dysfunction-fill ' + getBarClass(score);
+                scoreEl.textContent = score;
+            });
+        }
+        
+        function updateRecommendations(lowestArea, d) {
+            const recs = {
+                'Trust': [
+                    { title: 'Build Psychological Safety', desc: 'Start meetings with personal check-ins. Use vulnerability exercises from the Trust Builder game.' },
+                    { title: 'Share Personal Histories', desc: 'Schedule a team session where members share their professional journey and what shaped them.' },
+                    { title: 'Model Vulnerability', desc: 'Leaders should go first in admitting mistakes and asking for help.' }
+                ],
+                'Conflict': [
+                    { title: 'Address Conflict Avoidance', desc: 'Schedule weekly "productive conflict" sessions where team members practice sharing dissenting opinions.' },
+                    { title: 'Use Structured Debate', desc: 'Implement the Disagree & Commit exercise for major decisions.' },
+                    { title: 'Celebrate Healthy Conflict', desc: 'Recognize and praise team members who respectfully challenge ideas.' }
+                ],
+                'Commitment': [
+                    { title: 'Clarify Decisions', desc: 'End every meeting by explicitly stating what was decided and who owns what.' },
+                    { title: 'Address Ambiguity', desc: 'When decisions are unclear, ask "What would we need to see to feel confident committing?"' },
+                    { title: 'Commit Publicly', desc: 'Have team members verbally commit to decisions in front of peers.' }
+                ],
+                'Accountability': [
+                    { title: 'Strengthen Accountability', desc: 'Implement peer accountability partnerships using the Accountability Arena game.' },
+                    { title: 'Make Progress Visible', desc: 'Use public dashboards to track commitments and progress.' },
+                    { title: 'Practice Peer Feedback', desc: 'Train team on giving constructive feedback using SBI (Situation-Behavior-Impact) format.' }
+                ],
+                'Results': [
+                    { title: 'Align on Team Goals', desc: 'Define 3-5 team-level metrics that everyone is accountable for.' },
+                    { title: 'Link Individual to Team', desc: 'Show how each person\'s work contributes to collective outcomes.' },
+                    { title: 'Celebrate Team Wins', desc: 'Recognize team achievements more than individual achievements.' }
+                ]
+            };
+            
+            const container = document.getElementById('recommendationsList');
+            const recommendations = recs[lowestArea] || recs['Conflict'];
+            
+            container.innerHTML = recommendations.map((rec, i) => `
+                <div class="recommendation-item">
+                    <div class="rec-number">${i + 1}</div>
+                    <div class="rec-content">
+                        <h4>${rec.title}</h4>
+                        <p>${rec.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function updateMemberTable(members) {
+            const tbody = document.getElementById('memberTableBody');
+            
+            tbody.innerHTML = members.map(m => {
+                const beltName = (m.belt || 'white').charAt(0).toUpperCase() + (m.belt || 'white').slice(1);
+                const completion = m.completion || Math.min(100, (m.xp / 500) * 100);
+                
+                let status = 'active';
+                let statusText = 'Active';
+                if (m.xp === 0) {
+                    status = 'new';
+                    statusText = 'Not Started';
+                } else {
+                    const lastActive = new Date(m.lastActive);
+                    const twoWeeksAgo = new Date();
+                    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+                    if (lastActive < twoWeeksAgo) {
+                        status = 'inactive';
+                        statusText = 'Inactive';
+                    }
+                }
+                
+                return `
+                    <tr>
+                        <td>${m.name}</td>
+                        <td>${beltName} Belt - Stripe ${m.stripe || 1}</td>
+                        <td>${m.xp || 0} XP</td>
+                        <td>${Math.round(completion)}%</td>
+                        <td><span class="status-badge ${status}">${statusText}</span></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Download PDF
+        async function downloadPDF() {
+            const loading = document.getElementById('loadingOverlay');
+            loading.classList.add('active');
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const element = document.getElementById('reportContent');
+                
+                // Capture the report as canvas
+                const canvas = await html2canvas(element, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                
+                // Create PDF
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                const imgWidth = canvas.width;
+                const imgHeight = canvas.height;
+                const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+                
+                const imgX = (pdfWidth - imgWidth * ratio) / 2;
+                const imgY = 0;
+                
+                // Handle multi-page
+                const pageHeight = pdfHeight;
+                const scaledHeight = imgHeight * ratio;
+                let heightLeft = scaledHeight;
+                let position = 0;
+                
+                pdf.addImage(imgData, 'PNG', imgX, position, imgWidth * ratio, scaledHeight);
+                heightLeft -= pageHeight;
+                
+                while (heightLeft > 0) {
+                    position = heightLeft - scaledHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', imgX, position, imgWidth * ratio, scaledHeight);
+                    heightLeft -= pageHeight;
+                }
+                
+                // Download
+                const teamName = localStorage.getItem('teamName') || 'Team';
+                const date = new Date().toISOString().split('T')[0];
+                pdf.save(`${teamName}-Health-Report-${date}.pdf`);
+                
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+            
+            loading.classList.remove('active');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateReport();
+        });
+    </script>
+</body>
+</html>

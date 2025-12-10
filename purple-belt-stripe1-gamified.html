@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Purple Belt Stripe 1: Productive Conflict - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --purple: #8b5cf6;
+            --purple-dark: #7c3aed;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--black), transparent);
+        }
+        .back-btn { 
+            color: var(--light-grey); 
+            text-decoration: none; 
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .back-btn:hover { opacity: 1; }
+        .xp-display { 
+            font-size: 0.85rem; 
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Journey Line */
+        .journey-line {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--mid-grey);
+            z-index: 101;
+        }
+        .journey-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple), var(--green));
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+
+        /* Container */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 80px 24px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Beat Card */
+        .beat {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .beat.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Typography */
+        .beat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple);
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .beat-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .beat-text-small {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.9);
+        }
+        .beat-subtext {
+            font-size: 0.95rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Continue Button */
+        .continue-btn {
+            background: none;
+            border: 1px solid var(--mid-grey);
+            color: var(--light-grey);
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .continue-btn:hover {
+            border-color: var(--light-grey);
+            color: var(--white);
+        }
+        .continue-btn.primary {
+            background: var(--purple);
+            border-color: var(--purple);
+            color: var(--white);
+        }
+        .continue-btn.primary:hover {
+            opacity: 0.9;
+        }
+        .continue-btn:disabled {
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        /* Binary Choice Cards */
+        .binary-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin: 20px 0;
+        }
+        .binary-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .binary-card:hover {
+            border-color: var(--purple);
+            transform: translateY(-2px);
+        }
+        .binary-card.selected {
+            border-color: var(--purple);
+            background: rgba(139, 92, 246, 0.15);
+        }
+        .binary-card-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        .binary-card-sub {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+
+        /* Scenario Cards */
+        .scenario-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .scenario-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .scenario-card:hover {
+            border-color: var(--light-grey);
+        }
+        .scenario-card.selected {
+            border-color: var(--purple);
+            background: rgba(139, 92, 246, 0.1);
+        }
+        .scenario-card.correct {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .scenario-card.incorrect {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 0.6;
+        }
+
+        /* Spectrum Slider */
+        .spectrum-container {
+            margin: 30px 0;
+        }
+        .spectrum-line {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+        }
+        .spectrum-marker {
+            width: 24px;
+            height: 24px;
+            background: var(--purple);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            left: 50%;
+            box-shadow: 0 2px 10px rgba(139, 92, 246, 0.4);
+            transition: left 0.1s ease;
+            display: none;
+        }
+        .spectrum-marker.visible {
+            display: block;
+        }
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+
+        /* Pill Rating */
+        .pill-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            margin: 25px 0;
+        }
+        .pill {
+            flex: 1;
+            padding: 14px 8px;
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .pill:hover {
+            border-color: var(--purple);
+        }
+        .pill.selected {
+            background: var(--purple);
+            border-color: var(--purple);
+        }
+        .pill-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            margin-top: 8px;
+        }
+
+        /* Quote */
+        .quote-block {
+            border-left: 3px solid var(--gold);
+            padding-left: 20px;
+            margin: 30px 0;
+        }
+        .quote-text {
+            font-size: 1.15rem;
+            font-style: italic;
+            color: var(--white);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .quote-author {
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+
+        /* Insight Reveal */
+        .insight-reveal {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+            border: 1px solid var(--purple);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+            animation: fadeIn 0.5s ease;
+        }
+        .insight-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple);
+            margin-bottom: 10px;
+        }
+        .insight-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.85);
+        }
+
+        /* Stat Reveal */
+        .stat-reveal {
+            text-align: center;
+            padding: 30px 20px;
+            background: var(--dark-grey);
+            border-radius: 16px;
+            margin: 25px 0;
+        }
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--purple);
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 1.1rem;
+            color: var(--white);
+            font-weight: 600;
+        }
+        .stat-sublabel {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            margin-top: 5px;
+        }
+
+        /* Quick Fire */
+        .quickfire-container {
+            margin: 20px 0;
+        }
+        .quickfire-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--mid-grey);
+            transition: opacity 0.3s ease;
+        }
+        .quickfire-item.answered {
+            opacity: 0.5;
+        }
+        .quickfire-text {
+            font-size: 0.95rem;
+            flex: 1;
+            padding-right: 15px;
+        }
+        .quickfire-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .quickfire-btn {
+            padding: 8px 16px;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quickfire-btn:hover {
+            border-color: var(--purple);
+        }
+        .quickfire-btn.selected {
+            background: var(--purple);
+            border-color: var(--purple);
+        }
+
+        /* Callback Box */
+        .callback-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(16, 185, 129, 0.1));
+            border: 1px solid var(--purple);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .callback-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .callback-highlight {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Mirror Reveal */
+        .mirror-reveal {
+            margin: 30px 0;
+        }
+        .mirror-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--mid-grey);
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.5s ease;
+        }
+        .mirror-item.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .mirror-item:last-child { border-bottom: none; }
+        .mirror-label {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        .mirror-value {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--purple);
+        }
+
+        /* Framework Box */
+        .framework-box {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .framework-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .framework-item:last-child { margin-bottom: 0; }
+        .framework-letter {
+            width: 40px;
+            height: 40px;
+            background: var(--purple);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .framework-content { flex: 1; }
+        .framework-word {
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 4px;
+        }
+        .framework-desc {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+
+        /* Reveal Box */
+        .reveal-box {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s;
+        }
+        .reveal-box.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-title {
+            font-weight: 600;
+            color: var(--green);
+            margin-bottom: 10px;
+        }
+        .reveal-text {
+            font-size: 0.95rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+        }
+
+        /* Completion */
+        .completion-container {
+            text-align: center;
+        }
+        .completion-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        .completion-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .completion-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        .xp-earned-final {
+            display: inline-block;
+            background: rgba(212, 168, 83, 0.15);
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            margin: 20px 0;
+        }
+        .xp-earned-final span {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .skills-learned {
+            text-align: left;
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        .skill-item:last-child { border-bottom: none; }
+        .skill-check {
+            width: 24px;
+            height: 24px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .unlock-reveal {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--green);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .unlock-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+        .unlock-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="purple-belt-stripe1-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="purple-belt-stripe1-gamified-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="journey-line">
+        <div class="journey-progress" id="journeyProgress"></div>
+    </div>
+
+    <header class="header">
+        <a href="gym-dashboard.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Exit</a>
+        <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+    </header>
+
+    <main class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">Purple Belt · Stripe 1</div>
+            <p class="beat-text">Most people think conflict is the problem.</p>
+            <p class="beat-subtext">They spend their entire careers avoiding it. Smoothing things over. Keeping the peace.</p>
+            <p class="beat-subtext">They're wrong. And it's costing them everything.</p>
+            <button class="continue-btn" onclick="nextBeat()">Show me</button>
+        </div>
+
+        <!-- Beat 2: Binary Choice - Personal Pattern -->
+        <div class="beat" id="beat2">
+            <p class="beat-text-small">When you strongly disagree with a decision, your first instinct is to...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(2, 'speak')">
+                    <div class="binary-card-title">Speak up immediately</div>
+                    <div class="binary-card-sub">Say what I'm thinking, deal with reactions later</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(2, 'wait')">
+                    <div class="binary-card-title">Wait for the right moment</div>
+                    <div class="binary-card-sub">Think about how to say it, who to say it to</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 3: Insight from Choice -->
+        <div class="beat" id="beat3">
+            <div class="insight-reveal">
+                <div class="insight-label">What this reveals</div>
+                <p class="insight-text" id="insight3"></p>
+            </div>
+            <p class="beat-subtext">Neither is wrong. But knowing your default pattern is the first step to mastering conflict.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 4: Stat Reveal -->
+        <div class="beat" id="beat4">
+            <p class="beat-subtext">Patrick Lencioni studied hundreds of teams to find what separates the best from the rest.</p>
+            <p class="beat-subtext">The #1 difference wasn't talent, strategy, or resources.</p>
+            <div class="stat-reveal">
+                <div class="stat-number">65%</div>
+                <div class="stat-label">of teams avoid conflict</div>
+                <div class="stat-sublabel">And it's destroying them</div>
+            </div>
+            <p class="beat-subtext">The teams that performed worst weren't the ones that fought. They were the ones that didn't.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 5: Spectrum - Conflict Comfort -->
+        <div class="beat" id="beat5">
+            <p class="beat-text-small">How comfortable are you with tension in a room?</p>
+            <p class="beat-subtext">Tap anywhere on the line.</p>
+            <div class="spectrum-container">
+                <div class="spectrum-line" id="spectrum5" onclick="selectSpectrum(event, 5)">
+                    <div class="spectrum-marker" id="marker5"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>I need to resolve it</span>
+                    <span>I can sit with it</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue5" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 6: The Distinction -->
+        <div class="beat" id="beat6">
+            <p class="beat-text">There are two types of conflict.</p>
+            <p class="beat-text-small"><strong>Productive conflict</strong> is about ideas. It's passionate debate about what's best for the team. It makes decisions better.</p>
+            <p class="beat-text-small"><strong>Destructive conflict</strong> is about people. It's personal attacks, politics, and ego. It tears teams apart.</p>
+            <div class="quote-block">
+                <p class="quote-text">"If everyone is thinking alike, then somebody isn't thinking."</p>
+                <p class="quote-author">— General George Patton</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 7: Scenario 1 -->
+        <div class="beat" id="beat7">
+            <div class="beat-label">Scenario</div>
+            <p class="beat-text-small">Your team is about to make a decision you think is wrong. Everyone else seems to agree. The leader asks, "Any concerns?"</p>
+            <p class="beat-subtext">What do you do?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(7, 'silent')">Stay quiet. It's not worth the conflict.</div>
+                <div class="scenario-card" onclick="selectScenario(7, 'private')">Say nothing, but bring it up privately later.</div>
+                <div class="scenario-card" onclick="selectScenario(7, 'challenge')" data-correct="true">"Actually, I see a potential issue..."</div>
+                <div class="scenario-card" onclick="selectScenario(7, 'attack')">"This plan has obvious flaws."</div>
+            </div>
+            <div class="reveal-box" id="reveal7">
+                <div class="reveal-title">The Right Move</div>
+                <div class="reveal-text">Speaking up in the moment is productive conflict. You're challenging the idea, not the people. Staying silent lets bad decisions happen. Attacking makes it personal. And bringing it up privately later? That's politics—it creates back-channels and undermines trust.</div>
+            </div>
+            <button class="continue-btn" id="btn7" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 8: Quick Fire -->
+        <div class="beat" id="beat8">
+            <div class="beat-label">Quick fire</div>
+            <p class="beat-text-small" style="margin-bottom: 25px;">Three rapid questions. Go with your gut.</p>
+            <div class="quickfire-container" id="quickfire">
+                <div class="quickfire-item" id="qf1">
+                    <span class="quickfire-text">I've disagreed openly in a meeting this month.</span>
+                    <div class="quickfire-btns">
+                        <button class="quickfire-btn" onclick="quickfire(1, true)">Yes</button>
+                        <button class="quickfire-btn" onclick="quickfire(1, false)">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 9: Pill Rating -->
+        <div class="beat" id="beat9">
+            <p class="beat-text-small">When someone challenges my idea, I feel...</p>
+            <div class="pill-options">
+                <div class="pill" onclick="selectPill(9, 1)">1</div>
+                <div class="pill" onclick="selectPill(9, 2)">2</div>
+                <div class="pill" onclick="selectPill(9, 3)">3</div>
+                <div class="pill" onclick="selectPill(9, 4)">4</div>
+                <div class="pill" onclick="selectPill(9, 5)">5</div>
+            </div>
+            <div class="pill-labels">
+                <span>Defensive</span>
+                <span>Curious</span>
+            </div>
+        </div>
+
+        <!-- Beat 10: The Framework -->
+        <div class="beat" id="beat10">
+            <p class="beat-text">The IDE Framework for productive conflict.</p>
+            <div class="framework-box">
+                <div class="framework-item">
+                    <div class="framework-letter">I</div>
+                    <div class="framework-content">
+                        <div class="framework-word">Intention</div>
+                        <div class="framework-desc">State your positive intent. "I want this to succeed, which is why..."</div>
+                    </div>
+                </div>
+                <div class="framework-item">
+                    <div class="framework-letter">D</div>
+                    <div class="framework-content">
+                        <div class="framework-word">Data</div>
+                        <div class="framework-desc">Share what you see. Facts, not judgments. "I noticed that..."</div>
+                    </div>
+                </div>
+                <div class="framework-item">
+                    <div class="framework-letter">E</div>
+                    <div class="framework-content">
+                        <div class="framework-word">Explore</div>
+                        <div class="framework-desc">Invite dialogue. "What am I missing?" or "Help me understand..."</div>
+                    </div>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 11: Scenario 2 - Apply IDE -->
+        <div class="beat" id="beat11">
+            <div class="beat-label">Apply it</div>
+            <p class="beat-text-small">A colleague's project is behind schedule, and it's affecting your work. Using IDE, which response is best?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(11, 'blame')">"Your delays are making me look bad to my stakeholders."</div>
+                <div class="scenario-card" onclick="selectScenario(11, 'avoid')">"No worries, just let me know when you're ready."</div>
+                <div class="scenario-card" onclick="selectScenario(11, 'ide')" data-correct="true">"I want us both to succeed here. I'm seeing the timeline slip, and it's impacting my deliverables. What's happening on your end?"</div>
+                <div class="scenario-card" onclick="selectScenario(11, 'hint')">"I guess some people just work at different speeds."</div>
+            </div>
+            <div class="reveal-box" id="reveal11">
+                <div class="reveal-title">IDE in Action</div>
+                <div class="reveal-text">Option 3 uses all three elements: positive intention ("want us both to succeed"), data ("timeline slip"), and exploration ("what's happening"). The others are either attacking, avoiding, or passive-aggressive—all destructive patterns.</div>
+            </div>
+            <button class="continue-btn" id="btn11" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 12: Callback + Quote -->
+        <div class="beat" id="beat12">
+            <div class="callback-box">
+                <p class="callback-text" id="callback12"></p>
+            </div>
+            <div class="quote-block">
+                <p class="quote-text">"The mark of great teams is not the absence of conflict, but the presence of trust."</p>
+                <p class="quote-author">— Patrick Lencioni</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 13: Binary - The Hard Question -->
+        <div class="beat" id="beat13">
+            <p class="beat-text">Be honest with yourself.</p>
+            <p class="beat-text-small">In your most important relationships, do you lean toward...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(13, 'harmony')">
+                    <div class="binary-card-title">Keeping the peace</div>
+                    <div class="binary-card-sub">Avoiding topics that might cause friction</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(13, 'truth')">
+                    <div class="binary-card-title">Saying what's true</div>
+                    <div class="binary-card-sub">Even when it's uncomfortable</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 14: The Mirror -->
+        <div class="beat" id="beat14">
+            <p class="beat-text">Here's what I see in you.</p>
+            <div class="mirror-reveal" id="mirrorReveal">
+                <div class="mirror-item" id="mirror1">
+                    <span class="mirror-label">Your conflict style</span>
+                    <span class="mirror-value" id="conflictStyle">—</span>
+                </div>
+                <div class="mirror-item" id="mirror2">
+                    <span class="mirror-label">Comfort with tension</span>
+                    <span class="mirror-value" id="tensionLevel">—</span>
+                </div>
+                <div class="mirror-item" id="mirror3">
+                    <span class="mirror-label">Response to challenge</span>
+                    <span class="mirror-value" id="challengeResponse">—</span>
+                </div>
+                <div class="mirror-item" id="mirror4">
+                    <span class="mirror-label">Your edge</span>
+                    <span class="mirror-value" id="growthEdge">—</span>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 15: Commitment -->
+        <div class="beat" id="beat15">
+            <p class="beat-text">One thing you'll do differently this week.</p>
+            <p class="beat-subtext">Real growth requires commitment. Choose one:</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectCommitment(this, 'speak')">Speak up in one meeting where I'd normally stay quiet</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'ask')">Ask "What am I missing?" instead of defending my idea</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'ide')">Use the IDE framework in one difficult conversation</div>
+            </div>
+            <button class="continue-btn primary" id="btn15" onclick="completeStripe()" disabled>Complete Stripe</button>
+        </div>
+
+        <!-- Beat 16: Completion -->
+        <div class="beat" id="beat16">
+            <div class="completion-container">
+                <div class="completion-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2 class="completion-title">Stripe 1 Complete</h2>
+                <p class="completion-subtitle">Productive Conflict Foundations</p>
+                <div class="xp-earned-final"><span id="finalXP">+75 XP</span></div>
+                
+                <div class="skills-learned">
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Productive vs Destructive Conflict</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>The IDE Framework</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Your Personal Conflict Pattern</span>
+                    </div>
+                </div>
+
+                <div class="unlock-reveal">
+                    <div class="unlock-title">Unlocked</div>
+                    <div class="unlock-name">Stripe 2: Navigating Disagreement</div>
+                </div>
+
+                <button class="continue-btn primary" onclick="goToNext()">Continue Journey</button>
+                <button class="continue-btn" style="margin-top: 10px;" onclick="goToHub()">Return to Hub</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // State
+        let currentBeat = 1;
+        const totalBeats = 16;
+        let xp = 0;
+        let responses = {};
+        let quickfireCount = 0;
+        const quickfireQuestions = [
+            "I've disagreed openly in a meeting this month.",
+            "I've avoided a conversation because it might get uncomfortable.",
+            "I've changed my mind based on someone's pushback."
+        ];
+
+        // Core Functions
+        function updateProgress() {
+            const pct = ((currentBeat - 1) / (totalBeats - 1)) * 100;
+            document.getElementById('journeyProgress').style.width = pct + '%';
+        }
+
+        function addXP(amount) {
+            xp += amount;
+            document.getElementById('xpDisplay').textContent = xp;
+        }
+
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Special beat handling
+            if (currentBeat === 14) {
+                setTimeout(revealMirror, 500);
+            }
+        }
+
+        // Binary Choice
+        function selectBinary(beat, value) {
+            const cards = document.querySelectorAll('#beat' + beat + ' .binary-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['binary' + beat] = value;
+            addXP(5);
+            
+            // Generate insight for beat 3
+            if (beat === 2) {
+                setTimeout(() => {
+                    if (value === 'speak') {
+                        document.getElementById('insight3').textContent = "You lead with directness. Your challenge will be learning when to pause—not every battle needs to be fought immediately, but your instinct to engage is valuable.";
+                    } else {
+                        document.getElementById('insight3').textContent = "You lead with strategy. Your challenge will be learning when to speak up sooner—sometimes the 'right moment' never comes, and the cost of silence is higher than the cost of friction.";
+                    }
+                    nextBeat();
+                }, 600);
+            } else {
+                setTimeout(nextBeat, 600);
+            }
+        }
+
+        // Spectrum
+        function selectSpectrum(event, beat) {
+            const line = document.getElementById('spectrum' + beat);
+            const marker = document.getElementById('marker' + beat);
+            const rect = line.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            
+            marker.style.left = pct + '%';
+            marker.classList.add('visible');
+            responses['spectrum' + beat] = pct;
+            
+            document.getElementById('continue' + beat).disabled = false;
+            addXP(5);
+        }
+
+        // Scenario
+        function selectScenario(beat, value) {
+            const cards = document.querySelectorAll('#beat' + beat + ' .scenario-card');
+            const clicked = event.currentTarget;
+            const isCorrect = clicked.dataset.correct === 'true';
+            
+            cards.forEach(c => {
+                c.classList.remove('selected');
+                if (c.dataset.correct === 'true') c.classList.add('correct');
+                else if (c === clicked && !isCorrect) c.classList.add('incorrect');
+            });
+            clicked.classList.add('selected');
+            responses['scenario' + beat] = value;
+            
+            const reveal = document.getElementById('reveal' + beat);
+            if (reveal) reveal.classList.add('show');
+            
+            const btn = document.getElementById('btn' + beat);
+            if (btn) btn.disabled = false;
+            
+            addXP(isCorrect ? 10 : 5);
+        }
+
+        // Quick Fire
+        function quickfire(num, value) {
+            const item = document.getElementById('qf' + num);
+            const btns = item.querySelectorAll('.quickfire-btn');
+            btns.forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            item.classList.add('answered');
+            
+            responses['qf' + num] = value;
+            quickfireCount++;
+            addXP(3);
+            
+            if (quickfireCount < 3) {
+                setTimeout(() => {
+                    const container = document.getElementById('quickfire');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'quickfire-item';
+                    newItem.id = 'qf' + (quickfireCount + 1);
+                    newItem.innerHTML = `
+                        <span class="quickfire-text">${quickfireQuestions[quickfireCount]}</span>
+                        <div class="quickfire-btns">
+                            <button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, true)">Yes</button>
+                            <button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, false)">No</button>
+                        </div>
+                    `;
+                    container.appendChild(newItem);
+                }, 400);
+            } else {
+                setTimeout(nextBeat, 600);
+            }
+        }
+
+        // Pill Rating
+        function selectPill(beat, value) {
+            const pills = document.querySelectorAll('#beat' + beat + ' .pill');
+            pills.forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['pill' + beat] = value;
+            addXP(5);
+            setTimeout(nextBeat, 500);
+        }
+
+        // Commitment
+        function selectCommitment(card, value) {
+            const cards = document.querySelectorAll('#beat15 .scenario-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            responses.commitment = value;
+            document.getElementById('btn15').disabled = false;
+            addXP(5);
+        }
+
+        // Mirror Reveal
+        function revealMirror() {
+            // Conflict style
+            let style = responses.binary2 === 'speak' ? 'Direct Challenger' : 'Strategic Navigator';
+            document.getElementById('conflictStyle').textContent = style;
+            document.getElementById('mirror1').classList.add('visible');
+            
+            setTimeout(() => {
+                // Tension level
+                let tension = responses.spectrum5 || 50;
+                let tensionText = tension > 66 ? 'High tolerance' : tension > 33 ? 'Moderate' : 'Needs resolution';
+                document.getElementById('tensionLevel').textContent = tensionText;
+                document.getElementById('mirror2').classList.add('visible');
+            }, 400);
+            
+            setTimeout(() => {
+                // Challenge response
+                let challenge = responses.pill9 || 3;
+                let challengeText = challenge >= 4 ? 'Naturally curious' : challenge >= 3 ? 'Balanced' : 'Defensive instinct';
+                document.getElementById('challengeResponse').textContent = challengeText;
+                document.getElementById('mirror3').classList.add('visible');
+            }, 800);
+            
+            setTimeout(() => {
+                // Growth edge
+                let edge = responses.binary13 === 'harmony' ? 'Speaking up more' : 'Choosing battles wisely';
+                document.getElementById('growthEdge').textContent = edge;
+                document.getElementById('mirror4').classList.add('visible');
+            }, 1200);
+            
+            // Callback text
+            let callbackText = '';
+            if (responses.binary2 === 'speak') {
+                callbackText = 'Earlier you said you <span class="callback-highlight">speak up immediately</span>. That directness is a strength—but the IDE framework gives you a way to be direct AND constructive.';
+            } else {
+                callbackText = 'Earlier you said you <span class="callback-highlight">wait for the right moment</span>. That thoughtfulness is a strength—but sometimes the right moment is now, and IDE gives you the words.';
+            }
+            document.getElementById('callback12').innerHTML = callbackText;
+        }
+
+        // Complete
+        function completeStripe() {
+            localStorage.setItem('tap_in_purple_stripe1_complete', 'true');
+            localStorage.setItem('tap_in_purple_stripe1_answers', JSON.stringify(responses));
+            
+            const totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0') + xp + 25;
+            localStorage.setItem('tap_in_xp', totalXP);
+            
+            document.getElementById('finalXP').textContent = '+' + (xp + 25) + ' XP';
+            nextBeat();
+        }
+
+        function goToNext() {
+            window.location.href = 'purple-belt-stripe2-gamified.html';
+        }
+
+        function goToHub() {
+            window.location.href = 'gym-dashboard.html';
+        }
+
+        // Init
+        updateProgress();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

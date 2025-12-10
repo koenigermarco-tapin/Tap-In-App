@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Brown Belt Zeremonie | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #0d0d14;
+            --card-bg: #1a1a24;
+            --border: #2a2a3a;
+            --white: #ffffff;
+            --light-grey: #a0a0b0;
+            --green: #10b981;
+            --belt-color: #8b6914;
+            --belt-accent: #a67c00;
+            --gold: #f59e0b;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px; height: 10px;
+            animation: fall 3s ease-out forwards;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+        
+        .belt-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, var(--belt-color), var(--belt-accent));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 60px rgba(166, 124, 0, 0.5);
+        }
+        
+        .belt-icon svg {
+            width: 60px;
+            height: 60px;
+            color: var(--white);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 60px rgba(166, 124, 0, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 80px rgba(166, 124, 0, 0.7); }
+        }
+        
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--belt-accent), #d4a853);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.1rem;
+            color: var(--light-grey);
+            margin-bottom: 10px;
+        }
+        
+        .xp-badge {
+            display: inline-block;
+            background: rgba(166, 124, 0, 0.2);
+            border: 1px solid var(--belt-accent);
+            padding: 10px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            color: var(--belt-accent);
+            margin-top: 20px;
+        }
+        
+        .achievement-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--belt-accent);
+        }
+        
+        .skill-list {
+            list-style: none;
+        }
+        
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .skill-item:last-child {
+            border-bottom: none;
+        }
+        
+        .skill-check {
+            width: 28px;
+            height: 28px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .cta-card {
+            background: linear-gradient(135deg, rgba(166, 124, 0, 0.15), rgba(16, 185, 129, 0.08));
+            border: 1px solid rgba(166, 124, 0, 0.4);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .cta-card h3 {
+            margin-bottom: 10px;
+            color: var(--belt-accent);
+        }
+        
+        .cta-card p {
+            color: var(--light-grey);
+        }
+        
+        .cta-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 12px 18px;
+            border-radius: 10px;
+            font-weight: 700;
+            border: 1px solid var(--belt-accent);
+            background: var(--card-bg);
+            color: var(--white);
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .btn.primary {
+            background: linear-gradient(135deg, var(--belt-accent), #d4a853);
+            color: #0d0d14;
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .timeline {
+            margin: 30px 0;
+        }
+        
+        .timeline-step {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .timeline-step strong {
+            color: var(--belt-accent);
+        }
+        
+        .note {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 640px) {
+            .hero-title { font-size: 1.8rem; }
+            .hero-subtitle { font-size: 1rem; }
+            .container { padding: 16px; }
+        }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="celebration" id="celebration"></div>
+    
+    <div class="container">
+        <section class="hero">
+            <div class="belt-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h18M3 12l3.6-6.75A1 1 0 017.5 5h9a1 1 0 01.9.55L21 12M3 12l3.6 6.75A1 1 0 007.5 19h9a1 1 0 00.9-.55L21 12"/></svg>
+            </div>
+            <div class="hero-title">Brown Belt Zeremonie</div>
+            <p class="hero-subtitle">Feiere deinen Aufstieg. Ehrung für Disziplin, Konfliktlösungen und Vertrauen.</p>
+            <div class="xp-badge">+250 XP • Achievement: Brown Belt Unlocked</div>
+        </section>
+        
+        <div class="achievement-section">
+            <div class="section-title">Was du bewiesen hast</div>
+            <ul class="skill-list">
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    <div>
+                        <strong>Konflikte lenken</strong>
+                        <p style="color: var(--light-grey);">Du erkennst Spannungen früh und führst Teams zu klaren Vereinbarungen.</p>
+                    </div>
+                </li>
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    <div>
+                        <strong>Vertrauen aufbauen</strong>
+                        <p style="color: var(--light-grey);">Du nutzt Micro-Reps, um psychologische Sicherheit zu stärken.</p>
+                    </div>
+                </li>
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    <div>
+                        <strong>Verbindlichkeit herstellen</strong>
+                        <p style="color: var(--light-grey);">Klare Owner, Deadlines und Konsequenzen gehören zu deinem Standard.</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="achievement-section">
+            <div class="section-title">Nächste Schritte</div>
+            <div class="timeline">
+                <div class="timeline-step">
+                    <strong>1) Feiere das Team</strong>
+                    <div class="note">Teile dein Badge und bedanke dich bei deinen Mentoren.</div>
+                </div>
+                <div class="timeline-step">
+                    <strong>2) Schärfe deinen Stil</strong>
+                    <div class="note">Starte den Black Belt Assessment und das Shark Tank Warm-up.</div>
+                </div>
+                <div class="timeline-step">
+                    <strong>3) Gib es weiter</strong>
+                    <div class="note">Coache mindestens 2 Teammitglieder durch ihre nächste Stripe.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="cta-card">
+            <h3>Starte den Black Belt Track</h3>
+            <p>Beginne mit Assessment und Shark Tank, um den nächsten Level zu sichern.</p>
+            <div class="cta-actions">
+                <a class="btn primary" href="black-belt-assessment-de.html">Black Belt Assessment</a>
+                <a class="btn" href="black-belt-shark-tank-de.html">Shark Tank</a>
+                <a class="btn" href="black-belt-exam-de.html">Finales Exam</a>
+            </div>
+        </div>
+        
+        <div class="cta-card">
+            <h3>Bonus-XP verdienen</h3>
+            <p>Schließe ein Brown Belt Spotlight und ein Team-Learning durch.</p>
+            <div class="cta-actions">
+                <a class="btn" href="combined-profile-carousel.de.html">Profil teilen</a>
+                <a class="btn" href="team-assessment-enhanced-v2.html">Team Assessment</a>
+            </div>
+        </div>
+        
+        <p class="note">Braun steht für Erdung, Ausdauer und sichtbare Wirkung im Team.</p>
+    </div>
+    
+    <script>
+        // Konfetti für Celebration
+        const confettiColors = ['#d4a853', '#10b981', '#8b6914', '#ffffff'];
+        const celebration = document.getElementById('celebration');
+        function launchConfetti() {
+            for (let i = 0; i < 80; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.background = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                piece.style.animationDelay = (Math.random() * 1.5) + 's';
+                piece.style.opacity = Math.random();
+                piece.style.transform = `rotate(${Math.random()*360}deg)`;
+                celebration.appendChild(piece);
+            }
+        }
+        launchConfetti();
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

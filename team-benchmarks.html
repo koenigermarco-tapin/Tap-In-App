@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Team Benchmarks | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        .industry-select {
+            padding: 12px 16px;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1rem;
+            cursor: pointer;
+            min-width: 200px;
+        }
+        
+        .industry-select option {
+            background: var(--dark-grey);
+        }
+        
+        /* Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .summary-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        
+        .summary-label {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .summary-comparison {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .comparison-above {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+        
+        .comparison-below {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+        
+        .comparison-average {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+        }
+        
+        .summary-comparison svg {
+            width: 12px;
+            height: 12px;
+        }
+        
+        /* Benchmark Chart Section */
+        .chart-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 350px;
+        }
+        
+        /* Legend */
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        
+        .legend-dot.your-team { background: var(--green); }
+        .legend-dot.industry { background: var(--blue); }
+        .legend-dot.top-performers { background: var(--gold); }
+        
+        /* Dimension Breakdown */
+        .dimension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .dimension-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .dimension-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .dimension-name {
+            font-weight: 700;
+        }
+        
+        .dimension-score {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .benchmark-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .benchmark-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .benchmark-label {
+            width: 100px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .benchmark-bar-container {
+            flex: 1;
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .benchmark-bar {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .benchmark-bar.your-team { background: var(--green); }
+        .benchmark-bar.industry { background: var(--blue); }
+        .benchmark-bar.top { background: var(--gold); }
+        
+        .benchmark-value {
+            width: 40px;
+            text-align: right;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        /* Insights */
+        .insights-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .insight-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .insight-item {
+            display: flex;
+            gap: 16px;
+            padding: 16px;
+            background: var(--black);
+            border-radius: 10px;
+        }
+        
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .insight-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .insight-icon.strength { background: var(--green-dim); }
+        .insight-icon.strength svg { color: var(--green); }
+        .insight-icon.opportunity { background: rgba(251, 191, 36, 0.2); }
+        .insight-icon.opportunity svg { color: var(--gold); }
+        .insight-icon.warning { background: rgba(239, 68, 68, 0.2); }
+        .insight-icon.warning svg { color: var(--red); }
+        
+        .insight-content h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .insight-content p {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        @media (max-width: 768px) {
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .page-header { flex-direction: column; }
+            .chart-legend { flex-wrap: wrap; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="business-portal.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Portal
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Team Benchmarks
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Industry Benchmarks</h1>
+                <p class="page-desc">Compare your team's performance against industry standards.</p>
+            </div>
+            <select class="industry-select" id="industrySelect" onchange="updateBenchmarks()">
+                <option value="tech">Technology</option>
+                <option value="finance">Finance & Banking</option>
+                <option value="healthcare">Healthcare</option>
+                <option value="retail">Retail & E-commerce</option>
+                <option value="manufacturing">Manufacturing</option>
+                <option value="all">All Industries</option>
+            </select>
+        </div>
+        
+        <!-- Summary Cards -->
+        <div class="summary-grid">
+            <div class="summary-card">
+                <div class="summary-value" style="color: var(--green);" id="overallScore">78</div>
+                <div class="summary-label">Your Team Score</div>
+                <div class="summary-comparison comparison-above" id="overallComparison">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg>
+                    +8 above avg
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" style="color: var(--blue);" id="industryAvg">70</div>
+                <div class="summary-label">Industry Average</div>
+                <div class="summary-comparison comparison-average">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg>
+                    Baseline
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" style="color: var(--gold);" id="topPerformers">85</div>
+                <div class="summary-label">Top 10% Teams</div>
+                <div class="summary-comparison comparison-below" id="topComparison">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+                    -7 below top
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-value" style="color: var(--purple);" id="percentile">72<span style="font-size: 1rem;">nd</span></div>
+                <div class="summary-label">Your Percentile</div>
+                <div class="summary-comparison comparison-above">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    Top 30%
+                </div>
+            </div>
+        </div>
+        
+        <!-- Bar Chart -->
+        <div class="chart-section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Five Dysfunctions Comparison
+            </h2>
+            <div class="chart-container">
+                <canvas id="benchmarkChart"></canvas>
+            </div>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <div class="legend-dot your-team"></div>
+                    <span>Your Team</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot industry"></div>
+                    <span>Industry Average</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot top-performers"></div>
+                    <span>Top 10%</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dimension Breakdown -->
+        <div class="dimension-grid" id="dimensionGrid">
+            <!-- Generated by JS -->
+        </div>
+        
+        <!-- Insights -->
+        <div class="insights-section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Benchmark Insights
+            </h2>
+            <div class="insight-list" id="insightList">
+                <!-- Generated by JS -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Industry benchmark data
+        const benchmarkData = {
+            tech: {
+                name: 'Technology',
+                industry: { trust: 72, conflict: 65, commitment: 70, accountability: 68, results: 74 },
+                top10: { trust: 88, conflict: 82, commitment: 85, accountability: 83, results: 89 }
+            },
+            finance: {
+                name: 'Finance & Banking',
+                industry: { trust: 68, conflict: 60, commitment: 72, accountability: 75, results: 78 },
+                top10: { trust: 85, conflict: 78, commitment: 88, accountability: 90, results: 92 }
+            },
+            healthcare: {
+                name: 'Healthcare',
+                industry: { trust: 75, conflict: 62, commitment: 68, accountability: 70, results: 72 },
+                top10: { trust: 90, conflict: 80, commitment: 84, accountability: 86, results: 88 }
+            },
+            retail: {
+                name: 'Retail & E-commerce',
+                industry: { trust: 65, conflict: 58, commitment: 65, accountability: 62, results: 70 },
+                top10: { trust: 82, conflict: 75, commitment: 80, accountability: 78, results: 85 }
+            },
+            manufacturing: {
+                name: 'Manufacturing',
+                industry: { trust: 70, conflict: 64, commitment: 72, accountability: 74, results: 75 },
+                top10: { trust: 86, conflict: 80, commitment: 86, accountability: 88, results: 90 }
+            },
+            all: {
+                name: 'All Industries',
+                industry: { trust: 70, conflict: 62, commitment: 69, accountability: 70, results: 74 },
+                top10: { trust: 86, conflict: 79, commitment: 85, accountability: 85, results: 89 }
+            }
+        };
+        
+        // Your team data (from localStorage or demo)
+        const yourTeam = JSON.parse(localStorage.getItem('teamDysfunctions')) || {
+            trust: 78,
+            conflict: 62,
+            commitment: 74,
+            accountability: 70,
+            results: 78
+        };
+        
+        let chart = null;
+        
+        function updateBenchmarks() {
+            const industry = document.getElementById('industrySelect').value;
+            const data = benchmarkData[industry];
+            
+            // Calculate averages
+            const yourAvg = Math.round(Object.values(yourTeam).reduce((a, b) => a + b, 0) / 5);
+            const industryAvg = Math.round(Object.values(data.industry).reduce((a, b) => a + b, 0) / 5);
+            const topAvg = Math.round(Object.values(data.top10).reduce((a, b) => a + b, 0) / 5);
+            
+            // Update summary cards
+            document.getElementById('overallScore').textContent = yourAvg;
+            document.getElementById('industryAvg').textContent = industryAvg;
+            document.getElementById('topPerformers').textContent = topAvg;
+            
+            const diff = yourAvg - industryAvg;
+            const topDiff = yourAvg - topAvg;
+            const percentile = Math.round(50 + (diff / industryAvg) * 100);
+            
+            document.getElementById('overallComparison').innerHTML = diff >= 0 
+                ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg> +${diff} above avg`
+                : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg> ${diff} below avg`;
+            document.getElementById('overallComparison').className = `summary-comparison ${diff >= 0 ? 'comparison-above' : 'comparison-below'}`;
+            
+            document.getElementById('topComparison').innerHTML = topDiff >= 0
+                ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg> +${topDiff} above top`
+                : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg> ${Math.abs(topDiff)} below top`;
+            document.getElementById('topComparison').className = `summary-comparison ${topDiff >= 0 ? 'comparison-above' : 'comparison-below'}`;
+            
+            const suffix = percentile === 1 ? 'st' : percentile === 2 ? 'nd' : percentile === 3 ? 'rd' : 'th';
+            document.getElementById('percentile').innerHTML = `${Math.min(99, Math.max(1, percentile))}<span style="font-size: 1rem;">${suffix}</span>`;
+            
+            // Update chart
+            updateChart(data);
+            
+            // Update dimension cards
+            renderDimensionCards(data);
+            
+            // Update insights
+            renderInsights(data);
+        }
+        
+        function updateChart(data) {
+            const ctx = document.getElementById('benchmarkChart').getContext('2d');
+            
+            if (chart) chart.destroy();
+            
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Trust', 'Conflict', 'Commitment', 'Accountability', 'Results'],
+                    datasets: [
+                        {
+                            label: 'Your Team',
+                            data: [yourTeam.trust, yourTeam.conflict, yourTeam.commitment, yourTeam.accountability, yourTeam.results],
+                            backgroundColor: 'rgba(16, 185, 129, 0.8)',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Industry Average',
+                            data: [data.industry.trust, data.industry.conflict, data.industry.commitment, data.industry.accountability, data.industry.results],
+                            backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                            borderRadius: 6
+                        },
+                        {
+                            label: 'Top 10%',
+                            data: [data.top10.trust, data.top10.conflict, data.top10.commitment, data.top10.accountability, data.top10.results],
+                            backgroundColor: 'rgba(251, 191, 36, 0.8)',
+                            borderRadius: 6
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            ticks: { color: '#8a8a9a' }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8a8a9a' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function renderDimensionCards(data) {
+            const dimensions = ['trust', 'conflict', 'commitment', 'accountability', 'results'];
+            const labels = {
+                trust: 'Trust',
+                conflict: 'Conflict',
+                commitment: 'Commitment',
+                accountability: 'Accountability',
+                results: 'Results Focus'
+            };
+            
+            document.getElementById('dimensionGrid').innerHTML = dimensions.map(dim => `
+                <div class="dimension-card">
+                    <div class="dimension-header">
+                        <div class="dimension-name">${labels[dim]}</div>
+                        <div class="dimension-score">${yourTeam[dim]}</div>
+                    </div>
+                    <div class="benchmark-bars">
+                        <div class="benchmark-row">
+                            <span class="benchmark-label">Your Team</span>
+                            <div class="benchmark-bar-container">
+                                <div class="benchmark-bar your-team" style="width: ${yourTeam[dim]}%"></div>
+                            </div>
+                            <span class="benchmark-value" style="color: var(--green)">${yourTeam[dim]}</span>
+                        </div>
+                        <div class="benchmark-row">
+                            <span class="benchmark-label">Industry</span>
+                            <div class="benchmark-bar-container">
+                                <div class="benchmark-bar industry" style="width: ${data.industry[dim]}%"></div>
+                            </div>
+                            <span class="benchmark-value" style="color: var(--blue)">${data.industry[dim]}</span>
+                        </div>
+                        <div class="benchmark-row">
+                            <span class="benchmark-label">Top 10%</span>
+                            <div class="benchmark-bar-container">
+                                <div class="benchmark-bar top" style="width: ${data.top10[dim]}%"></div>
+                            </div>
+                            <span class="benchmark-value" style="color: var(--gold)">${data.top10[dim]}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function renderInsights(data) {
+            const insights = [];
+            const labels = {
+                trust: 'Trust',
+                conflict: 'Conflict',
+                commitment: 'Commitment',
+                accountability: 'Accountability',
+                results: 'Results Focus'
+            };
+            
+            // Find strengths (above industry average)
+            Object.keys(yourTeam).forEach(dim => {
+                const diff = yourTeam[dim] - data.industry[dim];
+                const topDiff = yourTeam[dim] - data.top10[dim];
+                
+                if (diff >= 10) {
+                    insights.push({
+                        type: 'strength',
+                        title: `${labels[dim]} is a strength`,
+                        text: `Your team scores ${diff} points above the industry average. This puts you in the top tier for ${labels[dim].toLowerCase()}.`
+                    });
+                } else if (diff <= -5) {
+                    insights.push({
+                        type: 'warning',
+                        title: `${labels[dim]} needs attention`,
+                        text: `Your team scores ${Math.abs(diff)} points below the industry average. Consider focusing on ${labels[dim].toLowerCase()} development.`
+                    });
+                } else if (topDiff >= -5 && topDiff < 0) {
+                    insights.push({
+                        type: 'opportunity',
+                        title: `${labels[dim]} - close to top performers`,
+                        text: `You're only ${Math.abs(topDiff)} points away from top 10% teams in ${labels[dim].toLowerCase()}. A small push could get you there!`
+                    });
+                }
+            });
+            
+            // If no insights, add a general one
+            if (insights.length === 0) {
+                insights.push({
+                    type: 'strength',
+                    title: 'Performing at industry level',
+                    text: 'Your team is performing close to industry averages across all dimensions. Focus on conflict handling to stand out.'
+                });
+            }
+            
+            document.getElementById('insightList').innerHTML = insights.slice(0, 4).map(insight => `
+                <div class="insight-item">
+                    <div class="insight-icon ${insight.type}">
+                        ${insight.type === 'strength' 
+                            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg>'
+                            : insight.type === 'warning'
+                            ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                            : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>'
+                        }
+                    </div>
+                    <div class="insight-content">
+                        <h4>${insight.title}</h4>
+                        <p>${insight.text}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', updateBenchmarks);
+    </script>
+</body>
+</html>

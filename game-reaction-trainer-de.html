@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Reaction Trainer - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981;
+            --gold: #d4a853; --red: #ef4444; --blue: #3b82f6; --purple: #8b5cf6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--black); min-height: 100vh; min-height: 100dvh; color: var(--white); overflow: hidden; -webkit-tap-highlight-color: transparent; }
+        
+        /* Header */
+        .game-header { padding: 12px 16px; background: var(--dark-grey); border-bottom: 1px solid var(--mid-grey); display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: none; border: none; color: var(--light-grey); font-size: 1.5rem; cursor: pointer; padding: 8px; }
+        .header-center { text-align: center; }
+        .game-title { font-size: 0.9rem; font-weight: 700; }
+        .level-badge { font-size: 0.7rem; color: var(--gold); margin-top: 2px; }
+        .streak-display { display: flex; align-items: center; gap: 5px; background: var(--mid-grey); padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; }
+        .streak-fire { color: #ff6b35; }
+        
+        /* Stats Bar */
+        .stats-bar { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 12px 16px; background: var(--dark-grey); }
+        .stat-item { text-align: center; }
+        .stat-value { font-size: 1.3rem; font-weight: 800; color: var(--green); }
+        .stat-value.xp { color: var(--gold); }
+        .stat-value.time { color: var(--blue); }
+        .stat-label { font-size: 0.65rem; color: var(--light-grey); text-transform: uppercase; letter-spacing: 1px; }
+        
+        /* Main Container */
+        .game-container { max-width: 500px; margin: 0 auto; padding: 16px; height: calc(100vh - 130px); height: calc(100dvh - 130px); display: flex; flex-direction: column; }
+        
+        /* Timer Ring */
+        .timer-container { display: flex; justify-content: center; margin-bottom: 16px; }
+        .timer-ring { width: 60px; height: 60px; position: relative; }
+        .timer-ring svg { transform: rotate(-90deg); }
+        .timer-ring circle { fill: none; stroke-width: 4; }
+        .timer-bg { stroke: var(--mid-grey); }
+        .timer-progress { stroke: var(--green); stroke-linecap: round; stroke-dasharray: 170; stroke-dashoffset: 0; transition: stroke-dashoffset 0.1s linear, stroke 0.3s; }
+        .timer-progress.warning { stroke: var(--gold); }
+        .timer-progress.danger { stroke: var(--red); }
+        .timer-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.2rem; font-weight: 800; }
+        
+        /* Scenario Card */
+        .scenario-card { background: var(--dark-grey); border-radius: 16px; padding: 20px; margin-bottom: 16px; min-height: 120px; display: flex; flex-direction: column; justify-content: center; }
+        .scenario-context { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 8px; font-weight: 600; }
+        .scenario-text { font-size: 1rem; line-height: 1.5; }
+        
+        /* Response Options */
+        .options-grid { display: flex; flex-direction: column; gap: 10px; flex: 1; overflow-y: auto; padding-bottom: 10px; }
+        .option-btn { background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; padding: 14px 16px; text-align: left; font-size: 0.9rem; color: var(--white); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; gap: 12px; }
+        .option-btn:active { transform: scale(0.98); }
+        .option-letter { width: 28px; height: 28px; background: var(--dark-grey); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .option-btn.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--green); }
+        .option-btn.correct .option-letter { background: var(--green); }
+        .option-btn.wrong { background: rgba(239, 68, 68, 0.15); border-color: var(--red); opacity: 0.7; }
+        .option-btn.wrong .option-letter { background: var(--red); }
+        .option-btn.partial { background: rgba(212, 168, 83, 0.15); border-color: var(--gold); }
+        .option-btn.partial .option-letter { background: var(--gold); }
+        .option-btn:disabled { pointer-events: none; }
+        
+        /* Feedback Overlay */
+        .feedback-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+        .feedback-overlay.show { opacity: 1; pointer-events: auto; }
+        .feedback-card { background: var(--dark-grey); border-radius: 20px; padding: 30px; max-width: 90%; width: 400px; text-align: center; transform: scale(0.9); transition: transform 0.2s; }
+        .feedback-overlay.show .feedback-card { transform: scale(1); }
+        .feedback-icon { font-size: 4rem; margin-bottom: 15px; }
+        .feedback-title { font-size: 1.5rem; font-weight: 800; margin-bottom: 8px; }
+        .feedback-title.correct { color: var(--green); }
+        .feedback-title.wrong { color: var(--red); }
+        .feedback-title.partial { color: var(--gold); }
+        .feedback-title.timeout { color: var(--light-grey); }
+        .feedback-points { font-size: 1.2rem; font-weight: 700; margin-bottom: 15px; }
+        .feedback-points.positive { color: var(--green); }
+        .feedback-points.negative { color: var(--red); }
+        .feedback-explanation { font-size: 0.9rem; color: var(--light-grey); line-height: 1.5; margin-bottom: 20px; text-align: left; background: var(--black); padding: 15px; border-radius: 10px; }
+        .feedback-btn { width: 100%; padding: 16px; background: var(--green); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        
+        /* Start Screen */
+        .start-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: var(--black); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+        .start-screen.hidden { display: none; }
+        .start-content { text-align: center; padding: 30px; max-width: 400px; }
+        .start-icon { font-size: 5rem; margin-bottom: 20px; }
+        .start-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        .start-subtitle { color: var(--light-grey); margin-bottom: 30px; line-height: 1.5; }
+        .start-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; background: var(--dark-grey); padding: 20px; border-radius: 16px; }
+        .start-stat-value { font-size: 1.5rem; font-weight: 800; color: var(--gold); }
+        .start-stat-label { font-size: 0.7rem; color: var(--light-grey); }
+        .start-btn { width: 100%; padding: 18px; background: var(--green); border: none; border-radius: 12px; color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer; margin-bottom: 10px; }
+        .difficulty-btns { display: flex; gap: 10px; }
+        .diff-btn { flex: 1; padding: 12px; background: var(--mid-grey); border: 2px solid transparent; border-radius: 10px; color: var(--white); font-size: 0.85rem; font-weight: 600; cursor: pointer; }
+        .diff-btn.active { border-color: var(--green); background: rgba(16,185,129,0.1); }
+        
+        /* Level Up */
+        .levelup-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 3000; opacity: 0; pointer-events: none; }
+        .levelup-overlay.show { opacity: 1; pointer-events: auto; }
+        .levelup-card { text-align: center; padding: 40px; }
+        .levelup-badge { font-size: 6rem; margin-bottom: 20px; animation: bounce 0.5s ease; }
+        @keyframes bounce { 0%,100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        .levelup-title { font-size: 2rem; font-weight: 800; color: var(--gold); margin-bottom: 10px; }
+        .levelup-name { font-size: 1.2rem; color: var(--white); margin-bottom: 20px; }
+        .levelup-btn { padding: 16px 40px; background: var(--gold); border: none; border-radius: 12px; color: var(--black); font-size: 1rem; font-weight: 700; cursor: pointer; }
+        
+        /* Game Over */
+        .gameover-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 3000; opacity: 0; pointer-events: none; }
+        .gameover-overlay.show { opacity: 1; pointer-events: auto; }
+        .gameover-card { background: var(--dark-grey); border-radius: 20px; padding: 30px; max-width: 90%; width: 400px; text-align: center; }
+        .gameover-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; }
+        .gameover-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 25px; }
+        .gameover-stat { background: var(--black); padding: 15px; border-radius: 12px; }
+        .gameover-stat-value { font-size: 1.8rem; font-weight: 800; color: var(--gold); }
+        .gameover-stat-label { font-size: 0.75rem; color: var(--light-grey); }
+        .gameover-btn { width: 100%; padding: 16px; background: var(--green); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
+        .gameover-btn.secondary { background: var(--mid-grey); }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-reaction-trainer.html" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-reaction-trainer-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <!-- Start Screen -->
+    <div class="start-screen" id="startScreen">
+        <div class="start-content">
+            <div class="start-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <h1 class="start-title">Reaction Trainer</h1>
+            <p class="start-subtitle">Train your leadership instincts. React quickly. Learn faster.</p>
+            <div class="start-stats">
+                <div><div class="start-stat-value" id="startBestStreak">0</div><div class="start-stat-label">Best Streak</div></div>
+                <div><div class="start-stat-value" id="startTotalXP">0</div><div class="start-stat-label">Total XP</div></div>
+                <div><div class="start-stat-value" id="startLevel">1</div><div class="start-stat-label">Level</div></div>
+            </div>
+            <div class="difficulty-btns">
+                <button class="diff-btn active" data-time="5" onclick="setDifficulty(this, 5)">Easy (5s)</button>
+                <button class="diff-btn" data-time="3" onclick="setDifficulty(this, 3)">Normal (3s)</button>
+                <button class="diff-btn" data-time="2" onclick="setDifficulty(this, 2)">Hard (2s)</button>
+            </div>
+            <button class="start-btn" onclick="startGame()">START TRAINING</button>
+        </div>
+    </div>
+
+    <!-- Game Header -->
+    <div class="game-header">
+        <button class="back-btn" onclick="exitGame()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+        <div class="header-center">
+            <div class="game-title">REACTION TRAINER</div>
+            <div class="level-badge" id="levelBadge">Level 1: Rookie</div>
+        </div>
+        <div class="streak-display">
+            <span class="streak-fire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <span id="currentStreak">0</span>
+        </div>
+    </div>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar">
+        <div class="stat-item"><div class="stat-value" id="scoreDisplay">0</div><div class="stat-label">Score</div></div>
+        <div class="stat-item"><div class="stat-value xp" id="xpDisplay">+0</div><div class="stat-label">XP This Round</div></div>
+        <div class="stat-item"><div class="stat-value time" id="roundDisplay">1/10</div><div class="stat-label">Round</div></div>
+    </div>
+
+    <!-- Game Container -->
+    <div class="game-container">
+        <div class="timer-container">
+            <div class="timer-ring">
+                <svg width="60" height="60">
+                    <circle class="timer-bg" cx="30" cy="30" r="27"></circle>
+                    <circle class="timer-progress" id="timerProgress" cx="30" cy="30" r="27"></circle>
+                </svg>
+                <div class="timer-text" id="timerText">5</div>
+            </div>
+        </div>
+        <div class="scenario-card">
+            <div class="scenario-context" id="scenarioContext">LOADING...</div>
+            <div class="scenario-text" id="scenarioText">Get ready for your first scenario...</div>
+        </div>
+        <div class="options-grid" id="optionsGrid"></div>
+    </div>
+
+    <!-- Feedback Overlay -->
+    <div class="feedback-overlay" id="feedbackOverlay">
+        <div class="feedback-card">
+            <div class="feedback-icon" id="feedbackIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="feedback-title" id="feedbackTitle">Correct!</div>
+            <div class="feedback-points" id="feedbackPoints">+10 points</div>
+            <div class="feedback-explanation" id="feedbackExplanation"></div>
+            <button class="feedback-btn" onclick="nextRound()">Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+        </div>
+    </div>
+
+    <!-- Level Up Overlay -->
+    <div class="levelup-overlay" id="levelupOverlay">
+        <div class="levelup-card">
+            <div class="levelup-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="levelup-title">LEVEL UP!</div>
+            <div class="levelup-name" id="levelupName">Responder</div>
+            <button class="levelup-btn" onclick="closeLevelUp()">Weiter</button>
+        </div>
+    </div>
+
+    <!-- Game Over Overlay -->
+    <div class="gameover-overlay" id="gameoverOverlay">
+        <div class="gameover-card">
+            <div class="gameover-title">Training Complete!</div>
+            <div class="gameover-stats">
+                <div class="gameover-stat"><div class="gameover-stat-value" id="finalScore">0</div><div class="gameover-stat-label">Final Score</div></div>
+                <div class="gameover-stat"><div class="gameover-stat-value" id="finalXP">+0</div><div class="gameover-stat-label">XP Earned</div></div>
+                <div class="gameover-stat"><div class="gameover-stat-value" id="finalCorrect">0/10</div><div class="gameover-stat-label">Correct</div></div>
+                <div class="gameover-stat"><div class="gameover-stat-value" id="finalStreak">0</div><div class="gameover-stat-label">Best Streak</div></div>
+            </div>
+            <button class="gameover-btn" onclick="playAgain()">Play Again</button>
+            <button class="gameover-btn secondary" onclick="exitGame()">Exit</button>
+        </div>
+    </div>
+
+    <script>
+    // 50 Scenarios
+    const scenarios = [
+        // WORKPLACE - Basic
+        { context: "WORKPLACE", text: "Your colleague interrupts you mid-sentence during a meeting.", correct: 1, options: ["Interrupt them back to make a point", "Pause, let them finish, then say 'I'd like to finish my thought'", "Stay quiet and let it go", "Roll your eyes visibly"], explanation: "Assertive but respectful. You acknowledge them while maintaining your space." },
+        { context: "WORKPLACE", text: "Your boss assigns you a task with an impossible deadline.", correct: 2, options: ["Say nothing and try your best", "Refuse outright", "Ask what can be deprioritized to make room", "Complain to coworkers"], explanation: "Negotiating priorities shows ownership while being realistic about constraints." },
+        { context: "WORKPLACE", text: "A teammate takes credit for your idea in front of leadership.", correct: 0, options: ["After the meeting, privately say: 'I noticed you presented my idea. Let's discuss how to handle attribution.'", "Call them out publicly in the meeting", "Let it go this time", "Send an angry email"], explanation: "Private, direct, specific. You address it without creating public drama." },
+        { context: "WORKPLACE", text: "You discover you made a significant mistake on a project.", correct: 1, options: ["Hope no one notices", "Immediately tell your manager what happened and your plan to fix it", "Blame it on unclear requirements", "Fix it quietly and never mention it"], explanation: "Owning mistakes builds trust. Coming with a solution shows leadership." },
+        { context: "WORKPLACE", text: "A client is yelling at you for something that isn't your fault.", correct: 2, options: ["Yell back to defend yourself", "Hang up on them", "Say: 'I understand this is frustrating. Let me find out what happened and get back to you in an hour.'", "Apologize profusely even though it's not your fault"], explanation: "Acknowledge emotion, commit to action, set a timeline. Professional under pressure." },
+        { context: "WORKPLACE", text: "Your coworker keeps asking you to do their work for them.", correct: 0, options: ["Say: 'I'm happy to help you learn, but I can't take on your tasks. What specifically are you stuck on?'", "Just do it to avoid conflict", "Report them to your manager immediately", "Be passive-aggressive about it"], explanation: "Helpful but with boundaries. You offer to teach, not to do." },
+        { context: "WORKPLACE", text: "You're in a meeting that has gone completely off-topic.", correct: 1, options: ["Check your phone until it's over", "Say: 'This is great discussion, but can we table it and get back to our agenda?'", "Walk out dramatically", "Zone out and wait"], explanation: "Respectfully redirecting shows you value everyone's time." },
+        { context: "WORKPLACE", text: "A new employee asks you the same question for the fifth time.", correct: 2, options: ["Snap at them", "Sigh and answer again", "Say: 'Let's write this down together so you have a reference for next time.'", "Tell them to figure it out themselves"], explanation: "Patient and constructive. You solve the root cause, not just the symptom." },
+        { context: "WORKPLACE", text: "Your manager publicly criticizes your work in front of the team.", correct: 1, options: ["Argue back publicly", "Say: 'I'd like to discuss this feedback. Can we connect after the meeting?'", "Shut down and say nothing", "Storm out of the meeting"], explanation: "Take it offline. You show composure and address it properly." },
+        { context: "WORKPLACE", text: "You're asked to work over the weekend again—third time this month.", correct: 0, options: ["Say: 'I can do this weekend, but we need to discuss workload. This pattern isn't sustainable.'", "Refuse without explanation", "Just do it and resent everyone", "Quit on the spot"], explanation: "Agree short-term while addressing the pattern. Boundaries with solutions." },
+        
+        // WORKPLACE - Intermediate
+        { context: "LEADERSHIP", text: "Two of your team members are having a conflict that's affecting everyone.", correct: 1, options: ["Ignore it and hope it resolves", "Bring them both in together and say: 'I've noticed tension. Let's discuss what's happening.'", "Pick a side and support them", "Transfer one of them to another team"], explanation: "Address it directly. Create space for dialogue rather than avoiding." },
+        { context: "LEADERSHIP", text: "Your top performer wants a raise, but budget is frozen.", correct: 2, options: ["Just say no", "Promise something you can't deliver", "Say: 'I can't do salary now, but let's discuss what else would be meaningful and revisit salary in Q2.'", "Avoid the conversation"], explanation: "Honest about constraints while showing you value them and have a plan." },
+        { context: "LEADERSHIP", text: "You need to give negative feedback to a sensitive employee.", correct: 0, options: ["Start with specific observations, focus on behavior not character, and ask for their perspective", "Sandwich it between excessive praise", "Send it in an email to avoid the conversation", "Wait until their review in 6 months"], explanation: "Direct, specific, and collaborative. Treat them like an adult." },
+        { context: "LEADERSHIP", text: "A team member comes to you with a problem, expecting you to solve it.", correct: 1, options: ["Solve it for them immediately", "Ask: 'What solutions have you considered?' and guide them to their own answer", "Tell them it's not your problem", "Defer to someone else"], explanation: "Coaching over solving. Help them build capability." },
+        { context: "LEADERSHIP", text: "Your team missed a major deadline due to poor planning.", correct: 2, options: ["Blame the team publicly", "Blame yourself publicly", "Own it to leadership, then run a retrospective with the team to prevent recurrence", "Hide it and hope no one notices"], explanation: "Leaders own outcomes upward and create learning opportunities downward." },
+        
+        // PERSONAL - Basic
+        { context: "PERSONAL", text: "Your friend cancels plans last minute—for the third time.", correct: 1, options: ["Passive-aggressively say 'It's fine'", "Say: 'I value our time together. When you cancel last minute, I feel like a low priority. Can we find times that work better?'", "Stop inviting them to things", "Blow up at them"], explanation: "SBIR: Situation, behavior, impact, request. Direct but caring." },
+        { context: "PERSONAL", text: "Your partner criticizes how you loaded the dishwasher.", correct: 0, options: ["Take a breath and say: 'I hear you. Can you show me how you'd prefer it done?'", "Get defensive and list their faults", "Do it their way silently while resentful", "Refuse to ever do dishes again"], explanation: "Curious over defensive. Small moments build or erode relationships." },
+        { context: "PERSONAL", text: "Your parent gives unsolicited advice about your career.", correct: 2, options: ["Snap at them", "Nod and ignore", "Say: 'I appreciate you care. I've thought about this and I'm confident in my choice. Can you support that?'", "Argue until they agree"], explanation: "Acknowledge intent, assert your autonomy, make a clear request." },
+        { context: "PERSONAL", text: "A friend shares a secret you accidentally told someone else.", correct: 1, options: ["Deny it happened", "Say: 'I messed up. I shared something I shouldn't have. I'm sorry, and it won't happen again.'", "Blame the other person for spreading it", "Avoid the friend until it blows over"], explanation: "Own it fully. No excuses. Commit to change." },
+        { context: "PERSONAL", text: "Your roommate's guest has overstayed their welcome (week 2).", correct: 0, options: ["Say: 'Hey, it's been two weeks. I need my space back. When is your guest leaving?'", "Hope they take the hint", "Move out", "Complain to mutual friends"], explanation: "Direct ask with a clear timeline request. Avoidance makes it worse." },
+        
+        // DIFFICULT CONVERSATIONS
+        { context: "DIFFICULT", text: "Someone makes an offensive joke in a group setting.", correct: 1, options: ["Laugh along to not make it awkward", "Say: 'I don't find that funny. Can we move on?'", "Lecture them about why it's wrong", "Leave the room silently"], explanation: "Brief, clear, redirect. You don't need to teach; you can just set a boundary." },
+        { context: "DIFFICULT", text: "A family member asks when you're having kids (you don't want them).", correct: 2, options: ["Lie and say 'someday'", "Get angry at them for asking", "Say: 'That's not in my plans. I'd appreciate if we didn't discuss it.'", "Give a long explanation of why not"], explanation: "Simple, clear boundary. You don't owe anyone an explanation." },
+        { context: "DIFFICULT", text: "Your friend is in a bad relationship but won't leave.", correct: 0, options: ["Say: 'I love you and I'm worried. I'm here whenever you need me, no judgment.'", "Give them an ultimatum", "Tell them exactly what to do", "Stop being their friend"], explanation: "Support without control. Plant seeds, stay available, don't push." },
+        { context: "DIFFICULT", text: "Someone cuts in line in front of you.", correct: 1, options: ["Shove them out of the way", "Say: 'Excuse me, the line starts back there.'", "Fume silently", "Take a photo to post online"], explanation: "Direct, factual, no drama. Most people will self-correct." },
+        { context: "DIFFICULT", text: "You realize mid-argument that you're wrong.", correct: 2, options: ["Keep arguing to save face", "Go silent", "Say: 'You know what, I think you're right. I was wrong about that.'", "Change the subject"], explanation: "Admitting you're wrong builds respect, not weakness." },
+        
+        // HIGH STAKES
+        { context: "HIGH STAKES", text: "You're asked your opinion in a meeting and you don't have one yet.", correct: 1, options: ["Make something up confidently", "Say: 'I need more time to form a view. Can I follow up after I've thought it through?'", "Say 'I don't know' and stay silent", "Deflect to someone else"], explanation: "Honest about needing time, but committed to contributing. That's credibility." },
+        { context: "HIGH STAKES", text: "A recruiter asks why you left your last job (you were fired).", correct: 0, options: ["Say: 'It wasn't the right fit. I learned [specific lesson] and am looking for [specific environment].'", "Lie and say you resigned", "Bad-mouth your old company", "Refuse to answer"], explanation: "Honest, forward-looking, shows growth. Don't lie, don't dwell." },
+        { context: "HIGH STAKES", text: "Your presentation is going badly—audience looks bored.", correct: 2, options: ["Speed through the rest to end sooner", "Keep going as planned", "Pause and say: 'I'm sensing this isn't landing. What would be most useful to cover?'", "Blame the audience for not paying attention"], explanation: "Reading the room and adapting shows confidence and audience-focus." },
+        { context: "HIGH STAKES", text: "You strongly disagree with a decision your CEO made.", correct: 1, options: ["Complain to everyone but the CEO", "Request a meeting: 'I have concerns about X. Can I share my perspective?'", "Quit immediately", "Post about it on LinkedIn"], explanation: "Go to the source. Disagree and commit, or escalate properly." },
+        { context: "HIGH STAKES", text: "You're asked to do something unethical by your boss.", correct: 0, options: ["Say: 'I'm not comfortable with this because [reason]. Is there another way to achieve the goal?'", "Just do it to keep your job", "Report them immediately without talking to them", "Pretend you didn't understand"], explanation: "Clear boundary with an alternative offered. Document everything." },
+        
+        // EMOTIONAL INTELLIGENCE
+        { context: "EMOTIONAL", text: "A colleague starts crying in a 1:1.", correct: 2, options: ["Pretend not to notice", "Try to fix their problem immediately", "Pause, say 'Take your time,' and sit with them in silence", "Tell them to calm down"], explanation: "Presence over fixing. Sometimes people just need space to feel." },
+        { context: "EMOTIONAL", text: "You feel yourself getting angry in a heated discussion.", correct: 1, options: ["Let it out—they deserve it", "Say: 'I'm getting heated. Let me take 5 minutes and come back.'", "Suppress it and continue robotically", "Walk out without saying anything"], explanation: "Self-awareness in action. Taking a break is strength, not weakness." },
+        { context: "EMOTIONAL", text: "Someone shares good news but you're having a terrible day.", correct: 0, options: ["Genuinely celebrate with them—their moment isn't about you", "One-up them with your own news", "Barely acknowledge it", "Dump your problems on them"], explanation: "Generosity even when struggling. Good character shows in hard moments." },
+        { context: "EMOTIONAL", text: "You're jealous of a friend's success.", correct: 2, options: ["Distance yourself from them", "Secretly hope they fail", "Acknowledge the feeling to yourself, then ask: 'What about their success can I learn from?'", "Tell them you're jealous"], explanation: "Feelings are data. Use them for growth, not destruction." },
+        { context: "EMOTIONAL", text: "You feel underappreciated at work despite strong performance.", correct: 1, options: ["Quit without warning", "Ask your manager: 'What does great look like here, and how am I tracking?'", "Work less since no one notices", "Complain to everyone"], explanation: "Get clarity before assuming. Maybe your manager doesn't know how you feel." },
+        
+        // BOUNDARIES
+        { context: "BOUNDARIES", text: "Your manager Slacks you at 10pm expecting a response.", correct: 1, options: ["Respond immediately", "Set an auto-reply: 'I check messages 8am-6pm. Will respond then.'", "Ignore it and stress all night", "Quit the next morning"], explanation: "Model the boundaries you want. Leaders often don't realize they're doing it." },
+        { context: "BOUNDARIES", text: "A friend always vents to you but never asks how YOU are.", correct: 0, options: ["Say: 'I love supporting you. I'd also love if we checked in on each other.'", "Keep being their free therapist", "Cut them off completely", "Start dumping on them without warning"], explanation: "Request reciprocity directly. Good friends want to know." },
+        { context: "BOUNDARIES", text: "Someone asks for a favor you don't have time for.", correct: 2, options: ["Say yes and resent them", "Ghost them", "Say: 'I can't right now. Could you ask me again next month?'", "Make up an elaborate excuse"], explanation: "Honest 'no' with a possible future yes. Clean and kind." },
+        { context: "BOUNDARIES", text: "Your in-laws keep showing up unannounced.", correct: 1, options: ["Suffer in silence", "Say: 'We love seeing you, but we need advance notice to be good hosts. Can we plan visits together?'", "Never be home", "Ban them from visiting"], explanation: "Frame it positively, make a clear request. Boundaries can be warm." },
+        { context: "BOUNDARIES", text: "A coworker keeps interrupting your focused work.", correct: 0, options: ["Say: 'I'm in focused mode until 3pm. Can I find you after?'", "Put up with it", "Complain about them to others", "Wear headphones and ignore them completely"], explanation: "Clear timeboxing. You offer an alternative instead of just blocking." },
+        
+        // CONFLICT RESOLUTION
+        { context: "CONFLICT", text: "You and a teammate disagree on approach—conversation is getting heated.", correct: 2, options: ["Dig in harder", "Give up and do it their way", "Say: 'We're both passionate. Let's step back—what's the outcome we're both trying to achieve?'", "Escalate to your manager"], explanation: "Zoom out to shared goals. Often you're disagreeing on methods, not outcomes." },
+        { context: "CONFLICT", text: "Two people on your team give you conflicting instructions.", correct: 1, options: ["Do whatever the highest-ranking one said", "Say: 'I'm getting different directions. Can we get aligned so I can move forward?'", "Do nothing until they figure it out", "Play them against each other"], explanation: "Surface the conflict transparently. You're not taking sides." },
+        { context: "CONFLICT", text: "A client blames you for a mistake that was actually their fault.", correct: 0, options: ["Say: 'Let's look at the timeline together so we're aligned on what happened.'", "Accept blame to keep them happy", "Tell them they're wrong aggressively", "Never work with them again"], explanation: "Fact-based, collaborative. You protect yourself without attacking." },
+        { context: "CONFLICT", text: "Someone apologizes but it doesn't feel sincere.", correct: 2, options: ["Say 'it's fine' even though it isn't", "Demand a better apology", "Say: 'Thanks. What I'd really like is [specific change] going forward.'", "Hold a grudge forever"], explanation: "Accept and redirect to the future. Focus on what you need, not revenge." },
+        { context: "CONFLICT", text: "You need to tell a friend their startup idea won't work.", correct: 1, options: ["Pretend to be supportive", "Ask: 'What would need to be true for this to succeed? Have you tested those assumptions?'", "Tear it apart directly", "Avoid the topic forever"], explanation: "Questions over declarations. Help them discover the gaps themselves." },
+        
+        // GROWTH MINDSET
+        { context: "GROWTH", text: "You get rejected from your dream job.", correct: 1, options: ["Give up on that career path", "Ask: 'Is there anything specific I could improve for future opportunities?'", "Bad-mouth the company", "Apply again immediately with no changes"], explanation: "Rejection is data. Get the feedback to improve next time." },
+        { context: "GROWTH", text: "Someone gives you harsh but fair feedback.", correct: 0, options: ["Thank them and ask: 'Can you give me an example so I can understand better?'", "Get defensive", "Agree and feel terrible about yourself", "Dismiss them as wrong"], explanation: "Curiosity over defensiveness. Specific examples help you actually improve." },
+        { context: "GROWTH", text: "You keep procrastinating on an important task.", correct: 2, options: ["Beat yourself up about it", "Do something else instead", "Ask: 'What am I actually avoiding?' and address the root cause", "Wait until the deadline forces you"], explanation: "Procrastination often masks fear. Name it to solve it." },
+        { context: "GROWTH", text: "You're in a job where you've stopped learning.", correct: 1, options: ["Complain but do nothing", "Proactively seek stretch projects or talk to your manager about growth paths", "Quiet quit", "Leave immediately"], explanation: "Own your growth. Don't wait for someone to develop you." },
+        { context: "GROWTH", text: "You failed publicly at something important.", correct: 0, options: ["Share what you learned with others who might benefit", "Hide and hope everyone forgets", "Blame circumstances", "Never try anything risky again"], explanation: "Your failure can help others. That's leadership." }
+    ];
+
+    const levels = [
+        { name: "Rookie", xpRequired: 0 },
+        { name: "Responder", xpRequired: 100 },
+        { name: "Quick Thinker", xpRequired: 300 },
+        { name: "Instinct", xpRequired: 600 },
+        { name: "Reflex Master", xpRequired: 1000 }
+    ];
+
+    let gameState = {
+        timeLimit: 5,
+        currentRound: 0,
+        totalRounds: 10,
+        score: 0,
+        xpThisRound: 0,
+        streak: 0,
+        bestStreak: 0,
+        correct: 0,
+        usedIndices: [],
+        currentScenario: null,
+        timerInterval: null,
+        timeRemaining: 5
+    };
+
+    // Load saved data
+    function loadSavedData() {
+        const saved = JSON.parse(localStorage.getItem('tap_in_reaction_trainer') || '{}');
+        document.getElementById('startBestStreak').textContent = saved.bestStreak || 0;
+        document.getElementById('startTotalXP').textContent = saved.totalXP || 0;
+        const level = getLevel(saved.totalXP || 0);
+        document.getElementById('startLevel').textContent = level.index + 1;
+    }
+
+    function getLevel(xp) {
+        for (let i = levels.length - 1; i >= 0; i--) {
+            if (xp >= levels[i].xpRequired) {
+                return { ...levels[i], index: i };
+            }
+        }
+        return { ...levels[0], index: 0 };
+    }
+
+    function setDifficulty(btn, time) {
+        document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        gameState.timeLimit = time;
+    }
+
+    function startGame() {
+        document.getElementById('startScreen').classList.add('hidden');
+        gameState.currentRound = 0;
+        gameState.score = 0;
+        gameState.xpThisRound = 0;
+        gameState.streak = 0;
+        gameState.correct = 0;
+        gameState.usedIndices = [];
+        gameState.bestStreak = 0;
+        updateDisplays();
+        loadRound();
+    }
+
+    function loadRound() {
+        gameState.currentRound++;
+        if (gameState.currentRound > gameState.totalRounds) {
+            endGame();
+            return;
+        }
+
+        // Get random unused scenario
+        let index;
+        do {
+            index = Math.floor(Math.random() * scenarios.length);
+        } while (gameState.usedIndices.includes(index));
+        gameState.usedIndices.push(index);
+        gameState.currentScenario = scenarios[index];
+
+        // Update UI
+        document.getElementById('roundDisplay').textContent = gameState.currentRound + '/' + gameState.totalRounds;
+        document.getElementById('scenarioContext').textContent = gameState.currentScenario.context;
+        document.getElementById('scenarioText').textContent = gameState.currentScenario.text;
+
+        // Render options
+        const grid = document.getElementById('optionsGrid');
+        const letters = ['A', 'B', 'C', 'D'];
+        grid.innerHTML = gameState.currentScenario.options.map((opt, i) => 
+            `<button class="option-btn" onclick="selectOption(${i})">
+                <span class="option-letter">${letters[i]}</span>
+                <span>${opt}</span>
+            </button>`
+        ).join('');
+
+        // Start timer
+        startTimer();
+    }
+
+    function startTimer() {
+        gameState.timeRemaining = gameState.timeLimit;
+        updateTimerDisplay();
+        
+        const circumference = 2 * Math.PI * 27; // r=27
+        document.getElementById('timerProgress').style.strokeDasharray = circumference;
+        document.getElementById('timerProgress').style.strokeDashoffset = 0;
+        document.getElementById('timerProgress').classList.remove('warning', 'danger');
+
+        gameState.timerInterval = setInterval(() => {
+            gameState.timeRemaining -= 0.1;
+            updateTimerDisplay();
+            
+            // Update progress ring
+            const progress = gameState.timeRemaining / gameState.timeLimit;
+            document.getElementById('timerProgress').style.strokeDashoffset = circumference * (1 - progress);
+            
+            // Color changes
+            if (progress < 0.3) {
+                document.getElementById('timerProgress').classList.add('danger');
+            } else if (progress < 0.5) {
+                document.getElementById('timerProgress').classList.add('warning');
+            }
+
+            if (gameState.timeRemaining <= 0) {
+                clearInterval(gameState.timerInterval);
+                handleTimeout();
+            }
+        }, 100);
+    }
+
+    function updateTimerDisplay() {
+        document.getElementById('timerText').textContent = Math.ceil(gameState.timeRemaining);
+    }
+
+    function selectOption(index) {
+        clearInterval(gameState.timerInterval);
+        
+        const scenario = gameState.currentScenario;
+        const isCorrect = index === scenario.correct;
+        const timeBonus = Math.floor(gameState.timeRemaining);
+        
+        // Calculate points
+        let points = 0;
+        let xp = 0;
+        let resultClass = '';
+        let resultTitle = '';
+        let resultIcon = '';
+        
+        if (isCorrect) {
+            points = 10 + timeBonus + (gameState.streak * 2);
+            xp = 10;
+            gameState.streak++;
+            gameState.correct++;
+            resultClass = 'correct';
+            resultTitle = 'Correct!';
+            resultIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg>';
+        } else {
+            points = -5;
+            xp = 2;
+            gameState.streak = 0;
+            resultClass = 'wrong';
+            resultTitle = 'Not quite';
+            resultIcon = '✗';
+        }
+
+        gameState.score += points;
+        gameState.xpThisRound += xp;
+        if (gameState.streak > gameState.bestStreak) gameState.bestStreak = gameState.streak;
+
+        // Update option styling
+        document.querySelectorAll('.option-btn').forEach((btn, i) => {
+            btn.disabled = true;
+            if (i === scenario.correct) btn.classList.add('correct');
+            else if (i === index && !isCorrect) btn.classList.add('wrong');
+        });
+
+        // Show feedback
+        showFeedback(resultClass, resultTitle, resultIcon, points, scenario.explanation);
+        updateDisplays();
+    }
+
+    function handleTimeout() {
+        gameState.streak = 0;
+        const scenario = gameState.currentScenario;
+        
+        document.querySelectorAll('.option-btn').forEach((btn, i) => {
+            btn.disabled = true;
+            if (i === scenario.correct) btn.classList.add('correct');
+        });
+
+        showFeedback('timeout', 'Time\'s up!', '⏱', 0, scenario.explanation);
+        updateDisplays();
+    }
+
+    function showFeedback(type, title, icon, points, explanation) {
+        document.getElementById('feedbackIcon').textContent = icon;
+        document.getElementById('feedbackTitle').textContent = title;
+        document.getElementById('feedbackTitle').className = 'feedback-title ' + type;
+        document.getElementById('feedbackPoints').textContent = points >= 0 ? '+' + points + ' points' : points + ' points';
+        document.getElementById('feedbackPoints').className = 'feedback-points ' + (points >= 0 ? 'positive' : 'negative');
+        document.getElementById('feedbackExplanation').textContent = explanation;
+        document.getElementById('feedbackOverlay').classList.add('show');
+    }
+
+    function nextRound() {
+        document.getElementById('feedbackOverlay').classList.remove('show');
+        setTimeout(loadRound, 200);
+    }
+
+    function updateDisplays() {
+        document.getElementById('scoreDisplay').textContent = gameState.score;
+        document.getElementById('xpDisplay').textContent = '+' + gameState.xpThisRound;
+        document.getElementById('currentStreak').textContent = gameState.streak;
+        
+        // Level badge
+        const saved = JSON.parse(localStorage.getItem('tap_in_reaction_trainer') || '{}');
+        const level = getLevel((saved.totalXP || 0) + gameState.xpThisRound);
+        document.getElementById('levelBadge').textContent = 'Level ' + (level.index + 1) + ': ' + level.name;
+    }
+
+    function endGame() {
+        // Save to localStorage
+        const saved = JSON.parse(localStorage.getItem('tap_in_reaction_trainer') || '{}');
+        const oldXP = saved.totalXP || 0;
+        const newTotalXP = oldXP + gameState.xpThisRound;
+        
+        // Check for level up
+        const oldLevel = getLevel(oldXP);
+        const newLevel = getLevel(newTotalXP);
+        
+        saved.totalXP = newTotalXP;
+        saved.bestStreak = Math.max(saved.bestStreak || 0, gameState.bestStreak);
+        saved.gamesPlayed = (saved.gamesPlayed || 0) + 1;
+        localStorage.setItem('tap_in_reaction_trainer', JSON.stringify(saved));
+        
+        // Also add to global TAP-IN XP
+        const globalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+        localStorage.setItem('tap_in_xp', globalXP + gameState.xpThisRound);
+
+        // Show level up if applicable
+        if (newLevel.index > oldLevel.index) {
+            showLevelUp(newLevel.name);
+        } else {
+            showGameOver();
+        }
+    }
+
+    function showLevelUp(levelName) {
+        document.getElementById('levelupName').textContent = levelName;
+        document.getElementById('levelupOverlay').classList.add('show');
+    }
+
+    function closeLevelUp() {
+        document.getElementById('levelupOverlay').classList.remove('show');
+        showGameOver();
+    }
+
+    function showGameOver() {
+        document.getElementById('finalScore').textContent = gameState.score;
+        document.getElementById('finalXP').textContent = '+' + gameState.xpThisRound;
+        document.getElementById('finalCorrect').textContent = gameState.correct + '/' + gameState.totalRounds;
+        document.getElementById('finalStreak').textContent = gameState.bestStreak;
+        document.getElementById('gameoverOverlay').classList.add('show');
+    }
+
+    function playAgain() {
+        document.getElementById('gameoverOverlay').classList.remove('show');
+        loadSavedData();
+        startGame();
+    }
+
+    function exitGame() {
+        window.location.href = 'gym-dashboard.html';
+    }
+
+    // Init
+    loadSavedData();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

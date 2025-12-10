@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Black Belt Stripe 2: Mastery Under Pressure - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --belt-color: #1a1a1a;
+            --belt-accent: #404040;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); overflow-x: hidden; }
+        
+        .header { position: fixed; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: linear-gradient(to bottom, var(--black), transparent); }
+        .back-btn { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; opacity: 0.7; }
+        .xp-display { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+        
+        .journey-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--mid-grey); z-index: 101; }
+        .journey-progress { height: 100%; background: linear-gradient(90deg, var(--belt-accent), var(--green)); width: 0%; transition: width 0.6s ease; }
+        
+        .container { max-width: 500px; margin: 0 auto; padding: 80px 24px 40px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        
+        .beat { display: none; animation: fadeIn 0.5s ease; }
+        .beat.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .beat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--belt-accent); margin-bottom: 20px; }
+        .beat-text { font-size: 1.4rem; font-weight: 500; line-height: 1.5; margin-bottom: 30px; }
+        .beat-text-small { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: rgba(255,255,255,0.9); }
+        .beat-subtext { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; margin-bottom: 25px; }
+        
+        .continue-btn { background: none; border: 1px solid var(--mid-grey); color: var(--light-grey); padding: 14px 28px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; margin-top: 10px; width: 100%; }
+        .continue-btn:hover { border-color: var(--light-grey); color: var(--white); }
+        .continue-btn.primary { background: var(--belt-accent); border-color: var(--belt-accent); color: var(--white); }
+        .continue-btn:disabled { opacity: 0.3; pointer-events: none; }
+        
+        .binary-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .binary-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.25s ease; }
+        .binary-card:hover { border-color: var(--belt-accent); transform: translateY(-2px); }
+        .binary-card.selected { border-color: var(--belt-accent); background: rgba(64, 64, 64, 0.2); }
+        .binary-card-title { font-weight: 600; margin-bottom: 6px; }
+        .binary-card-sub { font-size: 0.85rem; color: var(--light-grey); }
+        
+        .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+        .scenario-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+        .scenario-card:hover { border-color: var(--light-grey); }
+        .scenario-card.selected { border-color: var(--belt-accent); background: rgba(64, 64, 64, 0.15); }
+        .scenario-card.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .scenario-card.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        
+        .spectrum-container { margin: 30px 0; }
+        .spectrum-line { height: 8px; background: var(--mid-grey); border-radius: 4px; position: relative; cursor: pointer; }
+        .spectrum-marker { width: 24px; height: 24px; background: var(--belt-accent); border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); left: 50%; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4); display: none; }
+        .spectrum-marker.visible { display: block; }
+        .spectrum-labels { display: flex; justify-content: space-between; margin-top: 12px; font-size: 0.8rem; color: var(--light-grey); }
+        
+        .pill-options { display: flex; justify-content: space-between; gap: 8px; margin: 25px 0; }
+        .pill { flex: 1; padding: 14px 8px; background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 8px; text-align: center; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .pill:hover { border-color: var(--belt-accent); }
+        .pill.selected { background: var(--belt-accent); border-color: var(--belt-accent); }
+        .pill-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--light-grey); margin-top: 8px; }
+        
+        .quote-block { border-left: 3px solid var(--gold); padding-left: 20px; margin: 30px 0; }
+        .quote-text { font-size: 1.15rem; font-style: italic; color: var(--white); line-height: 1.6; margin-bottom: 12px; }
+        .quote-author { font-size: 0.85rem; color: var(--gold); }
+        
+        .insight-reveal { background: linear-gradient(135deg, rgba(64, 64, 64, 0.2), rgba(64, 64, 64, 0.05)); border: 1px solid var(--belt-accent); border-radius: 16px; padding: 25px; margin: 25px 0; }
+        .insight-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--belt-accent); margin-bottom: 10px; }
+        .insight-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.85); }
+        
+        .stat-reveal { text-align: center; padding: 30px 20px; background: var(--dark-grey); border-radius: 16px; margin: 25px 0; }
+        .stat-number { font-size: 3.5rem; font-weight: 800; color: var(--gold); line-height: 1; margin-bottom: 8px; }
+        .stat-unit { font-size: 1.5rem; font-weight: 600; color: var(--gold); }
+        .stat-label { font-size: 1.1rem; color: var(--white); font-weight: 600; }
+        
+        .quickfire-container { margin: 20px 0; }
+        .quickfire-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); }
+        .quickfire-item.answered { opacity: 0.5; }
+        .quickfire-text { font-size: 0.95rem; flex: 1; padding-right: 15px; }
+        .quickfire-btns { display: flex; gap: 8px; }
+        .quickfire-btn { padding: 8px 16px; background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 6px; color: var(--white); font-size: 0.85rem; cursor: pointer; }
+        .quickfire-btn.selected { background: var(--belt-accent); border-color: var(--belt-accent); }
+        
+        .callback-box { background: linear-gradient(135deg, rgba(64, 64, 64, 0.2), rgba(16, 185, 129, 0.1)); border: 1px solid var(--belt-accent); border-radius: 16px; padding: 25px; margin: 20px 0; }
+        .callback-text { font-size: 1rem; line-height: 1.6; }
+        .callback-highlight { color: var(--gold); font-weight: 600; }
+        
+        .mirror-reveal { margin: 30px 0; }
+        .mirror-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; }
+        .mirror-item.visible { opacity: 1; transform: translateX(0); }
+        .mirror-item:last-child { border-bottom: none; }
+        .mirror-label { color: var(--light-grey); font-size: 0.9rem; }
+        .mirror-value { font-weight: 600; font-size: 1rem; color: var(--gold); }
+        
+        .reveal-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 20px 0; opacity: 0; transform: translateY(10px); transition: all 0.4s; }
+        .reveal-box.show { opacity: 1; transform: translateY(0); }
+        .reveal-title { font-weight: 600; color: var(--green); margin-bottom: 10px; }
+        .reveal-text { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; }
+        
+        .timer-display { text-align: center; padding: 40px 20px; background: var(--dark-grey); border-radius: 16px; margin: 25px 0; }
+        .timer-number { font-size: 5rem; font-weight: 800; color: var(--gold); line-height: 1; font-family: monospace; }
+        .timer-label { font-size: 1rem; color: var(--light-grey); margin-top: 10px; }
+        
+        .technique-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 15px 0; }
+        .technique-title { font-weight: 600; color: var(--white); margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .technique-num { width: 28px; height: 28px; background: var(--belt-accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; }
+        .technique-desc { font-size: 0.9rem; color: var(--light-grey); line-height: 1.5; }
+        
+        .scenario-box { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .scenario-context { font-size: 0.75rem; color: var(--belt-accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .scenario-dialogue { font-size: 1.1rem; color: var(--white); font-style: italic; }
+        
+        .completion-container { text-align: center; }
+        .completion-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--belt-color), var(--belt-accent)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; border: 2px solid var(--gold); }
+        .completion-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .completion-subtitle { color: var(--light-grey); margin-bottom: 25px; }
+        .xp-earned-final { display: inline-block; background: rgba(212, 168, 83, 0.15); border: 1px solid rgba(212, 168, 83, 0.3); padding: 12px 24px; border-radius: 25px; margin: 20px 0; }
+        .xp-earned-final span { color: var(--gold); font-weight: 700; font-size: 1.2rem; }
+        .skills-learned { text-align: left; background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 25px 0; }
+        .skill-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--mid-grey); }
+        .skill-item:last-child { border-bottom: none; }
+        .skill-check { width: 24px; height: 24px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .unlock-reveal { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(64, 64, 64, 0.1)); border: 1px solid var(--green); border-radius: 16px; padding: 20px; margin: 20px 0; text-align: center; }
+        .unlock-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 8px; }
+        .unlock-name { font-size: 1.1rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="black-belt-stripe2-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="black-belt-stripe2-gamified-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="journey-line"><div class="journey-progress" id="journeyProgress"></div></div>
+    <header class="header">
+        <a href="gym-dashboard.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Exit</a>
+        <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+    </header>
+
+    <main class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">Black Belt · Stripe 2</div>
+            <p class="beat-text">Under pressure, everything you've learned disappears.</p>
+            <p class="beat-subtext">Your leadership skills, your emotional intelligence, your communication training—all of it goes offline the moment your amygdala takes over.</p>
+            <p class="beat-subtext">Black Belts train differently. They build mastery that survives pressure.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 2: Binary -->
+        <div class="beat" id="beat2">
+            <p class="beat-text-small">When you're under intense pressure, your instinct is to...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(2, 'action')">
+                    <div class="binary-card-title">Take immediate action</div>
+                    <div class="binary-card-sub">Do something—anything—to address it</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(2, 'pause')">
+                    <div class="binary-card-title">Create space first</div>
+                    <div class="binary-card-sub">Step back before responding</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 3: Insight -->
+        <div class="beat" id="beat3">
+            <div class="insight-reveal">
+                <div class="insight-label">Your pressure pattern</div>
+                <p class="insight-text" id="insight3"></p>
+            </div>
+            <p class="beat-subtext">Neither is wrong—but understanding your default helps you calibrate when to override it.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 4: The 90-Second Rule -->
+        <div class="beat" id="beat4">
+            <p class="beat-text">The 90-second rule.</p>
+            <div class="timer-display">
+                <div class="timer-number">90</div>
+                <div class="timer-label">seconds</div>
+            </div>
+            <p class="beat-subtext">Neuroscientist Jill Bolte Taylor discovered that the chemical process of an emotion lasts about 90 seconds. After that, you're <em>choosing</em> to stay in it.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 5: What Happens Under Stress -->
+        <div class="beat" id="beat5">
+            <p class="beat-text">What happens when pressure hits.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">The Amygdala Hijack</div>
+                <p class="insight-text"><strong>Your listening drops to 25%</strong><br>You hear threats, miss nuance<br><br><strong>You default to old habits</strong><br>Training disappears, instinct takes over<br><br><strong>Empathy decreases dramatically</strong><br>Others become obstacles, not people<br><br><strong>Decision quality drops</strong><br>Urgency creates tunnel vision</p>
+            </div>
+            <p class="beat-subtext">This isn't a character flaw—it's biology. But you can train for it.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 6: Spectrum -->
+        <div class="beat" id="beat6">
+            <p class="beat-text-small">How quickly do you typically recover composure after being triggered?</p>
+            <p class="beat-subtext">Tap anywhere on the line.</p>
+            <div class="spectrum-container">
+                <div class="spectrum-line" id="spectrum6" onclick="selectSpectrum(event, 6)">
+                    <div class="spectrum-marker" id="marker6"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>Takes hours/days</span>
+                    <span>Minutes or less</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue6" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 7: Scenario 1 -->
+        <div class="beat" id="beat7">
+            <div class="beat-label">High-Stakes Moment</div>
+            <div class="scenario-box">
+                <div class="scenario-context">Crisis Situation</div>
+                <p class="scenario-dialogue">A major client threatens to leave. Your CEO pulls you into a meeting and demands answers in front of the leadership team. You feel attacked.</p>
+            </div>
+            <p class="beat-subtext">What's your first move?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(7, 'defend')">Defend your team's work immediately</div>
+                <div class="scenario-card" onclick="selectScenario(7, 'breath')" data-correct="true">Take a breath. Ask a clarifying question</div>
+                <div class="scenario-card" onclick="selectScenario(7, 'deflect')">Redirect blame to the factors you don't control</div>
+                <div class="scenario-card" onclick="selectScenario(7, 'solve')">Jump straight into solution mode</div>
+            </div>
+            <div class="reveal-box" id="reveal7">
+                <div class="reveal-title">Create Space First</div>
+                <div class="reveal-text">The breath isn't weakness—it's strategy. A clarifying question like "Can you tell me more about what the client said?" buys time, shows composure, and often reveals that the situation is less dire than the initial framing.</div>
+            </div>
+            <button class="continue-btn" id="btn7" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 8: Quote -->
+        <div class="beat" id="beat8">
+            <div class="quote-block">
+                <p class="quote-text">"Between stimulus and response there is a space. In that space is our power to choose our response. In our response lies our growth and our freedom."</p>
+                <p class="quote-author">— Viktor Frankl</p>
+            </div>
+            <p class="beat-subtext">Black Belts train to expand that space. Even 3 breaths changes everything.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 9: Quick Fire -->
+        <div class="beat" id="beat9">
+            <div class="beat-label">Quick check</div>
+            <p class="beat-text-small" style="margin-bottom: 25px;">Think of a recent high-pressure moment.</p>
+            <div class="quickfire-container" id="quickfire">
+                <div class="quickfire-item" id="qf1">
+                    <span class="quickfire-text">I said something I later regretted</span>
+                    <div class="quickfire-btns">
+                        <button class="quickfire-btn" onclick="quickfire(1, true)">Yes</button>
+                        <button class="quickfire-btn" onclick="quickfire(1, false)">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 10: The Techniques -->
+        <div class="beat" id="beat10">
+            <p class="beat-text">Four techniques to expand the gap.</p>
+            <div class="technique-box">
+                <div class="technique-title"><div class="technique-num">1</div> The Tactical Breath</div>
+                <div class="technique-desc">Navy SEALs use 4-4-4: Inhale 4 seconds, hold 4 seconds, exhale 4 seconds. Even one round resets your nervous system.</div>
+            </div>
+            <div class="technique-box">
+                <div class="technique-title"><div class="technique-num">2</div> Name It to Tame It</div>
+                <div class="technique-desc">Silently label the emotion: "I'm feeling attacked." This engages the prefrontal cortex and reduces amygdala activity by up to 50%.</div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 11: Techniques continued -->
+        <div class="beat" id="beat11">
+            <div class="technique-box">
+                <div class="technique-title"><div class="technique-num">3</div> The Clarifying Question</div>
+                <div class="technique-desc">"Can you tell me more?" buys time, shows you're listening, and often reveals the situation is less dire than the initial framing.</div>
+            </div>
+            <div class="technique-box">
+                <div class="technique-title"><div class="technique-num">4</div> The Physical Reset</div>
+                <div class="technique-desc">Change your physiology: Stand if sitting, unclench your jaw, drop your shoulders. Your body informs your brain.</div>
+            </div>
+            <p class="beat-subtext">These aren't soft skills. They're performance tools used by surgeons, pilots, and special forces.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 12: Pill Rating -->
+        <div class="beat" id="beat12">
+            <p class="beat-text-small">How practiced are you at using techniques like these in the moment?</p>
+            <div class="pill-options">
+                <div class="pill" onclick="selectPill(12, 1)">1</div>
+                <div class="pill" onclick="selectPill(12, 2)">2</div>
+                <div class="pill" onclick="selectPill(12, 3)">3</div>
+                <div class="pill" onclick="selectPill(12, 4)">4</div>
+                <div class="pill" onclick="selectPill(12, 5)">5</div>
+            </div>
+            <div class="pill-labels">
+                <span>Never use them</span>
+                <span>Second nature</span>
+            </div>
+        </div>
+
+        <!-- Beat 13: Preemptive Preparation -->
+        <div class="beat" id="beat13">
+            <p class="beat-text">Mastery starts before the pressure hits.</p>
+            <p class="beat-subtext">The best performers don't just manage stress in the moment—they build systems that reduce their baseline reactivity.</p>
+            <div class="stat-reveal">
+                <div class="stat-number">40%</div>
+                <div class="stat-label">of performance under pressure<br>is determined before the moment arrives</div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 14: Pre-Crisis Protocol -->
+        <div class="beat" id="beat14">
+            <p class="beat-text-small">Which pre-crisis habit has the biggest impact on your composure?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(14, this, 'a')">Regular sleep and exercise</div>
+                <div class="scenario-card" onclick="selectScenario(14, this, 'b')">Daily mindfulness or meditation practice</div>
+                <div class="scenario-card" onclick="selectScenario(14, this, 'c')">Mental rehearsal of high-pressure scenarios</div>
+                <div class="scenario-card" onclick="selectScenario(14, this, 'd')">Knowing your triggers and early warning signs</div>
+            </div>
+            <div class="insight-reveal" id="insight14" style="display:none;">
+                <div class="insight-label">They All Matter</div>
+                <p class="insight-text">Research shows all four contribute significantly. Sleep and exercise build baseline resilience. Meditation increases your gap between stimulus and response. Mental rehearsal creates neural pathways. Knowing triggers enables early intervention. Elite performers stack all four.</p>
+            </div>
+            <button class="continue-btn" id="btn14" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 15: Your Triggers -->
+        <div class="beat" id="beat15">
+            <p class="beat-text">Know your triggers before they know you.</p>
+            <p class="beat-subtext">What situations reliably activate your stress response?</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Common Trigger Categories</div>
+                <p class="insight-text">
+                    <strong>Competence threats</strong> — Being questioned or wrong in public<br><br>
+                    <strong>Authority challenges</strong> — Someone undermining your position<br><br>
+                    <strong>Fairness violations</strong> — Injustice or broken commitments<br><br>
+                    <strong>Autonomy attacks</strong> — Being micromanaged or controlled<br><br>
+                    <strong>Status threats</strong> — Being overlooked or dismissed
+                </p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 16: Identify Your Pattern -->
+        <div class="beat" id="beat16">
+            <p class="beat-text-small">Which trigger category is your biggest challenge?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(16, this, 'competence')">Competence threats</div>
+                <div class="scenario-card" onclick="selectScenario(16, this, 'authority')">Authority challenges</div>
+                <div class="scenario-card" onclick="selectScenario(16, this, 'fairness')">Fairness violations</div>
+                <div class="scenario-card" onclick="selectScenario(16, this, 'autonomy')">Autonomy attacks</div>
+                <div class="scenario-card" onclick="selectScenario(16, this, 'status')">Status threats</div>
+            </div>
+            <div class="insight-reveal" id="insight16" style="display:none;">
+                <div class="insight-label">Self-Awareness Is Power</div>
+                <p class="insight-text">Now that you've named it, you can prepare for it. Create a specific protocol for your trigger type. What will you notice first? What technique will you use? Practice the response until it becomes automatic.</p>
+            </div>
+            <button class="continue-btn" id="btn16" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 17: Public Scenario -->
+        <div class="beat" id="beat17">
+            <div class="beat-label">Scenario</div>
+            <div class="scenario-box">
+                <div class="scenario-context">Personal Trigger</div>
+                <p class="scenario-dialogue">A colleague publicly dismisses your idea in a meeting, saying "We tried that before and it didn't work." You feel your face flush.</p>
+            </div>
+            <p class="beat-subtext">Using what you've learned, what's the Black Belt response?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(17, this, 'a')">Counter with evidence why your idea is different</div>
+                <div class="scenario-card" onclick="selectScenario(17, this, 'b')">Pause. Then: "Interesting. What specifically didn't work before?"</div>
+                <div class="scenario-card" onclick="selectScenario(17, this, 'c')">Let it go and move on to protect the relationship</div>
+                <div class="scenario-card" onclick="selectScenario(17, this, 'd')">Call out the dismissive behavior in the moment</div>
+            </div>
+            <div class="insight-reveal" id="insight17" style="display:none;">
+                <div class="insight-label">Curious, Not Combative</div>
+                <p class="insight-text">The pause acknowledges the trigger. The question shows genuine interest while also testing whether their objection has merit. Often, "we tried that before" is vague—getting specifics either validates their point or reveals the gap in their logic.</p>
+            </div>
+            <button class="continue-btn" id="btn17" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 18: Leading Others Under Pressure -->
+        <div class="beat" id="beat18">
+            <p class="beat-text">Your calm is contagious.</p>
+            <p class="beat-subtext">As a leader, you don't just manage your own pressure—you set the emotional tone for everyone around you.</p>
+            <div class="quote-block">
+                <p class="quote-text">"The commander's mood infects the army. If you panic, they panic. If you are steady, they are steady."</p>
+                <p class="quote-author">— Jocko Willink</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 19: Team Pressure Protocol -->
+        <div class="beat" id="beat19">
+            <div class="beat-label">Apply It</div>
+            <p class="beat-text-small">Your team just discovered a major client issue right before a holiday weekend. Everyone is stressed. What's your first action?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(19, this, 'a')">Immediately jump into fixing the problem</div>
+                <div class="scenario-card" onclick="selectScenario(19, this, 'b')">Gather everyone for a brief huddle: acknowledge, clarify, assign</div>
+                <div class="scenario-card" onclick="selectScenario(19, this, 'c')">Send an update email with action items</div>
+                <div class="scenario-card" onclick="selectScenario(19, this, 'd')">Tell everyone to stay calm and take a break first</div>
+            </div>
+            <div class="insight-reveal" id="insight19" style="display:none;">
+                <div class="insight-label">The Huddle Protocol</div>
+                <p class="insight-text">The brief huddle demonstrates calm leadership. Acknowledge the situation ("We have a problem"). Clarify what's known and unknown. Assign clear next steps. This creates structure, which reduces anxiety and enables effective action.</p>
+            </div>
+            <button class="continue-btn" id="btn19" onclick="nextBeat()" disabled>Continue</button>
+        </div>
+
+        <!-- Beat 20: Recovery -->
+        <div class="beat" id="beat20">
+            <p class="beat-text">What to do when you've already lost it.</p>
+            <p class="beat-subtext">Even Black Belts get triggered. The difference is what happens next.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">The Recovery Protocol</div>
+                <p class="insight-text"><strong>1. Notice it happened</strong><br>Awareness is the first step back<br><br><strong>2. Don't compound it</strong><br>Avoid the shame spiral—it's biology, not character<br><br><strong>3. Name it publicly if needed</strong><br>"I reacted poorly. Let me try that again."<br><br><strong>4. Circle back</strong><br>Repair any damage when you're regulated</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 21: Post-Crisis Debrief -->
+        <div class="beat" id="beat21">
+            <p class="beat-text">The debrief is where growth happens.</p>
+            <p class="beat-subtext">After every high-pressure situation, ask yourself these questions:</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Pressure Debrief</div>
+                <p class="insight-text">
+                    <strong>1. What triggered me?</strong><br><br>
+                    <strong>2. What was my first impulse?</strong><br><br>
+                    <strong>3. Did I expand the gap or close it?</strong><br><br>
+                    <strong>4. What would I do differently?</strong><br><br>
+                    <strong>5. What can I practice to prepare for next time?</strong>
+                </p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 22: Technique Selection -->
+        <div class="beat" id="beat22">
+            <p class="beat-text-small">Which technique will you practice first?</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(22, 'breath')">
+                    <div class="binary-card-title">The Tactical Breath</div>
+                    <div class="binary-card-sub">4-4-4 breathing to reset the nervous system</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(22, 'name')">
+                    <div class="binary-card-title">Name It to Tame It</div>
+                    <div class="binary-card-sub">Label the emotion to reduce its power</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(22, 'question')">
+                    <div class="binary-card-title">The Clarifying Question</div>
+                    <div class="binary-card-sub">Buy time and gather information</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(22, 'physical')">
+                    <div class="binary-card-title">The Physical Reset</div>
+                    <div class="binary-card-sub">Change posture to change state</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 23: The Mirror -->
+        <div class="beat" id="beat23">
+            <p class="beat-text">Your pressure mastery profile.</p>
+            <div class="mirror-reveal" id="mirrorReveal">
+                <div class="mirror-item" id="mirror1">
+                    <span class="mirror-label">Pressure response</span>
+                    <span class="mirror-value" id="pressureResponse">—</span>
+                </div>
+                <div class="mirror-item" id="mirror2">
+                    <span class="mirror-label">Recovery speed</span>
+                    <span class="mirror-value" id="recoverySpeed">—</span>
+                </div>
+                <div class="mirror-item" id="mirror3">
+                    <span class="mirror-label">Technique readiness</span>
+                    <span class="mirror-value" id="techniqueReadiness">—</span>
+                </div>
+                <div class="mirror-item" id="mirror4">
+                    <span class="mirror-label">Primary trigger</span>
+                    <span class="mirror-value" id="primaryTrigger">—</span>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 24: Commitment -->
+        <div class="beat" id="beat24">
+            <p class="beat-text">One thing you'll practice this week.</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectCommitment(this, 'breath')">Practice tactical breathing for 1 minute daily</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'rehearse')">Mentally rehearse a challenging upcoming situation</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'journal')">Journal about a recent pressure moment using the debrief questions</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'protocol')">Create a personal pressure protocol for my top trigger</div>
+            </div>
+            <button class="continue-btn primary" id="btn24" onclick="completeStripe()" disabled>Complete Stripe</button>
+        </div>
+
+        <!-- Beat 25: Completion -->
+        <div class="beat" id="beat25">
+            <div class="completion-container">
+                <div class="completion-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2 class="completion-title">Stripe 2 Complete</h2>
+                <p class="completion-subtitle">Mastery Under Pressure</p>
+                <div class="xp-earned-final"><span id="finalXP">+75 XP</span></div>
+                
+                <div class="skills-learned">
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>The 90-Second Rule</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Four Pressure Techniques</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Trigger Awareness</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Team Pressure Leadership</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>The Recovery Protocol</span>
+                    </div>
+                </div>
+
+                <div class="unlock-reveal">
+                    <div class="unlock-title">Unlocked</div>
+                    <div class="unlock-name">Stripe 3: Systems Thinking</div>
+                </div>
+
+                <button class="continue-btn primary" onclick="goToNext()">Continue Journey</button>
+                <button class="continue-btn" style="margin-top: 10px;" onclick="goToHub()">Return to Hub</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentBeat = 1;
+        const totalBeats = 25;
+        let xp = 0;
+        let responses = {};
+        let quickfireCount = 0;
+        const quickfireQuestions = [
+            "I said something I later regretted",
+            "I noticed my body's stress signals",
+            "I successfully paused before reacting"
+        ];
+
+        function updateProgress() { document.getElementById('journeyProgress').style.width = ((currentBeat - 1) / (totalBeats - 1) * 100) + '%'; }
+        function addXP(amount) { xp += amount; document.getElementById('xpDisplay').textContent = xp; }
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (currentBeat === 23) setTimeout(revealMirror, 500);
+            if (currentBeat === 16) setTimeout(revealMirror, 500);
+        }
+
+        function selectBinary(beat, value) {
+            document.querySelectorAll('#beat' + beat + ' .binary-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['binary' + beat] = value;
+            addXP(5);
+            if (beat === 2) {
+                setTimeout(() => {
+                    document.getElementById('insight3').textContent = value === 'action'
+                        ? "You're wired for action under pressure. This can be a strength—but it can also lead to reactive decisions. Your work is learning when to slow the impulse."
+                        : "You have natural pause instincts. This serves you well in complex situations—but can be paralyzing in genuine emergencies. Your work is trusting your judgment when action is needed.";
+                    nextBeat();
+                }, 600);
+            } else { setTimeout(nextBeat, 600); }
+        }
+
+        function selectSpectrum(event, beat) {
+            const line = document.getElementById('spectrum' + beat);
+            const marker = document.getElementById('marker' + beat);
+            const rect = line.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            marker.style.left = pct + '%';
+            marker.classList.add('visible');
+            responses['spectrum' + beat] = pct;
+            document.getElementById('continue' + beat).disabled = false;
+            addXP(5);
+        }
+
+        function selectScenario(beat, el, value) {
+            const cards = document.querySelectorAll('#beat' + beat + ' .scenario-card');
+            cards.forEach(c => c.classList.remove('selected', 'correct', 'incorrect'));
+            el.classList.add('selected');
+            responses['scenario' + beat] = value;
+            
+            // Correct answers for specific beats
+            const correctAnswers = {
+                7: 'breathe',   // High stakes - take a breath
+                17: 'b',        // Pause then question
+                19: 'b'         // Huddle protocol
+            };
+            
+            const isCorrect = correctAnswers[beat] === value;
+            if (correctAnswers[beat]) {
+                cards.forEach(c => {
+                    const cardValue = c.getAttribute('onclick')?.match(/'([^']+)'\)$/)?.[1];
+                    if (cardValue === correctAnswers[beat]) c.classList.add('correct');
+                    else if (c === el && !isCorrect) c.classList.add('incorrect');
+                });
+            }
+            
+            const insight = document.getElementById('insight' + beat);
+            if (insight) insight.style.display = 'block';
+            const reveal = document.getElementById('reveal' + beat);
+            if (reveal) reveal.classList.add('show');
+            
+            const btn = document.getElementById('btn' + beat);
+            if (btn) btn.disabled = false;
+            addXP(isCorrect ? 10 : 5);
+        }
+
+        function quickfire(num, value) {
+            const item = document.getElementById('qf' + num);
+            item.querySelectorAll('.quickfire-btn').forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            item.classList.add('answered');
+            responses['qf' + num] = value;
+            quickfireCount++;
+            addXP(3);
+            if (quickfireCount < 3) {
+                setTimeout(() => {
+                    const container = document.getElementById('quickfire');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'quickfire-item';
+                    newItem.id = 'qf' + (quickfireCount + 1);
+                    newItem.innerHTML = `<span class="quickfire-text">${quickfireQuestions[quickfireCount]}</span><div class="quickfire-btns"><button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, true)">Yes</button><button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, false)">No</button></div>`;
+                    container.appendChild(newItem);
+                }, 400);
+            } else { setTimeout(nextBeat, 600); }
+        }
+
+        function selectPill(beat, value) {
+            document.querySelectorAll('#beat' + beat + ' .pill').forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['pill' + beat] = value;
+            addXP(5);
+            setTimeout(nextBeat, 500);
+        }
+
+        function selectCommitment(card, value) {
+            document.querySelectorAll('#beat24 .scenario-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            responses.commitment = value;
+            document.getElementById('btn24').disabled = false;
+            addXP(5);
+        }
+
+        function revealMirror() {
+            document.getElementById('pressureResponse').textContent = responses.binary2 === 'action' ? 'Action-oriented' : 'Pause-first';
+            document.getElementById('mirror1').classList.add('visible');
+            setTimeout(() => {
+                let recovery = responses.spectrum6 || 50;
+                document.getElementById('recoverySpeed').textContent = recovery > 66 ? 'Fast recovery' : recovery > 33 ? 'Moderate' : 'Needs work';
+                document.getElementById('mirror2').classList.add('visible');
+            }, 400);
+            setTimeout(() => {
+                let pill = responses.pill12 || 3;
+                document.getElementById('techniqueReadiness').textContent = pill >= 4 ? 'Practiced' : pill >= 3 ? 'Developing' : 'Beginner';
+                document.getElementById('mirror3').classList.add('visible');
+            }, 800);
+            setTimeout(() => {
+                const triggerMap = {
+                    'competence': 'Competence threats',
+                    'authority': 'Authority challenges',
+                    'fairness': 'Fairness violations',
+                    'autonomy': 'Autonomy attacks',
+                    'status': 'Status threats'
+                };
+                document.getElementById('primaryTrigger').textContent = triggerMap[responses.scenario16] || 'Unknown';
+                document.getElementById('mirror4').classList.add('visible');
+            }, 1200);
+        }
+
+        function completeStripe() {
+            localStorage.setItem('tap_in_black_stripe2_complete', 'true');
+            localStorage.setItem('tap_in_black_stripe2_answers', JSON.stringify(responses));
+            const totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0') + xp + 25;
+            localStorage.setItem('tap_in_xp', totalXP);
+            document.getElementById('finalXP').textContent = '+' + (xp + 25) + ' XP';
+            nextBeat();
+        }
+
+        function goToNext() { window.location.href = 'black-belt-stripe3-gamified.html'; }
+        function goToHub() { window.location.href = 'gym-dashboard.html'; }
+        updateProgress();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

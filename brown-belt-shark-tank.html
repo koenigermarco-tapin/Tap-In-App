@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>brown Belt Shark Tank - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0f;
+            --dark: #12121a;
+            --card: #1a1a25;
+            --border: #2a2a3a;
+            --text: #e2e8f0;
+            --muted: #8a8a9a;
+            --brown-belt: #92400e;
+            --brown-dark: #78350f;
+            --accent: #d97706;
+            --accent-glow: rgba(146, 64, 14, 0.3);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --gold: #fbbf24;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--black) 0%, #1a0d29 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        
+        .back-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .belt-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(146, 64, 14, 0.15);
+            border: 1px solid rgba(146, 64, 14, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--brown-belt);
+        }
+        
+        .belt-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--brown-belt);
+            border-radius: 50%;
+        }
+        
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+        }
+        
+        .timer-display.warning { color: var(--warning); }
+        .timer-display.danger { color: var(--error); animation: pulse 0.5s infinite; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+            min-height: 100vh;
+        }
+        
+        .phase-indicator { display: flex; justify-content: center; gap: 8px; margin-bottom: 40px; }
+        
+        .phase-dot {
+            width: 40px; height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        .phase-dot.active { background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .phase-dot.complete { background: var(--success); }
+        
+        .phase { display: none; animation: fadeIn 0.5s ease; }
+        .phase.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .phase-header { text-align: center; margin-bottom: 40px; }
+        .phase-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 10px; }
+        .phase-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        .phase-subtitle { color: var(--muted); font-size: 1rem; }
+        
+        .question-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .question-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .question-number { font-size: 0.85rem; color: var(--muted); }
+        
+        .question-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-bar { width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .timer-fill { height: 100%; background: var(--success); transition: width 0.1s linear; }
+        .timer-fill.warning { background: var(--warning); }
+        .timer-fill.danger { background: var(--error); }
+        
+        .question-text { font-size: 1.2rem; font-weight: 600; line-height: 1.5; margin-bottom: 25px; }
+        
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        
+        .option {
+            padding: 16px 20px;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .option:hover { border-color: var(--accent); transform: translateX(5px); }
+        .option.selected { border-color: var(--accent); background: rgba(146, 64, 14, 0.1); }
+        .option.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.15); }
+        .option.incorrect { border-color: var(--error); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        .option.disabled { pointer-events: none; }
+        
+        .feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--dark);
+            border-left: 4px solid var(--success);
+        }
+        
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        .feedback.incorrect { border-left-color: var(--error); }
+        .feedback-title { font-weight: 700; margin-bottom: 8px; }
+        .feedback-text { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+        
+        .scenario-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .scenario-icon { font-size: 2.5rem; }
+        .scenario-title { font-size: 1.3rem; font-weight: 700; }
+        .scenario-context { color: var(--muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
+        .scenario-question { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: var(--accent); }
+        
+        .scenario-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .scenario-textarea:focus { outline: none; border-color: var(--accent); }
+        
+        .reflection-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .reflection-question { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; }
+        
+        .slider-container { margin: 30px 0; }
+        .slider-labels { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; color: var(--muted); }
+        .slider { width: 100%; height: 8px; -webkit-appearance: none; background: var(--border); border-radius: 4px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: var(--accent); border-radius: 50%; cursor: pointer; }
+        .slider-value { text-align: center; font-size: 2rem; font-weight: 800; color: var(--accent); margin-top: 15px; }
+        
+        .star-rating { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .star { font-size: 2.5rem; cursor: pointer; opacity: 0.3; transition: all 0.2s; }
+        .star:hover, .star.active { opacity: 1; transform: scale(1.1); }
+        
+        .result-card {
+            background: linear-gradient(135deg, var(--card) 0%, rgba(146, 64, 14, 0.1) 100%);
+            border: 2px solid var(--brown-belt);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .result-belt-icon { font-size: 4rem; margin-bottom: 15px; }
+        .result-title { font-size: 1.5rem; font-weight: 800; color: var(--brown-belt); margin-bottom: 10px; }
+        .result-score { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--brown-belt), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        
+        .result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .result-stat { background: var(--dark); padding: 20px; border-radius: 16px; }
+        .result-stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+        .result-stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 5px; }
+        
+        .strengths-list, .growth-list { text-align: left; background: var(--dark); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .strengths-list h4, .growth-list h4 { margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .strengths-list h4 { color: var(--success); }
+        .growth-list h4 { color: var(--warning); }
+        .strengths-list li, .growth-list li { padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.95rem; list-style: none; }
+        .strengths-list li:last-child, .growth-list li:last-child { border-bottom: none; }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-block { width: 100%; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .nav-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        
+        @media (max-width: 600px) {
+            .container { padding: 90px 15px 30px; }
+            .phase-title { font-size: 1.5rem; }
+            .question-text { font-size: 1.1rem; }
+            .result-stats { grid-template-columns: 1fr; }
+            .result-score { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="brown-belt-shark-tank.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="brown-belt-shark-tank-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <header class="header">
+        <div class="header-left">
+            <a href="gym-dashboard.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Exit
+            </a>
+            <div class="belt-badge">
+                <div class="belt-dot"></div>
+                brown Belt Shark Tank
+            </div>
+        </div>
+        <div class="timer-display" id="globalTimer">--:--</div>
+    </header>
+    
+    <div class="container">
+        <div class="phase-indicator">
+            <div class="phase-dot active" id="phase1Dot"></div>
+            <div class="phase-dot" id="phase2Dot"></div>
+            <div class="phase-dot" id="phase3Dot"></div>
+            <div class="phase-dot" id="phase4Dot"></div>
+            <div class="phase-dot" id="phase5Dot"></div>
+        </div>
+        
+        <!-- PHASE 1: Intro -->
+        <div class="phase active" id="phase1">
+            <div class="phase-header">
+                <div class="phase-label">brown Belt Final Assessment</div>
+                <h1 class="phase-title">The Accountability Chamber</h1>
+                <p class="phase-subtitle">Prove your mastery of commitment and buy-in</p>
+            </div>
+            
+            <div class="question-card">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px;">4 Phases Await You</h3>
+                    <div style="display: grid; gap: 15px; text-align: left; max-width: 400px; margin: 0 auto;">
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Rapid Fire</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">25 questions, 30 sec each</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Accountability Challenges</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">5 decision scenarios</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;">🪞</span>
+                            <div>
+                                <div style="font-weight: 600;">Self-Reflection</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">Your commitment growth</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Your Belt Analysis</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">Personalized result card</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="startPhase2()" style="margin-top: 30px;">
+                    Enter the Chamber
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- PHASE 2: Rapid Fire -->
+        <div class="phase" id="phase2">
+            <div class="phase-header">
+                <div class="phase-label">Phase 1 of 4</div>
+                <h1 class="phase-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Rapid Fire</h1>
+                <p class="phase-subtitle">30 seconds per question. Trust your training.</p>
+            </div>
+            
+            <div class="question-card" id="questionCard">
+                <div class="question-progress">
+                    <span class="question-number" id="questionNumber">Question 1 of 25</span>
+                    <div class="question-timer">
+                        <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+                        <span id="questionTimer">30</span>
+                    </div>
+                </div>
+                <div class="question-text" id="questionText">Loading question...</div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="feedback" id="feedback">
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextQuestionBtn" onclick="nextQuestion()" disabled>Next Question</button>
+            </div>
+        </div>
+        
+        <!-- PHASE 3: Scenarios -->
+        <div class="phase" id="phase3">
+            <div class="phase-header">
+                <div class="phase-label">Phase 2 of 4</div>
+                <h1 class="phase-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg> Accountability Challenges</h1>
+                <p class="phase-subtitle">Navigate these decision moments</p>
+            </div>
+            <div id="scenariosContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextScenarioBtn" onclick="nextScenario()">Continue</button>
+            </div>
+        </div>
+        
+        <!-- PHASE 4: Reflection -->
+        <div class="phase" id="phase4">
+            <div class="phase-header">
+                <div class="phase-label">Phase 3 of 4</div>
+                <h1 class="phase-title">🪞 Self-Reflection</h1>
+                <p class="phase-subtitle">Reflect on your brown Belt journey</p>
+            </div>
+            <div id="reflectionContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextReflectionBtn" onclick="nextReflection()">Continue</button>
+            </div>
+        </div>
+        
+        <!-- PHASE 5: Results -->
+        <div class="phase" id="phase5">
+            <div class="phase-header">
+                <div class="phase-label">Assessment Complete</div>
+                <h1 class="phase-title">Your brown Belt Analysis</h1>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-belt-icon">🥋</div>
+                <div class="result-title">brown Belt Mastery</div>
+                <div class="result-score" id="resultScore">--</div>
+                
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="correctCount">0</div>
+                        <div class="result-stat-label">Correct</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="avgTime">0s</div>
+                        <div class="result-stat-label">Avg Time</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="streakCount">0</div>
+                        <div class="result-stat-label">Best Streak</div>
+                    </div>
+                </div>
+                
+                <div class="strengths-list">
+                    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Your Strengths</h4>
+                    <ul id="strengthsList"><li>Loading...</li></ul>
+                </div>
+                
+                <div class="growth-list">
+                    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Growth Areas</h4>
+                    <ul id="growthList"><li>Loading...</li></ul>
+                </div>
+                
+                <button class="btn btn-success btn-block" onclick="completeSharkTank()" style="margin-top: 20px;">
+                    Claim Your brown Belt
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // brown Belt Questions - Accountability, Standards, Difficult Conversations, Clarity
+        const questions = [
+            // Accountability Fundamentals
+            { q: "True commitment requires:", options: ["100% agreement from everyone", "Understanding and buy-in, not necessarily agreement", "Written contracts", "Majority vote"], correct: 1, category: "commitment", explanation: "Accountability comes from understanding the decision, even without full agreement." },
+            { q: "The biggest enemy of commitment is:", options: ["Disagreement", "Ambiguity", "Conflict", "Time pressure"], correct: 1, category: "commitment", explanation: "Ambiguity kills commitment. People can't commit to what they don't understand." },
+            { q: "When a team member says 'I guess that's fine', they are showing:", options: ["Full commitment", "Passive agreement without commitment", "Healthy conflict", "Strong leadership"], correct: 1, category: "commitment", explanation: "Passive agreement signals lack of true buy-in and often leads to sabotage." },
+            { q: "The phrase 'disagree and commit' means:", options: ["Pretending to agree", "Voicing disagreement then fully supporting the decision", "Waiting for others to fail", "Avoiding conflict"], correct: 1, category: "commitment", explanation: "It means expressing your view, then genuinely committing once decided." },
+            { q: "Clarity in decisions should be:", options: ["Flexible to avoid conflict", "Explicit enough that everyone can repeat the decision", "Left open for interpretation", "Communicated only to leaders"], correct: 1, category: "commitment", explanation: "If people can't articulate the decision, they can't truly commit to it." },
+            
+            // Difficult Conversations
+            { q: "The best decisions come from teams that:", options: ["Avoid conflict at all costs", "Engage in productive conflict before deciding", "Let the leader decide alone", "Take votes on everything"], correct: 1, category: "decisions", explanation: "Healthy conflict ensures all perspectives are heard before commitment." },
+            { q: "When facing analysis paralysis, teams should:", options: ["Wait for more data", "Set a deadline and decide with available info", "Avoid the decision", "Let someone else decide"], correct: 1, category: "decisions", explanation: "Bold action with course correction beats delayed inaction." },
+            { q: "A 'false consensus' happens when:", options: ["Everyone genuinely agrees", "People agree publicly but disagree privately", "The decision is wrong", "Voting is used"], correct: 1, category: "decisions", explanation: "False consensus creates the illusion of buy-in without real commitment." },
+            { q: "The leader's role in team decisions is to:", options: ["Always have the final say", "Ensure all voices are heard, then decide if needed", "Avoid making decisions", "Delegate all decisions"], correct: 1, category: "decisions", explanation: "Leaders facilitate input and break ties when consensus isn't reached." },
+            { q: "Revisiting decisions should happen:", options: ["Never, once decided", "When significant new information emerges", "Whenever someone disagrees", "At every meeting"], correct: 1, category: "decisions", explanation: "Decisions should be stable but not permanent when context changes significantly." },
+            
+            // Standards Strategies
+            { q: "To gain buy-in, the most important thing is:", options: ["Having the best idea", "Making people feel heard before deciding", "Using authority", "Avoiding disagreement"], correct: 1, category: "buyin", explanation: "People commit to decisions where they felt genuinely heard." },
+            { q: "The 'weigh-in' before 'buy-in' principle means:", options: ["Voting on everything", "Giving everyone input before expecting commitment", "Weighing pros and cons alone", "Buying people's agreement"], correct: 1, category: "buyin", explanation: "People need to weigh in with their perspective to genuinely buy in." },
+            { q: "Cascading communication after a decision means:", options: ["Top-down announcements", "Each level owning the message as their own", "Blaming leadership for unpopular decisions", "Email chains"], correct: 1, category: "buyin", explanation: "Leaders at each level present decisions as 'we decided', not 'they decided'." },
+            { q: "When someone on your team doesn't agree with a team decision, you should:", options: ["Let them opt out", "Expect them to support it publicly while voicing concerns privately", "Force agreement", "Overrule the team"], correct: 1, category: "buyin", explanation: "Disagree and commit: private dissent, public alignment." },
+            { q: "The fastest way to destroy buy-in is:", options: ["Asking for input", "Making decisions without including affected people", "Taking time to decide", "Documenting decisions"], correct: 1, category: "buyin", explanation: "Excluding people from decisions they're expected to execute kills commitment." },
+            
+            // Team Culture
+            { q: "Team alignment means:", options: ["Everyone thinking the same way", "Clear shared understanding of priorities and direction", "Avoiding disagreement", "Following the leader blindly"], correct: 1, category: "alignment", explanation: "Team Culture is about shared clarity, not uniformity of thought." },
+            { q: "When priorities conflict, teams should:", options: ["Work on everything equally", "Clarify the single most important priority", "Let individuals choose", "Avoid the conversation"], correct: 1, category: "alignment", explanation: "Without clear priority ranking, everything becomes equally unimportant." },
+            { q: "A thematic goal helps teams by:", options: ["Adding more work", "Creating a rallying cry that unifies efforts", "Replacing all other goals", "Measuring individual performance"], correct: 1, category: "alignment", explanation: "A thematic goal provides focus and shared purpose." },
+            { q: "The sign of true alignment is:", options: ["No disagreements", "Quick, confident decision-making on trade-offs", "Long meetings", "Detailed documentation"], correct: 1, category: "alignment", explanation: "Aligned teams can quickly decide what to prioritize because they share understanding." },
+            { q: "Silos in organizations happen because of:", options: ["Bad people", "Lack of shared clarity on collective priorities", "Too much communication", "Strong teams"], correct: 1, category: "alignment", explanation: "Silos form when teams optimize for local goals over shared ones." },
+            
+            // Self-Accountability
+            { q: "Accountability without follow-through is:", options: ["Still valuable", "Essentially meaningless", "A good start", "Leadership's problem"], correct: 1, category: "followthrough", explanation: "Accountability only matters if it leads to action." },
+            { q: "The best way to ensure follow-through is:", options: ["Trust people", "Clarify who does what by when", "Hope for the best", "Micromanage"], correct: 1, category: "followthrough", explanation: "Clear ownership and deadlines enable accountability." },
+            { q: "When commitments are missed, the first question should be:", options: ["Who's to blame?", "Was the commitment clear and achievable?", "How do we punish this?", "Can we hide it?"], correct: 1, category: "followthrough", explanation: "Often missed commitments stem from unclear expectations." },
+            { q: "Regular progress reviews help teams:", options: ["Create more work", "Maintain commitment momentum and catch issues early", "Blame individuals", "Slow down"], correct: 1, category: "followthrough", explanation: "Reviews keep commitments visible and allow course correction." },
+            { q: "The greatest threat to team commitment over time is:", options: ["New information", "Lack of visible progress and reinforcement", "Strong personalities", "External factors"], correct: 1, category: "followthrough", explanation: "Without visible progress, commitment erodes into cynicism." }
+        ];
+        
+        const scenarios = [
+            { icon: "<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>", title: "The Divided Team", context: "Your team just finished a 2-hour discussion about strategy. The vote is 4-3, and you're on the losing side. The decision has been made to pursue Option A, which you believe is risky. The team leader asks everyone to confirm their commitment.", question: "How do you genuinely commit to this decision while staying authentic?" },
+            { icon: "⚖️", title: "The Silent Majority", context: "In a planning meeting, the most senior person proposes a direction. Everyone nods along, but you notice several people look uncomfortable. No one speaks up, and the leader says 'Great, we're aligned.'", question: "What do you do to surface the real concerns without undermining the leader?" },
+            { icon: "🔄", title: "The Priority Collision", context: "Your team has committed to a major initiative, but now a 'urgent' request from another department threatens to derail it. Your manager wants you to 'make both work' without any additional resources.", question: "How do you advocate for clarity without seeming inflexible?" },
+            { icon: "📢", title: "The Cascade Challenge", context: "Leadership made a decision you disagreed with in the planning meetings. Now you need to present it to your team as if it's your own. Several team members know you originally opposed it.", question: "How do you authentically own this message while maintaining credibility?" },
+            { icon: "🚧", title: "The Drifting Accountability", context: "Three months ago, your team made a bold commitment. Progress has been slower than expected, and you notice people starting to hedge: 'Well, we said we'd try...' and 'Things changed...'", question: "How do you re-energize commitment without shaming the team?" }
+        ];
+        
+        const reflections = [
+            { type: "text", question: "Describe a time when you disagreed with a decision but fully committed to it anyway. How did that feel?" },
+            { type: "slider", question: "How comfortable are you 'disagreeing and committing'?", min: "Struggle with it", max: "Fully comfortable" },
+            { type: "text", question: "What's ONE decision your team is currently not fully aligned on?" },
+            { type: "rating", question: "How would you rate your brown Belt journey?" }
+        ];
+        
+        // State
+        let currentQuestion = 0;
+        let currentScenario = 0;
+        let currentReflection = 0;
+        let score = 0;
+        let answers = [];
+        let timer = null;
+        let timeLeft = 30;
+        let totalTime = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let startTime = null;
+        let categoryScores = { commitment: { correct: 0, total: 0 }, decisions: { correct: 0, total: 0 }, buyin: { correct: 0, total: 0 }, alignment: { correct: 0, total: 0 }, followthrough: { correct: 0, total: 0 } };
+        
+        function startPhase2() {
+            document.getElementById('phase1').classList.remove('active');
+            document.getElementById('phase2').classList.add('active');
+            document.getElementById('phase1Dot').classList.remove('active');
+            document.getElementById('phase1Dot').classList.add('complete');
+            document.getElementById('phase2Dot').classList.add('active');
+            startTime = Date.now();
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const optionsHtml = q.options.map((opt, i) => `<div class="option" onclick="selectAnswer(${i})">${opt}</div>`).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextQuestionBtn').disabled = true;
+            
+            timeLeft = 30;
+            updateTimer();
+            timer = setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            document.getElementById('questionTimer').textContent = timeLeft;
+            const fill = document.getElementById('timerFill');
+            fill.style.width = `${(timeLeft / 30) * 100}%`;
+            fill.className = 'timer-fill' + (timeLeft <= 10 ? ' warning' : '') + (timeLeft <= 5 ? ' danger' : '');
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                selectAnswer(-1);
+            }
+            timeLeft--;
+        }
+        
+        function selectAnswer(idx) {
+            clearInterval(timer);
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            options.forEach(o => o.classList.add('disabled'));
+            
+            const timeTaken = 30 - timeLeft;
+            totalTime += timeTaken;
+            
+            if (idx === q.correct) {
+                score++;
+                streak++;
+                maxStreak = Math.max(maxStreak, streak);
+                options[idx].classList.add('correct');
+                categoryScores[q.category].correct++;
+                document.getElementById('feedbackTitle').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Correct!';
+            } else {
+                streak = 0;
+                if (idx >= 0) options[idx].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                document.getElementById('feedbackTitle').textContent = idx < 0 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Time\'s up!' : '✗ Not quite';
+            }
+            
+            categoryScores[q.category].total++;
+            document.getElementById('feedbackText').textContent = q.explanation;
+            document.getElementById('feedback').classList.add('show');
+            document.getElementById('feedback').classList.toggle('incorrect', idx !== q.correct);
+            document.getElementById('nextQuestionBtn').disabled = false;
+            
+            answers.push({ question: currentQuestion, selected: idx, correct: q.correct, time: timeTaken });
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                startPhase3();
+            } else {
+                showQuestion();
+            }
+        }
+        
+        function startPhase3() {
+            document.getElementById('phase2').classList.remove('active');
+            document.getElementById('phase3').classList.add('active');
+            document.getElementById('phase2Dot').classList.remove('active');
+            document.getElementById('phase2Dot').classList.add('complete');
+            document.getElementById('phase3Dot').classList.add('active');
+            showScenario();
+        }
+        
+        function showScenario() {
+            const s = scenarios[currentScenario];
+            document.getElementById('scenariosContainer').innerHTML = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="scenario-icon">${s.icon}</div>
+                        <div class="scenario-title">${s.title}</div>
+                    </div>
+                    <div class="scenario-context">${s.context}</div>
+                    <div class="scenario-question">${s.question}</div>
+                    <textarea class="scenario-textarea" placeholder="Your response..." id="scenarioResponse"></textarea>
+                </div>
+            `;
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            if (currentScenario >= scenarios.length) {
+                startPhase4();
+            } else {
+                showScenario();
+            }
+        }
+        
+        function startPhase4() {
+            document.getElementById('phase3').classList.remove('active');
+            document.getElementById('phase4').classList.add('active');
+            document.getElementById('phase3Dot').classList.remove('active');
+            document.getElementById('phase3Dot').classList.add('complete');
+            document.getElementById('phase4Dot').classList.add('active');
+            showReflection();
+        }
+        
+        function showReflection() {
+            const r = reflections[currentReflection];
+            let html = `<div class="reflection-card"><div class="reflection-question">${r.question}</div>`;
+            
+            if (r.type === 'text') {
+                html += `<textarea class="scenario-textarea" placeholder="Your reflection..." id="reflectionResponse"></textarea>`;
+            } else if (r.type === 'slider') {
+                html += `<div class="slider-container"><div class="slider-labels"><span>${r.min}</span><span>${r.max}</span></div><input type="range" class="slider" min="1" max="10" value="5" oninput="document.getElementById('sliderValue').textContent=this.value"><div class="slider-value" id="sliderValue">5</div></div>`;
+            } else if (r.type === 'rating') {
+                html += `<div class="star-rating">${[1,2,3,4,5].map(i => `<span class="star" onclick="setRating(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>`).join('')}</div>`;
+            }
+            
+            html += `</div>`;
+            document.getElementById('reflectionContainer').innerHTML = html;
+        }
+        
+        function setRating(n) {
+            document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < n));
+        }
+        
+        function nextReflection() {
+            currentReflection++;
+            if (currentReflection >= reflections.length) {
+                showResults();
+            } else {
+                showReflection();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('phase4').classList.remove('active');
+            document.getElementById('phase5').classList.add('active');
+            document.getElementById('phase4Dot').classList.remove('active');
+            document.getElementById('phase4Dot').classList.add('complete');
+            document.getElementById('phase5Dot').classList.add('active');
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('resultScore').textContent = percentage + '%';
+            document.getElementById('correctCount').textContent = `${score}/${questions.length}`;
+            document.getElementById('avgTime').textContent = Math.round(totalTime / questions.length) + 's';
+            document.getElementById('streakCount').textContent = maxStreak;
+            
+            const strengths = [], growth = [];
+            Object.entries(categoryScores).forEach(([cat, data]) => {
+                const pct = data.total > 0 ? (data.correct / data.total) : 0;
+                const name = { commitment: 'Accountability Basics', decisions: 'Difficult Conversations', buyin: 'Standards Strategies', alignment: 'Team Team Culture', followthrough: 'Self-Accountability' }[cat];
+                if (pct >= 0.7) strengths.push(name + ': Strong understanding');
+                else growth.push(name + ': Review fundamentals');
+            });
+            
+            if (maxStreak >= 5) strengths.push('Consistency: Great focus under pressure');
+            if (totalTime / questions.length < 15) strengths.push('Speed: Quick decision-making');
+            
+            document.getElementById('strengthsList').innerHTML = strengths.length ? strengths.map(s => `<li>${s}</li>`).join('') : '<li>Keep practicing!</li>';
+            document.getElementById('growthList').innerHTML = growth.length ? growth.map(g => `<li>${g}</li>`).join('') : '<li>Excellent all-around performance!</li>';
+            
+            localStorage.setItem('tap_in_brown_belt_shark_tank', JSON.stringify({ score, total: questions.length, percentage, streak: maxStreak, avgTime: Math.round(totalTime / questions.length), completedAt: new Date().toISOString() }));
+        }
+        
+        function completeSharkTank() {
+            window.location.href = 'brown-belt-ceremony.html';
+        }
+        
+        // Timer display
+        setInterval(() => {
+            if (startTime) {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                document.getElementById('globalTimer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

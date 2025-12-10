@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Accountability Arena - TAP-IN Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --orange: #f97316;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --brown: #b45309;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover { color: var(--white); }
+        
+        .header-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .stat.xp { color: var(--gold); }
+        .stat.streak { color: var(--green); }
+        
+        .main-content {
+            padding: 80px 20px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .screen { display: none; animation: fadeIn 0.4s; }
+        .screen.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Intro Screen */
+        .intro-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(180, 83, 9, 0.15));
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 40px 25px;
+            text-align: center;
+        }
+        
+        .intro-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+        
+        .intro-title {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+        
+        .intro-desc {
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        .intro-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .intro-stat {
+            background: var(--black);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        
+        .intro-stat-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--brown);
+        }
+        
+        .intro-stat-label {
+            font-size: 10px;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(180, 83, 9, 0.4);
+        }
+        
+        /* Game Screen */
+        .progress-section { margin-bottom: 20px; }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--brown), var(--orange));
+            transition: width 0.5s;
+        }
+        
+        /* Stakes Meter */
+        .stakes-section {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stakes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .stakes-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+        }
+        
+        .stakes-value {
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .stakes-value.low { color: var(--green); }
+        .stakes-value.medium { color: var(--gold); }
+        .stakes-value.high { color: var(--red); }
+        
+        .stakes-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .stake-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            padding: 4px 10px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+        }
+        
+        .stake-item.at-risk { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        .stake-item.protected { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+        
+        /* Scenario Card */
+        .scenario-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .type-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .type-icon.work { background: linear-gradient(135deg, var(--blue), var(--cyan)); }
+        .type-icon.friend { background: linear-gradient(135deg, var(--green), var(--cyan)); }
+        .type-icon.family { background: linear-gradient(135deg, var(--orange), var(--gold)); }
+        .type-icon.roommate { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+        .type-icon.community { background: linear-gradient(135deg, var(--pink), var(--red)); }
+        
+        .type-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+        }
+        
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--orange), var(--red));
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .streak-badge.inactive {
+            background: var(--mid-grey);
+            color: var(--light-grey);
+        }
+        
+        .scenario-situation {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-question {
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        /* Response Options */
+        .responses {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .response-btn {
+            background: var(--mid-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            color: var(--white);
+            font-size: 14px;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .response-btn:hover:not(:disabled) {
+            border-color: var(--light-grey);
+            transform: translateX(5px);
+        }
+        
+        .response-btn:disabled { cursor: default; }
+        .response-btn.selected { border-color: var(--blue); }
+        .response-btn.excellent { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .response-btn.good { border-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
+        .response-btn.poor { border-color: var(--red); background: rgba(239, 68, 68, 0.1); }
+        
+        .response-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .response-btn.revealed .response-meta { opacity: 1; }
+        
+        .quality-label {
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 4px;
+        }
+        
+        .quality-label.excellent { background: var(--green); color: var(--black); }
+        .quality-label.good { background: var(--gold); color: var(--black); }
+        .quality-label.poor { background: var(--red); color: var(--white); }
+        
+        .points-earned {
+            font-weight: 600;
+        }
+        
+        .points-earned.positive { color: var(--green); }
+        .points-earned.negative { color: var(--red); }
+        
+        /* Feedback Section */
+        .feedback {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .feedback.excellent .feedback-icon { background: var(--green); }
+        .feedback.good .feedback-icon { background: var(--gold); }
+        .feedback.poor .feedback-icon { background: var(--red); }
+        
+        .feedback-title { font-weight: 700; font-size: 16px; }
+        
+        .feedback-text {
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        /* Consequence Box */
+        .consequence-box {
+            background: var(--mid-grey);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .consequence-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 6px;
+        }
+        
+        .consequence-text {
+            font-size: 13px;
+            color: var(--white);
+            font-style: italic;
+        }
+        
+        /* Continue Button */
+        .continue-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .continue-btn.show { display: block; }
+        
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+            padding: 30px 0;
+        }
+        
+        .results-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .results-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .result-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 18px;
+        }
+        
+        .result-value {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+        
+        .result-value.score { color: var(--brown); }
+        .result-value.xp { color: var(--gold); }
+        .result-value.excellent { color: var(--green); }
+        .result-value.streak { color: var(--orange); }
+        
+        .result-label {
+            font-size: 11px;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        /* Style Profile */
+        .style-section {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .style-title { font-weight: 700; margin-bottom: 15px; }
+        
+        .style-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .style-label {
+            width: 80px;
+            font-size: 12px;
+            color: var(--light-grey);
+        }
+        
+        .style-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .style-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        
+        .style-value {
+            width: 35px;
+            text-align: right;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .exit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--brown);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .play-again-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--mid-grey);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .intro-stats { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+            .intro-stat { padding: 10px 6px; }
+            .intro-stat-value { font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-accountability-arena-v2.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="game-accountability-arena-v2-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library.html" class="back-btn">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            Exit
+        </a>
+        <div class="header-stats">
+            <div class="stat xp">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span id="xpDisplay">0</span>
+            </div>
+            <div class="stat streak">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span id="streakDisplay">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <!-- Intro Screen -->
+        <div class="screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-icon">🛡️</div>
+                <h1 class="intro-title">Accountability Arena</h1>
+                <p class="intro-desc">
+                    Master the art of holding others accountable without damaging relationships. 
+                    Navigate real scenarios where someone missed a commitment and learn to address it constructively.
+                </p>
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">12</div>
+                        <div class="intro-stat-label">Scenarios</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">~10</div>
+                        <div class="intro-stat-label">Minutes</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">+100</div>
+                        <div class="intro-stat-label">XP</div>
+                    </div>
+                </div>
+                <button class="start-btn" onclick="startGame()">Enter the Arena</button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="screen" id="gameScreen">
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Scenario <span id="currentNum">1</span> of <span id="totalNum">12</span></span>
+                    <span id="progressPct">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="stakes-section" id="stakesSection">
+                <div class="stakes-header">
+                    <span class="stakes-label">What's at Stake</span>
+                    <span class="stakes-value medium" id="stakesValue">Medium Stakes</span>
+                </div>
+                <div class="stakes-items" id="stakesItems"></div>
+            </div>
+            
+            <div class="scenario-card" id="scenarioCard">
+                <div class="scenario-header">
+                    <div class="scenario-type">
+                        <div class="type-icon work" id="typeIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                        <span class="type-label" id="typeLabel">Workplace</span>
+                    </div>
+                    <div class="streak-badge inactive" id="streakBadge">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <span id="streakCount">0</span>
+                    </div>
+                </div>
+                <div class="scenario-situation" id="scenarioText">Loading...</div>
+                <div class="scenario-question" id="scenarioQuestion">How do you handle this?</div>
+                <div class="responses" id="responses"></div>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-header">
+                    <div class="feedback-icon" id="feedbackIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    <div class="feedback-title" id="feedbackTitle">Great approach!</div>
+                </div>
+                <div class="feedback-text" id="feedbackText"></div>
+                <div class="consequence-box">
+                    <div class="consequence-label">What Happens Next</div>
+                    <div class="consequence-text" id="consequenceText"></div>
+                </div>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" onclick="nextScenario()">Continue</button>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="screen" id="resultsScreen">
+            <div class="results-screen">
+                <h1 class="results-title">Arena Complete!</h1>
+                <p class="results-subtitle">Here's how you handled accountability</p>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-value score" id="finalScore">0%</div>
+                        <div class="result-label">Accuracy</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value xp" id="finalXP">+0</div>
+                        <div class="result-label">XP Earned</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value excellent" id="excellentCount">0</div>
+                        <div class="result-label">Excellent</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value streak" id="maxStreak">0</div>
+                        <div class="result-label">Best Streak</div>
+                    </div>
+                </div>
+                
+                <div class="style-section">
+                    <div class="style-title">Your Accountability Style</div>
+                    <div id="styleBreakdown"></div>
+                    <p class="feedback-text" id="styleDescription" style="margin-top: 15px;"></p>
+                </div>
+                
+                <button class="exit-btn" onclick="exitGame()">Claim XP & Exit</button>
+                <button class="play-again-btn" onclick="playAgain()">Play Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 15 scenarios across 5 contexts
+        const allScenarios = [
+            // WORK
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace',
+                stakes: 'medium', stakeItems: ['Team Trust', 'Project Timeline'],
+                situation: "Your teammate Alex promised to finish the API documentation by Friday. It's now Monday, and it's still not done. The dev team is blocked and frustration is building.",
+                question: "How do you approach Alex?",
+                responses: [
+                    { text: "\"Hey Alex, I noticed the API docs aren't done yet. The team is blocked. What happened, and what's your plan to complete them?\"", quality: 'excellent', points: 10, feedback: "Direct, factual, and solution-focused. You stated the impact without attacking, and invited them to own the solution.", consequence: "Alex appreciates the direct approach. They explain a personal issue came up and commit to finishing by end of day. The team appreciates your initiative.", style: 'direct' },
+                    { text: "\"Alex, you really dropped the ball on this one. The whole team is waiting on you.\"", quality: 'poor', points: 0, feedback: "This is accusatory and shame-based. It will make Alex defensive and damage trust without solving the problem.", consequence: "Alex gets defensive and shuts down. The conversation becomes about blame rather than solutions. Trust is damaged.", style: 'harsh' },
+                    { text: "Say nothing and do the docs yourself to avoid conflict.", quality: 'poor', points: 0, feedback: "Avoiding accountability enables the pattern to continue and creates resentment. You've also taken on work that wasn't yours.", consequence: "Alex never knows there was a problem. You feel resentful. The pattern continues.", style: 'avoidant' },
+                    { text: "\"Alex, I know you're busy. Is there something blocking you on the docs? How can I help?\"", quality: 'good', points: 5, feedback: "Supportive, but missing the accountability piece. You should also clarify the impact and get a commitment.", consequence: "Alex appreciates the support but doesn't fully own the delay. Partial progress.", style: 'supportive' }
+                ]
+            },
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace',
+                stakes: 'high', stakeItems: ['Quality Standards', 'Team Culture', 'Your Credibility'],
+                situation: "Jordan submitted a code review that has several obvious issues. This is the third time this month their PRs haven't met team standards. Others are starting to notice.",
+                question: "How do you address this pattern?",
+                responses: [
+                    { text: "Approve the PR anyway to avoid awkwardness, then fix the issues yourself.", quality: 'poor', points: 0, feedback: "This erodes standards and enables the pattern. It also creates hidden resentment and burnout for you.", consequence: "Standards silently drop. Other team members start cutting corners too. You become increasingly frustrated.", style: 'avoidant' },
+                    { text: "\"Jordan, I've noticed a pattern in your recent PRs. Can we talk about what's going on and how we can get back to our quality bar?\"", quality: 'excellent', points: 10, feedback: "Perfect. You named the pattern, signaled concern rather than judgment, and invited collaboration.", consequence: "Jordan reveals they've been overwhelmed. You problem-solve together. Quality improves and Jordan feels supported.", style: 'direct' },
+                    { text: "Leave detailed comments on every issue and reject the PR without discussion.", quality: 'good', points: 5, feedback: "You're maintaining standards, but missing the coaching opportunity. A conversation would address root cause.", consequence: "Jordan fixes this PR but the pattern continues. They may feel criticized without support.", style: 'harsh' },
+                    { text: "Escalate directly to the manager without talking to Jordan first.", quality: 'poor', points: 0, feedback: "This damages trust and skips peer accountability that's most effective. Try direct conversation first.", consequence: "Jordan feels blindsided. Your relationship is damaged. The manager wishes you'd tried talking first.", style: 'escalator' }
+                ]
+            },
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace',
+                stakes: 'medium', stakeItems: ['Meeting Effectiveness', 'Team Norms'],
+                situation: "During team meetings, Sam consistently arrives 5-10 minutes late and scrolls their phone. Others are noticing and some are starting to do the same.",
+                question: "What's your move?",
+                responses: [
+                    { text: "Pull Sam aside privately: \"Hey Sam, everything okay? I've noticed you've been late to meetings lately and on your phone. Anything going on?\"", quality: 'excellent', points: 10, feedback: "A private, caring check-in is perfect for behavioral issues. It opens dialogue without public embarrassment.", consequence: "Sam reveals they've been dealing with a family issue. They appreciate your approach and commit to being more present.", style: 'supportive' },
+                    { text: "Call them out in the next meeting: \"Sam, nice of you to join us. Can you put the phone away?\"", quality: 'poor', points: 0, feedback: "Public embarrassment destroys trust and makes everyone else afraid to be vulnerable. Never do this.", consequence: "Sam is humiliated. The team becomes guarded. Meeting participation drops as people fear being called out.", style: 'harsh' },
+                    { text: "Say nothing - it's not your job to police meeting behavior.", quality: 'poor', points: 0, feedback: "When you don't address it, you're implicitly saying it's acceptable. Standards erode through silence.", consequence: "The behavior spreads. Soon half the team is late or distracted. Meetings become ineffective.", style: 'avoidant' },
+                    { text: "Ask the meeting organizer to send a reminder about meeting norms to everyone.", quality: 'good', points: 5, feedback: "Good intent, but passive. Direct conversation with Sam would be more effective than a blanket reminder.", consequence: "Everyone gets a reminder. Sam doesn't connect it to their behavior. The pattern continues.", style: 'indirect' }
+                ]
+            },
+            // FRIENDS
+            {
+                context: 'friend', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Friend',
+                stakes: 'medium', stakeItems: ['Friendship', 'Future Plans'],
+                situation: "Your friend promised to help you move this weekend. Moving day arrives and they text: 'Sorry, something came up. Can't make it.' This is the third time they've bailed on plans.",
+                question: "How do you respond?",
+                responses: [
+                    { text: "\"That's frustrating. This is the third time you've cancelled. I value our friendship and need to know I can count on you. Can we talk about what's going on?\"", quality: 'excellent', points: 10, feedback: "You named the pattern, expressed the impact, and opened dialogue. This is accountability with care.", consequence: "Your friend apologizes sincerely. They explain they've been overcommitting. You both establish clearer expectations.", style: 'direct' },
+                    { text: "\"Whatever, I'll figure it out\" and start distancing yourself.", quality: 'poor', points: 0, feedback: "Passive withdrawal doesn't give them a chance to address it. Resentment builds without resolution.", consequence: "The friendship slowly fades. Neither of you knows exactly what happened. Years later, you wonder what went wrong.", style: 'avoidant' },
+                    { text: "Go off: \"You ALWAYS do this! You're such a flake! I can't count on you for anything!\"", quality: 'poor', points: 0, feedback: "Attacking with 'always' and labels creates defensiveness. The valid concern gets lost in the delivery.", consequence: "Your friend gets defensive. The argument becomes about your delivery, not their behavior. Nothing is resolved.", style: 'harsh' },
+                    { text: "\"No worries, hope everything's okay\" and find someone else to help.", quality: 'good', points: 5, feedback: "Gracious in the moment, but you're avoiding the pattern. This enables it to continue.", consequence: "You solve the immediate problem but the pattern continues. Eventually resentment builds anyway.", style: 'supportive' }
+                ]
+            },
+            {
+                context: 'friend', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Friend',
+                stakes: 'high', stakeItems: ['Group Harmony', 'Shared Finances'],
+                situation: "Your friend group planned a trip together. Everyone agreed to a budget, but one friend keeps suggesting expensive activities that bust the budget. Others are getting uncomfortable but not speaking up.",
+                question: "How do you handle this?",
+                responses: [
+                    { text: "Privately: \"Hey, I love your enthusiasm for the trip. I'm noticing some of the activities are outside the budget we agreed on. Can we find options that work for everyone?\"", quality: 'excellent', points: 10, feedback: "You acknowledged their excitement while redirecting to the group agreement. Private approach preserves their dignity.", consequence: "Your friend hadn't realized the impact. They appreciate you pulling them aside and suggest budget-friendly alternatives.", style: 'direct' },
+                    { text: "Go along with the expensive suggestions to avoid being the buzzkill.", quality: 'poor', points: 0, feedback: "You're letting others break agreements and potentially straining finances. Speak up.", consequence: "The trip is great but some friends are stressed about money. Resentment simmers. The next trip is awkward.", style: 'avoidant' },
+                    { text: "In the group chat: \"Um, that's way over budget. Some of us can't afford to just throw money around.\"", quality: 'poor', points: 0, feedback: "Public callout with judgment creates defensiveness and embarrassment. Handle this privately first.", consequence: "Your friend is embarrassed. The group chat gets tense. The trip planning becomes stressful.", style: 'harsh' },
+                    { text: "Suggest the group revisit the budget together.", quality: 'good', points: 5, feedback: "Good to involve the group, but addressing the specific person privately first would be more effective.", consequence: "The conversation helps but feels awkward. The friend who suggested expensive things feels targeted.", style: 'indirect' }
+                ]
+            },
+            // FAMILY
+            {
+                context: 'family', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Family',
+                stakes: 'high', stakeItems: ['Family Harmony', 'Holiday Plans', 'Relationship'],
+                situation: "Your sibling keeps making commitments about family events and then backing out last minute. Your parents are hurt, and you're tired of making excuses for them.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Have an honest conversation: \"I've noticed you've been canceling family events a lot. Mom and Dad are hurt. What's going on? Is there something we can do differently?\"", quality: 'excellent', points: 10, feedback: "You stated the impact, showed curiosity about the cause, and offered to problem-solve together.", consequence: "Your sibling opens up about feeling overwhelmed by family expectations. You work together on more realistic commitments.", style: 'direct' },
+                    { text: "Cover for them with your parents and hope they figure it out.", quality: 'poor', points: 0, feedback: "Enabling the pattern protects them from consequences they need to feel. It also exhausts you.", consequence: "The pattern continues. You become resentful. Your parents remain hurt. Nothing changes.", style: 'avoidant' },
+                    { text: "\"You're so selfish. Mom and Dad won't be around forever. You need to grow up and show up.\"", quality: 'poor', points: 0, feedback: "Guilt-tripping and labeling creates defensiveness. Even if true, this delivery won't create change.", consequence: "Your sibling gets defensive and pulls back further. The relationship is damaged. Family events become more tense.", style: 'harsh' },
+                    { text: "Tell your parents that your sibling is unreliable and they should stop expecting them.", quality: 'poor', points: 0, feedback: "Talking about them to others rather than to them creates drama and doesn't address the issue.", consequence: "Your parents are caught in the middle. Your sibling finds out you 'threw them under the bus.' Trust is broken.", style: 'escalator' }
+                ]
+            },
+            {
+                context: 'family', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Family',
+                stakes: 'medium', stakeItems: ['Family Boundaries', 'Your Mental Health'],
+                situation: "Your parent keeps giving you unsolicited advice about your career, despite you asking them to stop. They just did it again at dinner, and you're frustrated.",
+                question: "How do you respond?",
+                responses: [
+                    { text: "\"Mom/Dad, I love you and I know you want what's best for me. But I've asked you to let me handle my career. When you give advice after I've asked you not to, it makes me want to share less with you.\"", quality: 'excellent', points: 10, feedback: "You affirmed the relationship, restated the boundary, and explained the consequence. Perfect.", consequence: "They're surprised by the consequence you named. After reflection, they apologize and try harder to respect your boundary.", style: 'direct' },
+                    { text: "Smile and nod, then vent to your partner later.", quality: 'poor', points: 0, feedback: "Avoiding the conversation means the pattern continues and your frustration builds. Address it directly.", consequence: "The pattern continues. You dread family dinners. Your partner is tired of hearing about it.", style: 'avoidant' },
+                    { text: "\"Why can't you just STOP? I'm not a child anymore! You don't respect me at all!\"", quality: 'poor', points: 0, feedback: "Explosive responses escalate rather than resolve. Take a breath and address it calmly.", consequence: "Dinner becomes a fight. Everyone is upset. The real issue gets lost in the conflict.", style: 'harsh' },
+                    { text: "Change the subject smoothly and hope they get the hint.", quality: 'good', points: 5, feedback: "This works in the moment but doesn't address the pattern. They may not even notice your redirect.", consequence: "You avoided this instance but the pattern will continue. Hints are not clear communication.", style: 'indirect' }
+                ]
+            },
+            // ROOMMATES
+            {
+                context: 'roommate', icon: '🏠', label: 'Roommate',
+                stakes: 'medium', stakeItems: ['Living Harmony', 'Shared Space'],
+                situation: "Your roommate keeps leaving dirty dishes in the sink for days. You've mentioned it casually twice, but nothing has changed. The kitchen is becoming unusable.",
+                question: "How do you escalate appropriately?",
+                responses: [
+                    { text: "\"Hey, I need to talk about the dishes. I've mentioned it a couple times but it keeps happening. This isn't working for me. Can we figure out a system that works for both of us?\"", quality: 'excellent', points: 10, feedback: "You acknowledged previous attempts, stated your need clearly, and proposed collaborative problem-solving.", consequence: "Your roommate apologizes and admits they've been stressed. You agree on a 24-hour dish rule. Things improve.", style: 'direct' },
+                    { text: "Just start doing their dishes while silently resenting them.", quality: 'poor', points: 0, feedback: "This enables the behavior and builds resentment. Express your needs clearly.", consequence: "You become the household dishwasher. Resentment builds. Eventually you explode over something minor.", style: 'avoidant' },
+                    { text: "Leave a passive-aggressive note: \"Some of us actually use this kitchen.\"", quality: 'poor', points: 0, feedback: "Passive-aggressive communication damages relationships without solving problems. Talk directly.", consequence: "Your roommate is offended by the note. Now there's tension AND dirty dishes.", style: 'indirect' },
+                    { text: "Start a group chat with all roommates about 'kitchen cleanliness.'", quality: 'good', points: 5, feedback: "Group accountability can help, but since you know who's responsible, talk to them directly first.", consequence: "The group discussion feels awkward. Your roommate knows it's about them but wasn't addressed directly.", style: 'indirect' }
+                ]
+            },
+            {
+                context: 'roommate', icon: '🏠', label: 'Roommate',
+                stakes: 'high', stakeItems: ['Sleep Quality', 'Shared Lease', 'Relationship'],
+                situation: "Your roommate has been having loud parties on weeknights. You have early work and haven't slept well in two weeks. You've mentioned it once and they said 'sorry' but did it again.",
+                question: "What's your next move?",
+                responses: [
+                    { text: "\"We need to talk. The weeknight parties are really affecting my sleep and work. I need quiet by 10pm on weeknights. Can you commit to that, or do we need to find a different living situation?\"", quality: 'excellent', points: 10, feedback: "Clear boundary with a specific ask and stated consequence. This is what healthy accountability looks like.", consequence: "Your roommate takes it seriously when they hear it's affecting the living situation. They agree to weekends only.", style: 'direct' },
+                    { text: "Start sleeping at a friend's house on weeknights.", quality: 'poor', points: 0, feedback: "You're working around the problem instead of addressing it. This isn't sustainable.", consequence: "You're displaced from your own home. The situation doesn't improve. You're exhausted.", style: 'avoidant' },
+                    { text: "Call the police next time they're loud.", quality: 'poor', points: 0, feedback: "Escalating to authorities before a direct conversation destroys the relationship and creates hostility.", consequence: "Your roommate is furious. The living situation becomes hostile. You both can't wait to move out.", style: 'escalator' },
+                    { text: "Buy noise-canceling headphones and hope it resolves itself.", quality: 'poor', points: 0, feedback: "You shouldn't have to buy equipment to compensate for someone else's boundary violations.", consequence: "Headphones help a little but the underlying issue remains. Resentment builds.", style: 'avoidant' }
+                ]
+            },
+            // COMMUNITY
+            {
+                context: 'community', icon: '🏘️', label: 'Community',
+                stakes: 'low', stakeItems: ['Neighbor Relations', 'Shared Space'],
+                situation: "A neighbor on your street keeps parking in front of your house, making it hard for your guests to find parking. It's legal but frustrating.",
+                question: "How do you handle this?",
+                responses: [
+                    { text: "Knock on their door: \"Hi, I wanted to introduce myself and ask a small favor. Would you mind parking in front of your own place when you can? It would help my guests find parking.\"", quality: 'excellent', points: 10, feedback: "Friendly, direct request with explanation. Building relationship first makes the ask more likely to succeed.", consequence: "Your neighbor is happy to meet you. They hadn't realized it was an issue and gladly accommodate.", style: 'direct' },
+                    { text: "Leave a note on their car: \"Please don't park here.\"", quality: 'poor', points: 0, feedback: "Anonymous notes feel hostile and don't build relationship. A face-to-face conversation is more effective.", consequence: "They don't know who left the note. They ignore it or feel annoyed. Nothing changes.", style: 'indirect' },
+                    { text: "Complain to the HOA or city council.", quality: 'poor', points: 0, feedback: "Going to authorities before talking directly escalates unnecessarily and creates an adversarial dynamic.", consequence: "Your neighbor finds out you reported them. They're now hostile. The neighborhood vibe suffers.", style: 'escalator' },
+                    { text: "Just deal with it - it's not worth the potential conflict.", quality: 'good', points: 5, feedback: "Sometimes letting small things go is wise, but a friendly conversation often resolves issues easily.", consequence: "You avoid conflict but the frustration continues. A simple conversation could have solved it.", style: 'avoidant' }
+                ]
+            },
+            // MORE WORK
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace',
+                stakes: 'high', stakeItems: ['Project Success', 'Team Learning'],
+                situation: "After a project failure, Morgan blames the other team: 'They didn't give us the API on time.' You know Morgan never followed up when it was late.",
+                question: "How do you respond?",
+                responses: [
+                    { text: "\"That's frustrating. Did we escalate when we saw it going off track? What could we do differently next time to catch these earlier?\"", quality: 'excellent', points: 10, feedback: "You validated their frustration while redirecting to what was in their control. This builds ownership.", consequence: "Morgan reflects and admits they could have escalated sooner. The team learns and improves their process.", style: 'direct' },
+                    { text: "Agree that the other team is the problem to avoid conflict.", quality: 'poor', points: 0, feedback: "Joining the blame game prevents learning and accountability. It feels supportive but isn't.", consequence: "No one learns. The same pattern will repeat. The blame culture spreads.", style: 'avoidant' },
+                    { text: "\"Morgan, that's not entirely true. You never followed up when it was late.\"", quality: 'good', points: 5, feedback: "Direct and factual, but potentially defensive-inducing. The framing could be softer.", consequence: "Morgan gets defensive. The valid point is lost in the conflict about who's right.", style: 'harsh' },
+                    { text: "Report to management that Morgan isn't taking responsibility.", quality: 'poor', points: 0, feedback: "Escalating without direct conversation first erodes trust. Try peer feedback first.", consequence: "Morgan feels betrayed. Trust is broken. You're now seen as someone who goes over heads.", style: 'escalator' }
+                ]
+            },
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace',
+                stakes: 'high', stakeItems: ['Your Integrity', 'Team Norms'],
+                situation: "Your manager scheduled a meeting for Friday despite the team's 'no meetings Friday' policy. Others are silently attending.",
+                question: "How do you handle up?",
+                responses: [
+                    { text: "\"Hey, I noticed this is scheduled for Friday. We have a team norm about no meetings Fridays - is this urgent enough to make an exception?\"", quality: 'excellent', points: 10, feedback: "You reminded them respectfully and gave them a face-saving way to adjust. Perfectly handled.", consequence: "Your manager hadn't even noticed. They reschedule and thank you for the reminder.", style: 'direct' },
+                    { text: "Attend without saying anything - it's your manager after all.", quality: 'poor', points: 0, feedback: "This teaches your manager that norms don't apply to them, and signals that commitments are optional.", consequence: "Friday meetings become common. The policy dies silently. Everyone is resentful but compliant.", style: 'avoidant' },
+                    { text: "Decline the meeting with no explanation.", quality: 'poor', points: 0, feedback: "Passive resistance without communication damages your relationship with your manager.", consequence: "Your manager is confused, then annoyed. You're seen as difficult rather than principled.", style: 'indirect' },
+                    { text: "Complain to teammates about the manager not respecting norms.", quality: 'poor', points: 0, feedback: "Gossip doesn't solve the problem and undermines your manager. Speak to them directly.", consequence: "The gossip spreads. Your manager finds out. Trust is damaged on both sides.", style: 'avoidant' }
+                ]
+            }
+        ];
+        
+        let scenarios = [];
+        let currentIndex = 0;
+        let xp = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let excellentCount = 0;
+        let goodCount = 0;
+        let poorCount = 0;
+        let totalQuestions = 12;
+        let styleStats = { direct: 0, supportive: 0, avoidant: 0, harsh: 0, indirect: 0, escalator: 0 };
+        
+        function initGame() {
+            const shuffled = [...allScenarios].sort(() => Math.random() - 0.5);
+            scenarios = shuffled.slice(0, totalQuestions);
+            document.getElementById('totalNum').textContent = totalQuestions;
+        }
+        
+        function startGame() {
+            initGame();
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            loadScenario();
+        }
+        
+        function loadScenario() {
+            const s = scenarios[currentIndex];
+            
+            // Update progress
+            document.getElementById('currentNum').textContent = currentIndex + 1;
+            document.getElementById('progressPct').textContent = Math.round((currentIndex / totalQuestions) * 100) + '%';
+            document.getElementById('progressFill').style.width = (currentIndex / totalQuestions) * 100 + '%';
+            
+            // Update stakes
+            const stakesValue = document.getElementById('stakesValue');
+            stakesValue.textContent = s.stakes.charAt(0).toUpperCase() + s.stakes.slice(1) + ' Stakes';
+            stakesValue.className = 'stakes-value ' + s.stakes;
+            document.getElementById('stakesItems').innerHTML = s.stakeItems.map(item => `
+                <div class="stake-item at-risk">${item}</div>
+            `).join('');
+            
+            // Update scenario
+            const icon = document.getElementById('typeIcon');
+            icon.textContent = s.icon;
+            icon.className = 'type-icon ' + s.context;
+            document.getElementById('typeLabel').textContent = s.label;
+            
+            document.getElementById('scenarioText').textContent = s.situation;
+            document.getElementById('scenarioQuestion').textContent = s.question;
+            
+            // Update streak badge
+            const badge = document.getElementById('streakBadge');
+            document.getElementById('streakCount').textContent = streak;
+            badge.classList.toggle('inactive', streak === 0);
+            
+            // Shuffle responses
+            const shuffledResponses = [...s.responses].sort(() => Math.random() - 0.5);
+            s.shuffledResponses = shuffledResponses;
+            
+            document.getElementById('responses').innerHTML = shuffledResponses.map((r, i) => `
+                <button class="response-btn" onclick="selectResponse(${i})">
+                    ${r.text}
+                    <div class="response-meta">
+                        <span class="quality-label ${r.quality}">${r.quality === 'excellent' ? 'Excellent' : r.quality === 'good' ? 'Good' : 'Poor'}</span>
+                        <span class="points-earned ${r.points > 0 ? 'positive' : 'negative'}">+${r.points} pts</span>
+                    </div>
+                </button>
+            `).join('');
+            
+            // Hide feedback
+            document.getElementById('feedback').classList.remove('show', 'excellent', 'good', 'poor');
+            document.getElementById('continueBtn').classList.remove('show');
+        }
+        
+        function selectResponse(index) {
+            const s = scenarios[currentIndex];
+            const response = s.shuffledResponses[index];
+            
+            // Disable and reveal all buttons
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.add('revealed');
+                const r = s.shuffledResponses[i];
+                btn.classList.add(r.quality);
+                if (i === index) btn.classList.add('selected');
+            });
+            
+            // Track style
+            styleStats[response.style] = (styleStats[response.style] || 0) + 1;
+            
+            // Update XP and streak
+            let bonusXP = 0;
+            if (response.quality === 'excellent') {
+                excellentCount++;
+                streak++;
+                bonusXP = streak > 1 ? streak * 2 : 0; // Streak bonus
+                maxStreak = Math.max(maxStreak, streak);
+            } else if (response.quality === 'good') {
+                goodCount++;
+                streak = 0;
+            } else {
+                poorCount++;
+                streak = 0;
+            }
+            
+            xp += response.points + bonusXP;
+            document.getElementById('xpDisplay').textContent = xp;
+            document.getElementById('streakDisplay').textContent = streak;
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + response.quality;
+            document.getElementById('feedbackIcon').textContent = response.quality === 'excellent' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' : response.quality === 'good' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg>' : '✗';
+            document.getElementById('feedbackTitle').textContent = response.quality === 'excellent' ? 'Excellent approach!' : response.quality === 'good' ? 'Good approach!' : 'Could be better...';
+            document.getElementById('feedbackText').textContent = response.feedback;
+            document.getElementById('consequenceText').textContent = response.consequence;
+            
+            // Update stakes to show outcome
+            const stakeItems = document.querySelectorAll('.stake-item');
+            stakeItems.forEach(item => {
+                item.classList.remove('at-risk');
+                item.classList.add(response.quality === 'excellent' ? 'protected' : response.quality === 'good' ? 'protected' : 'at-risk');
+            });
+            
+            document.getElementById('continueBtn').classList.add('show');
+        }
+        
+        function nextScenario() {
+            currentIndex++;
+            if (currentIndex >= totalQuestions) {
+                showResults();
+            } else {
+                loadScenario();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            const accuracy = Math.round((excellentCount / totalQuestions) * 100);
+            const totalXP = xp + 50; // Base completion XP
+            
+            document.getElementById('finalScore').textContent = accuracy + '%';
+            document.getElementById('finalXP').textContent = '+' + totalXP;
+            document.getElementById('excellentCount').textContent = excellentCount;
+            document.getElementById('maxStreak').textContent = maxStreak;
+            
+            // Calculate dominant style
+            const relevantStyles = { direct: styleStats.direct || 0, supportive: styleStats.supportive || 0, avoidant: styleStats.avoidant || 0 };
+            const totalStyled = Object.values(relevantStyles).reduce((a, b) => a + b, 0) || 1;
+            
+            const colors = { direct: '#10b981', supportive: '#3b82f6', avoidant: '#ef4444' };
+            const descriptions = {
+                direct: "You tend to address issues head-on with clarity and care. This is the most effective approach for building accountability culture.",
+                supportive: "You lead with empathy and support, which builds relationships. Just make sure to also include clear expectations.",
+                avoidant: "You sometimes avoid difficult conversations, which can let issues fester. Practice addressing things directly with kindness."
+            };
+            
+            const dominant = Object.entries(relevantStyles).sort((a, b) => b[1] - a[1])[0][0];
+            
+            document.getElementById('styleBreakdown').innerHTML = Object.entries(relevantStyles).map(([style, count]) => {
+                const pct = Math.round((count / totalStyled) * 100);
+                return `
+                    <div class="style-bar-row">
+                        <div class="style-label">${style.charAt(0).toUpperCase() + style.slice(1)}</div>
+                        <div class="style-bar">
+                            <div class="style-bar-fill" style="width: ${pct}%; background: ${colors[style]}"></div>
+                        </div>
+                        <div class="style-value">${pct}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('styleDescription').textContent = descriptions[dominant];
+        }
+        
+        function exitGame() {
+            const totalXP = xp + 50;
+            const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+            localStorage.setItem('totalXP', currentXP + totalXP);
+            window.location.href = 'game-library.html';
+        }
+        
+        function playAgain() {
+            currentIndex = 0;
+            xp = 0;
+            streak = 0;
+            maxStreak = 0;
+            excellentCount = 0;
+            goodCount = 0;
+            poorCount = 0;
+            styleStats = { direct: 0, supportive: 0, avoidant: 0, harsh: 0, indirect: 0, escalator: 0 };
+            
+            document.getElementById('xpDisplay').textContent = '0';
+            document.getElementById('streakDisplay').textContent = '0';
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            
+            initGame();
+            loadScenario();
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

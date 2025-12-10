@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <title>Signing In... - TAP-IN</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        .callback-container {
+            background: white;
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            color: #1a365d;
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+        }
+
+        p {
+            color: #64748b;
+            margin: 0;
+        }
+
+        .success-icon {
+            font-size: 3rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+
+        .error-icon {
+            font-size: 3rem;
+            color: #ef4444;
+            margin-bottom: 1rem;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 2rem;
+            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            text-decoration: none;
+            transition: transform 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="auth-callback.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="#" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="callback-container">
+        <div id="loading-state">
+            <div class="spinner"></div>
+            <h1>Signing you in...</h1>
+            <p>Please wait while we authenticate your account.</p>
+        </div>
+
+        <div id="success-state" style="display: none;">
+            <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <h1>Success!</h1>
+            <p>You've been signed in successfully.</p>
+            <p style="font-size: 0.9rem; color: #64748b; margin-top: 0.5rem;">
+                Redirecting to dashboard...
+            </p>
+        </div>
+
+        <div id="error-state" style="display: none;">
+            <div class="error-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <h1>Authentication Failed</h1>
+            <p id="error-message">Something went wrong during authentication.</p>
+            <a href="gym-dashboard.html" class="btn">Try Again</a>
+        </div>
+    </div>
+
+    <script src="js/supabase-client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Check if we have auth tokens in URL hash
+                const hash = window.location.hash;
+                
+                if (!hash || !hash.includes('access_token')) {
+                    throw new Error('No authentication token found in URL');
+                }
+
+                // Initialize Supabase if not already
+                if (!TapInSupabase.isInitialized) {
+                    await TapInSupabase.init();
+                }
+
+                // Supabase will automatically handle the callback via onAuthStateChange
+                // Wait a moment for auth to complete
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Check if user is authenticated
+                const user = await TapInSupabase.getCurrentUser();
+                
+                if (user) {
+                    // Success!
+                    showSuccess();
+                    
+                    // Update user session
+                    await TapInSupabase.updateUserSession();
+                    
+                    // Redirect to dashboard after 2 seconds
+                    setTimeout(() => {
+                        // Check if there's a redirect URL
+                        const redirectUrl = localStorage.getItem('tapin_redirect_url') || 'gym-dashboard.html';
+                        localStorage.removeItem('tapin_redirect_url');
+                        
+                        // Check if we should go to migration wizard for data sync
+                        const hasLocalData = localStorage.getItem('totalXP') && 
+                                           parseInt(localStorage.getItem('totalXP')) > 0;
+                        
+                        if (hasLocalData) {
+                            // Redirect to migration wizard to sync data
+                            window.location.href = '/migration-wizard.html';
+                        } else {
+                            window.location.href = redirectUrl;
+                        }
+                    }, 2000);
+                    
+                } else {
+                    throw new Error('Authentication completed but user not found');
+                }
+
+            } catch (error) {
+                console.error('Auth callback error:', error);
+                showError(error.message || 'Authentication failed. Please try again.');
+            }
+        });
+
+        function showSuccess() {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('error-state').style.display = 'none';
+            document.getElementById('success-state').style.display = 'block';
+        }
+
+        function showError(message) {
+            document.getElementById('loading-state').style.display = 'none';
+            document.getElementById('success-state').style.display = 'none';
+            document.getElementById('error-state').style.display = 'block';
+            document.getElementById('error-message').textContent = message;
+        }
+    </script>
+
+    <!-- Focus Management for Accessibility -->
+    <script src="js/focus-management.js" defer></script>
+
+    <!-- Screen Reader Enhancements for Accessibility -->
+    <script src="js/screen-reader-enhancements.js" defer></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
+

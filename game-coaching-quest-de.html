@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Coaching Quest - GROW Model in Action | TAP-IN</title>
+    <meta name="description" content="Master the GROW coaching model through interactive scenarios. Practice real coaching conversations.">
+    
+    <!-- Language Switcher -->
+    <style>
+        .language-switcher {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            display: flex;
+            gap: 5px;
+        }
+        .lang-btn {
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .lang-btn.active {
+            background: #10b981;
+            color: #000;
+        }
+        .lang-btn:not(.active) {
+            background: #2a2a3a;
+            color: #fff;
+        }
+        .lang-btn:hover:not(.active) {
+            background: #3a3a4a;
+        }
+    </style>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0a1a 0%, #1a0a0a 50%, #0a1a0f 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        .hi {
+            width: 1.25em;
+            height: 1.25em;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+        
+        /* Header */
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .game-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #92400e 0%, #f59e0b 50%, #92400e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+        
+        .game-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+        
+        .belt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #92400e22;
+            border: 1px solid #92400e;
+            color: #f59e0b;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+        
+        /* Progress Bar */
+        .progress-container {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .progress-bar-outer {
+            height: 8px;
+            background: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+        }
+        
+        .progress-bar-inner {
+            height: 100%;
+            background: linear-gradient(90deg, #92400e, #f59e0b);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+        
+        /* GROW Indicator */
+        .grow-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .grow-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            background: #1e293b;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            min-width: 70px;
+        }
+        
+        .grow-step.active {
+            border-color: #f59e0b;
+            background: #92400e22;
+        }
+        
+        .grow-step.completed {
+            border-color: #10b981;
+            background: #10b98122;
+        }
+        
+        .grow-letter {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #64748b;
+        }
+        
+        .grow-step.active .grow-letter {
+            color: #f59e0b;
+        }
+        
+        .grow-step.completed .grow-letter {
+            color: #10b981;
+        }
+        
+        .grow-label {
+            font-size: 0.7rem;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+        
+        /* Scenario Card */
+        .scenario-card {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid #334155;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .coachee-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .coachee-info h3 {
+            color: #f1f5f9;
+            font-size: 1.1rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .coachee-info p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+        
+        .scenario-context {
+            background: #0f172a;
+            border-left: 3px solid #f59e0b;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 1.5rem;
+        }
+        
+        .scenario-context p {
+            color: #cbd5e1;
+            line-height: 1.6;
+            font-style: italic;
+        }
+        
+        /* Coach Question */
+        .coach-section {
+            margin-top: 1.5rem;
+        }
+        
+        .coach-prompt {
+            color: #f59e0b;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        /* Response Options */
+        .response-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .response-btn {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 10px;
+            color: #e2e8f0;
+            font-size: 0.95rem;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+            line-height: 1.5;
+        }
+        
+        .response-btn:hover {
+            border-color: #f59e0b;
+            background: #92400e11;
+            transform: translateX(4px);
+        }
+        
+        .response-btn.selected {
+            border-color: #f59e0b;
+            background: #92400e22;
+        }
+        
+        .response-btn.correct {
+            border-color: #10b981;
+            background: #10b98122;
+        }
+        
+        .response-btn.incorrect {
+            border-color: #ef4444;
+            background: #ef444422;
+        }
+        
+        .response-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        /* Feedback Section */
+        .feedback-section {
+            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            border-radius: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feedback-section.success {
+            background: linear-gradient(135deg, #10b98122, #10b98111);
+            border: 1px solid #10b98144;
+        }
+        
+        .feedback-section.partial {
+            background: linear-gradient(135deg, #f59e0b22, #f59e0b11);
+            border: 1px solid #f59e0b44;
+        }
+        
+        .feedback-section.incorrect {
+            background: linear-gradient(135deg, #ef444422, #ef444411);
+            border: 1px solid #ef444444;
+        }
+        
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feedback-section.success .feedback-title {
+            color: #10b981;
+        }
+        
+        .feedback-section.partial .feedback-title {
+            color: #f59e0b;
+        }
+        
+        .feedback-section.incorrect .feedback-title {
+            color: #ef4444;
+        }
+        
+        .feedback-text {
+            color: #cbd5e1;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+        
+        .coaching-tip {
+            background: #0f172a;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 3px solid #f59e0b;
+        }
+        
+        .coaching-tip-title {
+            color: #f59e0b;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .coaching-tip p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        /* Continue Button */
+        .continue-btn {
+            display: none;
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #92400e, #f59e0b);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.2s;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+        
+        /* Score Display */
+        .score-display {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .score-item {
+            text-align: center;
+        }
+        
+        .score-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #f59e0b;
+        }
+        
+        .score-label {
+            font-size: 0.75rem;
+            color: #64748b;
+            text-transform: uppercase;
+        }
+        
+        /* Completion Screen */
+        .completion-screen {
+            display: none;
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 20px;
+        }
+        
+        .completion-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .completion-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #f59e0b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .completion-subtitle {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .completion-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            background: #0f172a;
+            padding: 1.5rem;
+            border-radius: 12px;
+            min-width: 120px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #10b981;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+        
+        .xp-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f59e0b22;
+            border: 2px solid #f59e0b;
+            color: #f59e0b;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-btn.primary {
+            background: linear-gradient(135deg, #92400e, #f59e0b);
+            color: white;
+            border: none;
+        }
+        
+        .action-btn.secondary {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 2px solid #334155;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .game-title {
+                font-size: 1.75rem;
+            }
+            
+            .grow-indicator {
+                flex-wrap: wrap;
+            }
+            
+            .grow-step {
+                min-width: 60px;
+                padding: 0.5rem 0.75rem;
+            }
+            
+            .scenario-card {
+                padding: 1.25rem;
+            }
+            
+            .completion-stats {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher">
+        <a href="game-coaching-quest.html" class="lang-btn">EN</a>
+        <a href="game-coaching-quest-de.html" class="lang-btn active">DE</a>
+    </div>
+    
+    <div class="container">
+        <!-- Header -->
+        <div class="game-header">
+            <h1 class="game-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Stripe 4
+                </a>
+                <a href="game-library.html" class="action-btn secondary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    More Games
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // GROW Coaching Scenarios
+        const scenarios = [
+            {
+                id: 1,
+                coachee: {
+                    name: "Sarah",
+                    initials: "S",
+                    role: "Senior Developer",
+                    color: "#3b82f6"
+                },
+                context: "Sarah has been with the company for 3 years and feels stuck. She mentioned wanting to move into a tech lead role but hasn't made progress. She seems frustrated during your 1:1.",
+                growPhases: [
+                    {
+                        phase: "G",
+                        prompt: "What's the best opening question to establish Sarah's Goal?",
+                        options: [
+                            { text: "Why haven't you applied for any tech lead positions yet?", quality: "incorrect", feedback: "This is accusatory and puts Sarah on the defensive. It doesn't help establish a positive goal." },
+                            { text: "What does success look like for you in the next 6-12 months?", quality: "correct", feedback: "Excellent! This is an open-ended question that invites Sarah to articulate her aspirations without judgment." },
+                            { text: "Have you thought about taking management courses?", quality: "partial", feedback: "While helpful, this jumps to solutions before understanding what Sarah actually wants to achieve." },
+                            { text: "Tell me about your frustrations with your current role.", quality: "partial", feedback: "This explores problems but doesn't establish a forward-looking goal. Save this for the Reality phase." }
+                        ],
+                        tip: "In the Goal phase, use future-focused, open questions. Help the coachee paint a picture of what they want, not what they're trying to escape."
+                    },
+                    {
+                        phase: "R",
+                        prompt: "Sarah says she wants to lead a team within a year. What's the best Reality-checking question?",
+                        options: [
+                            { text: "What specific leadership experiences have you had so far?", quality: "correct", feedback: "Perfect! This helps Sarah assess her current position relative to her goal without judgment." },
+                            { text: "You know that's going to be really hard, right?", quality: "incorrect", feedback: "This is discouraging and imposing your perspective. Let Sarah discover her own reality." },
+                            { text: "What's stopping you from leading a team today?", quality: "partial", feedback: "Good intent, but phrasing is slightly negative. 'What would need to change' is more empowering." },
+                            { text: "Let me tell you what I think the gaps are.", quality: "incorrect", feedback: "Coaching is about helping others discover insights, not telling them what you think." }
+                        ],
+                        tip: "In the Reality phase, be curious not critical. Help the coachee honestly assess where they are now through self-reflection, not your opinions."
+                    },
+                    {
+                        phase: "O",
+                        prompt: "Sarah identifies she needs more visibility with senior leadership. What's the best Options question?",
+                        options: [
+                            { text: "You should volunteer for the upcoming cross-team project.", quality: "incorrect", feedback: "This gives advice instead of exploring options. In GROW, options should come from the coachee." },
+                            { text: "What are three different ways you could increase your visibility?", quality: "correct", feedback: "Excellent! Asking for multiple options encourages creative thinking and ownership." },
+                            { text: "Is there anyone you could shadow or mentor with?", quality: "partial", feedback: "Good question but it's leading toward a specific solution. Let Sarah generate her own ideas first." },
+                            { text: "What have others in your position done?", quality: "partial", feedback: "This can be helpful but might limit Sarah to conventional paths. Encourage her own ideas first." }
+                        ],
+                        tip: "In the Options phase, encourage quantity over quality initially. Ask 'what else?' to push beyond obvious answers."
+                    },
+                    {
+                        phase: "W",
+                        prompt: "Sarah has identified several options. What's the best Way Forward question?",
+                        options: [
+                            { text: "Which of these options excites you most, and what's your first step?", quality: "correct", feedback: "Perfect! This combines commitment (excitement) with action (first step) - the essence of Way Forward." },
+                            { text: "Okay, so you'll start with the cross-team project then?", quality: "incorrect", feedback: "Never assume or dictate the choice. The coachee must own the decision." },
+                            { text: "When do you think you can get started?", quality: "partial", feedback: "Good but misses the commitment element. Make sure Sarah has chosen her path first." },
+                            { text: "Let me know how it goes next week.", quality: "incorrect", feedback: "This is vague and doesn't establish clear commitment or accountability." }
+                        ],
+                        tip: "In the Way Forward phase, help the coachee commit to specific, time-bound actions. 'What will you do by when?' is powerful."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                coachee: {
+                    name: "Marcus",
+                    initials: "M",
+                    role: "Project Manager",
+                    color: "#8b5cf6"
+                },
+                context: "Marcus is struggling with a team member who consistently misses deadlines. He's been avoiding the conversation and the project is falling behind.",
+                growPhases: [
+                    {
+                        phase: "G",
+                        prompt: "What's the best Goal question to start this coaching conversation?",
+                        options: [
+                            { text: "What outcome would make this situation feel resolved for you?", quality: "correct", feedback: "Excellent! This helps Marcus envision success without focusing on the problem itself." },
+                            { text: "Why haven't you talked to this person yet?", quality: "incorrect", feedback: "This is judgmental and focuses on the past, not future goals." },
+                            { text: "Do you want me to talk to them for you?", quality: "incorrect", feedback: "This takes ownership away from Marcus and doesn't help him develop as a leader." },
+                            { text: "What's been going on with the project?", quality: "partial", feedback: "This explores the situation but doesn't establish what Marcus wants to achieve." }
+                        ],
+                        tip: "Start with what success looks like. 'What would great look like?' helps shift from problem-focus to solution-focus."
+                    },
+                    {
+                        phase: "R",
+                        prompt: "Marcus wants improved team performance. What Reality question helps him assess the situation?",
+                        options: [
+                            { text: "What conversations have you already had with this team member about deadlines?", quality: "correct", feedback: "Perfect! This objectively explores what's been tried without assuming anything." },
+                            { text: "Have you considered that maybe they're not cut out for the job?", quality: "incorrect", feedback: "This is leading and judgmental. Stay neutral and curious in the Reality phase." },
+                            { text: "Why do you think they keep missing deadlines?", quality: "partial", feedback: "Good intent but invites speculation. Focus on observable facts, not interpretations." },
+                            { text: "Other managers seem to handle this fine. What's different for you?", quality: "incorrect", feedback: "This is comparing and potentially shaming. Stay supportive and curious." }
+                        ],
+                        tip: "Ask about facts and behaviors, not interpretations. 'What has happened?' rather than 'Why did it happen?'"
+                    },
+                    {
+                        phase: "O",
+                        prompt: "Marcus realizes he's been avoiding direct feedback. What Options question opens up possibilities?",
+                        options: [
+                            { text: "If you weren't worried about the reaction, what approach might you try?", quality: "correct", feedback: "Excellent! This removes the mental barrier and opens creative thinking." },
+                            { text: "You need to have a direct conversation. When will you do it?", quality: "incorrect", feedback: "This skips Options entirely and jumps to Way Forward with your solution, not his." },
+                            { text: "Have you tried the feedback sandwich approach?", quality: "partial", feedback: "This suggests a specific technique rather than letting Marcus explore his own options first." },
+                            { text: "What's the worst that could happen if you had the conversation?", quality: "partial", feedback: "This addresses fear but doesn't generate options. Save it as a follow-up question." }
+                        ],
+                        tip: "Use hypothetical questions to bypass limiting beliefs: 'If you knew you couldn't fail, what would you try?'"
+                    },
+                    {
+                        phase: "W",
+                        prompt: "Marcus decides to have a direct conversation using the SBIR framework. What's the best Way Forward question?",
+                        options: [
+                            { text: "On a scale of 1-10, how committed are you to having this conversation this week?", quality: "correct", feedback: "Perfect! Scaling questions reveal true commitment and open discussion about barriers." },
+                            { text: "Great, just remember to stay calm during the conversation.", quality: "incorrect", feedback: "This gives advice rather than helping Marcus plan and commit." },
+                            { text: "Let me know after you've talked to them.", quality: "incorrect", feedback: "Vague and passive. Establish specific commitments and follow-up timing." },
+                            { text: "What day this week will you have this conversation?", quality: "partial", feedback: "Good specificity but doesn't check commitment level. Combine timing with motivation." }
+                        ],
+                        tip: "Use scaling questions: 'On a scale of 1-10...' If below 7, ask 'What would make it a 8 or 9?'"
+                    }
+                ]
+            },
+            {
+                id: 3,
+                coachee: {
+                    name: "Priya",
+                    initials: "P",
+                    role: "Marketing Director",
+                    color: "#10b981"
+                },
+                context: "Priya just received feedback that she's seen as 'not strategic enough' by the executive team. She's upset and questioning her future at the company.",
+                growPhases: [
+                    {
+                        phase: "G",
+                        prompt: "Priya is emotional about the feedback. What's the best Goal question after acknowledging her feelings?",
+                        options: [
+                            { text: "What would being seen as strategic mean for you and your career?", quality: "correct", feedback: "Excellent! This connects the feedback to a positive goal while validating its importance." },
+                            { text: "Let's not worry about what they think. What do YOU think?", quality: "incorrect", feedback: "Dismissing the feedback doesn't help Priya grow. The feedback has valuable information." },
+                            { text: "Who gave you that feedback?", quality: "incorrect", feedback: "This gets into blame/defense territory rather than forward-looking goals." },
+                            { text: "Do you think the feedback is fair?", quality: "partial", feedback: "This might help process emotions but doesn't establish a goal. Do this first, then move to Goal." }
+                        ],
+                        tip: "Acknowledge emotions first ('I can see this is frustrating'), then help reframe feedback as development opportunity."
+                    },
+                    {
+                        phase: "R",
+                        prompt: "Priya wants to be seen as more strategic. What Reality question helps assess the gap?",
+                        options: [
+                            { text: "When have you successfully demonstrated strategic thinking in the past?", quality: "correct", feedback: "Perfect! This identifies existing strengths and resources to build upon." },
+                            { text: "What specifically did the executives mean by 'not strategic enough'?", quality: "partial", feedback: "Good for clarity but might reinforce the negative. Balance with positive examples too." },
+                            { text: "I've always thought you were strategic. Are they sure they're right?", quality: "incorrect", feedback: "Rescuing and disagreeing with feedback doesn't help Priya grow or take ownership." },
+                            { text: "What do you think you're doing wrong?", quality: "incorrect", feedback: "Too negative and assumes fault. Focus on growth opportunities, not deficiencies." }
+                        ],
+                        tip: "Look for past successes, not just current gaps. 'When has this worked before?' builds confidence and reveals resources."
+                    },
+                    {
+                        phase: "O",
+                        prompt: "Priya identifies she needs to communicate her thinking more visibly. What Options question helps?",
+                        options: [
+                            { text: "What are all the different ways you could make your strategic thinking more visible?", quality: "correct", feedback: "Excellent! Open-ended and encourages multiple possibilities without leading." },
+                            { text: "Have you thought about sending weekly strategy updates to the exec team?", quality: "partial", feedback: "This is a specific suggestion. Better to let Priya generate options first." },
+                            { text: "Maybe you need an executive coach. Would you like me to recommend one?", quality: "incorrect", feedback: "This jumps to a solution and subtly suggests she can't figure it out herself." },
+                            { text: "What would your mentor suggest?", quality: "partial", feedback: "Good prompt but relies on external advice. Help Priya access her own wisdom first." }
+                        ],
+                        tip: "Ask 'What else?' after each option. Push for at least 3-5 possibilities before evaluating any of them."
+                    },
+                    {
+                        phase: "W",
+                        prompt: "Priya wants to start presenting at monthly exec meetings. What Way Forward question solidifies commitment?",
+                        options: [
+                            { text: "What's the smallest first step you could take in the next 48 hours?", quality: "correct", feedback: "Perfect! Small, immediate actions build momentum and feel achievable." },
+                            { text: "Great idea! I'll talk to the CEO about getting you on the agenda.", quality: "incorrect", feedback: "This takes over Priya's commitment and removes her ownership." },
+                            { text: "What might get in the way, and how will you handle it?", quality: "partial", feedback: "Great question but comes after establishing the first step. Address obstacles after commitment." },
+                            { text: "Let's see how the next meeting goes.", quality: "incorrect", feedback: "Too passive and vague. Coaching requires specific commitments." }
+                        ],
+                        tip: "Make the first step small enough that it can't fail. Success breeds success and builds momentum."
+                    }
+                ]
+            },
+            {
+                id: 4,
+                coachee: {
+                    name: "James",
+                    initials: "J",
+                    role: "Sales Lead",
+                    color: "#ef4444"
+                },
+                context: "James is a top performer who wants to transition to a people management role. However, he's known for being impatient with lower performers and has a 'just do it yourself' tendency.",
+                growPhases: [
+                    {
+                        phase: "G",
+                        prompt: "James wants to be a manager but hasn't considered the behavioral changes needed. What Goal question helps?",
+                        options: [
+                            { text: "What kind of manager do you want to be, and what would your team say about working for you?", quality: "correct", feedback: "Excellent! This invites James to envision his leadership identity and impact on others." },
+                            { text: "Do you know that managers have to develop people, not just perform themselves?", quality: "incorrect", feedback: "This is teaching, not coaching. Let James discover this through self-reflection." },
+                            { text: "Why do you want to be a manager?", quality: "partial", feedback: "Good question but might lead to surface answers. Go deeper into the vision of success." },
+                            { text: "Have you talked to HR about management openings?", quality: "incorrect", feedback: "This is tactical and skips the important self-reflection James needs to do." }
+                        ],
+                        tip: "For stretch goals, help the coachee envision not just what they want to achieve, but who they want to become."
+                    },
+                    {
+                        phase: "R",
+                        prompt: "James says he wants to be 'a manager people want to work for.' What Reality question reveals the gap?",
+                        options: [
+                            { text: "If I asked your current team how easy you are to approach with problems, what would they say?", quality: "correct", feedback: "Perfect! This external perspective question helps James see himself through others' eyes." },
+                            { text: "You know you have a reputation for being impatient, right?", quality: "incorrect", feedback: "Telling rather than asking. Even if true, let James discover this through reflection." },
+                            { text: "What feedback have others given you about your working style?", quality: "partial", feedback: "Good question but might be too easy to deflect. The hypothetical 'what would they say' is more revealing." },
+                            { text: "How would you rate your patience with others who learn slowly?", quality: "partial", feedback: "Direct and relevant but might trigger defensiveness. Approach indirectly first." }
+                        ],
+                        tip: "Third-party perspective questions ('What would your team say?') create safe distance for self-reflection."
+                    },
+                    {
+                        phase: "O",
+                        prompt: "James acknowledges he needs to develop more patience. What Options question helps him explore?",
+                        options: [
+                            { text: "What would a patient, developmental manager do in situations where you typically take over?", quality: "correct", feedback: "Excellent! This helps James model the behavior he wants to develop." },
+                            { text: "You should try counting to 10 before reacting.", quality: "incorrect", feedback: "This is advice-giving, not coaching. Options should come from James." },
+                            { text: "Would you be willing to get a mentor?", quality: "partial", feedback: "Good suggestion but frames it as yes/no. Better: 'What resources might help you develop patience?'" },
+                            { text: "What do other patient managers do differently?", quality: "partial", feedback: "Good but external-focused. Help James develop his own approach first." }
+                        ],
+                        tip: "Use 'modeling' questions: 'What would [ideal version of yourself] do?' to tap into internal wisdom."
+                    },
+                    {
+                        phase: "W",
+                        prompt: "James decides to practice asking questions instead of giving answers. What Way Forward question ensures follow-through?",
+                        options: [
+                            { text: "What specific situation this week will you practice this in, and how will you know if you succeeded?", quality: "correct", feedback: "Perfect! Specific context plus success criteria creates clear commitment." },
+                            { text: "Okay, try that and let me know how it goes.", quality: "incorrect", feedback: "Too vague. No specific commitment, timeline, or success criteria." },
+                            { text: "I'll send you some articles on coaching questions.", quality: "incorrect", feedback: "This is doing the work for James instead of helping him own his development." },
+                            { text: "When will you start?", quality: "partial", feedback: "Good but needs specificity. 'What exactly will you do, when, and how will you measure success?'" }
+                        ],
+                        tip: "Great Way Forward commitments answer: What? When? How will you know? What support do you need?"
+                    }
+                ]
+            }
+        ];
+        
+        // Game State
+        let currentScenarioIndex = 0;
+        let currentPhaseIndex = 0;
+        let score = 0;
+        let perfectResponses = 0;
+        let answered = false;
+        
+        // Initialize Game
+        function init() {
+            loadScenario();
+            updateProgress();
+        }
+        
+        function loadScenario() {
+            const scenario = scenarios[currentScenarioIndex];
+            const phase = scenario.growPhases[currentPhaseIndex];
+            
+            // Update GROW indicator
+            updateGrowIndicator(phase.phase);
+            
+            // Generate HTML
+            const html = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="coachee-avatar" style="background: linear-gradient(135deg, ${scenario.coachee.color}, ${scenario.coachee.color}88);">
+                            ${scenario.coachee.initials}
+                        </div>
+                        <div class="coachee-info">
+                            <h3>${scenario.coachee.name}</h3>
+                            <p>${scenario.coachee.role}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-context">
+                        <p>"${scenario.context}"</p>
+                    </div>
+                    
+                    <div class="coach-section">
+                        <div class="coach-prompt">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                            ${phase.prompt}
+                        </div>
+                        
+                        <div class="response-options" id="responseOptions">
+                            ${phase.options.map((opt, i) => `
+                                <button class="response-btn" data-quality="${opt.quality}" data-feedback="${encodeURIComponent(opt.feedback)}" onclick="selectResponse(this)">
+                                    ${opt.text}
+                                </button>
+                            `).join('')}
+                        </div>
+                        
+                        <div class="feedback-section" id="feedbackSection">
+                            <div class="feedback-title" id="feedbackTitle"></div>
+                            <p class="feedback-text" id="feedbackText"></p>
+                            <div class="coaching-tip">
+                                <div class="coaching-tip-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Coaching Tip</div>
+                                <p>${phase.tip}</p>
+                            </div>
+                        </div>
+                        
+                        <button class="continue-btn" id="continueBtn" onclick="nextPhase()">Continue <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('gameContent').innerHTML = html;
+            answered = false;
+        }
+        
+        function updateGrowIndicator(activePhase) {
+            const steps = document.querySelectorAll('.grow-step');
+            const phaseOrder = ['G', 'R', 'O', 'W'];
+            const activeIndex = phaseOrder.indexOf(activePhase);
+            
+            steps.forEach((step, i) => {
+                step.classList.remove('active', 'completed');
+                if (i < activeIndex) {
+                    step.classList.add('completed');
+                } else if (i === activeIndex) {
+                    step.classList.add('active');
+                }
+            });
+        }
+        
+        function selectResponse(btn) {
+            if (answered) return;
+            answered = true;
+            
+            const quality = btn.dataset.quality;
+            const feedback = decodeURIComponent(btn.dataset.feedback);
+            
+            // Disable all buttons
+            document.querySelectorAll('.response-btn').forEach(b => {
+                b.disabled = true;
+                if (b.dataset.quality === 'correct') {
+                    b.classList.add('correct');
+                }
+            });
+            
+            // Mark selected button
+            btn.classList.add('selected');
+            if (quality !== 'correct') {
+                btn.classList.add(quality === 'partial' ? 'partial' : 'incorrect');
+            }
+            
+            // Update score
+            if (quality === 'correct') {
+                score += 25;
+                perfectResponses++;
+            } else if (quality === 'partial') {
+                score += 10;
+            }
+            document.getElementById('scoreDisplay').textContent = `Score: ${score}`;
+            
+            // Show feedback
+            const feedbackSection = document.getElementById('feedbackSection');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            
+            feedbackSection.className = 'feedback-section ' + quality;
+            feedbackSection.style.display = 'block';
+            
+            if (quality === 'correct') {
+                feedbackTitle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Excellent Coaching!';
+            } else if (quality === 'partial') {
+                feedbackTitle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Good Direction';
+            } else {
+                feedbackTitle.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Not Quite Right';
+            }
+            
+            feedbackText.textContent = feedback;
+            
+            // Show continue button
+            document.getElementById('continueBtn').style.display = 'block';
+        }
+        
+        function nextPhase() {
+            currentPhaseIndex++;
+            
+            if (currentPhaseIndex >= scenarios[currentScenarioIndex].growPhases.length) {
+                // Move to next scenario
+                currentScenarioIndex++;
+                currentPhaseIndex = 0;
+                
+                if (currentScenarioIndex >= scenarios.length) {
+                    // Game complete
+                    showCompletion();
+                    return;
+                }
+            }
+            
+            updateProgress();
+            loadScenario();
+        }
+        
+        function updateProgress() {
+            const totalPhases = scenarios.reduce((acc, s) => acc + s.growPhases.length, 0);
+            let completedPhases = 0;
+            
+            for (let i = 0; i < currentScenarioIndex; i++) {
+                completedPhases += scenarios[i].growPhases.length;
+            }
+            completedPhases += currentPhaseIndex;
+            
+            const percent = (completedPhases / totalPhases) * 100;
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('currentScenario').textContent = currentScenarioIndex + 1;
+            document.getElementById('totalScenarios').textContent = scenarios.length;
+        }
+        
+        function showCompletion() {
+            document.getElementById('gameContent').style.display = 'none';
+            document.getElementById('completionScreen').style.display = 'block';
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('perfectResponses').textContent = perfectResponses;
+            
+            // Award XP
+            const xp = 50;
+            const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+            localStorage.setItem('totalXP', (currentXP + xp).toString());
+            
+            // Track completion
+            localStorage.setItem('coachingQuestComplete', 'true');
+            localStorage.setItem('coachingQuestScore', score.toString());
+            localStorage.setItem('coachingQuestDate', new Date().toISOString());
+            
+            // Trigger achievement event
+            window.dispatchEvent(new CustomEvent('gameCompleted', {
+                detail: { game: 'coaching-quest', score: score, xp: xp }
+            }));
+        }
+        
+        function restartGame() {
+            currentScenarioIndex = 0;
+            currentPhaseIndex = 0;
+            score = 0;
+            perfectResponses = 0;
+            
+            document.getElementById('scoreDisplay').textContent = 'Score: 0';
+            document.getElementById('gameContent').style.display = 'block';
+            document.getElementById('completionScreen').style.display = 'none';
+            
+            updateProgress();
+            loadScenario();
+        }
+        
+        // Initialize
+        init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

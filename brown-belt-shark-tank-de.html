@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Brown Belt Shark Tank - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0f;
+            --dark: #12121a;
+            --card: #1a1a25;
+            --border: #2a2a3a;
+            --text: #e2e8f0;
+            --muted: #8a8a9a;
+            --brown-belt: #92400e;
+            --brown-dark: #78350f;
+            --accent: #d97706;
+            --accent-glow: rgba(146, 64, 14, 0.3);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --gold: #fbbf24;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--black) 0%, #1a0d29 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        
+        .back-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .belt-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(146, 64, 14, 0.15);
+            border: 1px solid rgba(146, 64, 14, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--brown-belt);
+        }
+        
+        .belt-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--brown-belt);
+            border-radius: 50%;
+        }
+        
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+        }
+        
+        .timer-display.warning { color: var(--warning); }
+        .timer-display.danger { color: var(--error); animation: pulse 0.5s infinite; }
+        
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+            min-height: 100vh;
+        }
+        
+        .phase-indicator { display: flex; justify-content: center; gap: 8px; margin-bottom: 40px; }
+        
+        .phase-dot {
+            width: 40px; height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        .phase-dot.active { background: var(--accent); box-shadow: 0 0 15px var(--accent-glow); }
+        .phase-dot.complete { background: var(--success); }
+        
+        .phase { display: none; animation: fadeIn 0.5s ease; }
+        .phase.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .phase-header { text-align: center; margin-bottom: 40px; }
+        .phase-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 3px; color: var(--accent); margin-bottom: 10px; }
+        .phase-title { font-size: 2rem; font-weight: 800; margin-bottom: 10px; }
+        .phase-subtitle { color: var(--muted); font-size: 1rem; }
+        
+        .question-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .question-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .question-number { font-size: 0.85rem; color: var(--muted); }
+        
+        .question-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-bar { width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+        .timer-fill { height: 100%; background: var(--success); transition: width 0.1s linear; }
+        .timer-fill.warning { background: var(--warning); }
+        .timer-fill.danger { background: var(--error); }
+        
+        .question-text { font-size: 1.2rem; font-weight: 600; line-height: 1.5; margin-bottom: 25px; }
+        
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        
+        .option {
+            padding: 16px 20px;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        
+        .option:hover { border-color: var(--accent); transform: translateX(5px); }
+        .option.selected { border-color: var(--accent); background: rgba(146, 64, 14, 0.1); }
+        .option.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.15); }
+        .option.incorrect { border-color: var(--error); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        .option.disabled { pointer-events: none; }
+        
+        .feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 12px;
+            background: var(--dark);
+            border-left: 4px solid var(--success);
+        }
+        
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        .feedback.incorrect { border-left-color: var(--error); }
+        .feedback-title { font-weight: 700; margin-bottom: 8px; }
+        .feedback-text { color: var(--muted); font-size: 0.95rem; line-height: 1.5; }
+        
+        .scenario-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .scenario-icon { font-size: 2.5rem; }
+        .scenario-title { font-size: 1.3rem; font-weight: 700; }
+        .scenario-context { color: var(--muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
+        .scenario-question { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; color: var(--accent); }
+        
+        .scenario-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 16px;
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .scenario-textarea:focus { outline: none; border-color: var(--accent); }
+        
+        .reflection-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .reflection-question { font-size: 1.2rem; font-weight: 600; margin-bottom: 20px; }
+        
+        .slider-container { margin: 30px 0; }
+        .slider-labels { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; color: var(--muted); }
+        .slider { width: 100%; height: 8px; -webkit-appearance: none; background: var(--border); border-radius: 4px; outline: none; }
+        .slider::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: var(--accent); border-radius: 50%; cursor: pointer; }
+        .slider-value { text-align: center; font-size: 2rem; font-weight: 800; color: var(--accent); margin-top: 15px; }
+        
+        .star-rating { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .star { font-size: 2.5rem; cursor: pointer; opacity: 0.3; transition: all 0.2s; }
+        .star:hover, .star.active { opacity: 1; transform: scale(1.1); }
+        
+        .result-card {
+            background: linear-gradient(135deg, var(--card) 0%, rgba(146, 64, 14, 0.1) 100%);
+            border: 2px solid var(--brown-belt);
+            border-radius: 24px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .result-belt-icon { font-size: 4rem; margin-bottom: 15px; }
+        .result-title { font-size: 1.5rem; font-weight: 800; color: var(--brown-belt); margin-bottom: 10px; }
+        .result-score { font-size: 4rem; font-weight: 900; background: linear-gradient(135deg, var(--brown-belt), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 30px; }
+        
+        .result-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 30px; }
+        .result-stat { background: var(--dark); padding: 20px; border-radius: 16px; }
+        .result-stat-value { font-size: 1.8rem; font-weight: 800; color: var(--accent); }
+        .result-stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 5px; }
+        
+        .strengths-list, .growth-list { text-align: left; background: var(--dark); border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+        .strengths-list h4, .growth-list h4 { margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        .strengths-list h4 { color: var(--success); }
+        .growth-list h4 { color: var(--warning); }
+        .strengths-list li, .growth-list li { padding: 8px 0; border-bottom: 1px solid var(--border); color: var(--text); font-size: 0.95rem; list-style: none; }
+        .strengths-list li:last-child, .growth-list li:last-child { border-bottom: none; }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary { background: var(--accent); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px var(--accent-glow); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-block { width: 100%; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        .nav-buttons { display: flex; gap: 15px; margin-top: 30px; }
+        
+        @media (max-width: 600px) {
+            .container { padding: 90px 15px 30px; }
+            .phase-title { font-size: 1.5rem; }
+            .question-text { font-size: 1.1rem; }
+            .result-stats { grid-template-columns: 1fr; }
+            .result-score { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    
+
+    <header class="header">
+        <div class="header-left">
+            <a href="gym-focused-de.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Beenden
+            </a>
+            <div class="belt-badge">
+                <div class="belt-dot"></div>
+                Brown Belt Shark Tank
+            </div>
+        </div>
+        <div class="timer-display" id="globalTimer">--:--</div>
+    </header>
+    
+    <div class="container">
+        <div class="phase-indicator">
+            <div class="phase-dot active" id="phase1Dot"></div>
+            <div class="phase-dot" id="phase2Dot"></div>
+            <div class="phase-dot" id="phase3Dot"></div>
+            <div class="phase-dot" id="phase4Dot"></div>
+            <div class="phase-dot" id="phase5Dot"></div>
+        </div>
+        
+        <!-- PHASE 1: Intro -->
+        <div class="phase active" id="phase1">
+            <div class="phase-header">
+                <div class="phase-label">Brown Belt Finale Bewertung</div>
+                <h1 class="phase-title">Die Verantwortungskammer</h1>
+                <p class="phase-subtitle">Beweise deine Meisterschaft in Engagement und Buy-in</p>
+            </div>
+            
+            <div class="question-card">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px;">4 Phasen erwarten dich</h3>
+                    <div style="display: grid; gap: 15px; text-align: left; max-width: 400px; margin: 0 auto;">
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Schnellfeuer</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">25 Fragen, je 30 Sekunden</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Verantwortungs-Herausforderungen</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">5 Entscheidungsszenarien</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;">🪞</span>
+                            <div>
+                                <div style="font-weight: 600;">Selbstreflexion</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">Dein Engagement-Wachstum</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Deine Belt-Analyse</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">Personalisierte Ergebnis-Karte</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="startPhase2()" style="margin-top: 30px;">
+                    Die Kammer betreten
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- PHASE 2: Schnellfeuer -->
+        <div class="phase" id="phase2">
+            <div class="phase-header">
+                <div class="phase-label">Phase 1 von 4</div>
+                <h1 class="phase-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Schnellfeuer</h1>
+                <p class="phase-subtitle">30 Sekunden pro Frage. Vertraue deinem Training.</p>
+            </div>
+            
+            <div class="question-card" id="questionCard">
+                <div class="question-progress">
+                    <span class="question-number" id="questionNumber">Frage 1 von 25</span>
+                    <div class="question-timer">
+                        <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+                        <span id="questionTimer">30</span>
+                    </div>
+                </div>
+                <div class="question-text" id="questionText">Frage wird geladen...</div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="feedback" id="feedback">
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextQuestionBtn" onclick="nextQuestion()" disabled>Nächste Frage</button>
+            </div>
+        </div>
+        
+        <!-- PHASE 3: Scenarios -->
+        <div class="phase" id="phase3">
+            <div class="phase-header">
+                <div class="phase-label">Phase 2 von 4</div>
+                <h1 class="phase-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg> Verantwortungs-Herausforderungen</h1>
+                <p class="phase-subtitle">Navigiere diese Entscheidungsmomente</p>
+            </div>
+            <div id="scenariosContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextScenarioBtn" onclick="nextScenario()">Weiter</button>
+            </div>
+        </div>
+        
+        <!-- PHASE 4: Reflection -->
+        <div class="phase" id="phase4">
+            <div class="phase-header">
+                <div class="phase-label">Phase 3 von 4</div>
+                <h1 class="phase-title">🪞 Selbstreflexion</h1>
+                <p class="phase-subtitle">Reflektiere deine Brown Belt Reise</p>
+            </div>
+            <div id="reflectionContainer"></div>
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextReflectionBtn" onclick="nextReflection()">Weiter</button>
+            </div>
+        </div>
+        
+        <!-- PHASE 5: Results -->
+        <div class="phase" id="phase5">
+            <div class="phase-header">
+                <div class="phase-label">Bewertung abgeschlossen</div>
+                <h1 class="phase-title">Deine Brown Belt Analyse</h1>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-belt-icon">🥋</div>
+                <div class="result-title">Brown Belt Meisterschaft</div>
+                <div class="result-score" id="resultScore">--</div>
+                
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="correctCount">0</div>
+                        <div class="result-stat-label">Richtig</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="avgTime">0s</div>
+                        <div class="result-stat-label">Ø Zeit</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="streakCount">0</div>
+                        <div class="result-stat-label">Bester Streak</div>
+                    </div>
+                </div>
+                
+                <div class="strengths-list">
+                    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Deine Stärken</h4>
+                    <ul id="strengthsList"><li>Loading...</li></ul>
+                </div>
+                
+                <div class="growth-list">
+                    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Wachstumsbereiche</h4>
+                    <ul id="growthList"><li>Loading...</li></ul>
+                </div>
+                
+                <button class="btn btn-success btn-block" onclick="completeSharkTank()" style="margin-top: 20px;">
+                    Deinen Brown Belt beanspruchen
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // brown Belt Questions - Accountability, Standards, Difficult Conversations, Clarity
+        const questions = [
+            {
+                        "q": "Wahres Engagement erfordert:",
+                        "options": [
+                                    "100% Zustimmung von allen",
+                                    "Verständnis und Buy-in, nicht unbedingt Zustimmung",
+                                    "Schriftliche Verträge",
+                                    "Mehrheitsabstimmung"
+                        ],
+                        "correct": 1,
+                        "category": "commitment",
+                        "explanation": "Verantwortlichkeit kommt aus dem Verständnis der Entscheidung, auch ohne volle Zustimmung."
+            },
+            {
+                        "q": "Der größte Feind von Engagement ist:",
+                        "options": [
+                                    "Uneinigkeit",
+                                    "Mehrdeutigkeit",
+                                    "Konflikt",
+                                    "Zeitdruck"
+                        ],
+                        "correct": 1,
+                        "category": "commitment",
+                        "explanation": "Mehrdeutigkeit tötet Engagement. Menschen können sich nicht zu dem verpflichten, was sie nicht verstehen."
+            },
+            {
+                        "q": "Wenn ein Teammitglied sagt 'Ich denke, das ist in Ordnung', zeigen sie:",
+                        "options": [
+                                    "Volles Engagement",
+                                    "Passive Zustimmung ohne Engagement",
+                                    "Gesunden Konflikt",
+                                    "Starke Führung"
+                        ],
+                        "correct": 1,
+                        "category": "commitment",
+                        "explanation": "Passive Zustimmung signalisiert mangelndes echtes Buy-in und führt oft zu Sabotage."
+            },
+            {
+                        "q": "Die Phrase 'widersprechen und verpflichten' bedeutet:",
+                        "options": [
+                                    "Vorgeben zuzustimmen",
+                                    "Widerspruch äußern, dann die Entscheidung voll unterstützen",
+                                    "Warten, bis andere scheitern",
+                                    "Konflikt vermeiden"
+                        ],
+                        "correct": 1,
+                        "category": "commitment",
+                        "explanation": "Es bedeutet, deine Ansicht zu äußern, dann sich wirklich zu verpflichten, sobald entschieden wurde."
+            },
+            {
+                        "q": "Klarheit in Entscheidungen sollte sein:",
+                        "options": [
+                                    "Flexibel, um Konflikt zu vermeiden",
+                                    "Explizit genug, dass jeder die Entscheidung wiederholen kann",
+                                    "Offen für Interpretation",
+                                    "Nur an Führungskräfte kommuniziert"
+                        ],
+                        "correct": 1,
+                        "category": "commitment",
+                        "explanation": "Wenn Menschen die Entscheidung nicht artikulieren können, können sie sich nicht wirklich dazu verpflichten."
+            },
+            {
+                        "q": "Die besten Entscheidungen kommen von Teams, die:",
+                        "options": [
+                                    "Konflikt um jeden Preis vermeiden",
+                                    "Produktiven Konflikt vor der Entscheidung führen",
+                                    "Den Leader allein entscheiden lassen",
+                                    "Bei allem abstimmen"
+                        ],
+                        "correct": 1,
+                        "category": "decisions",
+                        "explanation": "Gesunder Konflikt stellt sicher, dass alle Perspektiven vor dem Engagement gehört werden."
+            },
+            {
+                        "q": "Bei Analyse-Lähmung sollten Teams:",
+                        "options": [
+                                    "Auf mehr Daten warten",
+                                    "Eine Deadline setzen und mit verfügbaren Infos entscheiden",
+                                    "Die Entscheidung vermeiden",
+                                    "Jemand anderen entscheiden lassen"
+                        ],
+                        "correct": 1,
+                        "category": "decisions",
+                        "explanation": "Mutige Aktion mit Kurskorrektur schlägt verzögerte Untätigkeit."
+            },
+            {
+                        "q": "Ein 'falscher Konsens' passiert, wenn:",
+                        "options": [
+                                    "Alle wirklich zustimmen",
+                                    "Menschen öffentlich zustimmen, aber privat widersprechen",
+                                    "Die Entscheidung falsch ist",
+                                    "Abstimmung verwendet wird"
+                        ],
+                        "correct": 1,
+                        "category": "decisions",
+                        "explanation": "Falscher Konsens schafft die Illusion von Buy-in ohne echtes Engagement."
+            },
+            {
+                        "q": "Die Rolle des Leaders bei Teamentscheidungen ist:",
+                        "options": [
+                                    "Immer das letzte Wort haben",
+                                    "Sicherstellen, dass alle Stimmen gehört werden, dann bei Bedarf entscheiden",
+                                    "Entscheidungen vermeiden",
+                                    "Alle Entscheidungen delegieren"
+                        ],
+                        "correct": 1,
+                        "category": "decisions",
+                        "explanation": "Führungskräfte erleichtern Input und brechen Pattsituationen, wenn kein Konsens erreicht wird."
+            },
+            {
+                        "q": "Entscheidungen überdenken sollte passieren:",
+                        "options": [
+                                    "Nie, einmal entschieden",
+                                    "Wenn signifikante neue Informationen auftauchen",
+                                    "Wann immer jemand widerspricht",
+                                    "Bei jedem Meeting"
+                        ],
+                        "correct": 1,
+                        "category": "decisions",
+                        "explanation": "Entscheidungen sollten stabil sein, aber nicht permanent, wenn sich der Kontext signifikant ändert."
+            },
+            {
+                        "q": "Um Buy-in zu gewinnen, ist das Wichtigste:",
+                        "options": [
+                                    "Die beste Idee haben",
+                                    "Menschen sich gehört fühlen lassen, bevor entschieden wird",
+                                    "Autorität nutzen",
+                                    "Uneinigkeit vermeiden"
+                        ],
+                        "correct": 1,
+                        "category": "buyin",
+                        "explanation": "Menschen verpflichten sich zu Entscheidungen, bei denen sie sich wirklich gehört fühlten."
+            },
+            {
+                        "q": "Das 'Weigh-in' vor 'Buy-in' Prinzip bedeutet:",
+                        "options": [
+                                    "Bei allem abstimmen",
+                                    "Allen Input geben, bevor Engagement erwartet wird",
+                                    "Vor- und Nachteile allein abwägen",
+                                    "Menschen Zustimmung kaufen"
+                        ],
+                        "correct": 1,
+                        "category": "buyin",
+                        "explanation": "Menschen müssen mit ihrer Perspektive einbringen, um wirklich zu kaufen."
+            },
+            {
+                        "q": "Kaskadierte Kommunikation nach einer Entscheidung bedeutet:",
+                        "options": [
+                                    "Top-down Ankündigungen",
+                                    "Jede Ebene besitzt die Nachricht als ihre eigene",
+                                    "Führung für unpopuläre Entscheidungen verantwortlich machen",
+                                    "E-Mail-Ketten"
+                        ],
+                        "correct": 1,
+                        "category": "buyin",
+                        "explanation": "Führungskräfte auf jeder Ebene präsentieren Entscheidungen als 'wir haben entschieden', nicht 'sie haben entschieden'."
+            },
+            {
+                        "q": "Wenn jemand in deinem Team einer Teamentscheidung nicht zustimmt, solltest du:",
+                        "options": [
+                                    "Sie ausschließen lassen",
+                                    "Erwarten, dass sie es öffentlich unterstützen, während sie Bedenken privat äußern",
+                                    "Zustimmung erzwingen",
+                                    "Das Team überstimmen"
+                        ],
+                        "correct": 1,
+                        "category": "buyin",
+                        "explanation": "Widersprechen und verpflichten: privater Widerspruch, öffentliche Ausrichtung."
+            },
+            {
+                        "q": "Der schnellste Weg, Buy-in zu zerstören, ist:",
+                        "options": [
+                                    "Nach Input fragen",
+                                    "Entscheidungen treffen, ohne betroffene Menschen einzubeziehen",
+                                    "Sich Zeit zum Entscheiden nehmen",
+                                    "Entscheidungen dokumentieren"
+                        ],
+                        "correct": 1,
+                        "category": "buyin",
+                        "explanation": "Menschen von Entscheidungen ausschließen, die sie ausführen sollen, tötet Engagement."
+            },
+            {
+                        "q": "Team-Ausrichtung bedeutet:",
+                        "options": [
+                                    "Dass alle gleich denken",
+                                    "Klares gemeinsames Verständnis von Prioritäten und Richtung",
+                                    "Uneinigkeit vermeiden",
+                                    "Dem Leader blind folgen"
+                        ],
+                        "correct": 1,
+                        "category": "alignment",
+                        "explanation": "Team-Kultur geht um gemeinsame Klarheit, nicht Einheitlichkeit des Denkens."
+            },
+            {
+                        "q": "Wenn Prioritäten kollidieren, sollten Teams:",
+                        "options": [
+                                    "An allem gleich arbeiten",
+                                    "Die einzige wichtigste Priorität klären",
+                                    "Individuen wählen lassen",
+                                    "Das Gespräch vermeiden"
+                        ],
+                        "correct": 1,
+                        "category": "alignment",
+                        "explanation": "Ohne klare Prioritätsrangfolge wird alles gleich unwichtig."
+            },
+            {
+                        "q": "Ein thematisches Ziel hilft Teams durch:",
+                        "options": [
+                                    "Mehr Arbeit hinzufügen",
+                                    "Einen Schlachtruf schaffen, der Bemühungen vereint",
+                                    "Alle anderen Ziele ersetzen",
+                                    "Individuelle Leistung messen"
+                        ],
+                        "correct": 1,
+                        "category": "alignment",
+                        "explanation": "Ein thematisches Ziel bietet Fokus und gemeinsamen Zweck."
+            },
+            {
+                        "q": "Das Zeichen echter Ausrichtung ist:",
+                        "options": [
+                                    "Keine Uneinigkeiten",
+                                    "Schnelle, selbstbewusste Entscheidungsfindung bei Trade-offs",
+                                    "Lange Meetings",
+                                    "Detaillierte Dokumentation"
+                        ],
+                        "correct": 1,
+                        "category": "alignment",
+                        "explanation": "Ausgerichtete Teams können schnell entscheiden, was zu priorisieren ist, weil sie gemeinsames Verständnis haben."
+            },
+            {
+                        "q": "Silos in Organisationen entstehen wegen:",
+                        "options": [
+                                    "Schlechten Menschen",
+                                    "Mangelnder gemeinsamer Klarheit über kollektive Prioritäten",
+                                    "Zu viel Kommunikation",
+                                    "Starken Teams"
+                        ],
+                        "correct": 1,
+                        "category": "alignment",
+                        "explanation": "Silos bilden sich, wenn Teams für lokale Ziele über gemeinsame optimieren."
+            },
+            {
+                        "q": "Verantwortlichkeit ohne Umsetzung ist:",
+                        "options": [
+                                    "Trotzdem wertvoll",
+                                    "Im Wesentlichen bedeutungslos",
+                                    "Ein guter Anfang",
+                                    "Das Problem der Führung"
+                        ],
+                        "correct": 1,
+                        "category": "followthrough",
+                        "explanation": "Verantwortlichkeit zählt nur, wenn sie zu Aktion führt."
+            },
+            {
+                        "q": "Der beste Weg, Umsetzung sicherzustellen, ist:",
+                        "options": [
+                                    "Menschen vertrauen",
+                                    "Klären, wer was bis wann macht",
+                                    "Auf das Beste hoffen",
+                                    "Mikromanagen"
+                        ],
+                        "correct": 1,
+                        "category": "followthrough",
+                        "explanation": "Klare Verantwortlichkeit und Deadlines ermöglichen Verantwortlichkeit."
+            },
+            {
+                        "q": "Wenn Verpflichtungen verpasst werden, sollte die erste Frage sein:",
+                        "options": [
+                                    "Wer ist schuld?",
+                                    "War die Verpflichtung klar und erreichbar?",
+                                    "Wie bestrafen wir das?",
+                                    "Können wir es verstecken?"
+                        ],
+                        "correct": 1,
+                        "category": "followthrough",
+                        "explanation": "Oft stammen verpasste Verpflichtungen aus unklaren Erwartungen."
+            },
+            {
+                        "q": "Regelmäßige Fortschrittsüberprüfungen helfen Teams:",
+                        "options": [
+                                    "Mehr Arbeit schaffen",
+                                    "Engagement-Schwung aufrechterhalten und Probleme früh fangen",
+                                    "Individuen beschuldigen",
+                                    "Verlangsamen"
+                        ],
+                        "correct": 1,
+                        "category": "followthrough",
+                        "explanation": "Überprüfungen halten Verpflichtungen sichtbar und ermöglichen Kurskorrektur."
+            },
+            {
+                        "q": "Die größte Bedrohung für Team-Engagement über Zeit ist:",
+                        "options": [
+                                    "Neue Informationen",
+                                    "Mangel an sichtbarem Fortschritt und Verstärkung",
+                                    "Starke Persönlichkeiten",
+                                    "Externe Faktoren"
+                        ],
+                        "correct": 1,
+                        "category": "followthrough",
+                        "explanation": "Ohne sichtbaren Fortschritt erodiert Engagement zu Zynismus."
+            }
+];
+        
+        const scenarios = [
+            {
+                        "icon": "<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>",
+                        "title": "Das geteilte Team",
+                        "context": "Dein Team hat gerade eine 2-stündige Diskussion über Strategie beendet. Die Abstimmung ist 4-3, und du bist auf der Verliererseite. Die Entscheidung wurde getroffen, Option A zu verfolgen, die du für riskant hältst. Der Teamleiter bittet alle, ihr Engagement zu bestätigen.",
+                        "question": "Wie verpflichtest du dich wirklich zu dieser Entscheidung, während du authentisch bleibst?"
+            },
+            {
+                        "icon": "⚖️",
+                        "title": "Die stille Mehrheit",
+                        "context": "In einem Planungsmeeting schlägt die ranghöchste Person eine Richtung vor. Alle nicken mit, aber du bemerkst, dass mehrere Leute unwohl aussehen. Niemand spricht, und der Leader sagt 'Großartig, wir sind ausgerichtet.'",
+                        "question": "Was tust du, um die echten Bedenken zu Tage zu bringen, ohne den Leader zu untergraben?"
+            },
+            {
+                        "icon": "🔄",
+                        "title": "Die Prioritätskollision",
+                        "context": "Dein Team hat sich zu einer großen Initiative verpflichtet, aber jetzt droht eine 'dringende' Anfrage aus einer anderen Abteilung, sie zu entgleisen. Dein Manager will, dass du 'beides zum Laufen bringst' ohne zusätzliche Ressourcen.",
+                        "question": "Wie plädierst du für Klarheit, ohne unflexibel zu wirken?"
+            },
+            {
+                        "icon": "📢",
+                        "title": "Die Kaskaden-Herausforderung",
+                        "context": "Die Führung hat eine Entscheidung getroffen, der du in den Planungsmeetings widersprochen hast. Jetzt musst du sie deinem Team präsentieren, als wäre es deine eigene. Mehrere Teammitglieder wissen, dass du ursprünglich dagegen warst.",
+                        "question": "Wie besitzt du diese Nachricht authentisch, während du Glaubwürdigkeit bewahrst?"
+            },
+            {
+                        "icon": "🚧",
+                        "title": "Die driftende Verantwortlichkeit",
+                        "context": "Vor drei Monaten hat dein Team eine mutige Verpflichtung eingegangen. Der Fortschritt war langsamer als erwartet, und du bemerkst, dass Leute anfangen zu hedgen: 'Nun, wir sagten, wir würden es versuchen...' und 'Dinge haben sich geändert...'",
+                        "question": "Wie begeisterst du Engagement neu, ohne das Team zu beschämen?"
+            }
+];
+        
+        const reflections = [
+            {
+                        "type": "text",
+                        "question": "Beschreibe eine Zeit, in der du einer Entscheidung widersprochen hast, dich aber trotzdem vollständig dazu verpflichtet hast. Wie hat sich das angefühlt?"
+            },
+            {
+                        "type": "slider",
+                        "question": "Wie wohl fühlst du dich beim 'Widersprechen und Verpflichten'?",
+                        "min": "Kämpfe damit",
+                        "max": "Vollkommen wohl"
+            },
+            {
+                        "type": "text",
+                        "question": "Was ist EINE Entscheidung, bei der dein Team derzeit nicht vollständig ausgerichtet ist?"
+            },
+            {
+                        "type": "rating",
+                        "question": "Wie würdest du deine Brown Belt Reise bewerten?"
+            }
+];
+        
+        // State
+        let currentQuestion = 0;
+        let currentScenario = 0;
+        let currentReflection = 0;
+        let score = 0;
+        let answers = [];
+        let timer = null;
+        let timeLeft = 30;
+        let totalTime = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let startTime = null;
+        let categoryScores = { commitment: { correct: 0, total: 0 }, decisions: { correct: 0, total: 0 }, buyin: { correct: 0, total: 0 }, alignment: { correct: 0, total: 0 }, followthrough: { correct: 0, total: 0 } };
+        
+        function startPhase2() {
+            document.getElementById('phase1').classList.remove('active');
+            document.getElementById('phase2').classList.add('active');
+            document.getElementById('phase1Dot').classList.remove('active');
+            document.getElementById('phase1Dot').classList.add('complete');
+            document.getElementById('phase2Dot').classList.add('active');
+            startTime = Date.now();
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const optionsHtml = q.options.map((opt, i) => `<div class="option" onclick="selectAnswer(${i})">${opt}</div>`).join('');
+            document.getElementById('optionsContainer').innerHTML = optionsHtml;
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('nextQuestionBtn').disabled = true;
+            
+            timeLeft = 30;
+            updateTimer();
+            timer = setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            document.getElementById('questionTimer').textContent = timeLeft;
+            const fill = document.getElementById('timerFill');
+            fill.style.width = `${(timeLeft / 30) * 100}%`;
+            fill.className = 'timer-fill' + (timeLeft <= 10 ? ' warning' : '') + (timeLeft <= 5 ? ' danger' : '');
+            
+            if (timeLeft <= 0) {
+                clearInterval(timer);
+                selectAnswer(-1);
+            }
+            timeLeft--;
+        }
+        
+        function selectAnswer(idx) {
+            clearInterval(timer);
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            options.forEach(o => o.classList.add('disabled'));
+            
+            const timeTaken = 30 - timeLeft;
+            totalTime += timeTaken;
+            
+            if (idx === q.correct) {
+                score++;
+                streak++;
+                maxStreak = Math.max(maxStreak, streak);
+                options[idx].classList.add('correct');
+                categoryScores[q.category].correct++;
+                document.getElementById('feedbackTitle').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Richtig!';
+            } else {
+                streak = 0;
+                if (idx >= 0) options[idx].classList.add('incorrect');
+                options[q.correct].classList.add('correct');
+                document.getElementById('feedbackTitle').textContent = idx < 0 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Time\'s up!' : '✗ Nicht ganz';
+            }
+            
+            categoryScores[q.category].total++;
+            document.getElementById('feedbackText').textContent = q.explanation;
+            document.getElementById('feedback').classList.add('show');
+            document.getElementById('feedback').classList.toggle('incorrect', idx !== q.correct);
+            document.getElementById('nextQuestionBtn').disabled = false;
+            
+            answers.push({ question: currentQuestion, selected: idx, correct: q.correct, time: timeTaken });
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= questions.length) {
+                startPhase3();
+            } else {
+                showQuestion();
+            }
+        }
+        
+        function startPhase3() {
+            document.getElementById('phase2').classList.remove('active');
+            document.getElementById('phase3').classList.add('active');
+            document.getElementById('phase2Dot').classList.remove('active');
+            document.getElementById('phase2Dot').classList.add('complete');
+            document.getElementById('phase3Dot').classList.add('active');
+            showScenario();
+        }
+        
+        function showScenario() {
+            const s = scenarios[currentScenario];
+            document.getElementById('scenariosContainer').innerHTML = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="scenario-icon">${s.icon}</div>
+                        <div class="scenario-title">${s.title}</div>
+                    </div>
+                    <div class="scenario-context">${s.context}</div>
+                    <div class="scenario-question">${s.question}</div>
+                    <textarea class="scenario-textarea" placeholder="Deine Antwort..." id="scenarioResponse"></textarea>
+                </div>
+            `;
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            if (currentScenario >= scenarios.length) {
+                startPhase4();
+            } else {
+                showScenario();
+            }
+        }
+        
+        function startPhase4() {
+            document.getElementById('phase3').classList.remove('active');
+            document.getElementById('phase4').classList.add('active');
+            document.getElementById('phase3Dot').classList.remove('active');
+            document.getElementById('phase3Dot').classList.add('complete');
+            document.getElementById('phase4Dot').classList.add('active');
+            showReflection();
+        }
+        
+        function showReflection() {
+            const r = reflections[currentReflection];
+            let html = `<div class="reflection-card"><div class="reflection-question">${r.question}</div>`;
+            
+            if (r.type === 'text') {
+                html += `<textarea class="scenario-textarea" placeholder="Deine Reflexion..." id="reflectionResponse"></textarea>`;
+            } else if (r.type === 'slider') {
+                html += `<div class="slider-container"><div class="slider-labels"><span>${r.min}</span><span>${r.max}</span></div><input type="range" class="slider" min="1" max="10" value="5" oninput="document.getElementById('sliderValue').textContent=this.value"><div class="slider-value" id="sliderValue">5</div></div>`;
+            } else if (r.type === 'rating') {
+                html += `<div class="star-rating">${[1,2,3,4,5].map(i => `<span class="star" onclick="setRating(${i})"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></span>`).join('')}</div>`;
+            }
+            
+            html += `</div>`;
+            document.getElementById('reflectionContainer').innerHTML = html;
+        }
+        
+        function setRating(n) {
+            document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < n));
+        }
+        
+        function nextReflection() {
+            currentReflection++;
+            if (currentReflection >= reflections.length) {
+                showResults();
+            } else {
+                showReflection();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('phase4').classList.remove('active');
+            document.getElementById('phase5').classList.add('active');
+            document.getElementById('phase4Dot').classList.remove('active');
+            document.getElementById('phase4Dot').classList.add('complete');
+            document.getElementById('phase5Dot').classList.add('active');
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('resultScore').textContent = percentage + '%';
+            document.getElementById('correctCount').textContent = `${score}/${questions.length}`;
+            document.getElementById('avgTime').textContent = Math.round(totalTime / questions.length) + 's';
+            document.getElementById('streakCount').textContent = maxStreak;
+            
+            const strengths = [], growth = [];
+            Object.entries(categoryScores).forEach(([cat, data]) => {
+                const pct = data.total > 0 ? (data.correct / data.total) : 0;
+                const name = { commitment: 'Verantwortlichkeits-Grundlagen', decisions: 'Schwierige Gespräche', buyin: 'Buy-in Strategien', alignment: 'Team-Ausrichtung', followthrough: 'Selbst-Verantwortlichkeit' }[cat];
+                if (pct >= 0.7) strengths.push(name + ': Starkes Verständnis');
+                else growth.push(name + ': Grundlagen wiederholen');
+            });
+            
+            if (maxStreak >= 5) strengths.push('Konsistenz: Großer Fokus unter Druck');
+            if (totalTime / questions.length < 15) strengths.push('Geschwindigkeit: Schnelle Entscheidungsfindung');
+            
+            document.getElementById('strengthsList').innerHTML = strengths.length ? strengths.map(s => `<li>${s}</li>`).join('') : '<li>Keep practicing!</li>';
+            document.getElementById('growthList').innerHTML = growth.length ? growth.map(g => `<li>${g}</li>`).join('') : '<li>Excellent all-around performance!</li>';
+            
+            localStorage.setItem('tap_in_brown_belt_shark_tank', JSON.stringify({ score, total: questions.length, percentage, streak: maxStreak, avgTime: Math.round(totalTime / questions.length), completedAt: new Date().toISOString() }));
+        }
+        
+        function completeSharkTank() {
+            window.location.href = 'brown-belt-ceremony-de.html';
+        }
+        
+        // Timer display
+        setInterval(() => {
+            if (startTime) {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const mins = Math.floor(elapsed / 60);
+                const secs = elapsed % 60;
+                document.getElementById('globalTimer').textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+        }, 1000);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/language-switcher.js"></script>
+</body>
+</html>

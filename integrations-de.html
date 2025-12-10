@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Integrationen | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Section */
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Integration Cards */
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .integration-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        
+        .integration-card:hover {
+            border-color: var(--green);
+        }
+        
+        .integration-card.connected {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--dark-grey) 100%);
+        }
+        
+        .integration-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .integration-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-slack { background: #4A154B; }
+        .logo-teams { background: #5059C9; }
+        .logo-google { background: #EA4335; }
+        .logo-outlook { background: #0078D4; }
+        .logo-notion { background: #000000; border: 1px solid var(--mid-grey); }
+        .logo-zapier { background: #FF4A00; }
+        .logo-jira { background: #0052CC; }
+        .logo-asana { background: #F06A6A; }
+        
+        .integration-info h3 {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .integration-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-connected { background: var(--green); }
+        .status-getrennt { background: var(--mid-grey); }
+        
+        .integration-desc {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        .integration-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-tag {
+            padding: 4px 10px;
+            background: var(--mid-grey);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--mid-grey);
+            color: var(--white);
+        }
+        
+        .btn-secondary:hover {
+            background: #3a3a4a;
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Demnächst Badge */
+        .coming-soon {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-left: 8px;
+        }
+        
+        /* API Section */
+        .api-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .api-key-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .api-key-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .api-key-input::placeholder {
+            color: var(--light-grey);
+        }
+        
+        .api-info {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .api-info a {
+            color: var(--green);
+            text-decoration: none;
+        }
+        
+        .api-info a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--green);
+            color: var(--black);
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .toast svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light-grey);
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .modal-body {
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2rem;
+        }
+        
+        .modal-body p {
+            color: var(--light-grey);
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--mid-grey);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .modal-footer .btn {
+            flex: 1;
+        }
+        
+        @media (max-width: 600px) {
+            .api-key-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="business-portal-de.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Zurück zum Portal
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                Integrations
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Integrationen</h1>
+            <p class="page-desc">Verbinde TAP-IN mit deinen Lieblings-Tools, um deinen Workflow zu optimieren.</p>
+        </div>
+        
+        <!-- Communication -->
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                Communication
+            </h2>
+            <div class="integration-grid">
+                <!-- Slack -->
+                <div class="integration-card" id="slack-card">
+                    <div class="integration-header">
+                        <div class="integration-logo logo-slack">
+                            <svg style="width:28px;height:28px;color:white" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 0 1-2.52 2.523A2.528 2.528 0 0 1 0 15.165a2.527 2.527 0 0 1 2.522-2.52h2.52v2.52zM6.313 15.165a2.527 2.527 0 0 1 2.521-2.52 2.527 2.527 0 0 1 2.521 2.52v6.313A2.528 2.528 0 0 1 8.834 24a2.528 2.528 0 0 1-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 0 1-2.521-2.52A2.528 2.528 0 0 1 8.834 0a2.528 2.528 0 0 1 2.521 2.522v2.52H8.834zM8.834 6.313a2.528 2.528 0 0 1 2.521 2.521 2.528 2.528 0 0 1-2.521 2.521H2.522A2.528 2.528 0 0 1 0 8.834a2.528 2.528 0 0 1 2.522-2.521h6.312zM18.956 8.834a2.528 2.528 0 0 1 2.522-2.521A2.528 2.528 0 0 1 24 8.834a2.528 2.528 0 0 1-2.522 2.521h-2.522V8.834zM17.688 8.834a2.528 2.528 0 0 1-2.523 2.521 2.527 2.527 0 0 1-2.52-2.521V2.522A2.527 2.527 0 0 1 15.165 0a2.528 2.528 0 0 1 2.523 2.522v6.312zM15.165 18.956a2.528 2.528 0 0 1 2.523 2.522A2.528 2.528 0 0 1 15.165 24a2.527 2.527 0 0 1-2.52-2.522v-2.522h2.52zM15.165 17.688a2.527 2.527 0 0 1-2.52-2.523 2.526 2.526 0 0 1 2.52-2.52h6.313A2.527 2.527 0 0 1 24 15.165a2.528 2.528 0 0 1-2.522 2.523h-6.313z"/></svg>
+                        </div>
+                        <div class="integration-info">
+                            <h3>Slack</h3>
+                            <div class="integration-status">
+                                <span class="status-dot status-getrennt" id="slack-status"></span>
+                                <span id="slack-status-text">Nicht verbunden</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="integration-desc">Erhalte Echtzeit-Benachrichtigungen in Slack, wenn Teammitglieder Assessments abschließen oder Auszeichnungen verdienen.</p>
+                    <div class="integration-features">
+                        <span class="feature-tag">Benachrichtigungen</span>
+                        <span class="feature-tag">Tägliche Zusammenfassung</span>
+                        <span class="feature-tag">Erinnerungen</span>
+                    </div>
+                    <button class="btn btn-primary" id="slack-btn" onclick="connectIntegration('slack')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        Slack verbinden
+                    </button>
+                </div>
+                
+                <!-- Microsoft Teams -->
+                <div class="integration-card" id="teams-card">
+                    <div class="integration-header">
+                        <div class="integration-logo logo-teams">
+                            <svg style="width:28px;height:28px;color:white" viewBox="0 0 24 24" fill="currentColor"><path d="M20.625 8.166h-6.563a.937.937 0 0 0-.937.938v6.562c0 .518.42.938.938.938h6.562a.937.937 0 0 0 .938-.938V9.104a.937.937 0 0 0-.938-.937zm-2.813 1.875c.518 0 .938.42.938.938a.937.937 0 0 1-.938.937.938.938 0 0 1 0-1.875zM16.874 15.73h-1.875a.468.468 0 0 1-.469-.469v-.937c0-.517.42-.937.938-.937h.937a.47.47 0 0 1 .469.469v1.406a.468.468 0 0 1-.469.468h.469zm1.876-.469v-.937c0-.517.42-.937.938-.937h.937a.47.47 0 0 1 .469.469v1.405a.468.468 0 0 1-.469.469h-1.406a.468.468 0 0 1-.469-.469zM9.375 3.729a3.281 3.281 0 1 0 0 6.562 3.281 3.281 0 0 0 0-6.562zm6.563 16.875v-7.5a1.875 1.875 0 0 0-1.876-1.875H4.688a1.875 1.875 0 0 0-1.875 1.875v7.5h13.124z"/></svg>
+                        </div>
+                        <div class="integration-info">
+                            <h3>Microsoft Teams</h3>
+                            <div class="integration-status">
+                                <span class="status-dot status-getrennt" id="teams-status"></span>
+                                <span id="teams-status-text">Nicht verbunden</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="integration-desc">Erhalte Updates und sende Erinnerungen direkt über Microsoft Teams-Kanäle.</p>
+                    <div class="integration-features">
+                        <span class="feature-tag">Benachrichtigungen</span>
+                        <span class="feature-tag">Bot-Befehle</span>
+                        <span class="feature-tag">Tab App</span>
+                    </div>
+                    <button class="btn btn-primary" id="teams-btn" onclick="connectIntegration('teams')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        Teams verbinden
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Calendar -->
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Calendar & Productivity
+            </h2>
+            <div class="integration-grid">
+                <!-- Google Calendar -->
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-logo logo-google">
+                            <svg style="width:28px;height:28px;color:white" viewBox="0 0 24 24" fill="currentColor"><path d="M19.665 16.811a10.316 10.316 0 0 1-1.021 1.837c-.537.767-.978 1.297-1.316 1.592-.525.482-1.089.73-1.692.744-.432 0-.954-.123-1.562-.373-.61-.249-1.17-.371-1.683-.371-.537 0-1.113.122-1.73.371-.616.25-1.114.381-1.495.393-.577.025-1.154-.229-1.729-.764-.367-.32-.826-.87-1.377-1.648-.59-.829-1.075-1.794-1.455-2.891-.407-1.187-.611-2.335-.611-3.447 0-1.273.275-2.372.826-3.292a4.857 4.857 0 0 1 1.73-1.751 4.65 4.65 0 0 1 2.34-.662c.46 0 1.063.142 1.81.422s1.227.422 1.436.422c.158 0 .689-.167 1.593-.498.853-.307 1.573-.434 2.163-.384 1.6.129 2.801.759 3.6 1.895-1.43.867-2.137 2.08-2.123 3.637.012 1.213.453 2.222 1.317 3.023a4.33 4.33 0 0 0 1.315.863c-.106.307-.218.6-.336.882zM15.998 2.38c0 .95-.348 1.838-1.039 2.659-.836.976-1.846 1.541-2.941 1.452a2.955 2.955 0 0 1-.022-.36c0-.913.398-1.89 1.103-2.688.352-.404.8-.74 1.343-1.009.542-.264 1.054-.41 1.536-.435.013.128.02.255.02.381z"/></svg>
+                        </div>
+                        <div class="integration-info">
+                            <h3>Google Calendar</h3>
+                            <span class="coming-soon">Demnächst</span>
+                        </div>
+                    </div>
+                    <p class="integration-desc">Plane Team-Entwicklungssitzungen und synchronisiere Fristen mit Google Calendar.</p>
+                    <div class="integration-features">
+                        <span class="feature-tag">Event-Sync</span>
+                        <span class="feature-tag">Erinnerungen</span>
+                    </div>
+                    <button class="btn btn-secondary" disabled>Demnächst</button>
+                </div>
+                
+                <!-- Outlook -->
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-logo logo-outlook">
+                            <svg style="width:28px;height:28px;color:white" viewBox="0 0 24 24" fill="currentColor"><path d="M7.88 12.04q0 .45-.11.87-.1.41-.33.74-.22.33-.58.52-.37.2-.87.2t-.85-.2q-.35-.21-.57-.55-.22-.33-.33-.75-.1-.42-.1-.86t.1-.87q.1-.43.34-.76.22-.34.59-.54.36-.2.87-.2t.86.2q.35.21.57.55.22.34.31.77.1.43.1.88zM24 12v9.38q0 .46-.33.8-.33.32-.8.32H7.13q-.46 0-.8-.33-.32-.33-.32-.8V18H1q-.41 0-.7-.3-.3-.29-.3-.7V7q0-.41.3-.7Q.58 6 1 6h6.5V2.55q0-.44.3-.75.3-.3.75-.3h12.9q.44 0 .75.3.3.3.3.75V5.5l.02.02V12zM7.17 5.5h8.28L13 3.06zM2 16h4V8H2zm14.25 4.81l-2.67-2.67-.06-.06q-.32-.32-.32-.75 0-.44.32-.76l2.67-2.67 2.67 2.67q.32.32.32.76 0 .43-.32.75l-2.67 2.67.06.06zm5.75-4.81q0-.43-.13-.82t-.33-.71q-.21-.33-.51-.57-.3-.24-.64-.38V9.06q0-.44-.3-.75-.31-.3-.75-.3h-1.3l1.3-1.43q.2-.22.2-.52 0-.24-.14-.45-.14-.2-.38-.31l-.58-.25q-.25-.1-.52-.07-.25.03-.47.18l-3.47 3.5H9.5v9.19h12q.44 0 .75-.3.3-.3.3-.75v-5.31z"/></svg>
+                        </div>
+                        <div class="integration-info">
+                            <h3>Outlook Calendar</h3>
+                            <span class="coming-soon">Demnächst</span>
+                        </div>
+                    </div>
+                    <p class="integration-desc">Synchronisiere Team-Events und Zielfristen mit Outlook Calendar.</p>
+                    <div class="integration-features">
+                        <span class="feature-tag">Event-Sync</span>
+                        <span class="feature-tag">E-Mail-Erinnerungen</span>
+                    </div>
+                    <button class="btn btn-secondary" disabled>Demnächst</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Project Management -->
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                Project Management
+            </h2>
+            <div class="integration-grid">
+                <!-- Notion -->
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-logo logo-notion">
+                            <svg style="width:28px;height:28px;color:white" viewBox="0 0 24 24" fill="currentColor"><path d="M4.459 4.208c.746.606 1.026.56 2.428.466l13.215-.793c.28 0 .047-.28-.046-.326L17.86 1.968c-.42-.326-.98-.7-2.055-.607L3.01 2.295c-.466.046-.56.28-.374.466zm.793 3.08v13.904c0 .747.373 1.027 1.214.98l14.523-.84c.841-.046.935-.56.935-1.166V6.354c0-.606-.233-.933-.748-.886l-15.177.887c-.56.047-.747.327-.747.933zm14.337.745c.093.42 0 .84-.42.888l-.7.14v10.264c-.608.327-1.168.514-1.635.514-.748 0-.935-.234-1.495-.933l-4.577-7.186v6.952l1.448.327s0 .84-1.168.84l-3.22.186c-.094-.186 0-.653.327-.746l.84-.233V9.854L7.822 9.76c-.094-.42.14-1.026.793-1.073l3.456-.233 4.764 7.279v-6.44l-1.215-.14c-.093-.514.28-.886.747-.933zM2.1 1.155l13.215-.84c.748-.046 1.868-.047 2.475.467l3.36 2.427c.794.606.98.747.98 1.167v15.224c0 .98-.373 1.587-1.636 1.68l-14.617.887c-.98.047-1.448-.093-1.935-.747L1.21 18.26c-.56-.747-.793-1.307-.793-1.96V2.842c0-.747.373-1.354 1.683-1.687z"/></svg>
+                        </div>
+                        <div class="integration-info">
+                            <h3>Notion</h3>
+                            <span class="coming-soon">Demnächst</span>
+                        </div>
+                    </div>
+                    <p class="integration-desc">Synchronisiere Team-Ziele und Fortschritt mit Notion-Datenbanken für umfassende Verfolgung.</p>
+                    <div class="integration-features">
+                        <span class="feature-tag">Datenbank-Sync</span>
+                        <span class="feature-tag">Fortschritts-Updates</span>
+                    </div>
+                    <button class="btn btn-secondary" disabled>Demnächst</button>
+                </div>
+                
+                <!-- Zapier -->
+                <div class="integration-card">
+                    <div class="integration-header">
+                        <div class="integration-logo logo-zapier">
+                            <svg style="width:28px;height:28px;color:white" viewBox="0 0 24 24" fill="currentColor"><path d="M15.633 1.927l-3.588 6.212 3.588 6.212a1.91 1.91 0 0 1-1.655 2.864h-7.17l-3.588 6.212a1.91 1.91 0 0 1-3.31 0L-3.678 17.215H-10.848A1.91 1.91 0 0 1-12.503 14.351l3.588-6.212-3.588-6.212A1.91 1.91 0 0 1-10.848-0.937h7.17l3.588-6.212a1.91 1.91 0 0 1 3.31 0l3.588 6.212h7.17a1.91 1.91 0 0 1 1.655 2.864z"/></svg>
+                        </div>
+                        <div class="integration-info">
+                            <h3>Zapier</h3>
+                            <span class="coming-soon">Demnächst</span>
+                        </div>
+                    </div>
+                    <p class="integration-desc">Verbinde TAP-IN mit 5000+ Apps über Zapier-Automatisierungs-Workflows.</p>
+                    <div class="integration-features">
+                        <span class="feature-tag">Auslöser</span>
+                        <span class="feature-tag">Aktionen</span>
+                        <span class="feature-tag">Webhooks</span>
+                    </div>
+                    <button class="btn btn-secondary" disabled>Demnächst</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- API Access -->
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                API Access
+            </h2>
+            <div class="api-section">
+                <p class="integration-desc" style="margin-bottom: 16px;">Greife programmgesteuert über unsere REST API auf deine Team-Daten zu.</p>
+                <div class="api-key-container">
+                    <input type="text" class="api-key-input" id="apiKeyInput" placeholder="Klicke auf 'Generieren', um einen API-Schlüssel zu erstellen" readonly>
+                    <button class="btn btn-primary" onclick="generateApiKey()" style="width: auto; padding: 12px 24px;">Schlüssel generieren</button>
+                </div>
+                <p class="api-info">Need help? Check out our <a href="#">API-Dokumentation</a> für Endpunkte und Beispiele an.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Integration verbinden</div>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-icon" id="modalIcon">🔗</div>
+                <p id="modalDesc">Du bist dabei, diese Integration zu verbinden. Dies ermöglicht TAP-IN, Benachrichtigungen und Updates zu senden.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Abbrechen</button>
+                <button class="btn btn-primary" id="modalConfirm" onclick="confirmConnect()">Verbinden</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        <span id="toastMessage">Erfolgreich verbunden!</span>
+    </div>
+    
+    <script>
+        const integrations = {
+            slack: { connected: false, name: 'Slack' },
+            teams: { connected: false, name: 'Microsoft Teams' }
+        };
+        
+        let currentIntegration = null;
+        
+        // Load saved state
+        function loadIntegrations() {
+            const saved = localStorage.getItem('tapin_integrations');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    if (integrations[key]) {
+                        integrations[key].connected = data[key];
+                        updateIntegrationUI(key);
+                    }
+                });
+            }
+        }
+        
+        function saveIntegrations() {
+            const data = {};
+            Object.keys(integrations).forEach(key => {
+                data[key] = integrations[key].connected;
+            });
+            localStorage.setItem('tapin_integrations', JSON.stringify(data));
+        }
+        
+        function updateIntegrationUI(key) {
+            const card = document.getElementById(`${key}-card`);
+            const status = document.getElementById(`${key}-status`);
+            const statusText = document.getElementById(`${key}-status-text`);
+            const btn = document.getElementById(`${key}-btn`);
+            
+            if (integrations[key].connected) {
+                card.classList.add('connected');
+                status.classList.remove('status-getrennt');
+                status.classList.add('status-connected');
+                statusText.textContent = 'Connected';
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg> Disconnect`;
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-danger');
+            } else {
+                card.classList.remove('connected');
+                status.classList.remove('status-connected');
+                status.classList.add('status-getrennt');
+                statusText.textContent = 'Nicht verbunden';
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg> Connect ${integrations[key].name}`;
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-primary');
+            }
+        }
+        
+        function connectIntegration(key) {
+            currentIntegration = key;
+            
+            if (integrations[key].connected) {
+                // Disconnect
+                document.getElementById('modalTitle').textContent = `Disconnect ${integrations[key].name}`;
+                document.getElementById('modalDesc').textContent = `Are you sure you want to disconnect ${integrations[key].name}? You will stop receiving notifications.`;
+                document.getElementById('modalConfirm').textContent = 'Disconnect';
+                document.getElementById('modalConfirm').classList.remove('btn-primary');
+                document.getElementById('modalConfirm').classList.add('btn-danger');
+            } else {
+                // Connect
+                document.getElementById('modalTitle').textContent = `Connect ${integrations[key].name}`;
+                document.getElementById('modalDesc').textContent = `You're about to connect ${integrations[key].name}. This will allow TAP-IN to send notifications and updates.`;
+                document.getElementById('modalConfirm').textContent = 'Connect';
+                document.getElementById('modalConfirm').classList.remove('btn-danger');
+                document.getElementById('modalConfirm').classList.add('btn-primary');
+            }
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        function confirmConnect() {
+            if (!currentIntegration) return;
+            
+            integrations[currentIntegration].connected = !integrations[currentIntegration].connected;
+            updateIntegrationUI(currentIntegration);
+            saveIntegrations();
+            
+            const message = integrations[currentIntegration].connected 
+                ? `${integrations[currentIntegration].name} connected successfully!`
+                : `${integrations[currentIntegration].name} getrennt`;
+            showToast(message);
+            
+            closeModal();
+        }
+        
+        function closeModal(e) {
+            if (!e || e.target === document.getElementById('modalOverlay')) {
+                document.getElementById('modalOverlay').classList.remove('active');
+            }
+        }
+        
+        function generateApiKey() {
+            const key = 'tap_' + Array.from(crypto.getRandomValues(new Uint8Array(24)))
+                .map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+            document.getElementById('apiKeyInput').value = key;
+            showToast('API key generated! Keep it secure.');
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadIntegrations);
+    </script>
+</body>
+</html>

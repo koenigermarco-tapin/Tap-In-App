@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Trust Builder - TAP-IN Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --orange: #f97316;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover { color: var(--white); }
+        
+        .header-stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .stat.xp { color: var(--gold); }
+        .stat.streak { color: var(--green); }
+        
+        .main-content {
+            padding: 80px 20px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Progress Section */
+        .progress-section {
+            margin-bottom: 25px;
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue), var(--green));
+            transition: width 0.5s;
+        }
+        
+        /* Meters Section */
+        .meters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .meter {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .meter-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .meter-value {
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .meter.trust .meter-value { color: var(--green); }
+        .meter.vulnerability .meter-value { color: var(--purple); }
+        
+        .meter-bar {
+            height: 6px;
+            background: var(--mid-grey);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .meter-bar-fill {
+            height: 100%;
+            transition: width 0.5s;
+        }
+        
+        .meter.trust .meter-bar-fill { background: var(--green); }
+        .meter.vulnerability .meter-bar-fill { background: linear-gradient(90deg, var(--purple), var(--pink)); }
+        
+        .meter-desc {
+            font-size: 11px;
+            color: var(--light-grey);
+            margin-top: 6px;
+        }
+        
+        /* Scenario Card */
+        .scenario-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-type {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .type-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .type-icon.work { background: linear-gradient(135deg, var(--blue), var(--cyan)); }
+        .type-icon.friend { background: linear-gradient(135deg, var(--green), var(--cyan)); }
+        .type-icon.partner { background: linear-gradient(135deg, var(--pink), var(--purple)); }
+        .type-icon.family { background: linear-gradient(135deg, var(--orange), var(--gold)); }
+        .type-icon.boss { background: linear-gradient(135deg, var(--purple), var(--blue)); }
+        .type-icon.team { background: linear-gradient(135deg, var(--cyan), var(--green)); }
+        
+        .type-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+        }
+        
+        .difficulty-badge {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        .difficulty-badge.beginner { background: var(--green); color: var(--black); }
+        .difficulty-badge.intermediate { background: var(--gold); color: var(--black); }
+        .difficulty-badge.advanced { background: var(--purple); color: var(--white); }
+        
+        .scenario-text {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-question {
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        /* Response Options */
+        .responses {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .response-btn {
+            background: var(--mid-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            color: var(--white);
+            font-size: 14px;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .response-btn:hover:not(:disabled) {
+            border-color: var(--light-grey);
+            transform: translateX(5px);
+        }
+        
+        .response-btn:disabled { cursor: default; }
+        
+        .response-btn.selected { border-color: var(--blue); background: rgba(59, 130, 246, 0.1); }
+        .response-btn.best { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .response-btn.good { border-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
+        .response-btn.poor { border-color: var(--red); background: rgba(239, 68, 68, 0.1); }
+        
+        .response-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .response-btn.revealed .response-meta { opacity: 1; }
+        
+        .quality-label {
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+        
+        .quality-label.best { background: var(--green); color: var(--black); }
+        .quality-label.good { background: var(--gold); color: var(--black); }
+        .quality-label.poor { background: var(--red); color: var(--white); }
+        
+        .trust-change {
+            font-weight: 600;
+        }
+        
+        .trust-change.positive { color: var(--green); }
+        .trust-change.negative { color: var(--red); }
+        
+        /* Feedback Section */
+        .feedback {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .feedback.best .feedback-icon { background: var(--green); }
+        .feedback.good .feedback-icon { background: var(--gold); }
+        .feedback.poor .feedback-icon { background: var(--red); }
+        
+        .feedback-title {
+            font-weight: 700;
+            font-size: 16px;
+        }
+        
+        .feedback-text {
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        /* Trust Ripple Effect */
+        .ripple-effect {
+            background: var(--mid-grey);
+            border-radius: 8px;
+            padding: 12px;
+        }
+        
+        .ripple-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .ripple-text {
+            font-size: 13px;
+            color: var(--white);
+            font-style: italic;
+        }
+        
+        /* Continue Button */
+        .continue-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .continue-btn.show { display: block; }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Results Screen */
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .results-screen.show { display: block; animation: fadeIn 0.5s; }
+        
+        .results-title {
+            font-size: 32px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .results-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .result-value {
+            font-size: 36px;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+        
+        .result-value.trust { color: var(--green); }
+        .result-value.vulnerability { color: var(--purple); }
+        .result-value.xp { color: var(--gold); }
+        .result-value.best { color: var(--cyan); }
+        
+        .result-label {
+            font-size: 12px;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        /* Badge Unlocked */
+        .badge-unlocked {
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 25px;
+            display: none;
+        }
+        
+        .badge-unlocked.show { display: block; animation: fadeIn 0.5s; }
+        
+        .badge-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        
+        .badge-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--black);
+            margin-bottom: 5px;
+        }
+        
+        .badge-desc {
+            color: rgba(0, 0, 0, 0.7);
+            font-size: 14px;
+        }
+        
+        /* Style Profile */
+        .style-profile {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .style-title {
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .style-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .style-label {
+            width: 80px;
+            font-size: 12px;
+            color: var(--light-grey);
+        }
+        
+        .style-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .style-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        
+        .style-value {
+            width: 35px;
+            font-size: 12px;
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        /* Exit Button */
+        .exit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--green);
+            border: none;
+            border-radius: 12px;
+            color: var(--black);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .play-again-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--mid-grey);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        @media (max-width: 480px) {
+            .meters { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-trust-builder-v2.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="game-trust-builder-v2-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library.html" class="back-btn">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            Exit
+        </a>
+        <div class="header-stats">
+            <div class="stat xp">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span id="xpDisplay">0</span> XP
+            </div>
+            <div class="stat streak">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span id="streakDisplay">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <!-- Game Section -->
+        <div id="gameSection">
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Scenario <span id="currentNum">1</span> of <span id="totalNum">12</span></span>
+                    <span id="progressPct">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="meters">
+                <div class="meter trust">
+                    <div class="meter-label">Trust Level</div>
+                    <div class="meter-value" id="trustValue">50%</div>
+                    <div class="meter-bar">
+                        <div class="meter-bar-fill" id="trustFill" style="width: 50%"></div>
+                    </div>
+                    <div class="meter-desc" id="trustDesc">Building foundation</div>
+                </div>
+                <div class="meter vulnerability">
+                    <div class="meter-label">Vulnerability</div>
+                    <div class="meter-value" id="vulnValue">0%</div>
+                    <div class="meter-bar">
+                        <div class="meter-bar-fill" id="vulnFill" style="width: 0%"></div>
+                    </div>
+                    <div class="meter-desc" id="vulnDesc">Open up to build trust</div>
+                </div>
+            </div>
+            
+            <div class="scenario-card" id="scenarioCard">
+                <div class="scenario-header">
+                    <div class="scenario-type">
+                        <div class="type-icon work" id="typeIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                        <span class="type-label" id="typeLabel">Workplace</span>
+                    </div>
+                    <span class="difficulty-badge beginner" id="difficultyBadge">Beginner</span>
+                </div>
+                <div class="scenario-text" id="scenarioText">Loading scenario...</div>
+                <div class="scenario-question" id="scenarioQuestion">What do you do?</div>
+                <div class="responses" id="responses"></div>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-header">
+                    <div class="feedback-icon" id="feedbackIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    <div class="feedback-title" id="feedbackTitle">Great choice!</div>
+                </div>
+                <div class="feedback-text" id="feedbackText"></div>
+                <div class="ripple-effect">
+                    <div class="ripple-label">Trust Ripple Effect</div>
+                    <div class="ripple-text" id="rippleText"></div>
+                </div>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" onclick="nextScenario()">Continue</button>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results-screen" id="resultsSection">
+            <h1 class="results-title">Trust Mastery!</h1>
+            <p class="results-subtitle">You've completed all scenarios</p>
+            
+            <div class="badge-unlocked" id="badgeUnlocked">
+                <div class="badge-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+                <div class="badge-title">Trust Master Badge Unlocked!</div>
+                <div class="badge-desc">Made 10+ best choices - you're a natural trust builder</div>
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-value trust" id="finalTrust">50%</div>
+                    <div class="result-label">Final Trust</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value vulnerability" id="finalVuln">0%</div>
+                    <div class="result-label">Vulnerability</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value best" id="finalBest">0/12</div>
+                    <div class="result-label">Best Choices</div>
+                </div>
+                <div class="result-card">
+                    <div class="result-value xp" id="finalXP">+0</div>
+                    <div class="result-label">XP Earned</div>
+                </div>
+            </div>
+            
+            <div class="style-profile">
+                <div class="style-title">Your Trust-Building Style</div>
+                <div id="styleBreakdown"></div>
+            </div>
+            
+            <button class="exit-btn" onclick="exitGame()">Claim XP & Exit</button>
+            <button class="play-again-btn" onclick="playAgain()">Play Again</button>
+        </div>
+    </div>
+    
+    <script>
+        // 15 scenarios across contexts and difficulties
+        const allScenarios = [
+            // BEGINNER - Workplace
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace', difficulty: 'beginner',
+                text: "Your manager asks how a project is going. You're behind schedule because you underestimated the complexity.",
+                question: "What do you say?",
+                responses: [
+                    { text: "\"It's going well, on track!\" - hide the delay and hope to catch up", quality: 'poor', trust: -15, vuln: 0, feedback: "Hiding problems destroys trust when they surface later. Your manager can't help if they don't know.", ripple: "When the delay surfaces, your manager loses confidence in your updates. They start micromanaging." },
+                    { text: "Blame the complexity or other factors beyond your control", quality: 'poor', trust: -10, vuln: 0, feedback: "Deflecting responsibility feels safe but signals you can't be trusted with honest assessments.", ripple: "Team members start covering their own backs too. Blame culture begins to spread." },
+                    { text: "Be honest about the delay and share your plan to get back on track", quality: 'best', trust: +15, vuln: +15, feedback: "Honesty about setbacks builds trust. Your manager now knows they can rely on your updates.", ripple: "Your manager appreciates the transparency. They offer resources to help and trust your future updates." },
+                    { text: "Say you need to 'double-check a few things' and get back to them", quality: 'good', trust: +5, vuln: +5, feedback: "Better than lying, but delaying honesty still erodes trust. Speed matters in building credibility.", ripple: "Your manager senses hesitation. They trust you a bit less than before." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // BEGINNER - Friend
+            {
+                context: 'friend', icon: '👋', label: 'Friend', difficulty: 'beginner',
+                text: "A close friend asks what you thought of their new business idea. You have serious concerns about its viability.",
+                question: "How do you respond?",
+                responses: [
+                    { text: "\"I love it! You should totally go for it!\" - be supportive no matter what", quality: 'poor', trust: -10, vuln: 0, feedback: "False enthusiasm isn't kindness - it's setting them up for failure. Real friends tell hard truths.", ripple: "They invest time and money based on your encouragement. When it fails, they wonder why you didn't warn them." },
+                    { text: "\"That's a terrible idea, here's why...\" - be brutally direct", quality: 'poor', trust: -5, vuln: 0, feedback: "Harsh criticism without care damages the relationship. Truth without compassion is cruelty.", ripple: "Your friend stops sharing ideas with you. The friendship becomes more guarded." },
+                    { text: "Share your concerns thoughtfully while affirming their entrepreneurial spirit", quality: 'best', trust: +15, vuln: +10, feedback: "Caring enough to share concerns shows real investment in their success. This is what trust looks like.", ripple: "They may or may not take your advice, but they know you'll always be honest. The friendship deepens." },
+                    { text: "Ask questions that help them discover the concerns themselves", quality: 'good', trust: +10, vuln: +5, feedback: "Socratic approach is gentler but may not communicate your actual concerns clearly.", ripple: "They appreciate your engagement but might miss critical issues you could have flagged directly." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // BEGINNER - Partner
+            {
+                context: 'partner', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 21s-6-4.35-6-10a6 6 0 1112 0c0 5.65-6 10-6 10z"/></svg>', label: 'Partner', difficulty: 'beginner',
+                text: "Your partner asks if something is bothering you. You're frustrated about something they did, but don't want to start a fight.",
+                question: "What do you say?",
+                responses: [
+                    { text: "\"I'm fine, nothing's wrong\" - avoid the conflict", quality: 'poor', trust: -15, vuln: 0, feedback: "Your body language already betrayed you. 'I'm fine' when you're not teaches them to distrust your words.", ripple: "They learn that your words don't match reality. Future 'I'm fines' will always seem suspicious." },
+                    { text: "\"Yes, I'm annoyed because you always...\" - let it all out", quality: 'poor', trust: -5, vuln: +5, feedback: "Starting with accusations puts them on defense. The word 'always' is rarely true and always inflammatory.", ripple: "They become defensive. The conversation becomes about who's right rather than understanding each other." },
+                    { text: "\"Yes, something is. Can we talk about it when we're both calm?\"", quality: 'best', trust: +15, vuln: +15, feedback: "Acknowledging truth while setting conditions for productive discussion shows emotional maturity.", ripple: "They learn they can trust your words. You've established a pattern for healthy conflict resolution." },
+                    { text: "\"Kind of. It's not a big deal though.\" - minimize to avoid drama", quality: 'good', trust: +5, vuln: +5, feedback: "At least you're being partially honest. But minimizing teaches them your concerns aren't important.", ripple: "Small resentments accumulate. Six months later, something minor triggers an explosion of built-up frustration." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // BEGINNER - Team
+            {
+                context: 'team', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Team', difficulty: 'beginner',
+                text: "In a team meeting, someone presents an idea that has a major flaw. Others are nodding along enthusiastically.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Stay silent - you don't want to be the negative one", quality: 'poor', trust: -10, vuln: 0, feedback: "Silence isn't neutrality - it's agreement. The team loses when good ideas aren't stress-tested.", ripple: "The flawed plan moves forward. When it fails, everyone wonders why no one spoke up." },
+                    { text: "Interrupt to point out everything wrong with the idea", quality: 'poor', trust: -5, vuln: 0, feedback: "How you disagree matters as much as whether you do. Public takedowns shut down future idea sharing.", ripple: "People become afraid to share ideas. The team's creativity suffers." },
+                    { text: "Ask clarifying questions that surface the flaw without attacking", quality: 'best', trust: +15, vuln: +10, feedback: "Skilled questioning lets the presenter see issues themselves. This builds both trust and better ideas.", ripple: "You become known as someone who makes ideas better. People seek your input early." },
+                    { text: "Talk to the presenter privately afterward", quality: 'good', trust: +10, vuln: +5, feedback: "Private feedback is kind, but the team already moved forward. Timing matters.", ripple: "The relationship is preserved, but the flawed decision wasn't prevented." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // INTERMEDIATE - Boss
+            {
+                context: 'boss', icon: '👔', label: 'Boss', difficulty: 'intermediate',
+                text: "Your boss proposes a strategy you believe will fail. They seem very attached to it and have already mentioned it to senior leadership.",
+                question: "How do you handle this?",
+                responses: [
+                    { text: "Keep your concerns to yourself - it's their call to make", quality: 'poor', trust: -15, vuln: 0, feedback: "Leaders need dissent to make good decisions. Silence when you see problems isn't loyalty - it's fear.", ripple: "The strategy fails. Your boss wishes someone had warned them. They trust the silent ones less." },
+                    { text: "Send an email documenting your concerns to 'cover yourself'", quality: 'poor', trust: -10, vuln: 0, feedback: "CYA emails signal distrust. If it fails, you'll point to the email. Your boss knows this.", ripple: "Your boss sees you as someone who builds paper trails, not someone who has their back." },
+                    { text: "Request a private conversation to share your concerns directly", quality: 'best', trust: +15, vuln: +20, feedback: "Speaking up to power takes courage. Doing it privately shows you care about outcomes AND the relationship.", ripple: "Even if they proceed, they respect your candor. You're now someone they consult before big decisions." },
+                    { text: "Suggest 'testing' the strategy with a small pilot first", quality: 'good', trust: +10, vuln: +10, feedback: "A diplomatic middle ground. You're protecting both the relationship and the outcome.", ripple: "The pilot reveals issues. Your suggestion saved the company from a bigger mistake." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // INTERMEDIATE - Family
+            {
+                context: 'family', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Family', difficulty: 'intermediate',
+                text: "A family member keeps giving you unsolicited advice about your life choices. It's driving you crazy but you don't want to damage the relationship.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Smile, nod, and ignore them internally", quality: 'poor', trust: -10, vuln: 0, feedback: "Fake agreement poisons relationships slowly. Your resentment will leak out in other ways.", ripple: "They keep giving advice, thinking it's welcome. Your frustration builds until you explode over something minor." },
+                    { text: "Blow up: \"Stop telling me how to live my life!\"", quality: 'poor', trust: -15, vuln: +5, feedback: "Suppressed frustration becomes explosive. The message gets lost in the delivery.", ripple: "They're hurt and confused. Family gatherings become awkward for months." },
+                    { text: "Set a kind but clear boundary: \"I love you, and I need to figure this out myself\"", quality: 'best', trust: +15, vuln: +20, feedback: "Boundaries WITH love is the formula. You're being honest about your needs while affirming the relationship.", ripple: "They may be hurt initially, but come to respect your autonomy. The relationship matures." },
+                    { text: "Change the subject whenever they start advising", quality: 'good', trust: 0, vuln: 0, feedback: "Avoidance works short-term but doesn't solve the underlying dynamic.", ripple: "The pattern continues indefinitely. Neither of you grows." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // INTERMEDIATE - Work (Mistake)
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace', difficulty: 'intermediate',
+                text: "You discover you made a mistake on a project that's already been delivered to the client. No one else knows yet, and you might be able to fix it quietly.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Fix it quietly and hope no one notices", quality: 'poor', trust: -20, vuln: 0, feedback: "Even if you succeed, you've established a pattern of hiding. What happens when the next mistake is bigger?", ripple: "You got lucky. But now you're carrying a secret. Your anxiety around this client increases." },
+                    { text: "Blame it on unclear requirements or someone else's work", quality: 'poor', trust: -25, vuln: 0, feedback: "Deflecting blame destroys trust faster than almost anything. And the truth usually comes out.", ripple: "The person you blamed finds out. You've made an enemy and damaged your reputation." },
+                    { text: "Inform your manager immediately and propose a solution", quality: 'best', trust: +20, vuln: +25, feedback: "Owning mistakes proactively builds enormous trust. Leaders remember who they can count on in crises.", ripple: "Your manager is impressed by your integrity. You're now someone they trust with bigger responsibilities." },
+                    { text: "Fix it, then mention it casually later as something you caught", quality: 'good', trust: +5, vuln: +5, feedback: "You fixed it and disclosed it - that's good. But the timing diminishes the trust-building impact.", ripple: "Your manager appreciates the fix but wonders what else might be happening they don't know about." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // INTERMEDIATE - Friend (Conflict)
+            {
+                context: 'friend', icon: '👋', label: 'Friend', difficulty: 'intermediate',
+                text: "You find out a friend said something negative about you behind your back. You're hurt but they don't know you know.",
+                question: "How do you handle this?",
+                responses: [
+                    { text: "Start distancing yourself without saying why", quality: 'poor', trust: -15, vuln: 0, feedback: "Passive withdrawal punishes without explaining. They have no chance to address it or apologize.", ripple: "The friendship fades. Neither of you grows from the experience. You both wonder what happened." },
+                    { text: "Confront them angrily: \"I know what you said about me!\"", quality: 'poor', trust: -10, vuln: +5, feedback: "Leading with anger puts them on defense. The conversation becomes about the confrontation, not the issue.", ripple: "They apologize defensively. Trust is damaged on both sides. The friendship becomes careful and guarded." },
+                    { text: "Share that you heard something and ask for their perspective", quality: 'best', trust: +15, vuln: +20, feedback: "Opening dialogue rather than closing it shows maturity. Maybe there's context you're missing.", ripple: "They either explain, apologize, or reveal themselves. Either way, you both know where you stand." },
+                    { text: "Talk to other friends about it to get their opinion", quality: 'poor', trust: -15, vuln: 0, feedback: "Now you're doing the same thing they did - talking about people behind their back.", ripple: "The drama spreads. Multiple friendships are affected. You've become part of the problem." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // ADVANCED - Work (Vulnerability)
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace', difficulty: 'advanced',
+                text: "You're struggling with imposter syndrome in your new senior role. You feel like you're faking competence and everyone will discover you don't belong.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Keep projecting confidence - never let them see you sweat", quality: 'poor', trust: -10, vuln: -10, feedback: "Maintaining a facade is exhausting and isolating. And people can usually sense inauthenticity.", ripple: "You stay alone with your fears. Team members who feel the same never know they're not alone." },
+                    { text: "Share your insecurities freely with your whole team", quality: 'poor', trust: -5, vuln: +20, feedback: "Vulnerability requires context. Oversharing to everyone can undermine confidence in your leadership.", ripple: "Some team members appreciate it; others lose confidence in you. It's a mixed signal." },
+                    { text: "Find a trusted mentor or peer to share your experience with", quality: 'best', trust: +15, vuln: +25, feedback: "Selective vulnerability with trusted people builds deep connections and gets you support.", ripple: "Your mentor normalizes your experience. You feel less alone and perform better." },
+                    { text: "Research imposter syndrome and handle it yourself", quality: 'good', trust: 0, vuln: 0, feedback: "Self-help is valuable, but going it alone means missing the power of shared experience.", ripple: "You make some progress, but the loneliness of leadership remains." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // ADVANCED - Partner (Deep)
+            {
+                context: 'partner', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 21s-6-4.35-6-10a6 6 0 1112 0c0 5.65-6 10-6 10z"/></svg>', label: 'Partner', difficulty: 'advanced',
+                text: "You and your partner have different visions for the future (kids, career, location). You've been avoiding the conversation because you're afraid of what you might discover.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Keep hoping they'll change their mind eventually", quality: 'poor', trust: -20, vuln: 0, feedback: "Hoping someone will become a different person isn't a plan - it's a fantasy that wastes both your time.", ripple: "Years pass. One day the conversation can't be avoided. The breakup is harder because of all the invested time." },
+                    { text: "Give an ultimatum: \"It's my way or we're done\"", quality: 'poor', trust: -15, vuln: +5, feedback: "Ultimatums create pressure, not connection. Even if they agree, resentment builds.", ripple: "They cave to the pressure but never fully commit. The relationship is damaged at its foundation." },
+                    { text: "Have the scary conversation with open curiosity about both futures", quality: 'best', trust: +20, vuln: +30, feedback: "The bravest conversations are often the most necessary. Knowing is better than wondering.", ripple: "You either find alignment or discover you want different things. Both are better than pretending." },
+                    { text: "Suggest couples counseling to navigate the conversation", quality: 'good', trust: +15, vuln: +15, feedback: "Getting help for important conversations shows maturity. Just don't use it to avoid direct dialogue.", ripple: "A skilled counselor helps you communicate. You make progress on tough topics." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // ADVANCED - Team (Conflict)
+            {
+                context: 'team', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1 em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 21v-2a4 4 0 00-4-4H7a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>', label: 'Team', difficulty: 'advanced',
+                text: "Two team members are in conflict and it's affecting the whole team. Both have come to you privately to complain about the other.",
+                question: "How do you handle this?",
+                responses: [
+                    { text: "Pick a side based on who you believe or like more", quality: 'poor', trust: -20, vuln: 0, feedback: "Taking sides in someone else's conflict destroys trust with half your team and models poor conflict resolution.", ripple: "The 'losing' side feels betrayed. Team members wonder which side you'd take in future conflicts." },
+                    { text: "Tell them both to 'work it out' and stay out of it", quality: 'poor', trust: -10, vuln: 0, feedback: "Avoiding conflict doesn't make it go away. It signals you don't care about team health.", ripple: "The conflict festers and spreads. Other team members get pulled in." },
+                    { text: "Facilitate a direct conversation between them with ground rules", quality: 'best', trust: +20, vuln: +15, feedback: "Helping people have difficult conversations is a leadership superpower. You're building conflict resolution muscle.", ripple: "The team sees that conflict can be addressed productively. Future conflicts get resolved faster." },
+                    { text: "Meet with each separately and try to mediate through relay", quality: 'good', trust: +5, vuln: +5, feedback: "Shuttle diplomacy is better than ignoring it, but direct conversation builds more trust.", ripple: "Some progress is made, but they never actually work through it together." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // ADVANCED - Boss (Ethical)
+            {
+                context: 'boss', icon: '👔', label: 'Boss', difficulty: 'advanced',
+                text: "You discover your company is doing something ethically questionable but legal. Your boss seems aware and unbothered.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Keep your head down - it's not your responsibility", quality: 'poor', trust: -15, vuln: 0, feedback: "Silence in the face of ethical concerns makes you complicit. And you'll carry that weight.", ripple: "The practice continues. You lose a piece of yourself. It gets harder to speak up next time." },
+                    { text: "Start looking for a new job immediately", quality: 'good', trust: 0, vuln: 0, feedback: "Sometimes exit is the right choice, but leaving without trying changes nothing for those who stay.", ripple: "You leave with a clean conscience but without having tried to make a difference." },
+                    { text: "Raise concerns through appropriate channels, documenting as you go", quality: 'best', trust: +20, vuln: +25, feedback: "Speaking up about ethics is scary and brave. Whether change happens, you did what was right.", ripple: "Maybe nothing changes. Maybe everything does. Either way, you know you tried." },
+                    { text: "Anonymously leak it to the press or regulators", quality: 'poor', trust: -20, vuln: +30, feedback: "Whistleblowing has its place, but skipping internal channels first can backfire and undermine legitimate concerns.", ripple: "The leak becomes the story instead of the ethics. Your credibility if discovered is destroyed." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // BEGINNER - Work (Help)
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Workplace', difficulty: 'beginner',
+                text: "You're stuck on a problem and know a colleague could help. But asking means admitting you don't know everything.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Keep struggling alone - you'll figure it out eventually", quality: 'poor', trust: -10, vuln: 0, feedback: "Pride prevents progress. Teams with high trust ask for help freely - it's a strength, not a weakness.", ripple: "You waste hours on something that could take minutes with help. Colleagues wonder why you don't collaborate." },
+                    { text: "Ask for help but phrase it like you're 'just checking' your approach", quality: 'good', trust: +5, vuln: +5, feedback: "You asked, which is good. But the protective framing signals you're not comfortable with not knowing.", ripple: "They help, but the interaction was transactional. No deeper trust was built." },
+                    { text: "Be direct: \"I'm stuck on this - can you help me understand?\"", quality: 'best', trust: +15, vuln: +15, feedback: "Asking for help openly invites others to do the same. This is how trust grows.", ripple: "Your colleague respects your honesty. They'll feel comfortable asking you for help too." },
+                    { text: "Google solutions quietly and hope no one notices your struggle", quality: 'poor', trust: -5, vuln: 0, feedback: "Working around the team creates distance. Shared problems become shared solutions.", ripple: "You stay isolated. The team's collective intelligence remains untapped." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // INTERMEDIATE - Partner (Trust Repair)
+            {
+                context: 'partner', icon: '❤️', label: 'Partner', difficulty: 'intermediate',
+                text: "You broke a promise to your partner - nothing major, but it's the second time. They're visibly disappointed but say \"it's fine.\"",
+                question: "How do you respond?",
+                responses: [
+                    { text: "Take their \"it's fine\" at face value and move on", quality: 'poor', trust: -15, vuln: 0, feedback: "\"It's fine\" rarely means fine. Ignoring the pattern shows you don't take their feelings seriously.", ripple: "They stop trusting your promises. Small disappointments accumulate into resentment." },
+                    { text: "Get defensive: \"It's not a big deal, why are you making this an issue?\"", quality: 'poor', trust: -20, vuln: 0, feedback: "Making them feel bad for having feelings destroys trust and teaches them not to be honest.", ripple: "They learn to suppress concerns. Six months later, something minor triggers an explosion." },
+                    { text: "Acknowledge the pattern, apologize, and ask what would help rebuild trust", quality: 'best', trust: +15, vuln: +20, feedback: "Seeing patterns in yourself and addressing them proactively shows growth and care for the relationship.", ripple: "They feel heard and valued. Your awareness of patterns makes them more forgiving of occasional slips." },
+                    { text: "Apologize profusely and promise it won't happen again", quality: 'good', trust: +5, vuln: +10, feedback: "Apologies are good, but you already promised once. Action needs to follow words.", ripple: "They appreciate the apology but remain somewhat guarded until they see consistent change." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            },
+            // ADVANCED - Self
+            {
+                context: 'team', icon: '🪞', label: 'Self', difficulty: 'advanced',
+                text: "You realize you've been taking credit for ideas that came from your team. It wasn't intentional, but it's been happening.",
+                question: "What do you do?",
+                responses: [
+                    { text: "It wasn't intentional, so there's nothing to address", quality: 'poor', trust: -15, vuln: 0, feedback: "Impact matters more than intent. Your team noticed even if you didn't.", ripple: "Team members stop bringing ideas to you. They share with others who give credit." },
+                    { text: "Be more careful going forward but don't bring up the past", quality: 'good', trust: +5, vuln: 0, feedback: "Better behavior going forward is important, but unaddressed past erodes trust.", ripple: "Some notice the improvement. Others who felt credit-stolen still carry resentment." },
+                    { text: "Acknowledge it to the team and retroactively credit ideas publicly", quality: 'best', trust: +20, vuln: +30, feedback: "Admitting you were wrong, especially when no one called you out, builds immense trust.", ripple: "Your team is shocked and deeply appreciative. Their commitment to the team multiplies." },
+                    { text: "Talk to each affected person privately to apologize", quality: 'good', trust: +10, vuln: +15, feedback: "Private acknowledgment is meaningful but misses the chance for public modeling of accountability.", ripple: "Those you apologized to feel better. Others who noticed but weren't approached still wonder." }
+                ],
+                styles: { honest: 0, vulnerable: 0, accountable: 0, protective: 0 }
+            }
+        ];
+        
+        let scenarios = [];
+        let currentIndex = 0;
+        let trustLevel = 50;
+        let vulnerabilityLevel = 0;
+        let xp = 0;
+        let streak = 0;
+        let bestChoices = 0;
+        let totalQuestions = 12;
+        let styleStats = { honest: 0, vulnerable: 0, accountable: 0, protective: 0 };
+        
+        // Shuffle and pick 12 scenarios
+        function initGame() {
+            const shuffled = [...allScenarios].sort(() => Math.random() - 0.5);
+            scenarios = shuffled.slice(0, totalQuestions);
+            document.getElementById('totalNum').textContent = totalQuestions;
+            loadScenario();
+        }
+        
+        function loadScenario() {
+            const s = scenarios[currentIndex];
+            
+            // Update progress
+            document.getElementById('currentNum').textContent = currentIndex + 1;
+            document.getElementById('progressPct').textContent = Math.round((currentIndex / totalQuestions) * 100) + '%';
+            document.getElementById('progressFill').style.width = (currentIndex / totalQuestions) * 100 + '%';
+            
+            // Update scenario card
+            const icon = document.getElementById('typeIcon');
+            icon.textContent = s.icon;
+            icon.className = 'type-icon ' + s.context;
+            document.getElementById('typeLabel').textContent = s.label;
+            
+            const badge = document.getElementById('difficultyBadge');
+            badge.textContent = s.difficulty.charAt(0).toUpperCase() + s.difficulty.slice(1);
+            badge.className = 'difficulty-badge ' + s.difficulty;
+            
+            document.getElementById('scenarioText').textContent = s.text;
+            document.getElementById('scenarioQuestion').textContent = s.question;
+            
+            // Shuffle and render responses
+            const shuffledResponses = [...s.responses].sort(() => Math.random() - 0.5);
+            s.shuffledResponses = shuffledResponses;
+            
+            document.getElementById('responses').innerHTML = shuffledResponses.map((r, i) => `
+                <button class="response-btn" onclick="selectResponse(${i})">
+                    ${r.text}
+                    <div class="response-meta">
+                        <span class="quality-label ${r.quality}">${r.quality === 'best' ? 'Best' : r.quality === 'good' ? 'Good' : 'Poor'}</span>
+                        <span class="trust-change ${r.trust >= 0 ? 'positive' : 'negative'}">${r.trust >= 0 ? '+' : ''}${r.trust}% Trust</span>
+                    </div>
+                </button>
+            `).join('');
+            
+            // Reset feedback
+            document.getElementById('feedback').classList.remove('show', 'best', 'good', 'poor');
+            document.getElementById('continueBtn').classList.remove('show');
+        }
+        
+        function selectResponse(index) {
+            const s = scenarios[currentIndex];
+            const response = s.shuffledResponses[index];
+            
+            // Disable all buttons and reveal quality
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.add('revealed');
+                const resp = s.shuffledResponses[i];
+                btn.classList.add(resp.quality);
+                if (i === index) btn.classList.add('selected');
+            });
+            
+            // Update meters
+            trustLevel = Math.max(0, Math.min(100, trustLevel + response.trust));
+            vulnerabilityLevel = Math.max(0, Math.min(100, vulnerabilityLevel + response.vuln));
+            updateMeters();
+            
+            // Update XP and streak
+            if (response.quality === 'best') {
+                xp += 10;
+                streak++;
+                bestChoices++;
+            } else if (response.quality === 'good') {
+                xp += 5;
+                streak++;
+            } else {
+                streak = 0;
+            }
+            
+            document.getElementById('xpDisplay').textContent = xp;
+            document.getElementById('streakDisplay').textContent = streak;
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + response.quality;
+            document.getElementById('feedbackIcon').textContent = response.quality === 'best' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' : response.quality === 'good' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg>' : '✗';
+            document.getElementById('feedbackTitle').textContent = response.quality === 'best' ? 'Excellent choice!' : response.quality === 'good' ? 'Good choice!' : 'Consider this...';
+            document.getElementById('feedbackText').textContent = response.feedback;
+            document.getElementById('rippleText').textContent = response.ripple;
+            
+            document.getElementById('continueBtn').classList.add('show');
+        }
+        
+        function updateMeters() {
+            document.getElementById('trustValue').textContent = trustLevel + '%';
+            document.getElementById('trustFill').style.width = trustLevel + '%';
+            
+            const trustDesc = trustLevel >= 80 ? 'High trust environment' :
+                             trustLevel >= 60 ? 'Trust is growing' :
+                             trustLevel >= 40 ? 'Building foundation' :
+                             trustLevel >= 20 ? 'Trust needs work' : 'Critical - rebuild trust';
+            document.getElementById('trustDesc').textContent = trustDesc;
+            
+            document.getElementById('vulnValue').textContent = vulnerabilityLevel + '%';
+            document.getElementById('vulnFill').style.width = vulnerabilityLevel + '%';
+            
+            const vulnDesc = vulnerabilityLevel >= 70 ? 'Fully open & authentic' :
+                            vulnerabilityLevel >= 50 ? 'Showing your true self' :
+                            vulnerabilityLevel >= 30 ? 'Getting comfortable' :
+                            vulnerabilityLevel >= 10 ? 'Taking small risks' : 'Open up to build trust';
+            document.getElementById('vulnDesc').textContent = vulnDesc;
+        }
+        
+        function nextScenario() {
+            currentIndex++;
+            
+            if (currentIndex >= totalQuestions) {
+                showResults();
+            } else {
+                loadScenario();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('resultsSection').classList.add('show');
+            
+            document.getElementById('finalTrust').textContent = trustLevel + '%';
+            document.getElementById('finalVuln').textContent = vulnerabilityLevel + '%';
+            document.getElementById('finalBest').textContent = bestChoices + '/' + totalQuestions;
+            document.getElementById('finalXP').textContent = '+' + (xp + 50); // Base completion XP
+            
+            // Show badge if earned
+            if (bestChoices >= 10) {
+                document.getElementById('badgeUnlocked').classList.add('show');
+            }
+            
+            // Calculate style breakdown
+            const totalResponses = totalQuestions;
+            const colors = ['#10b981', '#8b5cf6', '#3b82f6', '#f97316'];
+            const labels = ['Honest', 'Vulnerable', 'Accountable', 'Protective'];
+            
+            // Simple approximation based on trust/vulnerability choices
+            const honestPct = Math.min(100, Math.round((trustLevel / 100) * 80 + 20));
+            const vulnPct = vulnerabilityLevel;
+            const accountPct = Math.min(100, Math.round((bestChoices / totalQuestions) * 100));
+            const protectPct = Math.max(0, 100 - vulnPct);
+            
+            document.getElementById('styleBreakdown').innerHTML = [
+                { label: 'Honest', pct: honestPct, color: colors[0] },
+                { label: 'Vulnerable', pct: vulnPct, color: colors[1] },
+                { label: 'Accountable', pct: accountPct, color: colors[2] },
+                { label: 'Guarded', pct: protectPct, color: colors[3] }
+            ].map(s => `
+                <div class="style-bar-row">
+                    <div class="style-label">${s.label}</div>
+                    <div class="style-bar">
+                        <div class="style-bar-fill" style="width: ${s.pct}%; background: ${s.color}"></div>
+                    </div>
+                    <div class="style-value">${s.pct}%</div>
+                </div>
+            `).join('');
+        }
+        
+        function exitGame() {
+            // Save XP
+            const totalXP = xp + 50;
+            const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+            localStorage.setItem('totalXP', currentXP + totalXP);
+            
+            window.location.href = 'game-library.html';
+        }
+        
+        function playAgain() {
+            currentIndex = 0;
+            trustLevel = 50;
+            vulnerabilityLevel = 0;
+            xp = 0;
+            streak = 0;
+            bestChoices = 0;
+            
+            document.getElementById('xpDisplay').textContent = '0';
+            document.getElementById('streakDisplay').textContent = '0';
+            document.getElementById('gameSection').style.display = 'block';
+            document.getElementById('resultsSection').classList.remove('show');
+            document.getElementById('badgeUnlocked').classList.remove('show');
+            
+            initGame();
+        }
+        
+        // Initialize
+        initGame();
+        updateMeters();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Deep Work | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --blue: #3b82f6;
+            --accent: #4a7c9c;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        .nav {
+            position: sticky;
+            top: 0;
+            background: var(--black);
+            border-bottom: 1px solid var(--mid-grey);
+            padding: 1rem 2rem;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-btn:hover { color: var(--white); }
+        
+        .hero {
+            background: linear-gradient(135deg, rgba(74, 124, 156, 0.15) 0%, transparent 100%);
+            padding: 60px 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .hero-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--accent), #5a8cac);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .hero-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--white);
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+        
+        .hero-description {
+            font-size: 1.1rem;
+            color: var(--light-grey);
+            max-width: 600px;
+            margin: 0 auto 25px;
+            line-height: 1.7;
+        }
+        
+        .hero-meta {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .meta-item {
+            background: rgba(74, 124, 156, 0.15);
+            border: 1px solid var(--accent);
+            padding: 8px 20px;
+            border-radius: 30px;
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .section-title {
+            color: var(--accent);
+            font-size: 1.3rem;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .lessons-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .lesson-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 20px;
+            align-items: center;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .lesson-card:hover {
+            border-color: var(--accent);
+            transform: translateX(8px);
+        }
+        
+        .lesson-number {
+            width: 50px;
+            height: 50px;
+            background: var(--accent);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .lesson-content h3 {
+            color: var(--white);
+            font-size: 1.1rem;
+            margin-bottom: 6px;
+        }
+        
+        .lesson-content p {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        .lesson-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            text-align: right;
+        }
+        
+        .lesson-time {
+            color: var(--light-grey);
+            font-size: 0.8rem;
+        }
+        
+        .lesson-xp {
+            color: var(--green);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+        
+        .start-section {
+            text-align: center;
+            margin-top: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(74, 124, 156, 0.1), transparent);
+            border: 1px solid var(--accent);
+            border-radius: 20px;
+        }
+        
+        .start-section h2 {
+            color: var(--white);
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+        
+        .start-section p {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        
+        .start-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--accent);
+            color: white;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .start-btn:hover {
+            background: #5a8cac;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(74, 124, 156, 0.3);
+        }
+        
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.8rem; }
+            .lesson-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .lesson-number { margin: 0 auto; }
+            .lesson-meta {
+                flex-direction: row;
+                justify-content: center;
+                text-align: center;
+            }
+        }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="course-deep-work.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="course-deep-work-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <nav class="nav">
+        <a href="learning-hub.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Learning Hub</a>
+    </nav>
+    
+    <div class="hero">
+        <div class="hero-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <h1>Deep Work</h1>
+        <p class="hero-description">
+            Master focus, flow, and meaningful performance. Build systems that protect your attention and enable peak cognitive output.
+        </p>
+        <div class="hero-meta">
+            <span class="meta-item">4 Lessons</span>
+            <span class="meta-item">~60 min</span>
+            <span class="meta-item">+100 XP</span>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h2 class="section-title">Course Content</h2>
+        
+        <div class="lessons-grid">
+            <a href="deep-work-1-what.html" class="lesson-card">
+                <div class="lesson-number">1</div>
+                <div class="lesson-content">
+                    <h3>What is Deep Work?</h3>
+                    <p>The competitive advantage of focus. Understand why deep work is the superpower of the 21st century.</p>
+                </div>
+                <div class="lesson-meta">
+                    <span class="lesson-time">12 min</span>
+                    <span class="lesson-xp">+20 XP</span>
+                </div>
+            </a>
+            
+            <a href="deep-work-2-flow.html" class="lesson-card">
+                <div class="lesson-number">2</div>
+                <div class="lesson-content">
+                    <h3>Entering Flow States</h3>
+                    <p>Optimal performance through total focus. Learn the triggers and rituals for the flow state.</p>
+                </div>
+                <div class="lesson-meta">
+                    <span class="lesson-time">15 min</span>
+                    <span class="lesson-xp">+25 XP</span>
+                </div>
+            </a>
+            
+            <a href="deep-work-3-protocols.html" class="lesson-card">
+                <div class="lesson-number">3</div>
+                <div class="lesson-content">
+                    <h3>Deep Work Protocols</h3>
+                    <p>Systems that protect focus. Pomodoro, time-blocking, and shutdown rituals.</p>
+                </div>
+                <div class="lesson-meta">
+                    <span class="lesson-time">18 min</span>
+                    <span class="lesson-xp">+30 XP</span>
+                </div>
+            </a>
+            
+            <a href="deep-work-4-defending.html" class="lesson-card">
+                <div class="lesson-number">4</div>
+                <div class="lesson-content">
+                    <h3>Defending Your Deep Work Time</h3>
+                    <p>Protect what matters most. Strategies against external and internal distractions.</p>
+                </div>
+                <div class="lesson-meta">
+                    <span class="lesson-time">15 min</span>
+                    <span class="lesson-xp">+25 XP</span>
+                </div>
+            </a>
+        </div>
+        
+        <div class="start-section">
+            <h2>Ready to Begin?</h2>
+            <p>Start with Lesson 1 and master Deep Work</p>
+            <a href="deep-work-1-what.html" class="start-btn">
+                Start Course <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    </div>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Brown Belt Exam - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --belt-color: #8b6914;
+            --belt-accent: #a67c00;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            padding: 30px 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-link { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; }
+        .progress-text { color: var(--belt-accent); font-size: 0.85rem; font-weight: 600; }
+        
+        .progress-bar { height: 4px; background: var(--mid-grey); border-radius: 2px; margin-bottom: 40px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--belt-color), var(--belt-accent)); border-radius: 2px; transition: width 0.3s; }
+        
+        .intro-screen { text-align: center; padding: 40px 0; }
+        .intro-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--belt-color), var(--belt-accent));
+            border-radius: 50%; margin: 0 auto 25px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .intro-icon svg { width: 40px; height: 40px; color: var(--white); }
+        .intro-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; }
+        .intro-text { color: var(--light-grey); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
+        .intro-rules { background: var(--dark-grey); border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px; }
+        .intro-rules h4 { margin-bottom: 12px; font-size: 0.9rem; }
+        .intro-rules ul { list-style: none; }
+        .intro-rules li { padding: 8px 0; font-size: 0.85rem; color: var(--light-grey); display: flex; align-items: center; gap: 10px; }
+        .intro-rules li::before { content: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'; color: var(--belt-accent); }
+        
+        .question-screen { display: none; }
+        .question-screen.active { display: block; }
+        
+        .scenario-box { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .scenario-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--belt-accent); margin-bottom: 10px; }
+        .scenario-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.9); }
+        
+        .question-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; line-height: 1.4; }
+        
+        .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .option { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 16px 20px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; line-height: 1.5; }
+        .option:hover { border-color: var(--belt-accent); }
+        .option.selected { border-color: var(--belt-accent); background: rgba(166, 124, 0, 0.1); }
+        .option.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .option.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        
+        .feedback-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+        .feedback-box.show { display: block; }
+        .feedback-title { font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .feedback-title.correct { color: var(--green); }
+        .feedback-title.incorrect { color: var(--red); }
+        .feedback-text { font-size: 0.9rem; color: var(--light-grey); line-height: 1.5; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--belt-color), var(--belt-accent)); color: var(--white); }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        
+        .results-screen { display: none; text-align: center; padding: 40px 0; }
+        .results-screen.active { display: block; }
+        
+        .results-icon { width: 100px; height: 100px; background: linear-gradient(135deg, var(--belt-color), var(--belt-accent)); border-radius: 50%; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; }
+        .results-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--belt-accent); }
+        .results-subtitle { color: var(--light-grey); margin-bottom: 30px; }
+        .score-display { font-size: 3rem; font-weight: 800; color: var(--belt-accent); margin-bottom: 10px; }
+        .score-label { color: var(--light-grey); margin-bottom: 30px; }
+        
+        .cert-box { background: linear-gradient(135deg, rgba(166, 124, 0, 0.2), rgba(26, 26, 26, 0.3)); border: 2px solid var(--belt-accent); border-radius: 16px; padding: 30px; margin-bottom: 30px; }
+        .cert-title { font-size: 1.2rem; font-weight: 700; color: var(--belt-accent); margin-bottom: 15px; }
+        .cert-text { color: var(--light-grey); font-size: 0.95rem; line-height: 1.6; }
+        
+        .retry-msg { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .retry-msg p { color: var(--light-grey); font-size: 0.9rem; }
+        .btn-secondary { background: var(--dark-grey); border: 1px solid var(--mid-grey); color: var(--light-grey); margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="brown-belt-exam.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="brown-belt-exam-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <a href="gym-dashboard.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Exit</a>
+            <span class="progress-text" id="progressText">Question 0 / 10</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h1 class="intro-title">Brown Belt Exam</h1>
+            <p class="intro-text">Demonstrate your mastery of coaching, culture building, change management, and developing leaders.</p>
+            
+            <div class="intro-rules">
+                <h4>Exam Rules</h4>
+                <ul>
+                    <li>10 scenario-based questions</li>
+                    <li>You need 8/10 correct to pass</li>
+                    <li>Each question tests Brown Belt principles</li>
+                    <li>Take your time and think carefully</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startExam()">Begin Exam</button>
+        </div>
+
+        <div class="question-screen" id="questionScreen">
+            <div class="scenario-box">
+                <div class="scenario-label">Scenario</div>
+                <p class="scenario-text" id="scenarioText"></p>
+            </div>
+            <p class="question-text" id="questionText"></p>
+            <div class="options" id="optionsContainer"></div>
+            <div class="feedback-box" id="feedbackBox">
+                <div class="feedback-title" id="feedbackTitle"></div>
+                <p class="feedback-text" id="feedbackText"></p>
+            </div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next Question</button>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <div class="results-icon">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h2 class="results-title" id="resultsTitle">Results</h2>
+            <p class="results-subtitle" id="resultsSubtitle"></p>
+            <div class="score-display" id="scoreDisplay">0/10</div>
+            <p class="score-label">Correct Answers</p>
+            
+            <div id="passContent">
+                <div class="cert-box">
+                    <div class="cert-title">Brown Belt Earned</div>
+                    <p class="cert-text">You've mastered the art of developing others. You understand coaching, culture, change, and leadership development at a deep level.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='brown-belt-ceremony.html'">Claim Your Brown Belt</button>
+            </div>
+            
+            <div id="failContent" style="display: none;">
+                <div class="retry-msg">
+                    <p>You need 8/10 to pass. Review the Brown Belt stripes and try again.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='brown-belt-stripe1-gamified.html'">Review Brown Belt</button>
+                <button class="btn btn-secondary" onclick="retryExam()">Retry Exam</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                scenario: "A team member comes to you saying 'I'm stuck on this project.' Your instinct is to solve their problem.",
+                question: "According to the GROW coaching model, what should you do FIRST?",
+                options: [
+                    "Ask what outcome they're trying to achieve (Goal)",
+                    "Share how you handled similar situations",
+                    "Ask what they've already tried (Reality)",
+                    "Brainstorm solutions together (Options)"
+                ],
+                correct: 0,
+                feedback: "GROW starts with Goal. Before exploring reality or options, clarify what success looks like. 'What would a good outcome look like?' sets direction for the whole conversation."
+            },
+            {
+                scenario: "Your company values 'innovation' but the last three promotions went to people who played it safe and hit their numbers reliably.",
+                question: "Using Schein's culture model, what does this reveal?",
+                options: [
+                    "The company should update its stated values",
+                    "There's a gap between espoused values and basic assumptions",
+                    "Innovation isn't actually important to success",
+                    "Promotions should be based on different criteria"
+                ],
+                correct: 1,
+                feedback: "Schein's model shows culture has three levels. Espoused values are what we say; basic assumptions are what we actually believe. Promotion patterns reveal the real culture beneath the stated values."
+            },
+            {
+                scenario: "You're rolling out a new process. You've communicated the vision clearly, but three weeks in, people are still using the old way.",
+                question: "According to Kotter's 8 steps, what did you likely skip?",
+                options: [
+                    "Creating urgency—they don't see why change matters",
+                    "Building a coalition—you don't have enough supporters",
+                    "Generating quick wins—they need early proof it works",
+                    "All of the above could be factors"
+                ],
+                correct: 3,
+                feedback: "Change fails for multiple reasons. No urgency = no motivation. No coalition = no support. No quick wins = no proof. Kotter's model shows these must all be in place, not just vision and communication."
+            },
+            {
+                scenario: "A high performer on your team could become a leader, but they're focused on their own excellence rather than developing others.",
+                question: "Using Maxwell's 5 Levels, what transition do they need to make?",
+                options: [
+                    "From Position to Permission—they need to build relationships",
+                    "From Permission to Production—they need to prove results",
+                    "From Production to People Development—they need to multiply their impact",
+                    "From People Development to Pinnacle—they need to develop leaders"
+                ],
+                correct: 2,
+                feedback: "Level 3 (Production) is about personal results. Level 4 (People Development) is about developing others. This person is stuck at Production—great at their own work, but not yet multiplying through others."
+            },
+            {
+                scenario: "You're coaching someone and they keep asking 'what would you do?' instead of exploring their own options.",
+                question: "What's the coaching approach here?",
+                options: [
+                    "Share your perspective—they clearly want guidance",
+                    "Redirect: 'What options have you considered?' then 'What else?'",
+                    "Explain why coaching requires them to find their own answers",
+                    "Give them two options and let them choose"
+                ],
+                correct: 1,
+                feedback: "The power of coaching is helping them develop their own judgment. 'What options have you considered?' followed by 'What else?' pushes them to think more broadly before you add anything."
+            },
+            {
+                scenario: "You want to shift your team's culture toward more direct feedback. You've announced this priority in team meetings.",
+                question: "According to the five culture levers, what else must you do?",
+                options: [
+                    "Give direct feedback publicly yourself—model the behavior",
+                    "Hire people who already give direct feedback",
+                    "Reward people who give direct feedback, even if it's uncomfortable",
+                    "All of the above"
+                ],
+                correct: 3,
+                feedback: "Culture levers include: what you pay attention to, how you react to crises, what you model, who you hire/promote, and how you allocate resources. Announcement isn't enough—you need multiple levers."
+            },
+            {
+                scenario: "You're leading a change initiative and face vocal resistance from a respected team member. Others are watching.",
+                question: "What does 'resistance is information' mean here?",
+                options: [
+                    "Their resistance signals a flaw in the change plan",
+                    "You should address their concerns publicly to show transparency",
+                    "Understand their concerns deeply—they may see something you've missed",
+                    "Resistance is normal and will fade once change takes hold"
+                ],
+                correct: 2,
+                feedback: "Resistance often contains valid concerns. Rather than dismissing or waiting it out, understanding it deeply can improve your change plan and potentially convert a skeptic into an advocate."
+            },
+            {
+                scenario: "You're developing a promising team member. They ask: 'Is there room for me to advance here?'",
+                question: "Using development best practices, how should you respond?",
+                options: [
+                    "Be honest about promotion timelines and opportunities",
+                    "Explore what advancement means to them—title, responsibility, impact, money?",
+                    "Focus them on current performance as the path to advancement",
+                    "Discuss this with HR before responding"
+                ],
+                correct: 1,
+                feedback: "Development conversations start with understanding their goals. 'Advancement' means different things to different people. Some want title, others want impact, others want flexibility. Know what matters to them first."
+            },
+            {
+                scenario: "Your team needs to change how they handle customer escalations. You have support from leadership but little urgency from the team.",
+                question: "Per Kotter, what should you create FIRST?",
+                options: [
+                    "A clear vision of the new process",
+                    "A coalition of supporters on the team",
+                    "Urgency by showing the cost of current escalation handling",
+                    "Quick wins by piloting with willing team members"
+                ],
+                correct: 2,
+                feedback: "Kotter's Step 1 is urgency. Without it, people have no reason to change. Show the real cost—customer churn, team burnout, competitive disadvantage—to create motivation for change."
+            },
+            {
+                scenario: "You're preparing to transition out of your role. Your successor is capable but has different strengths than you.",
+                question: "What's the leader-developer's approach to this transition?",
+                options: [
+                    "Document everything so they can reference your approach",
+                    "Help them develop their own leadership style that plays to their strengths",
+                    "Introduce them to key stakeholders with your endorsement",
+                    "Finish open projects so they can start fresh"
+                ],
+                correct: 1,
+                feedback: "Your successor doesn't need to be you. Helping them develop their own style—leveraging their unique strengths—creates more sustainable success than trying to replicate your approach."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function startExam() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('questionScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('scenarioText').textContent = q.scenario;
+            document.getElementById('questionText').textContent = q.question;
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectAnswer(i);
+                container.appendChild(div);
+            });
+            document.getElementById('feedbackBox').classList.remove('show');
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('progressText').textContent = `Question ${currentQuestion + 1} / 10`;
+            document.getElementById('progressFill').style.width = ((currentQuestion) / 10 * 100) + '%';
+            answered = false;
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                if (i === q.correct) opt.classList.add('correct');
+                else if (i === index) opt.classList.add('incorrect');
+            });
+            if (index === q.correct) score++;
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            feedbackTitle.className = 'feedback-title ' + (index === q.correct ? 'correct' : 'incorrect');
+            feedbackTitle.innerHTML = index === q.correct ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Correct' : '✗ Not quite';
+            document.getElementById('feedbackText').textContent = q.feedback;
+            document.getElementById('feedbackBox').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').textContent = currentQuestion === 9 ? 'See Results' : 'Next Question';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= 10) showResults();
+            else showQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('scoreDisplay').textContent = score + '/10';
+            if (score >= 8) {
+                document.getElementById('resultsTitle').textContent = 'Brown Belt Achieved';
+                document.getElementById('resultsSubtitle').textContent = 'You understand developing others';
+                document.getElementById('passContent').style.display = 'block';
+                document.getElementById('failContent').style.display = 'none';
+                localStorage.setItem('tap_in_brown_belt_exam_passed', 'true');
+            } else {
+                document.getElementById('resultsTitle').textContent = 'Not Yet';
+                document.getElementById('resultsSubtitle').textContent = 'Keep practicing';
+                document.getElementById('passContent').style.display = 'none';
+                document.getElementById('failContent').style.display = 'block';
+            }
+        }
+
+        function retryExam() {
+            currentQuestion = 0; score = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

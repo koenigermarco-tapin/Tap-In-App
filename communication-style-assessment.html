@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Communication Style Assessment | TAP-IN">
+    <meta name="theme-color" content="#0d0d14">
+    <title>Communication Style Assessment - TAP-IN</title>
+    <style>
+        :root { --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981; --green-glow: rgba(16,185,129,0.3); --gold: #fbbf24; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444; --direct-color: #ef4444; --analytical-color: #3b82f6; --expressive-color: #fbbf24; --amiable-color: #10b981; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%); border-bottom: 1px solid var(--mid-grey); margin-bottom: 30px; }
+        .header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 15px; background: linear-gradient(135deg, var(--blue) 0%, var(--gold) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: var(--light-grey); font-size: 1.1rem; max-width: 500px; margin: 0 auto 25px; }
+        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px auto; max-width: 400px; }
+        .style-preview { padding: 20px; border-radius: 12px; text-align: center; }
+        .style-preview.direct { background: linear-gradient(135deg, var(--direct-color), #dc2626); }
+        .style-preview.analytical { background: linear-gradient(135deg, var(--analytical-color), #2563eb); }
+        .style-preview.expressive { background: linear-gradient(135deg, var(--expressive-color), #d97706); }
+        .style-preview.amiable { background: linear-gradient(135deg, var(--amiable-color), #059669); }
+        .style-preview .icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .style-preview .name { font-weight: 600; font-size: 0.95rem; }
+        .start-btn { background: linear-gradient(135deg, var(--green) 0%, #059669 100%); color: white; border: none; padding: 18px 50px; font-size: 1.2rem; font-weight: 600; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 20px var(--green-glow); }
+        .progress-container { position: sticky; top: 0; background: var(--dark-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--mid-grey); z-index: 100; display: none; }
+        .progress-container.show { display: block; }
+        .progress-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .progress-label { font-size: 0.9rem; color: var(--light-grey); }
+        .progress-xp { color: var(--gold); font-weight: 600; }
+        .progress-bar { height: 8px; background: var(--mid-grey); border-radius: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--gold)); border-radius: 10px; transition: width 0.5s; width: 0%; }
+        .question-card { background: var(--dark-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; border: 1px solid var(--mid-grey); display: none; animation: fadeIn 0.5s; }
+        .question-card.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .question-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--mid-grey); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; color: var(--light-grey); margin-bottom: 20px; }
+        .question-text { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600; margin-bottom: 30px; line-height: 1.4; }
+        .image-choice { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 20px 0; }
+        .img-option { background: var(--mid-grey); border: 2px solid transparent; border-radius: 16px; padding: 25px 20px; text-align: center; cursor: pointer; transition: all 0.2s; }
+        .img-option:hover { border-color: var(--green); transform: translateY(-3px); }
+        .img-option.selected { border-color: var(--green); background: rgba(16,185,129,0.15); }
+        .img-option .emoji { font-size: 3rem; margin-bottom: 12px; }
+        .img-option .label { font-weight: 600; margin-bottom: 5px; }
+        .img-option .desc { font-size: 0.8rem; color: var(--light-grey); }
+        .spectrum { margin: 30px 0; }
+        .spectrum-labels { display: flex; justify-content: space-between; margin-bottom: 15px; }
+        .spectrum-label { text-align: center; max-width: 100px; }
+        .spectrum-label .text { font-size: 0.85rem; color: var(--light-grey); }
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 12px; background: linear-gradient(90deg, var(--direct-color), var(--amiable-color)); border-radius: 10px; cursor: pointer; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 28px; height: 28px; background: var(--white); border-radius: 50%; cursor: grab; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .spectrum-value { text-align: center; margin-top: 15px; font-size: 1.1rem; font-weight: 600; }
+        .scenario-box { background: var(--mid-grey); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--gold); }
+        .scenario-box .label { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 15px; }
+        .option:hover { border-color: var(--green); }
+        .option.selected { border-color: var(--green); background: rgba(16,185,129,0.15); }
+        .option .letter { width: 36px; height: 36px; background: var(--black); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--green); flex-shrink: 0; }
+        .option.selected .letter { background: var(--green); color: var(--black); }
+        .insight-card { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(251,191,36,0.1)); border: 1px solid var(--mid-grey); border-left: 4px solid var(--blue); border-radius: 12px; padding: 25px; margin-top: 25px; display: none; }
+        .insight-card.show { display: block; }
+        .insight-card .title { font-weight: 600; color: var(--blue); margin-bottom: 10px; }
+        .insight-card .content { color: var(--light-grey); line-height: 1.7; margin-bottom: 15px; }
+        .insight-card .quote { font-style: italic; padding: 15px; background: var(--mid-grey); border-radius: 8px; border-left: 3px solid var(--gold); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--green), #059669); color: white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .toast { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, var(--green), #059669); color: white; padding: 15px 25px; border-radius: 12px; z-index: 1002; display: none; }
+        .toast.show { display: block; }
+        .results-section { display: none; }
+        .results-section.active { display: block; }
+        .result-hero { text-align: center; padding: 50px 30px; border-radius: 20px; margin-bottom: 30px; }
+        .result-hero.direct { background: linear-gradient(135deg, var(--direct-color), #dc2626); }
+        .result-hero.analytical { background: linear-gradient(135deg, var(--analytical-color), #2563eb); }
+        .result-hero.expressive { background: linear-gradient(135deg, var(--expressive-color), #d97706); }
+        .result-hero.amiable { background: linear-gradient(135deg, var(--amiable-color), #059669); }
+        .result-hero .icon { font-size: 4rem; margin-bottom: 20px; }
+        .result-hero h2 { font-size: 2.5rem; margin-bottom: 15px; }
+        .result-hero .description { font-size: 1.1rem; opacity: 0.95; max-width: 500px; margin: 0 auto; }
+        .style-scores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; }
+        .style-score { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; text-align: center; }
+        .style-score .value { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        .style-score .name { font-size: 0.85rem; color: var(--light-grey); }
+        .result-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .result-card h3 { margin-bottom: 15px; }
+        .result-card ul { list-style: none; }
+        .result-card li { padding: 10px 0; border-bottom: 1px solid var(--mid-grey); color: var(--light-grey); }
+        .result-card li:last-child { border-bottom: none; }
+        .cta-section { background: linear-gradient(135deg, var(--green), #059669); border-radius: 20px; padding: 40px; text-align: center; }
+        .cta-section .btn { background: white; color: var(--green); margin-top: 15px; }
+        .lang-switch { position: fixed; top: 20px; right: 20px; display: flex; gap: 5px; background: var(--dark-grey); padding: 5px; border-radius: 8px; border: 1px solid var(--mid-grey); z-index: 100; }
+        .lang-btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--light-grey); }
+        .lang-btn.active { background: var(--green); color: white; }
+        .celebration { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(13,13,20,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .celebration.show { display: flex; }
+        .celebration-content { text-align: center; }
+        .celebration-icon { font-size: 5rem; margin-bottom: 20px; }
+        .celebration-text { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
+        .celebration-sub { color: var(--light-grey); margin-bottom: 30px; }
+        @media (max-width: 600px) { .nav-buttons { flex-direction: column; } .btn { width: 100%; } .image-choice, .style-grid, .style-scores { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="lang-switch"><button class="lang-btn active">EN</button><button class="lang-btn" onclick="switchLang('de')">DE</button></div>
+    <div class="toast" id="toast"><div class="title">+25 XP</div><div class="message">Communication insight!</div></div>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <h1>Communication Style Assessment</h1>
+                <p class="subtitle">Discover how you naturally communicate and connect with others. Understanding your style unlocks better relationships and influence.</p>
+                <div class="style-grid">
+                    <div class="style-preview direct"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div><div class="name">Direct</div></div>
+                    <div class="style-preview analytical"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div><div class="name">Analytical</div></div>
+                    <div class="style-preview expressive"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z"/></svg></div><div class="name">Expressive</div></div>
+                    <div class="style-preview amiable"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg></div><div class="name">Amiable</div></div>
+                </div>
+                <button class="start-btn" onclick="startAssessment()">Discover My Style</button>
+                <p style="margin-top: 20px; color: var(--light-grey); font-size: 0.9rem;">~5 minutes • 12 questions • Instant results</p>
+            </div>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-top"><span class="progress-label" id="progressLabel">Question 1 of 12</span><span class="progress-xp" id="progressXP">+0 XP</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="results-section" id="resultsSection"><div id="resultsContent"></div></div>
+    </div>
+    <div class="celebration" id="celebration"><div class="celebration-content"><div class="celebration-icon" id="celebrationIcon"></div><div class="celebration-text" id="celebrationText"></div><div class="celebration-sub" id="celebrationSub"></div><button class="btn btn-primary" onclick="closeCelebration()">Continue</button></div></div>
+    <script>
+        const questions = [
+            { type: 'image', question: 'In a meeting, which energy do you bring?', options: [
+                { value: 'direct', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>', label: 'Let\'s decide NOW', desc: 'Cut to the chase' },
+                { value: 'analytical', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>', label: 'Show me the data', desc: 'I need details first' },
+                { value: 'expressive', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 0 6 6c0 3.314-2.686 6-6 6a6 6 0 0 1-6-6 6 6 0 0 1 6-6z"/></svg>', label: 'What if we tried...', desc: 'Big ideas and energy' },
+                { value: 'amiable', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg>', label: 'How does everyone feel?', desc: 'Consensus matters' }
+            ], insight: { title: 'Meeting Dynamics', content: 'Research shows teams with all 4 styles make better decisions—but only if each style is heard. Direct and Analytical focus on TASK. Expressive and Amiable focus on PEOPLE.', quote: '"The single biggest problem in communication is the illusion that it has taken place." - George Bernard Shaw' }},
+            { type: 'spectrum', question: 'When making decisions, I tend to be...', leftLabel: 'Fast & Decisive', rightLabel: 'Thorough & Careful', leftValue: 'direct', rightValue: 'analytical', insight: { title: 'Decision Speed', content: 'Neither is "better"—context matters. Direct/Expressive styles decide 40% faster but may miss details. Analytical/Amiable styles are 30% more accurate but may delay action.', quote: '"In any moment of decision, the best thing you can do is the right thing. The worst is nothing." - Theodore Roosevelt' }},
+            { type: 'scenario', scenario: 'You need to give someone critical feedback...', question: 'Your natural approach?', options: [
+                { value: 'direct', letter: 'A', text: 'Be direct—they deserve the truth quickly' },
+                { value: 'analytical', letter: 'B', text: 'Prepare specific examples and data first' },
+                { value: 'expressive', letter: 'C', text: 'Frame it as growth opportunity, inspire change' },
+                { value: 'amiable', letter: 'D', text: 'Find a private, comfortable setting first' }
+            ], insight: { title: 'Feedback Styles', content: 'The best feedback adapts to the RECEIVER\'s style, not yours. Direct people want brevity. Analyticals want specifics. Expressives want vision. Amiables want care.', quote: '"Feedback is the breakfast of champions." - Ken Blanchard' }},
+            { type: 'image', question: 'Your ideal communication channel?', options: [
+                { value: 'direct', emoji: '📞', label: 'Quick call', desc: 'Get it done now' },
+                { value: 'analytical', emoji: '📧', label: 'Detailed email', desc: 'Everything in writing' },
+                { value: 'expressive', emoji: '🎥', label: 'Video/In-person', desc: 'See the energy' },
+                { value: 'amiable', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>', label: 'Warm message', desc: 'Personal touch' }
+            ], insight: { title: 'Channel Preferences', content: 'Mismatched channels cause 60% of workplace miscommunication. Direct people hate long emails. Analyticals distrust quick calls. Match the channel to your audience.', quote: '"The medium is the message." - Marshall McLuhan' }},
+            { type: 'spectrum', question: 'In conversations, I focus more on...', leftLabel: 'The Task/Goal', rightLabel: 'The Relationship', leftValue: 'analytical', rightValue: 'amiable', insight: { title: 'Task vs. Relationship', content: 'Harvard research: Long-term success requires BOTH. Task-focused people get things done. Relationship-focused people sustain teams. The best balance both.', quote: '"People don\'t care how much you know until they know how much you care." - John Maxwell' }},
+            { type: 'scenario', scenario: 'A colleague disagrees with your idea in a meeting...', question: 'Your reaction?', options: [
+                { value: 'direct', letter: 'A', text: 'Defend your position confidently' },
+                { value: 'analytical', letter: 'B', text: 'Ask them to explain their reasoning' },
+                { value: 'expressive', letter: 'C', text: 'Get excited—debate sparks better ideas!' },
+                { value: 'amiable', letter: 'D', text: 'Seek common ground between positions' }
+            ], insight: { title: 'Conflict Response', content: 'Thomas-Kilmann research: How you handle disagreement predicts influence. Direct people compete. Analyticals analyze. Expressives explore. Amiables accommodate.', quote: '"Conflict is inevitable. Combat is optional." - Max Lucado' }},
+            { type: 'image', question: 'What energizes you most?', options: [
+                { value: 'direct', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>', label: 'Winning', desc: 'Achieving results' },
+                { value: 'analytical', emoji: '🧩', label: 'Solving', desc: 'Figuring it out' },
+                { value: 'expressive', emoji: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>', label: 'Creating', desc: 'New possibilities' },
+                { value: 'amiable', emoji: '❤️', label: 'Connecting', desc: 'Building trust' }
+            ], insight: { title: 'Core Motivations', content: 'Understanding what energizes you reveals your communication strengths. Direct: results. Analytical: accuracy. Expressive: recognition. Amiable: harmony.', quote: '"Know thyself." - Oracle of Delphi' }},
+            { type: 'spectrum', question: 'I express emotions...', leftLabel: 'Openly & Freely', rightLabel: 'Reserved & Controlled', leftValue: 'expressive', rightValue: 'analytical', insight: { title: 'Emotional Expression', content: 'Neither is right—both are effective in different contexts. High expressiveness builds rapport. Low expressiveness builds credibility. Great communicators can flex.', quote: '"Emotional intelligence is the key to both personal and professional success." - Daniel Goleman' }},
+            { type: 'scenario', scenario: 'You\'re presenting to executives...', question: 'Your preparation focuses on?', options: [
+                { value: 'direct', letter: 'A', text: 'Key decisions needed and timeline' },
+                { value: 'analytical', letter: 'B', text: 'Data, analysis, and backup slides' },
+                { value: 'expressive', letter: 'C', text: 'Compelling story and vision' },
+                { value: 'amiable', letter: 'D', text: 'How this helps the team/organization' }
+            ], insight: { title: 'Executive Communication', content: 'McKinsey research: Executives are often Direct style. Lead with the answer, then support with data. Save relationship building for after the decision.', quote: '"Tell them what you\'re going to tell them. Tell them. Tell them what you told them."' }},
+            { type: 'image', question: 'Under stress, you tend to...', options: [
+                { value: 'direct', emoji: '💢', label: 'Get impatient', desc: 'Push harder' },
+                { value: 'analytical', emoji: '🔒', label: 'Withdraw', desc: 'Need more data' },
+                { value: 'expressive', emoji: '🌪️', label: 'Get emotional', desc: 'Express feelings' },
+                { value: 'amiable', emoji: '🏳️', label: 'Accommodate', desc: 'Keep peace' }
+            ], insight: { title: 'Stress Responses', content: 'Your style amplifies under stress. Direct becomes aggressive. Analytical becomes distant. Expressive becomes dramatic. Amiable becomes passive. Self-awareness is key.', quote: '"Between stimulus and response there is a space. In that space is our power to choose our response." - Viktor Frankl' }},
+            { type: 'spectrum', question: 'I prefer environments that are...', leftLabel: 'Fast-Paced & Dynamic', rightLabel: 'Stable & Predictable', leftValue: 'expressive', rightValue: 'amiable', insight: { title: 'Environmental Fit', content: 'Culture fit is really style fit. Startups attract Direct/Expressive. Established companies attract Analytical/Amiable. Mismatch causes burnout.', quote: '"Culture eats strategy for breakfast." - Peter Drucker' }},
+            { type: 'scenario', scenario: 'A new team member joins...', question: 'Your first instinct?', options: [
+                { value: 'direct', letter: 'A', text: 'Brief them on goals and expectations' },
+                { value: 'analytical', letter: 'B', text: 'Share documentation and processes' },
+                { value: 'expressive', letter: 'C', text: 'Welcome them enthusiastically, share vision' },
+                { value: 'amiable', letter: 'D', text: 'Help them feel comfortable and connected' }
+            ], insight: { title: 'Onboarding Styles', content: 'New hires need ALL four: clear expectations (Direct), process knowledge (Analytical), inspiration (Expressive), and belonging (Amiable). Teams that provide all four retain 50% better.', quote: '"You never get a second chance to make a first impression."' }}
+        ];
+        const styles = { direct: 0, analytical: 0, expressive: 0, amiable: 0 };
+        let currentQuestion = 0, answers = {}, totalXP = 0;
+
+        function startAssessment() { document.getElementById('introScreen').style.display = 'none'; document.getElementById('progressContainer').classList.add('show'); renderQuestion(); }
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            let html = `<div class="question-card active"><div class="question-badge">Q${currentQuestion + 1} of 12</div><div class="question-text">${q.question}</div>`;
+            if (q.type === 'image') html += renderImageChoice(q);
+            else if (q.type === 'spectrum') html += renderSpectrum(q);
+            else if (q.type === 'scenario') html += renderScenario(q);
+            html += `<div class="insight-card" id="insightCard"><div class="title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 0 6 6c0 3.314-2.686 6-6 6a6 6 0 0 1-6-6 6 6 0 0 1 6-6z"/></svg> ${q.insight.title}</div><div class="content">${q.insight.content}</div><div class="quote">${q.insight.quote}</div></div>`;
+            html += `<div class="nav-buttons">${currentQuestion > 0 ? '<button class="btn btn-secondary" onclick="prevQuestion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>' : '<div></div>'}<button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>${currentQuestion === questions.length - 1 ? 'See Results' : 'Continue'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`;
+            document.getElementById('questionsContainer').innerHTML = html;
+            updateProgress();
+        }
+
+        function renderImageChoice(q) {
+            return `<div class="image-choice">${q.options.map(o => `<div class="img-option" onclick="selectImage(this, '${o.value}')"><div class="emoji">${o.emoji}</div><div class="label">${o.label}</div><div class="desc">${o.desc}</div></div>`).join('')}</div>`;
+        }
+        function renderSpectrum(q) {
+            return `<div class="spectrum"><div class="spectrum-labels"><div class="spectrum-label"><div class="text">${q.leftLabel}</div></div><div class="spectrum-label"><div class="text">${q.rightLabel}</div></div></div><input type="range" min="0" max="100" value="50" oninput="updateSpectrumDisplay()" onchange="selectSpectrum(this.value, '${q.leftValue}', '${q.rightValue}')"><div class="spectrum-value" id="spectrumValue">Balanced</div></div>`;
+        }
+        function renderScenario(q) {
+            return `<div class="scenario-box"><div class="label">Situation</div><div>${q.scenario}</div></div><div class="options">${q.options.map(o => `<div class="option" onclick="selectOption(this, '${o.value}')"><div class="letter">${o.letter}</div><div>${o.text}</div></div>`).join('')}</div>`;
+        }
+
+        function selectImage(el, value) { document.querySelectorAll('.img-option').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); styles[value]++; answers[currentQuestion] = value; showInsight(); }
+        function updateSpectrumDisplay() { const v = document.querySelector('input[type="range"]').value; document.getElementById('spectrumValue').textContent = v < 35 ? 'Lean Left' : v > 65 ? 'Lean Right' : 'Balanced'; }
+        function selectSpectrum(value, left, right) { const style = value < 50 ? left : right; if (value < 35 || value > 65) styles[style]++; answers[currentQuestion] = style; showInsight(); }
+        function selectOption(el, value) { document.querySelectorAll('.option').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); styles[value]++; answers[currentQuestion] = value; showInsight(); }
+
+        function showInsight() { document.getElementById('insightCard').classList.add('show'); document.getElementById('nextBtn').disabled = false; totalXP += 25; document.getElementById('progressXP').textContent = `+${totalXP} XP`; showToast(); }
+        function showToast() { const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+        function updateProgress() { document.getElementById('progressFill').style.width = `${(currentQuestion / questions.length) * 100}%`; document.getElementById('progressLabel').textContent = `Question ${currentQuestion + 1} of 12`; }
+        function nextQuestion() { if (currentQuestion < questions.length - 1) { currentQuestion++; renderQuestion(); if (currentQuestion === 6) showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', 'Halfway!', 'Your communication style is emerging!'); } else showResults(); }
+        function prevQuestion() { if (currentQuestion > 0) { if (answers[currentQuestion]) styles[answers[currentQuestion]]--; currentQuestion--; renderQuestion(); } }
+        function showCelebration(icon, text, sub) { document.getElementById('celebrationIcon').textContent = icon; document.getElementById('celebrationText').textContent = text; document.getElementById('celebrationSub').textContent = sub; document.getElementById('celebration').classList.add('show'); }
+        function closeCelebration() { document.getElementById('celebration').classList.remove('show'); }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.display = 'none';
+            const total = Object.values(styles).reduce((a, b) => a + b, 0) || 1;
+            const pcts = { direct: Math.round((styles.direct / total) * 100), analytical: Math.round((styles.analytical / total) * 100), expressive: Math.round((styles.expressive / total) * 100), amiable: Math.round((styles.amiable / total) * 100) };
+            const sorted = Object.entries(pcts).sort((a, b) => b[1] - a[1]);
+            const primary = sorted[0][0];
+            const styleData = {
+                direct: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', name: 'Direct Communicator', desc: 'You value efficiency, results, and decisive action. You communicate with confidence and expect others to get to the point quickly.', strengths: ['Clear and decisive communication', 'Efficient in meetings and decisions', 'Natural leadership presence', 'Cuts through ambiguity'], growth: ['May seem impatient to others', 'Could miss important relationship context', 'Might intimidate more reserved styles'] },
+                analytical: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg>', name: 'Analytical Communicator', desc: 'You value accuracy, logic, and thoroughness. You communicate with precision and appreciate well-researched, data-driven discussions.', strengths: ['Thorough and accurate communication', 'Excellent at complex problem-solving', 'Provides valuable perspective', 'Reduces errors and oversights'], growth: ['May seem slow to decide', 'Could overwhelm with details', 'Might miss emotional undercurrents'] },
+                expressive: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l1.5 4.5L18 8l-4.5 1.5L12 14l-1.5-4.5L6 8l4.5-1.5L12 2z"/></svg>', name: 'Expressive Communicator', desc: 'You value creativity, enthusiasm, and connection. You communicate with energy and inspire others with vision and possibility.', strengths: ['Engaging and inspiring presence', 'Great at building enthusiasm', 'Creative problem-solver', 'Natural storyteller'], growth: ['May seem unfocused to others', 'Could overwhelm with energy', 'Might miss important details'] },
+                amiable: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg>', name: 'Amiable Communicator', desc: 'You value harmony, relationships, and consensus. You communicate with warmth and ensure everyone feels heard and valued.', strengths: ['Excellent listener and mediator', 'Builds strong team cohesion', 'Creates psychological safety', 'Sustains long-term relationships'], growth: ['May avoid necessary conflict', 'Could seem indecisive', 'Might prioritize harmony over results'] }
+            };
+            const p = styleData[primary];
+            showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>', 'Assessment Complete!', `You earned ${totalXP} XP!`);
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="result-hero ${primary}"><div class="icon">${p.icon}</div><h2>${p.name}</h2><p class="description">${p.desc}</p></div>
+                <div class="style-scores">
+                    <div class="style-score"><div class="value" style="color: var(--direct-color);">${pcts.direct}%</div><div class="name">Direct</div></div>
+                    <div class="style-score"><div class="value" style="color: var(--analytical-color);">${pcts.analytical}%</div><div class="name">Analytical</div></div>
+                    <div class="style-score"><div class="value" style="color: var(--expressive-color);">${pcts.expressive}%</div><div class="name">Expressive</div></div>
+                    <div class="style-score"><div class="value" style="color: var(--amiable-color);">${pcts.amiable}%</div><div class="name">Amiable</div></div>
+                </div>
+                <div class="result-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 10c0-5-3-7-3-7s-3 2-3 7"/><path d="M14 10h6"/><path d="M20 10v4a2 2 0 0 1-2 2h-2"/><path d="M4 10h6"/><path d="M4 10v4a2 2 0 0 0 2 2h2"/></svg> Your Strengths</h3><ul>${p.strengths.map(s => `<li>${s}</li>`).join('')}</ul></div>
+                <div class="result-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Growth Opportunities</h3><ul>${p.growth.map(g => `<li>${g}</li>`).join('')}</ul></div>
+                <div class="result-card"><h3>🔄 Flexing Your Style</h3><ul><li>When communicating with <strong>Direct</strong> styles: Be brief, focus on results</li><li>When communicating with <strong>Analytical</strong> styles: Provide data, be patient</li><li>When communicating with <strong>Expressive</strong> styles: Show enthusiasm, allow brainstorming</li><li>When communicating with <strong>Amiable</strong> styles: Build rapport first, seek consensus</li></ul></div>
+                <div class="cta-section"><h3>Master Communication</h3><p>The TAP-IN Belt System includes comprehensive communication training across all styles.</p><a href="gym-dashboard.html" class="btn">Explore Belt System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`;
+            localStorage.setItem('tapin-communication-style', JSON.stringify({ primary, scores: pcts, completedAt: new Date().toISOString(), xp: totalXP }));
+        }
+        function switchLang(lang) { if (lang === 'de') window.location.href = 'communication-style-assessment-de.html'; }
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

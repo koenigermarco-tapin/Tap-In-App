@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Empathie - Gamifiziertes Lernen</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container { max-width: 950px; margin: 0 auto; }
+
+        .module-header {
+            background: linear-gradient(135deg, #be185d 0%, #9f1239 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(190, 24, 93, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .module-title-group h1 { font-size: 2.5em; margin-bottom: 5px; }
+        .module-title-group p { font-size: 1.1em; opacity: 0.95; }
+
+        .header-stats { display: flex; gap: 30px; text-align: center; }
+        .stat { display: flex; flex-direction: column; align-items: center; }
+        .stat-icon { font-size: 2em; margin-bottom: 8px; }
+        .stat-value { font-size: 1.8em; font-weight: 800; }
+        .stat-label { font-size: 0.85em; opacity: 0.8; text-transform: uppercase; }
+
+        .gamification-dash {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .dash-item {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            border-left: 4px solid #f472b6;
+        }
+
+        .dash-item.xp { border-left-color: #10b981; }
+        .dash-item.streak { border-left-color: #f59e0b; }
+        .dash-item.badges { border-left-color: #db2777; }
+
+        .dash-value { font-size: 2em; font-weight: 800; color: #f472b6; margin-bottom: 5px; }
+        .dash-item.xp .dash-value { color: #10b981; }
+        .dash-item.streak .dash-value { color: #f59e0b; }
+        .dash-item.badges .dash-value { color: #db2777; }
+        .dash-label { font-size: 0.8em; color: #666; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .progress-container { margin-top: 20px; }
+        .progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; color: #333; }
+        .progress-bar { width: 100%; height: 10px; background: #e0e0e0; border-radius: 10px; overflow: hidden; margin-bottom: 5px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #f472b6 0%, #db2777 100%); border-radius: 10px; transition: width 0.3s ease; }
+        .progress-text { font-size: 0.85em; color: #666; }
+
+        .challenge-banner {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+        }
+
+        .challenge-content { display: flex; align-items: center; justify-content: space-between; }
+        .challenge-text h3 { margin-bottom: 5px; font-size: 1.1em; }
+        .challenge-text p { font-size: 0.9em; opacity: 0.95; }
+        .challenge-reward { background: rgba(255, 255, 255, 0.2); padding: 10px 20px; border-radius: 20px; font-weight: 600; }
+
+        .lessons-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-bottom: 30px; }
+
+        .lesson-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .lesson-card:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15); }
+
+        .lesson-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #10b981;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            z-index: 10;
+            display: none;
+        }
+
+        .lesson-badge.show { display: block; animation: popIn 0.5s ease; }
+        @keyframes popIn { 0% { transform: scale(0); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #f472b6 0%, #db2777 100%);
+            color: white;
+            padding: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .lesson-header.lesson-2 { background: linear-gradient(135deg, #f9a8d4 0%, #f472b6 100%); }
+        .lesson-header.lesson-3 { background: linear-gradient(135deg, #fbcfe8 0%, #f9a8d4 100%); }
+
+        .lesson-icon { font-size: 2.5em; margin-right: 15px; }
+        .lesson-title { flex: 1; }
+        .lesson-title h3 { font-size: 1.3em; margin-bottom: 5px; }
+        .lesson-subtitle { font-size: 0.9em; opacity: 0.9; }
+        .lesson-status { font-size: 0.75em; background: rgba(255, 255, 255, 0.3); padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+
+        .lesson-content { padding: 25px; }
+        .lesson-header-text { color: #be185d; margin-bottom: 15px; font-size: 1.2em; font-weight: 600; }
+
+        .lesson-body { display: none; animation: slideDown 0.3s ease; }
+        .lesson-body.active { display: block; }
+        @keyframes slideDown { from { opacity: 0; max-height: 0; transform: translateY(-10px); } to { opacity: 1; max-height: 2000px; transform: translateY(0); } }
+
+        .lesson-intro { color: #555; line-height: 1.6; margin-bottom: 20px; font-size: 0.95em; }
+        .lesson-section { margin-bottom: 25px; }
+        .lesson-section h5 { color: #be185d; margin-bottom: 10px; font-size: 1.05em; font-weight: 600; }
+
+        .strategy-item { background: #fce7f3; padding: 15px; border-left: 4px solid #f472b6; border-radius: 6px; margin-bottom: 10px; }
+        .strategy-item.strategy-2 { border-left-color: #f9a8d4; }
+        .strategy-item.strategy-3 { border-left-color: #fbcfe8; }
+        .strategy-name { font-weight: 700; color: #be185d; margin-bottom: 5px; }
+        .strategy-desc { font-size: 0.9em; color: #666; line-height: 1.5; }
+
+        .practical-exercises { background: #fce7f3; padding: 15px; border-radius: 8px; margin-top: 15px; }
+        .exercise-list { list-style: none; margin-top: 10px; }
+        .exercise-list li { padding: 8px 0; color: #555; display: flex; align-items: flex-start; }
+        .exercise-list li:before { content: "<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg>"; color: #f472b6; font-weight: bold; margin-right: 10px; font-size: 1.2em; }
+
+        .lesson-footer { display: flex; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #e0e0e0; }
+
+        .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 0.95em; cursor: pointer; transition: all 0.2s ease; font-weight: 600; }
+        .btn-primary { background: linear-gradient(135deg, #f472b6 0%, #db2777 100%); color: white; flex: 1; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(244, 114, 182, 0.3); }
+        .btn-secondary { background: white; color: #f472b6; border: 2px solid #f472b6; }
+        .btn-secondary:hover { background: #fdf2f8; }
+
+        .xp-badge { display: inline-block; background: #10b981; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8em; font-weight: 600; margin-left: 10px; }
+
+        .achievement-popup {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 300px;
+            z-index: 2000;
+            animation: slideInRight 0.5s ease;
+            display: none;
+        }
+
+        .achievement-popup.show { display: block; }
+        @keyframes slideInRight { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+        .achievement-header { display: flex; align-items: center; margin-bottom: 10px; }
+        .achievement-icon { font-size: 2.5em; margin-right: 15px; }
+        .achievement-text h4 { color: #be185d; margin-bottom: 3px; }
+        .achievement-text p { font-size: 0.85em; color: #666; }
+        .achievement-xp { background: #f0fdf4; padding: 10px; border-radius: 8px; text-align: center; margin-top: 10px; color: #16a34a; font-weight: 600; }
+
+        .summary-container { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); }
+        .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+        .summary-item { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 20px; border-radius: 10px; border-left: 4px solid #f472b6; text-align: center; }
+        .summary-item.summary-2 { border-left-color: #f9a8d4; }
+        .summary-item.summary-3 { border-left-color: #fbcfe8; }
+        .summary-label { font-size: 0.8em; color: #666; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+        .summary-value { font-size: 2em; font-weight: 800; color: #f472b6; }
+
+        @media (max-width: 768px) {
+            .module-header { flex-direction: column; text-align: center; }
+            .header-stats { margin-top: 20px; flex-direction: column; gap: 15px; }
+            .lesson-card:hover { transform: translateY(-4px); }
+            .achievement-popup { max-width: 90vw; right: 10px; left: 10px; }
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="module-header">
+            <div class="module-title-group">
+                <h1> Empathie</h1>
+                <p>Verbinde dich tief mit anderen—fühle mit ihnen, nicht für sie</p>
+            </div>
+            <div class="header-stats">
+                <div class="stat">
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="stat-value" id="moduleXP">0</div>
+                    <div class="stat-label">Modul XP</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="stat-value" id="moduleStreak">0</div>
+                    <div class="stat-label">Tage-Streak</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="gamification-dash">
+            <div class="dash-grid">
+                <div class="dash-item xp">
+                    <div class="dash-value" id="xpDisplay">0</div>
+                    <div class="dash-label">Gesamt XP</div>
+                </div>
+                <div class="dash-item streak">
+                    <div class="dash-value" id="streakDisplay">0</div>
+                    <div class="dash-label">Lektionen diese Woche</div>
+                </div>
+                <div class="dash-item badges">
+                    <div class="dash-value" id="badgesDisplay">0</div>
+                    <div class="dash-label">Badges verdient</div>
+                </div>
+            </div>
+
+            <div class="progress-container">
+                <div class="progress-label">
+                    <span>Modul-Meisterschaft</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 von 3 Lektionen abgeschlossen</div>
+            </div>
+        </div>
+
+        <div class="challenge-banner">
+            <div class="challenge-content">
+                <div class="challenge-text">
+                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Tägliche Herausforderung</h3>
+                    <p>Übe Perspektivwechsel in 2 Gesprächen heute</p>
+                </div>
+                <div class="challenge-reward">+50 XP</div>
+            </div>
+        </div>
+
+        <div class="lessons-grid">
+            <!-- Lektion 1: Empathie vs Sympathie -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge1">+25 XP</div>
+                <div class="lesson-header">
+                    <div class="lesson-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="lesson-title">
+                        <h3>Empathie vs Sympathie</h3>
+                        <p class="lesson-subtitle">Mitfühlen, nicht bemitleiden</p>
+                    </div>
+                    <div class="lesson-status" id="status1">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Empathie vs Sympathie</h4>
+                    <div class="lesson-body" id="lesson1">
+                        <p class="lesson-intro">Empathie bedeutet nicht, jemanden zu bemitleiden. Es bedeutet, in ihre Erfahrung einzutauchen und mit ihnen zu fühlen. Sympathie distanziert. Empathie verbindet.</p>
+
+                        <div class="lesson-section">
+                            <h5>Der Unterschied</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Sympathie = "Ich fühle mich schlecht FÜR dich"</div>
+                                <div class="strategy-desc">Du beobachtest ihren Schmerz von außen. "Das ist so traurig." "Tut mir leid, dass das passiert ist." Es ist mitfühlend, aber es hält Distanz. Du bist oben, schaust herab.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Empathie = "Ich fühle MIT dir"</div>
+                                <div class="strategy-desc">Du tauchst in ihre Erfahrung ein. "Ich kann mir vorstellen, wie schwer das sein muss." "Das klingt überwältigend." Du bist neben ihnen, fühlst was sie fühlen—nicht die gleiche Intensität, aber die gleiche Art.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Brené Browns Framework</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name">1. Perspektivwechsel</div>
+                                <div class="strategy-desc">Sieh die Situation durch ihre Augen. Nicht "Was würde ich tun?" sondern "Wie ist das für sie?"</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">2. Ohne Urteil bleiben</div>
+                                <div class="strategy-desc">Halte deine Meinungen zurück. Diagnostiziere nicht, berate nicht, kritisiere nicht. Verstehe einfach nur. Urteilen tötet Empathie.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">3. Emotion erkennen</div>
+                                <div class="strategy-desc">Benenne, was sie fühlen. "Das klingt einsam" oder "Ich höre Frustration." Das validiert ihre Erfahrung.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name">4. Kommunizieren, dass du verstehst</div>
+                                <div class="strategy-desc">Spiegle es zurück. "Es macht Sinn, dass du dich so fühlst." Das ist der Verbindungspunkt—sie fühlen sich gesehen.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Warum Empathie wichtig ist</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Verbindung</div>
+                                <div class="strategy-desc">Menschen brauchen nicht, dass du sie reparierst. Sie brauchen, sich weniger allein zu fühlen. Empathie sagt: "Du bist nicht verrückt. Ich verstehe das."</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Deeskalation</div>
+                                <div class="strategy-desc">Bei Konflikten ist Empathie der schnellste Weg, Emotionen zu beruhigen. Wenn Menschen sich verstanden fühlen, lässt die Defensive nach.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Einfluss</div>
+                                <div class="strategy-desc">Du kannst Menschen, die du nicht verstehst, nicht führen. Empathie baut Vertrauen auf, und Vertrauen baut Gefolgschaft.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Was Empathie blockiert</h5>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Der Reparier-Reflex</div>
+                                <div class="strategy-desc">Zu Lösungen springen. "Hast du schon versucht...?" fühlt sich abweisend an. Sie brauchen keine Reparatur—sie müssen zuerst gehört werden.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Die Übertrumpf-Antwort</div>
+                                <div class="strategy-desc">"Das ist mir auch passiert..." Du machst es um dich. Bleib bei ihnen fokussiert.</div>
+                            </div>
+                            <div class="strategy-item">
+                                <div class="strategy-name"> Silberstreifen</div>
+                                <div class="strategy-desc">"Wenigstens hast du..." minimiert ihren Schmerz. Lass sie fühlen, was sie fühlen, ohne zur Positivität zu hetzen.</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Diese Woche: Empathie üben</strong>
+                            <ul class="exercise-list">
+                                <li>Widerstehe in 2 Gesprächen dem Drang zu reparieren oder zu beraten</li>
+                                <li>Stattdessen spiegeln: "Das klingt wirklich schwer" oder "Ich kann verstehen, warum du dich so fühlst"</li>
+                                <li>Beobachte: Wie verändert sich das Gespräch, wenn du validierst statt zu lösen?</li>
+                                <li>Journaling: Wo fällt es dir am schwersten, Empathie zu zeigen? Warum?</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson1')">Einklappen</button>
+                            <button class="btn btn-primary" onclick="completeLesson(1)">Abschließen <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lektion 2: Kognitive & Emotionale Empathie -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge2">+25 XP</div>
+                <div class="lesson-header lesson-2">
+                    <div class="lesson-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="lesson-title">
+                        <h3>Kognitive & Emotionale Empathie</h3>
+                        <p class="lesson-subtitle">Verstehen vs Fühlen</p>
+                    </div>
+                    <div class="lesson-status" id="status2">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Kognitive & Emotionale Empathie</h4>
+                    <div class="lesson-body" id="lesson2">
+                        <p class="lesson-intro">Empathie hat zwei Formen: die Perspektive von jemandem verstehen (kognitiv) und ihre Emotion fühlen (emotional). Beide sind mächtig. Du brauchst beide.</p>
+
+                        <div class="lesson-section">
+                            <h5>Kognitive Empathie: Perspektivwechsel</h5>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"> Was es ist</div>
+                                <div class="strategy-desc">Verstehen, wie jemand denkt und die Welt sieht. Nicht zustimmen—nur ihr mentales Modell erfassen. "Wenn ich an ihrer Stelle wäre, würde ich es so wahrnehmen."</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Wann anwenden</div>
+                                <div class="strategy-desc">Verhandlungen, Strategie, Konfliktlösung. Du musst ihre Position verstehen, ohne dich emotional zu verlieren. Leader nutzen dies, um Bedürfnisse zu antizipieren und Botschaften zu rahmen.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Wie üben</div>
+                                <div class="strategy-desc">Frag dich: "Unter welchem Druck stehen sie? Was schätzen sie? Wovor haben sie Angst?" Kartiere ihre Welt, nicht deine.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Emotionale Empathie: Gefühlsverbindung</h5>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Was es ist</div>
+                                <div class="strategy-desc">Tatsächlich fühlen, was sie fühlen. Wenn sie verletzt sind, spürst du den Schmerz. Wenn sie freudig sind, spürst du den Aufschwung. Das ist viszeral, nicht intellektuell.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"> Wann anwenden</div>
+                                <div class="strategy-desc">1-on-1s, schwere Gespräche, jemanden durch harte Zeiten unterstützen. Emotionale Empathie baut tiefes Vertrauen und Verbindung auf. Menschen spüren es, wenn du wirklich bei ihnen bist.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"> Das Risiko</div>
+                                <div class="strategy-desc">Zu viel emotionale Empathie = Burnout, Mitgefühls-Erschöpfung. Du absorbierst den Schmerz anderer und verlierst dich selbst. Du brauchst Grenzen.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Beide balancieren</h5>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"> Nutze kognitiv, wenn du Distanz brauchst</div>
+                                <div class="strategy-desc">Hochrisiko-Entscheidungen, Konflikte, oder wenn du emotional erschöpft bist. Verstehen ohne zu absorbieren. "Ich sehe ihren Schmerz, aber ich trage ihn nicht."</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"> Nutze emotional, wenn Verbindung wichtig ist</div>
+                                <div class="strategy-desc">Jemanden unterstützen, Vertrauen aufbauen, zeigen dass du dich kümmerst. Lass dich mit ihnen fühlen—bleib nur nicht zu lange dort.</div>
+                            </div>
+                            <div class="strategy-item strategy-2">
+                                <div class="strategy-name"> Schütze deine Energie</div>
+                                <div class="strategy-desc">Nach schwerer emotionaler Empathie, resette. Geh spazieren, schreib Tagebuch, atme. Du kannst nicht aus einem leeren Becher eingießen.</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Diese Woche: Beide Typen üben</strong>
+                            <ul class="exercise-list">
+                                <li>Kognitiv: Wähle jemanden, mit dem du nicht übereinstimmst. Kartiere ihre Perspektive.</li>
+                                <li>Emotional: In einem 1-on-1, lass dich mit ihnen fühlen. Bemerke die Emotion in deinem Körper.</li>
+                                <li>Nach emotionaler Empathie, resette: 5-Minuten-Spaziergang oder Atemübung</li>
+                                <li>Reflektiere: Welcher Typ liegt dir natürlicher? Welchen vermeidest du?</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson2')">Einklappen</button>
+                            <button class="btn btn-primary" onclick="completeLesson(2)">Abschließen <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lektion 3: Empathie in Aktion -->
+            <div class="lesson-card">
+                <div class="lesson-badge" id="badge3">+25 XP</div>
+                <div class="lesson-header lesson-3">
+                    <div class="lesson-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="lesson-title">
+                        <h3>Empathie in Aktion</h3>
+                        <p class="lesson-subtitle">Echte Gespräche, echte Wirkung</p>
+                    </div>
+                    <div class="lesson-status" id="status3">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4 class="lesson-header-text">Empathie in Aktion</h4>
+                    <div class="lesson-body" id="lesson3">
+                        <p class="lesson-intro">Empathie ist kein Soft Skill—es ist ein strategisches Werkzeug. So nutzt du es in echten Gesprächen, Konflikten und Leadership-Momenten.</p>
+
+                        <div class="lesson-section">
+                            <h5>Szenario 1: Jemand kämpft</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"> Nicht: "Du solltest einfach..."</div>
+                                <div class="strategy-desc">Rat ohne Empathie fühlt sich abweisend an. Sie machen dicht.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Mach: Erst validieren, dann fragen</div>
+                                <div class="strategy-desc">"Das klingt wirklich überwältigend. Was würde dir gerade am meisten helfen?" Lass sie führen. Biete Unterstützung an, nicht Lösungen.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Szenario 2: Konflikt oder Meinungsverschiedenheit</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"> Nicht: "Du liegst falsch, weil..."</div>
+                                <div class="strategy-desc">Streiten eskaliert. Sie graben sich ein. Ihr verliert beide.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Mach: Ihre Perspektive spiegeln</div>
+                                <div class="strategy-desc">"Hilf mir, deine Sicht zu verstehen. Von deiner Seite klingt es wie..." Sobald sie sich gehört fühlen, werden sie weicher. Dann kannst du deine Perspektive teilen.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Szenario 3: Leistungsproblem</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"> Nicht: "Deine Arbeit lässt nach. Änder das."</div>
+                                <div class="strategy-desc">Direktives Feedback ohne Neugier fühlt sich wie ein Angriff an. Sie werden defensiv.</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Mach: Mit Neugier führen</div>
+                                <div class="strategy-desc">"Mir ist X aufgefallen. Was ist bei dir los?" Vielleicht sind sie ausgebrannt, unsicher oder kämpfen mit etwas Persönlichem. Empathie deckt die Wurzelursache auf.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Empathie-Phrasen zum Nutzen</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Validierung</div>
+                                <div class="strategy-desc">"Das macht Sinn." / "Ich kann verstehen, warum du dich so fühlst." / "Das klingt wirklich schwer."</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"> Neugier</div>
+                                <div class="strategy-desc">"Erzähl mir mehr darüber." / "Wie ist das für dich?" / "Hilf mir zu verstehen."</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"> Spiegeln</div>
+                                <div class="strategy-desc">"Also was ich höre ist..." / "Es klingt, als fühlst du dich..." / "Aus deiner Perspektive scheint es..."</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Wenn Empathie nicht ausreicht</h5>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"> Grenzen sind wichtig</div>
+                                <div class="strategy-desc">Empathie bedeutet nicht, die Emotionen anderer zu absorbieren oder Schaden zu tolerieren. Du kannst den Schmerz von jemandem verstehen und trotzdem Grenzen setzen. "Ich höre dich, und ich kann dieses Gespräch nicht fortsetzen, wenn es so intensiv bleibt."</div>
+                            </div>
+                            <div class="strategy-item strategy-3">
+                                <div class="strategy-name"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Aktion bleibt erforderlich</div>
+                                <div class="strategy-desc">Empathie ≠ Untätigkeit. Du kannst mit jemandem fühlen und trotzdem Verantwortlichkeit einfordern. "Ich verstehe, dass das schwer für dich ist, und wir müssen trotzdem die verpasste Deadline ansprechen."</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Diese Woche: Empathie in Aktion</strong>
+                            <ul class="exercise-list">
+                                <li>Wähle ein herausforderndes Gespräch, das du vermieden hast</li>
+                                <li>Führe mit Empathie: validieren, spiegeln, neugierig bleiben</li>
+                                <li>Nutze eine Phrase aus jeder Kategorie (Validierung, Neugier, Spiegeln)</li>
+                                <li>Beobachte: Wie verändert sich das Gespräch, wenn du mit Empathie führst?</li>
+                                <li>Nachbesprechung: Was hat sich verändert? Was hat dich überrascht?</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson3')">Einklappen</button>
+                            <button class="btn btn-primary" onclick="completeLesson(3)">Abschließen <span class="xp-badge">+25 XP</span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-container">
+            <h3 style="color: #be185d; margin-bottom: 20px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Empathie Zusammenfassung</h3>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <div class="summary-label">Lektionen abgeschlossen</div>
+                    <div class="summary-value" id="summaryComplete">0/3</div>
+                </div>
+                <div class="summary-item summary-2">
+                    <div class="summary-label">Modul-Fortschritt</div>
+                    <div class="summary-value" id="summaryStatus">0%</div>
+                </div>
+                <div class="summary-item summary-3">
+                    <div class="summary-label">XP verdient</div>
+                    <div class="summary-value" id="summaryXP">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="achievement-popup" id="achievementPopup">
+            <div class="achievement-header">
+                <div class="achievement-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                <div class="achievement-text">
+                    <h4>Lektion abgeschlossen!</h4>
+                    <p id="achievementDesc">Großartige Arbeit bei dieser Lektion</p>
+                </div>
+            </div>
+            <div class="achievement-xp" id="achievementXP">+25 XP verdient</div>
+        </div>
+    </div>
+
+    <script>
+        const TOTAL_LESSONS = 3;
+        const XP_PER_LESSON = 25;
+        const MODULE_BONUS_XP = 100;
+
+        function initModule() {
+            const completed = JSON.parse(localStorage.getItem('empathyCompleted') || '[]');
+            completed.forEach(lessonNum => markLessonAsComplete(lessonNum, false));
+            updateAllStats();
+        }
+
+        function toggleLesson(lessonId) {
+            document.getElementById(lessonId).classList.toggle('active');
+        }
+
+        function completeLesson(lessonNum) {
+            const completed = JSON.parse(localStorage.getItem('empathyCompleted') || '[]');
+            if (completed.includes(lessonNum)) { alert('Du hast diese Lektion bereits abgeschlossen!'); return; }
+
+            completed.push(lessonNum);
+            localStorage.setItem('empathyCompleted', JSON.stringify(completed));
+
+            let moduleXP = parseInt(localStorage.getItem('empathyModuleXP') || '0');
+            moduleXP += XP_PER_LESSON;
+
+            if (completed.length === TOTAL_LESSONS) {
+                moduleXP += MODULE_BONUS_XP;
+                showAchievement('Modul abgeschlossen! ', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
+            } else {
+                showAchievement('Lektion abgeschlossen!', `+${XP_PER_LESSON} XP`);
+            }
+
+            localStorage.setItem('empathyModuleXP', moduleXP.toString());
+            markLessonAsComplete(lessonNum, true);
+            updateAllStats();
+        }
+
+        function markLessonAsComplete(lessonNum, showBadge) {
+            const status = document.getElementById(`status${lessonNum}`);
+            const badge = document.getElementById(`badge${lessonNum}`);
+            document.getElementById(`lesson${lessonNum}`).classList.add('active');
+            status.textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Fertig';
+            status.style.background = '#10b981';
+            status.style.color = 'white';
+            if (showBadge) badge.classList.add('show');
+        }
+
+        function updateAllStats() {
+            const completed = JSON.parse(localStorage.getItem('empathyCompleted') || '[]');
+            const moduleXP = parseInt(localStorage.getItem('empathyModuleXP') || '0');
+            const percentage = Math.round((completed.length / TOTAL_LESSONS) * 100);
+
+            document.getElementById('moduleXP').textContent = moduleXP;
+            document.getElementById('moduleStreak').textContent = completed.length;
+            document.getElementById('xpDisplay').textContent = moduleXP;
+            document.getElementById('streakDisplay').textContent = completed.length;
+            document.getElementById('badgesDisplay').textContent = completed.length === TOTAL_LESSONS ? '1' : '0';
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('progressPercent').textContent = percentage + '%';
+            document.getElementById('progressText').textContent = `${completed.length} von ${TOTAL_LESSONS} Lektionen abgeschlossen`;
+            document.getElementById('summaryComplete').textContent = `${completed.length}/${TOTAL_LESSONS}`;
+            document.getElementById('summaryStatus').textContent = percentage + '%';
+            document.getElementById('summaryXP').textContent = moduleXP;
+        }
+
+        function showAchievement(title, xp) {
+            const popup = document.getElementById('achievementPopup');
+            document.querySelector('#achievementPopup h4').textContent = title;
+            document.getElementById('achievementXP').textContent = xp;
+            popup.classList.add('show');
+            setTimeout(() => popup.classList.remove('show'), 4000);
+        }
+
+        const APP_VERSION = '2024-11-24-v1';
+        function checkVersion() {
+            const cachedVersion = localStorage.getItem('appVersion');
+            if (cachedVersion && cachedVersion !== APP_VERSION) {
+                localStorage.setItem('appVersion', APP_VERSION);
+                if (!sessionStorage.getItem('hasReloaded')) {
+                    sessionStorage.setItem('hasReloaded', 'true');
+                    window.location.reload(true);
+                }
+            } else {
+                localStorage.setItem('appVersion', APP_VERSION);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { checkVersion(); initModule(); });
+    </script>
+
+    <script src="js/performance-optimizer.js"></script>
+    <script src="js/shared-utilities.js"></script>
+    <script src="js/global-error-handler.js"></script>
+    <script src="js/storage-health.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

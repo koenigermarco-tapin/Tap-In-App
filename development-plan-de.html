@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Development Plan | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --green: #10b981;
+            --gold: #d4a853;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--dark-grey), var(--black));
+            border-bottom: 1px solid var(--mid-grey);
+            padding: 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--white); }
+        .logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--brick-red), #c0392b); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: 900; }
+        .back-btn { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; display: flex; align-items: center; gap: 5px; }
+        .back-btn:hover { color: var(--white); }
+        
+        .container { max-width: 900px; margin: 0 auto; padding: 30px 20px; }
+        
+        .page-title {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .page-title h1 { font-size: 2.2rem; font-weight: 800; margin-bottom: 10px; }
+        .page-title p { color: var(--light-grey); font-size: 1.1rem; }
+        
+        .plan-summary {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .plan-summary h2 { font-size: 1.3rem; margin-bottom: 15px; color: var(--gold); }
+        .plan-summary .score-display {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .plan-summary .score-label { color: var(--light-grey); margin-bottom: 20px; }
+        
+        .focus-areas {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .focus-tag {
+            background: var(--dark-grey);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid var(--mid-grey);
+        }
+        .focus-tag.priority { border-color: var(--brick-red); color: var(--brick-red); }
+        .focus-tag.strength { border-color: var(--green); color: var(--green); }
+        
+        .timeline-section {
+            margin-bottom: 30px;
+        }
+        .timeline-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .timeline-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .timeline-icon.week1 { background: linear-gradient(135deg, var(--green), #0d9668); }
+        .timeline-icon.week2 { background: linear-gradient(135deg, var(--blue), #2563eb); }
+        .timeline-icon.week3 { background: linear-gradient(135deg, var(--purple), #7c3aed); }
+        .timeline-icon.week4 { background: linear-gradient(135deg, var(--gold), #b8860b); }
+        
+        .timeline-title h3 { font-size: 1.2rem; font-weight: 700; }
+        .timeline-title p { font-size: 0.9rem; color: var(--light-grey); }
+        
+        .action-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .action-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            gap: 15px;
+            transition: all 0.2s;
+        }
+        .action-card:hover { border-color: var(--green); }
+        .action-card.completed {
+            opacity: 0.7;
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .action-checkbox {
+            flex-shrink: 0;
+        }
+        .action-checkbox input {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: var(--green);
+        }
+        
+        .action-content { flex: 1; }
+        .action-title { font-weight: 600; margin-bottom: 5px; }
+        .action-desc { font-size: 0.9rem; color: var(--light-grey); margin-bottom: 10px; }
+        
+        .action-meta {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .action-tag {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: var(--mid-grey);
+            color: var(--light-grey);
+        }
+        .action-tag.time { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        .action-tag.category { background: rgba(139, 92, 246, 0.2); color: var(--purple); }
+        .action-tag.tool { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+        
+        .action-link {
+            flex-shrink: 0;
+        }
+        .action-link a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--mid-grey);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .action-link a:hover { background: var(--green); color: var(--black); }
+        
+        .progress-bar-container {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        .progress-bar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .progress-bar-title { font-weight: 600; }
+        .progress-bar-percent { color: var(--green); font-weight: 700; font-size: 1.2rem; }
+        
+        .progress-bar {
+            height: 12px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), #34d399);
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+        
+        .resources-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .resources-section h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .resources-section h3 svg { width: 24px; height: 24px; color: var(--gold); }
+        
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .resource-card {
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--white);
+            transition: all 0.2s;
+        }
+        .resource-card:hover { border-color: var(--green); transform: translateY(-3px); }
+        .resource-card h4 { font-size: 1rem; margin-bottom: 8px; }
+        .resource-card p { font-size: 0.85rem; color: var(--light-grey); }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--green), #0d9668);
+            color: var(--black);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3); }
+        .btn-secondary {
+            background: var(--dark-grey);
+            color: var(--white);
+            border: 1px solid var(--mid-grey);
+        }
+        .btn-secondary:hover { border-color: var(--green); }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .empty-state svg { width: 80px; height: 80px; color: var(--mid-grey); margin-bottom: 20px; }
+        .empty-state h3 { font-size: 1.3rem; margin-bottom: 10px; }
+        .empty-state p { color: var(--light-grey); margin-bottom: 25px; }
+        
+        @media print {
+            body { background: white; color: black; }
+            .header, .action-buttons, .action-link { display: none; }
+            .action-card, .resource-card, .plan-summary, .timeline-section, .resources-section { 
+                border-color: #ddd !important; 
+                background: white !important;
+            }
+            .timeline-icon { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="development-plan.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="development-plan-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="index.html" class="logo">
+                <div class="logo-icon">T</div>
+                TAP-IN
+            </a>
+            <a href="gym-dashboard.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Zurück zum Dashboard
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h1>Dein Entwicklungsplan</h1>
+            <p>Ein personalisierter 4-Wochen-Aktionsplan basierend auf deinen Bewertungsergebnissen</p>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 12h6m-3-3v6m-7 4h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+            </svg>
+            <h3>Keine Bewertungsdaten</h3>
+            <p>Schließe eine Führungsbewertung ab, um deinen personalisierten Entwicklungsplan zu erstellen.</p>
+            <a href="belt-assessment-v2.html" class="btn btn-primary">Bewertung starten</a>
+        </div>
+
+        <!-- Plan Content -->
+        <div id="planContent" style="display: none;">
+            <div class="plan-summary">
+                <h2>Aktueller Führungswert</h2>
+                <div class="score-display" id="currentScore">--</div>
+                <div class="score-label">Basierend auf deiner letzten Bewertung</div>
+                <div class="focus-areas" id="focusAreas">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="progress-bar-container">
+                <div class="progress-bar-header">
+                    <span class="progress-bar-title">Planfortschritt</span>
+                    <span class="progress-bar-percent" id="completionPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Week 1 -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <div class="timeline-icon week1">1</div>
+                    <div class="timeline-title">
+                        <h3>Woche 1: Grundlage</h3>
+                        <p>Bewusstsein aufbauen und Grundgewohnheiten etablieren</p>
+                    </div>
+                </div>
+                <div class="action-cards" id="week1Actions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Week 2 -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <div class="timeline-icon week2">2</div>
+                    <div class="timeline-title">
+                        <h3>Woche 2: Vertiefung</h3>
+                        <p>Fokus auf deinen primären Entwicklungsbereich</p>
+                    </div>
+                </div>
+                <div class="action-cards" id="week2Actions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Week 3 -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <div class="timeline-icon week3">3</div>
+                    <div class="timeline-title">
+                        <h3>Woche 3: Praxis</h3>
+                        <p>Fähigkeiten in realen Situationen anwenden</p>
+                    </div>
+                </div>
+                <div class="action-cards" id="week3Actions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <!-- Week 4 -->
+            <div class="timeline-section">
+                <div class="timeline-header">
+                    <div class="timeline-icon week4">4</div>
+                    <div class="timeline-title">
+                        <h3>Woche 4: Integration</h3>
+                        <p>Gelerntes festigen und Fortschritt messen</p>
+                    </div>
+                </div>
+                <div class="action-cards" id="week4Actions">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="resources-section">
+                <h3>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    Empfohlene Ressourcen
+                </h3>
+                <div class="resource-grid" id="resourcesGrid">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-secondary" onclick="window.print()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6v-8z"/></svg>
+                    Plan drucken
+                </button>
+                <a href="assessment-comparison-v2.html" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    Fortschritt vergleichen
+                </a>
+                <a href="belt-assessment-v2.html" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    Bewertung wiederholen
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'developmentPlanProgress';
+        
+        // Category definitions with actions
+        const categoryActions = {
+            trust: {
+                name: 'Trust Building',
+                color: '#3b82f6',
+                week1: [
+                    { title: 'Complete Trust Builder Game', desc: 'Practice vulnerability and trust-building scenarios', time: '15 min', link: 'game-trust-builder-v2.html', tool: 'Trust Builder' },
+                    { title: 'Journal: Trust Inventory', desc: 'List 3 people you trust and why. What behaviors build trust for you?', time: '10 min', link: 'tool-journal-v2.html', tool: 'Journal' }
+                ],
+                week2: [
+                    { title: 'Have One Vulnerable Conversation', desc: 'Share something you normally keep private with a trusted colleague', time: '15 min', category: 'Trust' },
+                    { title: 'Practice Active Listening', desc: 'In your next 1:1, focus entirely on listening without preparing your response', time: '30 min', link: 'active-listening-module-gamified-de.html', tool: 'Active Listening' }
+                ],
+                week3: [
+                    { title: 'Give Authentic Praise', desc: 'Recognize someone publicly for specific behavior, not just results', time: '5 min', category: 'Trust' },
+                    { title: 'Admit a Mistake', desc: 'Own an error without making excuses - model vulnerability', time: '10 min', category: 'Trust' }
+                ],
+                week4: [
+                    { title: 'Retake Trust Assessment', desc: 'Measure your progress after 4 weeks of focused practice', time: '10 min', link: 'game-trust-builder-v2.html', tool: 'Trust Builder' },
+                    { title: 'Reflect on Trust Growth', desc: 'Journal about what changed and what you learned', time: '15 min', link: 'tool-journal-v2.html', tool: 'Journal' }
+                ]
+            },
+            conflict: {
+                name: 'Conflict Resolution',
+                color: '#ef4444',
+                week1: [
+                    { title: 'Complete Conflict Navigator', desc: 'Practice handling conflicts across different contexts', time: '15 min', link: 'game-conflict-navigator-v2.html', tool: 'Conflict Navigator' },
+                    { title: 'Identify Your Conflict Style', desc: 'Are you avoiding, competing, accommodating, or collaborating?', time: '10 min', link: 'tool-journal-v2.html', tool: 'Journal' }
+                ],
+                week2: [
+                    { title: 'Address One Small Conflict', desc: 'Bring up something you\'ve been avoiding - start small', time: '20 min', category: 'Conflict' },
+                    { title: 'Practice SBIR Feedback', desc: 'Use Situation-Behavior-Impact-Request in feedback', time: '15 min', link: 'game-sbir-trainer.html', tool: 'SBIR Trainer' }
+                ],
+                week3: [
+                    { title: 'Play Devil\'s Advocate', desc: 'In a meeting, voice the opposing view to surface hidden concerns', time: '15 min', category: 'Conflict' },
+                    { title: 'Mediate a Team Disagreement', desc: 'Help two colleagues find common ground', time: '30 min', category: 'Conflict' }
+                ],
+                week4: [
+                    { title: 'Hold a Retrospective', desc: 'Facilitate a structured conversation about what\'s working and what\'s not', time: '45 min', category: 'Conflict' },
+                    { title: 'Reflect on Conflict Growth', desc: 'What conflicts are you now addressing that you used to avoid?', time: '15 min', link: 'tool-journal-v2.html', tool: 'Journal' }
+                ]
+            },
+            commitment: {
+                name: 'Commitment',
+                color: '#8b5cf6',
+                week1: [
+                    { title: 'Set 3 Clear Goals', desc: 'Define measurable outcomes for this week', time: '15 min', link: 'tool-goal-tracker-v2.html', tool: 'Goal Tracker' },
+                    { title: 'Clarify Decision Rights', desc: 'Identify one decision that\'s unclear - who owns it?', time: '10 min', category: 'Commitment' }
+                ],
+                week2: [
+                    { title: 'Disagree and Commit', desc: 'Even if you disagree with a decision, commit fully to execution', time: 'Ongoing', link: 'disagree-commit.html', tool: 'Disagree & Commit' },
+                    { title: 'Close Open Loops', desc: 'Finish 3 tasks you\'ve been putting off', time: '60 min', link: 'tool-goal-tracker-v2.html', tool: 'Goal Tracker' }
+                ],
+                week3: [
+                    { title: 'Make a Bold Commitment', desc: 'Publicly commit to something challenging with a deadline', time: '10 min', category: 'Commitment' },
+                    { title: 'Ask for Commitment', desc: 'Get explicit buy-in from team on a shared goal', time: '20 min', category: 'Commitment' }
+                ],
+                week4: [
+                    { title: 'Review Goal Progress', desc: 'How many of your commitments did you keep?', time: '15 min', link: 'tool-goal-tracker-v2.html', tool: 'Goal Tracker' },
+                    { title: 'Celebrate Wins', desc: 'Acknowledge completed commitments with your team', time: '10 min', category: 'Commitment' }
+                ]
+            },
+            accountability: {
+                name: 'Accountability',
+                color: '#f59e0b',
+                week1: [
+                    { title: 'Complete Accountability Arena', desc: 'Practice holding others accountable constructively', time: '15 min', link: 'game-accountability-arena-v2.html', tool: 'Accountability Arena' },
+                    { title: 'Set Up Weekly Check-ins', desc: 'Establish regular accountability touchpoints', time: '15 min', category: 'Accountability' }
+                ],
+                week2: [
+                    { title: 'Give Direct Feedback', desc: 'Address a performance issue within 24 hours of noticing it', time: '15 min', link: 'feedback-module-gamified-de.html', tool: 'Feedback Module' },
+                    { title: 'Create Shared Scoreboard', desc: 'Make goals visible so everyone can track progress', time: '30 min', category: 'Accountability' }
+                ],
+                week3: [
+                    { title: 'Model Self-Accountability', desc: 'Publicly track your own commitments and report back', time: '10 min', category: 'Accountability' },
+                    { title: 'Have a Tough Conversation', desc: 'Address underperformance with empathy but clarity', time: '30 min', link: 'game-accountability-arena-v2.html', tool: 'Accountability Arena' }
+                ],
+                week4: [
+                    { title: 'Conduct Peer Reviews', desc: 'Facilitate 360 feedback within your team', time: '45 min', link: '360-feedback-assessment.html', tool: '360 Feedback' },
+                    { title: 'Reflect on Accountability', desc: 'Are standards higher? Are people more reliable?', time: '15 min', link: 'tool-journal-v2.html', tool: 'Journal' }
+                ]
+            },
+            results: {
+                name: 'Results Focus',
+                color: '#10b981',
+                week1: [
+                    { title: 'Define Success Metrics', desc: 'What does winning look like for your team this quarter?', time: '20 min', link: 'tool-goal-tracker-v2.html', tool: 'Goal Tracker' },
+                    { title: 'Identify Biggest Blocker', desc: 'What one thing, if fixed, would unlock the most progress?', time: '15 min', category: 'Results' }
+                ],
+                week2: [
+                    { title: 'Remove One Obstacle', desc: 'Take action on the blocker you identified', time: '30 min', category: 'Results' },
+                    { title: 'Prioritize Ruthlessly', desc: 'Say no to 3 things to focus on what matters most', time: '20 min', link: 'deep-work-module-gamified-de.html', tool: 'Deep Work' }
+                ],
+                week3: [
+                    { title: 'Celebrate Small Wins', desc: 'Recognize progress toward goals, not just completion', time: '10 min', category: 'Results' },
+                    { title: 'Conduct Weekly Review', desc: 'What moved? What didn\'t? What will you do differently?', time: '20 min', link: 'tool-weekly-review.html', tool: 'Weekly Review' }
+                ],
+                week4: [
+                    { title: 'Measure Results', desc: 'Compare current metrics to baseline from Week 1', time: '20 min', link: 'assessment-comparison-v2.html', tool: 'Comparison' },
+                    { title: 'Plan Next Quarter', desc: 'Set new goals based on what you learned', time: '30 min', link: 'tool-goal-tracker-v2.html', tool: 'Goal Tracker' }
+                ]
+            }
+        };
+        
+        const resources = {
+            trust: [
+                { title: 'Trust Builder Game', desc: 'Interactive scenarios for building trust', link: 'game-trust-builder-v2.html' },
+                { title: 'Vulnerability Practice', desc: 'Confession Poker for teams', link: 'confession-poker-v2.html' }
+            ],
+            conflict: [
+                { title: 'Conflict Navigator', desc: 'Handle conflicts constructively', link: 'game-conflict-navigator-v2.html' },
+                { title: 'SBIR Trainer', desc: 'Master feedback delivery', link: 'game-sbir-trainer.html' }
+            ],
+            commitment: [
+                { title: 'Goal Tracker', desc: 'Set and track commitments', link: 'tool-goal-tracker-v2.html' },
+                { title: 'Disagree & Commit', desc: 'Decision-making framework', link: 'disagree-commit.html' }
+            ],
+            accountability: [
+                { title: 'Accountability Arena', desc: 'Practice holding standards', link: 'game-accountability-arena-v2.html' },
+                { title: 'Feedback Module', desc: 'Give effective feedback', link: 'feedback-module-gamified-de.html' }
+            ],
+            results: [
+                { title: 'Deep Work Module', desc: 'Focus on what matters', link: 'deep-work-module-gamified-de.html' },
+                { title: 'Weekly Review', desc: 'Measure and reflect', link: 'tool-weekly-review.html' }
+            ]
+        };
+        
+        function loadProgress() {
+            try {
+                return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+            } catch(e) {
+                return {};
+            }
+        }
+        
+        function saveProgress(progress) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(progress));
+        }
+        
+        function toggleAction(actionId) {
+            const progress = loadProgress();
+            progress[actionId] = !progress[actionId];
+            saveProgress(progress);
+            updateProgress();
+        }
+        
+        function getAssessmentData() {
+            // Try to get data from various assessment sources
+            let data = null;
+            
+            const beltResults = localStorage.getItem('beltAssessmentResults');
+            if (beltResults) {
+                try {
+                    data = JSON.parse(beltResults);
+                } catch(e) {}
+            }
+            
+            if (!data) {
+                const teamResults = localStorage.getItem('teamAssessmentResults');
+                if (teamResults) {
+                    try {
+                        data = JSON.parse(teamResults);
+                    } catch(e) {}
+                }
+            }
+            
+            if (!data) {
+                const history = localStorage.getItem('assessmentHistory');
+                if (history) {
+                    try {
+                        const historyData = JSON.parse(history);
+                        if (historyData.length > 0) {
+                            data = historyData[historyData.length - 1];
+                        }
+                    } catch(e) {}
+                }
+            }
+            
+            return data;
+        }
+        
+        function generatePlan(data) {
+            const score = data.overallScore || data.score || 50;
+            document.getElementById('currentScore').textContent = Math.round(score) + '%';
+            
+            // Determine focus areas
+            const categories = data.categoryScores || data.categories || {};
+            let sortedCategories = Object.entries(categories).sort((a, b) => a[1] - b[1]);
+            
+            // If no categories, create defaults
+            if (sortedCategories.length === 0) {
+                sortedCategories = [
+                    ['trust', score - 5],
+                    ['conflict', score - 3],
+                    ['commitment', score],
+                    ['accountability', score + 2],
+                    ['results', score + 5]
+                ];
+            }
+            
+            const weakest = sortedCategories[0][0];
+            const strongest = sortedCategories[sortedCategories.length - 1][0];
+            
+            // Show focus areas
+            document.getElementById('focusAreas').innerHTML = `
+                <div class="focus-tag priority">Priorität: ${categoryActions[weakest]?.name || weakest}</div>
+                <div class="focus-tag strength">Stärke: ${categoryActions[strongest]?.name || strongest}</div>
+            `;
+            
+            // Generate weekly actions focused on weakest area
+            generateWeeklyActions(weakest);
+            
+            // Show resources for focus area
+            generateResources(weakest);
+        }
+        
+        function generateWeeklyActions(focusCategory) {
+            const focus = categoryActions[focusCategory] || categoryActions.trust;
+            const progress = loadProgress();
+            
+            ['week1', 'week2', 'week3', 'week4'].forEach(week => {
+                const container = document.getElementById(week + 'Actions');
+                const actions = focus[week] || [];
+                
+                container.innerHTML = actions.map((action, idx) => {
+                    const actionId = `${focusCategory}-${week}-${idx}`;
+                    const isCompleted = progress[actionId] || false;
+                    
+                    return `
+                        <div class="action-card ${isCompleted ? 'completed' : ''}" data-action-id="${actionId}">
+                            <div class="action-checkbox">
+                                <input type="checkbox" ${isCompleted ? 'checked' : ''} onchange="toggleAction('${actionId}')">
+                            </div>
+                            <div class="action-content">
+                                <div class="action-title">${action.title}</div>
+                                <div class="action-desc">${action.desc}</div>
+                                <div class="action-meta">
+                                    <span class="action-tag time">${action.time}</span>
+                                    ${action.category ? `<span class="action-tag category">${action.category}</span>` : ''}
+                                    ${action.tool ? `<span class="action-tag tool">${action.tool}</span>` : ''}
+                                </div>
+                            </div>
+                            ${action.link ? `
+                                <div class="action-link">
+                                    <a href="${action.link}" title="Open tool">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                                    </a>
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                }).join('');
+            });
+            
+            updateProgress();
+        }
+        
+        function generateResources(focusCategory) {
+            const focusResources = resources[focusCategory] || resources.trust;
+            const container = document.getElementById('resourcesGrid');
+            
+            container.innerHTML = focusResources.map(resource => `
+                <a href="${resource.link}" class="resource-card">
+                    <h4>${resource.title}</h4>
+                    <p>${resource.desc}</p>
+                </a>
+            `).join('');
+        }
+        
+        function updateProgress() {
+            const progress = loadProgress();
+            const totalActions = document.querySelectorAll('.action-card').length;
+            const completedActions = Object.values(progress).filter(v => v).length;
+            
+            const percentage = totalActions > 0 ? Math.round((completedActions / totalActions) * 100) : 0;
+            
+            document.getElementById('completionPercent').textContent = percentage + '%';
+            document.getElementById('progressFill').style.width = percentage + '%';
+            
+            // Update visual state of cards
+            document.querySelectorAll('.action-card').forEach(card => {
+                const actionId = card.dataset.actionId;
+                if (progress[actionId]) {
+                    card.classList.add('completed');
+                    card.querySelector('input').checked = true;
+                } else {
+                    card.classList.remove('completed');
+                    card.querySelector('input').checked = false;
+                }
+            });
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            const data = getAssessmentData();
+            
+            if (data) {
+                document.getElementById('emptyState').style.display = 'none';
+                document.getElementById('planContent').style.display = 'block';
+                generatePlan(data);
+            } else {
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('planContent').style.display = 'none';
+                
+                // Create demo data for preview
+                createDemoData();
+            }
+        });
+        
+        function createDemoData() {
+            const demoData = {
+                overallScore: 62,
+                categoryScores: {
+                    trust: 55,
+                    conflict: 48,
+                    commitment: 70,
+                    accountability: 65,
+                    results: 72
+                },
+                timestamp: Date.now()
+            };
+            localStorage.setItem('beltAssessmentResults', JSON.stringify(demoData));
+            location.reload();
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

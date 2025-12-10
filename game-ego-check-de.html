@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Ego-Check - TAP-IN Spiele</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4af37;
+            --red: #ef4444;
+            --charcoal: #1a1a1a;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .lang-switcher {
+            position: fixed;
+            top: 15px;
+            right: 120px;
+            z-index: 101;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-switcher a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .lang-switcher a.active { background: var(--green); color: var(--black); }
+        .lang-switcher a:not(.active) { background: rgba(255,255,255,0.1); color: var(--white); }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .game-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-row { display: flex; gap: 15px; }
+        
+        .stat-badge {
+            background: var(--dark-grey);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stat-badge.streak { color: var(--gold); }
+        .stat-badge.score { color: var(--green); }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+        
+        .game-screen { display: none; animation: fadeIn 0.4s ease; }
+        .game-screen.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .intro-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(26, 26, 26, 0.5));
+            border: 2px solid var(--charcoal);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .intro-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--charcoal), #2a2a2a);
+            border: 2px solid var(--gold);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .intro-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--white), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .intro-desc {
+            color: var(--light-grey);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+        
+        .rules-box {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .rules-title { font-weight: 600; margin-bottom: 12px; color: var(--gold); }
+        
+        .rule {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .rule-icon { font-size: 1.2rem; }
+        
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--charcoal), #2a2a2a);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            width: 100%;
+        }
+        
+        .btn-primary:hover { background: var(--gold); color: var(--black); }
+        
+        .timer-bar {
+            height: 6px;
+            background: var(--mid-grey);
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: var(--gold);
+            transition: width 0.1s linear;
+        }
+        
+        .timer-fill.warning { background: var(--red); }
+        
+        .scenario-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .round-number {
+            font-size: 0.75rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .scenario-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        .choice-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .choice-btn {
+            padding: 25px 20px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid var(--mid-grey);
+            background: var(--dark-grey);
+            color: var(--white);
+        }
+        
+        .choice-btn:hover { transform: scale(1.02); }
+        .choice-btn.ego { border-color: var(--red); }
+        .choice-btn.ego:hover { background: rgba(239, 68, 68, 0.15); }
+        .choice-btn.results { border-color: var(--green); }
+        .choice-btn.results:hover { background: rgba(16, 185, 129, 0.15); }
+        .choice-btn.correct { background: rgba(16, 185, 129, 0.2); border-color: var(--green); animation: pulse 0.3s ease; }
+        .choice-btn.incorrect { background: rgba(239, 68, 68, 0.2); border-color: var(--red); animation: shake 0.3s ease; }
+        .choice-btn.disabled { pointer-events: none; opacity: 0.5; }
+        
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        
+        .feedback-banner {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .feedback-banner.show { display: block; }
+        .feedback-banner.correct { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--green); color: var(--green); }
+        .feedback-banner.incorrect { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--red); color: var(--red); }
+        
+        .streak-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2rem;
+            color: var(--gold);
+            display: none;
+        }
+        
+        .streak-display.show { display: block; animation: streakPop 0.5s ease; }
+        @keyframes streakPop { 0% { transform: scale(0); opacity: 0; } 50% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+        
+        .results-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(212, 175, 55, 0.1));
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--charcoal), #2a2a2a);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .results-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+        .results-score { font-size: 4rem; font-weight: 900; color: var(--gold); margin: 20px 0; }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat { background: var(--black); border-radius: 12px; padding: 15px; }
+        .result-stat-value { font-size: 1.5rem; font-weight: 800; }
+        .result-stat-label { font-size: 0.7rem; color: var(--light-grey); text-transform: uppercase; }
+        
+        .insight-box {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        
+        .insight-title { font-weight: 600; margin-bottom: 10px; color: var(--gold); }
+        .insight-text { color: var(--light-grey); font-size: 0.9rem; line-height: 1.6; }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 500px) {
+            .results-stats { grid-template-columns: 1fr; }
+            .stats-row { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-ego-check.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-ego-check-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="lang-switcher">
+        <a href="game-ego-check.html">EN</a>
+        <a href="game-ego-check-de.html" class="active">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library-de.html" class="back-btn">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Beenden
+        </a>
+        <div class="game-title">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Ego-Check
+        </div>
+        <div class="stats-row">
+            <div class="stat-badge streak" id="streakBadge">0x</div>
+            <div class="stat-badge score" id="scoreBadge">0</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="game-screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-icon">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h1 class="intro-title">Ego-Check</h1>
+                <p class="intro-desc">
+                    Kannst du erkennen, wenn das Ego Entscheidungen antreibt? 
+                    Lies jedes Szenario und entscheide: Ist diese Fuhrungskraft auf 
+                    <strong>EGO</strong> oder <strong>ERGEBNISSE</strong> fokussiert?
+                </p>
+                <div class="rules-box">
+                    <div class="rules-title">Spielregeln</div>
+                    <div class="rule">
+                        <span class="rule-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M12 9v2m0 4h.01"/><circle cx="12" cy="12" r="10"/></svg>
+                        </span>
+                        <span><strong>EGO</strong> = Personlicher Ruhm, Anerkennung, Image, Recht haben</span>
+                    </div>
+                    <div class="rule">
+                        <span class="rule-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                        </span>
+                        <span><strong>ERGEBNISSE</strong> = Team-Erfolge, kollektiver Erfolg, Mission zuerst</span>
+                    </div>
+                    <div class="rule">
+                        <span class="rule-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        </span>
+                        <span><strong>Timer</strong> = 8 Sekunden pro Runde. Vertrau deinem Bauchgefuhl!</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="startGame()">
+                    Spiel Starten
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="game-screen" id="gameScreen">
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill" style="width: 100%"></div>
+            </div>
+            <div class="scenario-card">
+                <div class="round-number" id="roundNumber">Runde 1 von 15</div>
+                <div class="scenario-text" id="scenarioText">Lade...</div>
+            </div>
+            <div class="choice-buttons">
+                <button class="choice-btn ego" id="egoBtn" onclick="makeChoice('ego')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 5px;"><path d="M12 9v2m0 4h.01"/><circle cx="12" cy="12" r="10"/></svg>
+                    <br>EGO
+                </button>
+                <button class="choice-btn results" id="resultsBtn" onclick="makeChoice('results')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 5px;"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                    <br>ERGEBNISSE
+                </button>
+            </div>
+            <div class="feedback-banner" id="feedbackBanner"></div>
+            <div class="streak-display" id="streakDisplay"></div>
+        </div>
+        
+        <div class="game-screen" id="resultsScreen">
+            <div class="results-card">
+                <div class="results-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h2 class="results-title">Spiel Abgeschlossen!</h2>
+                <div class="results-score" id="finalScore">0%</div>
+                <div class="results-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="correctCount">0</div>
+                        <div class="result-stat-label">Richtig</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="maxStreak">0</div>
+                        <div class="result-stat-label">Beste Serie</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="avgTime">0s</div>
+                        <div class="result-stat-label">Schnitt Zeit</div>
+                    </div>
+                </div>
+                <div class="insight-box">
+                    <div class="insight-title">Dein Ego-Radar</div>
+                    <div class="insight-text" id="insightText">Lade...</div>
+                </div>
+                <button class="btn btn-primary" onclick="playAgain()">
+                    Nochmal Spielen
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = [
+            { text: "Die Fuhrungskraft meldet sich freiwillig, um vor der Geschaftsleitung zu prasentieren, weil sie Face-Time mit dem C-Suite will.", answer: "ego" },
+            { text: "Die Fuhrungskraft lasst ein Junior-Teammitglied ihre eigene Arbeit prasentieren, um deren Fahigkeiten und Sichtbarkeit aufzubauen.", answer: "results" },
+            { text: "Nach einem Erfolg sagt die Fuhrungskraft offentlich 'Das Team hat grossartige Arbeit geleistet' und privat 'Ich bin so stolz auf das, was ich aufgebaut habe'.", answer: "ego" },
+            { text: "Die Fuhrungskraft fragt ihre Mitarbeiter auf ubernachster Ebene, was wirklich los ist, auch wenn es ihre eigenen blinden Flecken aufdecken konnte.", answer: "results" },
+            { text: "Wenn ihre Idee abgelehnt wird, sagt die Fuhrungskraft 'Sie werden irgendwann sehen, dass ich Recht hatte.'", answer: "ego" },
+            { text: "Die Fuhrungskraft befordert ihren Top-Performer, obwohl es bedeutet, ihn an ein anderes Team zu verlieren.", answer: "results" },
+            { text: "Die Fuhrungskraft ubernimmt ein hochkaratiges Projekt ausserhalb ihrer Expertise, anstatt es an jemand Qualifizierten zu delegieren.", answer: "ego" },
+            { text: "Nach einem Misserfolg sagt die Fuhrungskraft zum Team: 'Ich hatte euch mehr unterstutzen sollen. Das geht auf mich.'", answer: "results" },
+            { text: "Die Fuhrungskraft ist anderer Meinung als eine Entscheidung, steht aber voll dahinter und unterstutzt sie offentlich.", answer: "results" },
+            { text: "Die Fuhrungskraft untergrabt subtil eine Entscheidung, mit der sie nicht einverstanden war, indem sie 'zu beschaftigt' ist zu helfen.", answer: "ego" },
+            { text: "Die Fuhrungskraft gibt dem Team Anerkennung im All-Hands, erwartet aber, dass sie wissen, wer es wirklich ermoglicht hat.", answer: "ego" },
+            { text: "Die Fuhrungskraft storniert ihren Urlaub, als ein kritisches Projekt Hilfe braucht, ohne eine grosse Sache daraus zu machen.", answer: "results" },
+            { text: "Die Fuhrungskraft argumentiert fur ihren Bonus basierend auf Team-Metriken, nicht auf personlichen Beitragen.", answer: "results" },
+            { text: "Die Fuhrungskraft besteht darauf, bei allen E-Mails in CC zu sein, um 'im Loop zu bleiben' und 'Mehrwert zu liefern'.", answer: "ego" },
+            { text: "Die Fuhrungskraft gibt vor dem Team zu: 'Ich weiss hier nicht die Antwort. Wer hat Ideen?'", answer: "results" },
+            { text: "Die Fuhrungskraft schreibt ein Dokument eines Teammitglieds um, 'um es besser zu machen', anstatt es zu coachen.", answer: "ego" },
+            { text: "Die Fuhrungskraft misst ihren Erfolg daran, ob das Team ohne sie funktionieren kann.", answer: "results" },
+            { text: "Die Fuhrungskraft lasst Andeutungen uber ihren Elite-MBA fallen, wenn sie neue Leute trifft.", answer: "ego" },
+            { text: "Die Fuhrungskraft rekrutiert aktiv Menschen, die klüger sind als sie selbst.", answer: "results" },
+            { text: "Die Fuhrungskraft schreibt die Probleme des Teams 'den Leuten zu, die ich geerbt habe'.", answer: "ego" },
+            { text: "Die Fuhrungskraft sagt 'Wir sind gescheitert' statt 'Sie sind gescheitert' wenn sie mit ihrem Chef spricht.", answer: "results" },
+            { text: "Die Fuhrungskraft lehnt eine Beförderung ab, weil das Team noch nicht bereit ist, sie zu verlieren.", answer: "results" },
+            { text: "Die Fuhrungskraft nennt standig ihre fruhere Firma: 'Also, bei Google haben wir...'", answer: "ego" },
+            { text: "Die Fuhrungskraft teilt das Rampenlicht, indem sie Teammitglieder einladt, vor der Fuhrung zu prasentieren.", answer: "results" },
+            { text: "Die Fuhrungskraft ist neidisch, wenn ein direkter Mitarbeiter fur Arbeit anerkannt wird, die sie ermoglicht hat.", answer: "ego" }
+        ];
+        
+        let currentRound = 0;
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let totalTime = 0;
+        let timer = null;
+        let timeLeft = 8;
+        let shuffledScenarios = [];
+        const TOTAL_ROUNDS = 15;
+        
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        
+        function startGame() {
+            shuffledScenarios = shuffle(scenarios).slice(0, TOTAL_ROUNDS);
+            currentRound = 0; score = 0; streak = 0; maxStreak = 0; totalTime = 0;
+            
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            showRound();
+        }
+        
+        function showRound() {
+            const scenario = shuffledScenarios[currentRound];
+            document.getElementById('roundNumber').textContent = `Runde ${currentRound + 1} von ${TOTAL_ROUNDS}`;
+            document.getElementById('scenarioText').textContent = scenario.text;
+            
+            const egoBtn = document.getElementById('egoBtn');
+            const resultsBtn = document.getElementById('resultsBtn');
+            egoBtn.classList.remove('correct', 'incorrect', 'disabled');
+            resultsBtn.classList.remove('correct', 'incorrect', 'disabled');
+            
+            document.getElementById('feedbackBanner').classList.remove('show');
+            document.getElementById('streakDisplay').classList.remove('show');
+            
+            timeLeft = 8;
+            document.getElementById('timerFill').style.width = '100%';
+            document.getElementById('timerFill').classList.remove('warning');
+            
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                const percent = (timeLeft / 8) * 100;
+                document.getElementById('timerFill').style.width = percent + '%';
+                
+                if (timeLeft <= 3) { document.getElementById('timerFill').classList.add('warning'); }
+                if (timeLeft <= 0) { clearInterval(timer); makeChoice(null); }
+            }, 100);
+        }
+        
+        function makeChoice(choice) {
+            if (timer) clearInterval(timer);
+            
+            const scenario = shuffledScenarios[currentRound];
+            const isCorrect = choice === scenario.answer;
+            const responseTime = 8 - timeLeft;
+            totalTime += responseTime;
+            
+            const egoBtn = document.getElementById('egoBtn');
+            const resultsBtn = document.getElementById('resultsBtn');
+            egoBtn.classList.add('disabled');
+            resultsBtn.classList.add('disabled');
+            
+            if (scenario.answer === 'ego') { egoBtn.classList.add('correct'); }
+            else { resultsBtn.classList.add('correct'); }
+            
+            if (choice && !isCorrect) {
+                if (choice === 'ego') { egoBtn.classList.add('incorrect'); }
+                else { resultsBtn.classList.add('incorrect'); }
+            }
+            
+            if (isCorrect) {
+                score++; streak++; maxStreak = Math.max(maxStreak, streak);
+                document.getElementById('feedbackBanner').textContent = 'Richtig! +1';
+                document.getElementById('feedbackBanner').className = 'feedback-banner show correct';
+                if (streak >= 3) {
+                    document.getElementById('streakDisplay').textContent = streak + 'x SERIE!';
+                    document.getElementById('streakDisplay').classList.add('show');
+                }
+            } else {
+                streak = 0;
+                document.getElementById('feedbackBanner').textContent = choice ? 'Falsch!' : 'Zeit abgelaufen!';
+                document.getElementById('feedbackBanner').className = 'feedback-banner show incorrect';
+            }
+            
+            document.getElementById('scoreBadge').textContent = score;
+            document.getElementById('streakBadge').textContent = streak + 'x';
+            
+            setTimeout(() => {
+                currentRound++;
+                if (currentRound < TOTAL_ROUNDS) { showRound(); }
+                else { showResults(); }
+            }, 1500);
+        }
+        
+        function showResults() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            const percentage = Math.round((score / TOTAL_ROUNDS) * 100);
+            const avgTime = (totalTime / TOTAL_ROUNDS).toFixed(1);
+            
+            document.getElementById('finalScore').textContent = percentage + '%';
+            document.getElementById('correctCount').textContent = score + '/' + TOTAL_ROUNDS;
+            document.getElementById('maxStreak').textContent = maxStreak + 'x';
+            document.getElementById('avgTime').textContent = avgTime + 's';
+            
+            let insight = '';
+            if (percentage >= 85) {
+                insight = "Aussergewohnliches Ego-Radar! Du erkennst konstant, wenn Fuhrungskrafte personlichen Ruhm uber Teamergebnisse stellen. Dieses Bewusstsein ist die Grundlage von Level-5-Fuhrung.";
+            } else if (percentage >= 70) {
+                insight = "Gute Instinkte! Du erkennst die meisten ego-getriebenen Verhaltensweisen, obwohl einige subtile Muster dir entgehen konnten. Achte besonders auf Verhaltensweisen, die hilfsbereit aussehen, aber dem Image der Fuhrungskraft dienen.";
+            } else if (percentage >= 50) {
+                insight = "Entwickelndes Bewusstsein. Ego tarnt sich oft als Hilfsbereitschaft oder Hingabe. Frag dich: 'Wer profitiert wirklich von dieser Aktion?' Die Antwort offenbart die Motivation.";
+            } else {
+                insight = "Ego ist heimtuckisch! Es tarnt sich oft als Selbstvertrauen, Hingabe oder 'hohe Standards'. Ube zu fragen: 'Geht es hier um die Mission oder um mich?' bei deinen eigenen Entscheidungen.";
+            }
+            
+            document.getElementById('insightText').textContent = insight;
+            
+            localStorage.setItem('tap_in_ego_check_complete_de', 'true');
+            let totalXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', totalXP + 50);
+        }
+        
+        function playAgain() {
+            currentRound = 0; score = 0; streak = 0; maxStreak = 0; totalTime = 0;
+            document.getElementById('scoreBadge').textContent = '0';
+            document.getElementById('streakBadge').textContent = '0x';
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').classList.add('active');
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

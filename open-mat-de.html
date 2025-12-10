@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Freies Training - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+            --brown: #92400e;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            padding-bottom: 100px;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);
+            padding: 20px;
+            border-bottom: 1px solid var(--mid-grey);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .page-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .intro-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .intro-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--purple), #7c3aed);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2.5rem;
+        }
+        
+        .intro-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .intro-subtitle {
+            color: var(--light-grey);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .bjj-note {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+        }
+        
+        .bjj-note strong {
+            color: var(--purple);
+        }
+        
+        .section-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--light-grey);
+            margin-bottom: 15px;
+            margin-top: 30px;
+            font-weight: 600;
+        }
+        
+        .practice-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .practice-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--white);
+            transition: all 0.3s;
+        }
+        
+        .practice-card:hover {
+            border-color: var(--purple);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(139, 92, 246, 0.15);
+        }
+        
+        .practice-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .practice-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .practice-icon.conflict { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .practice-icon.coaching { background: linear-gradient(135deg, #f97316, #ea580c); }
+        .practice-icon.feedback { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .practice-icon.energy { background: linear-gradient(135deg, #10b981, #059669); }
+        .practice-icon.deep { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .practice-icon.boundaries { background: linear-gradient(135deg, #ec4899, #db2777); }
+        
+        .practice-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        
+        .practice-belt {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .practice-belt.blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .practice-belt.purple { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+        .practice-belt.brown { background: rgba(146, 64, 14, 0.2); color: #d97706; }
+        .practice-belt.all { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+        
+        .practice-desc {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .practice-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.8rem;
+        }
+        
+        .practice-time {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--green);
+            font-weight: 600;
+        }
+        
+        .practice-type {
+            color: var(--light-grey);
+        }
+        
+        .locked-card {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .locked-badge {
+            background: var(--mid-grey);
+            color: var(--light-grey);
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-left: auto;
+        }
+        
+        .hi { width: 20px; height: 20px; }
+        
+        .section-divider {
+            height: 1px;
+            background: var(--mid-grey);
+            margin: 30px 0;
+        }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="open-mat.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="open-mat-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="gym-focused-de.html" class="back-link">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Zurück zum Gym
+            </a>
+            <div class="page-title">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+                Freies Training
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="intro-section">
+            <div class="intro-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 016.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z"/></svg>
+            </div>
+            <h1 class="intro-title">Tiefere Übung</h1>
+            <p class="intro-subtitle">Erweiterte Sessions für fokussierte Kompetenzentwicklung. Wähle ein Thema, tauche tief ein und werde stärker.</p>
+            
+            <div class="bjj-note">
+                <strong>Why "Freies Training"?</strong> Im Brazilian Jiu-Jitsu, open mat is unstructured practice time where you work on whatever you need most. Same idea here—choose your focus.
+            </div>
+        </div>
+        
+        <div class="section-label">Interaktive Übung</div>
+        
+        <div class="practice-grid">
+            <a href="conflict-cards-de.html" class="practice-card">
+                <div class="practice-header">
+                    <div class="practice-icon conflict">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M14.5 4h-5L7 7H4v2h16V7h-3l-2.5-3z"/><path d="M4 11v9h16v-9"/><path d="M12 11v9"/></svg>
+                    </div>
+                    <div>
+                        <div class="practice-title">Konflikt-Karten</div>
+                        <span class="practice-belt purple">Purple Belt</span>
+                    </div>
+                </div>
+                <div class="practice-desc">Übe schwierige Gespräche zu navigieren with scenario cards. Build your conflict resolution muscle.</div>
+                <div class="practice-meta">
+                    <div class="practice-time">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        15-20 min
+                    </div>
+                    <div class="practice-type">Card deck practice</div>
+                </div>
+            </a>
+            
+            <a href="game-coaching-quest-de.html" class="practice-card">
+                <div class="practice-header">
+                    <div class="practice-icon coaching">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                    </div>
+                    <div>
+                        <div class="practice-title">Coaching Quest</div>
+                        <span class="practice-belt brown">Brown Belt</span>
+                    </div>
+                </div>
+                <div class="practice-desc">Arbeite Coaching-Szenarien durch using the GROW model. Learn to develop others through powerful questions.</div>
+                <div class="practice-meta">
+                    <div class="practice-time">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        10-15 min
+                    </div>
+                    <div class="practice-type">Scenario practice</div>
+                </div>
+            </a>
+        </div>
+        
+        <div class="section-divider"></div>
+        
+        <div class="section-label">Vertiefungs-Module</div>
+        
+        <div class="practice-grid">
+            <a href="feedback-module-gamified-de.html" class="practice-card">
+                <div class="practice-header">
+                    <div class="practice-icon feedback">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                    </div>
+                    <div>
+                        <div class="practice-title">Feedback-Meisterschaft</div>
+                        <span class="practice-belt blue">Blue Belt</span>
+                    </div>
+                </div>
+                <div class="practice-desc">Vertiefe das Geben und Empfangen von Feedback effectively. Master the SBIR framework.</div>
+                <div class="practice-meta">
+                    <div class="practice-time">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        20-30 min
+                    </div>
+                    <div class="practice-type">Learning module</div>
+                </div>
+            </a>
+            
+            <a href="energy-management-module-gamified-de.html" class="practice-card">
+                <div class="practice-header">
+                    <div class="practice-icon energy">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                    </div>
+                    <div>
+                        <div class="practice-title">Energie-Management</div>
+                        <span class="practice-belt all">All Levels</span>
+                    </div>
+                </div>
+                <div class="practice-desc">Optimiere deine Energie über den Tag. Learn about circadian rhythms and peak performance windows.</div>
+                <div class="practice-meta">
+                    <div class="practice-time">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        15-25 min
+                    </div>
+                    <div class="practice-type">Learning module</div>
+                </div>
+            </a>
+            
+            <a href="deep-work-2-flow.html" class="practice-card">
+                <div class="practice-header">
+                    <div class="practice-icon deep">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
+                    </div>
+                    <div>
+                        <div class="practice-title">Deep Work Deep Work & Flow Flow</div>
+                        <span class="practice-belt all">All Levels</span>
+                    </div>
+                </div>
+                <div class="practice-desc">Lerne den Flow-Zustand zu erreichen and protect your deep work time for maximum productivity.</div>
+                <div class="practice-meta">
+                    <div class="practice-time">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        15-20 min
+                    </div>
+                    <div class="practice-type">Learning module</div>
+                </div>
+            </a>
+            
+            <a href="course-boundaries.html" class="practice-card">
+                <div class="practice-header">
+                    <div class="practice-icon boundaries">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div>
+                        <div class="practice-title">Grenzen setzen</div>
+                        <span class="practice-belt blue">Blue Belt</span>
+                    </div>
+                </div>
+                <div class="practice-desc">Lerne gesunde Grenzen zu setzen at work and in relationships.</div>
+                <div class="practice-meta">
+                    <div class="practice-time">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        20-30 min
+                    </div>
+                    <div class="practice-type">Learning module</div>
+                </div>
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Check belt progress and lock/unlock content
+        function checkProgress() {
+            const whiteBelt = localStorage.getItem('tap_in_white_belt_complete') === 'true';
+            const blueBelt = localStorage.getItem('tap_in_blue_belt_complete') === 'true';
+            const purpleBelt = localStorage.getItem('tap_in_purple_belt_complete') === 'true';
+            
+            // For now, all content is accessible
+            // Later can add locking based on belt progress
+        }
+        
+        checkProgress();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

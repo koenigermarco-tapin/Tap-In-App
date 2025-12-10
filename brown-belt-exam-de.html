@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Brown Belt Prüfung - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --belt-color: #8b6914;
+            --belt-accent: #a67c00;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            padding: 30px 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-link { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; }
+        .progress-text { color: var(--belt-accent); font-size: 0.85rem; font-weight: 600; }
+        
+        .progress-bar { height: 4px; background: var(--mid-grey); border-radius: 2px; margin-bottom: 40px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--belt-color), var(--belt-accent)); border-radius: 2px; transition: width 0.3s; }
+        
+        .intro-screen { text-align: center; padding: 40px 0; }
+        .intro-icon {
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, var(--belt-color), var(--belt-accent));
+            border-radius: 50%; margin: 0 auto 25px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .intro-icon svg { width: 40px; height: 40px; color: var(--white); }
+        .intro-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 15px; }
+        .intro-text { color: var(--light-grey); font-size: 0.95rem; line-height: 1.6; margin-bottom: 30px; }
+        .intro-rules { background: var(--dark-grey); border-radius: 12px; padding: 20px; text-align: left; margin-bottom: 30px; }
+        .intro-rules h4 { margin-bottom: 12px; font-size: 0.9rem; }
+        .intro-rules ul { list-style: none; }
+        .intro-rules li { padding: 8px 0; font-size: 0.85rem; color: var(--light-grey); display: flex; align-items: center; gap: 10px; }
+        .intro-rules li::before { content: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'; color: var(--belt-accent); }
+        
+        .question-screen { display: none; }
+        .question-screen.active { display: block; }
+        
+        .scenario-box { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; margin-bottom: 25px; }
+        .scenario-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--belt-accent); margin-bottom: 10px; }
+        .scenario-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.9); }
+        
+        .question-text { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; line-height: 1.4; }
+        
+        .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .option { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 16px 20px; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; line-height: 1.5; }
+        .option:hover { border-color: var(--belt-accent); }
+        .option.selected { border-color: var(--belt-accent); background: rgba(166, 124, 0, 0.1); }
+        .option.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .option.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        
+        .feedback-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+        .feedback-box.show { display: block; }
+        .feedback-title { font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        .feedback-title.correct { color: var(--green); }
+        .feedback-title.incorrect { color: var(--red); }
+        .feedback-text { font-size: 0.9rem; color: var(--light-grey); line-height: 1.5; }
+        
+        .btn { width: 100%; padding: 16px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--belt-color), var(--belt-accent)); color: var(--white); }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        
+        .results-screen { display: none; text-align: center; padding: 40px 0; }
+        .results-screen.active { display: block; }
+        
+        .results-icon { width: 100px; height: 100px; background: linear-gradient(135deg, var(--belt-color), var(--belt-accent)); border-radius: 50%; margin: 0 auto 25px; display: flex; align-items: center; justify-content: center; }
+        .results-title { font-size: 1.8rem; font-weight: 700; margin-bottom: 10px; color: var(--belt-accent); }
+        .results-subtitle { color: var(--light-grey); margin-bottom: 30px; }
+        .score-display { font-size: 3rem; font-weight: 800; color: var(--belt-accent); margin-bottom: 10px; }
+        .score-label { color: var(--light-grey); margin-bottom: 30px; }
+        
+        .cert-box { background: linear-gradient(135deg, rgba(166, 124, 0, 0.2), rgba(26, 26, 26, 0.3)); border: 2px solid var(--belt-accent); border-radius: 16px; padding: 30px; margin-bottom: 30px; }
+        .cert-title { font-size: 1.2rem; font-weight: 700; color: var(--belt-accent); margin-bottom: 15px; }
+        .cert-text { color: var(--light-grey); font-size: 0.95rem; line-height: 1.6; }
+        
+        .retry-msg { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+        .retry-msg p { color: var(--light-grey); font-size: 0.9rem; }
+        .btn-secondary { background: var(--dark-grey); border: 1px solid var(--mid-grey); color: var(--light-grey); margin-top: 10px; }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="gym-focused-de.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Beenden</a>
+            <span class="progress-text" id="progressText">Frage 0 / 10</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h1 class="intro-title">Brown Belt Prüfung</h1>
+            <p class="intro-text">Beweise deine Meisterschaft in Coaching, Kultur, Change Management und der Entwicklung von Führungskräften.</p>
+            
+            <div class="intro-rules">
+                <h4>Prüfungsregeln</h4>
+                <ul>
+                    <li>10 szenariobasierte Fragen</li>
+                    <li>Du brauchst 8/10 richtig zum Bestehen</li>
+                    <li>Jede Frage testet Brown Belt Prinzipien</li>
+                    <li>Nimm dir Zeit und denke sorgfältig nach</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startExam()">Prüfung beginnen</button>
+        </div>
+
+        <div class="question-screen" id="questionScreen">
+            <div class="scenario-box">
+                <div class="scenario-label">Szenario</div>
+                <p class="scenario-text" id="scenarioText"></p>
+            </div>
+            <p class="question-text" id="questionText"></p>
+            <div class="options" id="optionsContainer"></div>
+            <div class="feedback-box" id="feedbackBox">
+                <div class="feedback-title" id="feedbackTitle"></div>
+                <p class="feedback-text" id="feedbackText"></p>
+            </div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Nächste Frage</button>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <div class="results-icon">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h2 class="results-title" id="resultsTitle">Ergebnisse</h2>
+            <p class="results-subtitle" id="resultsSubtitle"></p>
+            <div class="score-display" id="scoreDisplay">0/10</div>
+            <p class="score-label">Richtige Antworten</p>
+            
+            <div id="passContent">
+                <div class="cert-box">
+                    <div class="cert-title">Brown Belt erreicht</div>
+                    <p class="cert-text">Du hast die Kunst der Entwicklung anderer gemeistert. Du verstehst Coaching, Kultur, Wandel und Leadership-Entwicklung auf tiefem Niveau.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='brown-belt-ceremony-de.html'">Deinen Brown Belt beanspruchen</button>
+            </div>
+            
+            <div id="failContent" style="display: none;">
+                <div class="retry-msg">
+                    <p>Du brauchst 8/10 zum Bestehen. Wiederhole die Brown Belt Streifen und versuche es erneut.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='brown-belt-stripe1-gamified-de.html'">Brown Belt wiederholen</button>
+                <button class="btn btn-secondary" onclick="retryExam()">Prüfung wiederholen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                scenario: "Ein Teammitglied kommt zu dir und sagt 'Ich komme bei diesem Projekt nicht weiter.' Dein Instinkt ist, ihr Problem zu lösen.",
+                question: "Laut dem GROW Coaching-Modell, was solltest du ZUERST tun?",
+                options: [
+                    "Fragen, welches Ergebnis sie erreichen wollen (Goal)",
+                    "Teilen, wie du ähnliche Situationen gehandhabt hast",
+                    "Fragen, was sie bereits versucht haben (Reality)",
+                    "Gemeinsam Lösungen brainstormen (Options)"
+                ],
+                correct: 0,
+                feedback: "GROW beginnt mit Goal. Bevor du Realität oder Optionen erkundest, kläre, wie Erfolg aussieht. 'Wie würde ein gutes Ergebnis aussehen?' setzt die Richtung für das gesamte Gespräch."
+            },
+            {
+                scenario: "Dein Unternehmen schätzt 'Innovation', aber die letzten drei Beförderungen gingen an Leute, die auf Nummer sicher gingen und ihre Zahlen zuverlässig erreichten.",
+                question: "Was zeigt dies laut Scheins Kulturmodell?",
+                options: [
+                    "Das Unternehmen sollte seine formulierten Werte aktualisieren",
+                    "Es gibt eine Lücke zwischen formulierten Werten und Grundannahmen",
+                    "Innovation ist tatsächlich nicht wichtig für Erfolg",
+                    "Beförderungen sollten auf anderen Kriterien basieren"
+                ],
+                correct: 1,
+                feedback: "Scheins Modell zeigt, dass Kultur drei Ebenen hat. Formulierte Werte sind, was wir sagen; Grundannahmen sind, was wir tatsächlich glauben. Beförderungsmuster zeigen die echte Kultur unter den formulierten Werten."
+            },
+            {
+                scenario: "Du führst einen neuen Prozess ein. Du hast die Vision klar kommuniziert, aber drei Wochen später verwenden die Leute immer noch die alte Methode.",
+                question: "Laut Kotters 8 Schritten, was hast du wahrscheinlich übersprungen?",
+                options: [
+                    "Dringlichkeit schaffen—sie sehen nicht, warum Wandel wichtig ist",
+                    "Koalition aufbauen—du hast nicht genug Unterstützer",
+                    "Schnelle Erfolge generieren—sie brauchen frühen Beweis, dass es funktioniert",
+                    "Alles oben Genannte könnte Faktoren sein"
+                ],
+                correct: 3,
+                feedback: "Wandel scheitert aus mehreren Gründen. Keine Dringlichkeit = keine Motivation. Keine Koalition = keine Unterstützung. Keine schnellen Erfolge = kein Beweis. Kotters Modell zeigt, dass all diese Dinge vorhanden sein müssen, nicht nur Vision und Kommunikation."
+            },
+            {
+                scenario: "Ein High Performer in deinem Team könnte Führungskraft werden, aber sie konzentrieren sich auf ihre eigene Exzellenz statt auf die Entwicklung anderer.",
+                question: "Welchen Übergang müssen sie laut Maxwells 5 Ebenen machen?",
+                options: [
+                    "Von Position zu Erlaubnis—sie müssen Beziehungen aufbauen",
+                    "Von Erlaubnis zu Produktion—sie müssen Ergebnisse beweisen",
+                    "Von Produktion zu Menschenentwicklung—sie müssen ihre Wirkung multiplizieren",
+                    "Von Menschenentwicklung zu Gipfel—sie müssen Führungskräfte entwickeln"
+                ],
+                correct: 2,
+                feedback: "Ebene 3 (Produktion) geht um persönliche Ergebnisse. Ebene 4 (Menschenentwicklung) geht um die Entwicklung anderer. Diese Person ist bei Produktion stecken geblieben—großartig in ihrer eigenen Arbeit, aber noch nicht multiplizierend durch andere."
+            },
+            {
+                scenario: "Du coachst jemanden und sie fragen immer wieder 'was würdest du tun?' statt ihre eigenen Optionen zu erkunden.",
+                question: "Wie ist der Coaching-Ansatz hier?",
+                options: [
+                    "Teile deine Perspektive—sie wollen offensichtlich Anleitung",
+                    "Umleiten: 'Welche Optionen hast du erwogen?' dann 'Was noch?'",
+                    "Erklären, warum Coaching erfordert, dass sie ihre eigenen Antworten finden",
+                    "Gib ihnen zwei Optionen und lass sie wählen"
+                ],
+                correct: 1,
+                feedback: "Die Kraft des Coachings liegt darin, ihnen zu helfen, ihr eigenes Urteilsvermögen zu entwickeln. 'Welche Optionen hast du erwogen?' gefolgt von 'Was noch?' drängt sie, breiter zu denken, bevor du etwas hinzufügst."
+            },
+            {
+                scenario: "Du willst die Teamkultur hin zu direkterem Feedback verschieben. Du hast diese Priorität in Teammeetings angekündigt.",
+                question: "Was musst du laut den fünf Kulturhebeln sonst noch tun?",
+                options: [
+                    "Selbst öffentlich direktes Feedback geben—das Verhalten modellieren",
+                    "Leute einstellen, die bereits direktes Feedback geben",
+                    "Leute belohnen, die direktes Feedback geben, auch wenn es unangenehm ist",
+                    "Alles oben Genannte"
+                ],
+                correct: 3,
+                feedback: "Kulturhebel umfassen: worauf du achtest, wie du auf Krisen reagierst, was du modellierst, wen du einstellst/beförderst und wie du Ressourcen zuteilst. Ankündigung reicht nicht—du brauchst mehrere Hebel."
+            },
+            {
+                scenario: "Du führst eine Change-Initiative und stehst vor lautem Widerstand von einem respektierten Teammitglied. Andere beobachten.",
+                question: "Was bedeutet 'Widerstand ist Information' hier?",
+                options: [
+                    "Ihr Widerstand signalisiert einen Fehler im Change-Plan",
+                    "Du solltest ihre Bedenken öffentlich ansprechen, um Transparenz zu zeigen",
+                    "Verstehe ihre Bedenken tief—sie sehen vielleicht etwas, das du übersehen hast",
+                    "Widerstand ist normal und wird verblassen, sobald Wandel Fuß fasst"
+                ],
+                correct: 2,
+                feedback: "Widerstand enthält oft berechtigte Bedenken. Statt ihn abzutun oder abzuwarten, kann tiefes Verständnis deinen Change-Plan verbessern und potenziell einen Skeptiker in einen Befürworter verwandeln."
+            },
+            {
+                scenario: "Du entwickelst ein vielversprechendes Teammitglied. Sie fragen: 'Gibt es Raum für mich, hier voranzukommen?'",
+                question: "Wie solltest du laut Entwicklungs-Best-Practices antworten?",
+                options: [
+                    "Ehrlich über Beförderungszeitpläne und Möglichkeiten sein",
+                    "Erkunden, was Fortschritt für sie bedeutet—Titel, Verantwortung, Wirkung, Geld?",
+                    "Sie auf aktuelle Leistung als Weg zum Fortschritt fokussieren",
+                    "Dies mit HR besprechen, bevor du antwortest"
+                ],
+                correct: 1,
+                feedback: "Entwicklungsgespräche beginnen mit dem Verstehen ihrer Ziele. 'Fortschritt' bedeutet für verschiedene Leute unterschiedliche Dinge. Manche wollen Titel, andere wollen Wirkung, andere wollen Flexibilität. Wisse zuerst, was ihnen wichtig ist."
+            },
+            {
+                scenario: "Dein Team muss ändern, wie es Kundeneskalationen handhabt. Du hast Unterstützung von der Führung, aber wenig Dringlichkeit vom Team.",
+                question: "Was solltest du laut Kotter ZUERST schaffen?",
+                options: [
+                    "Eine klare Vision des neuen Prozesses",
+                    "Eine Koalition von Unterstützern im Team",
+                    "Dringlichkeit, indem du die Kosten der aktuellen Eskalationsbehandlung zeigst",
+                    "Schnelle Erfolge, indem du mit willigen Teammitgliedern pilotierst"
+                ],
+                correct: 2,
+                feedback: "Kotters Schritt 1 ist Dringlichkeit. Ohne sie haben Leute keinen Grund zu ändern. Zeige die echten Kosten—Kundenabwanderung, Team-Burnout, Wettbewerbsnachteil—um Motivation für Wandel zu schaffen."
+            },
+            {
+                scenario: "Du bereitest dich darauf vor, aus deiner Rolle auszusteigen. Dein Nachfolger ist fähig, hat aber andere Stärken als du.",
+                question: "Wie ist der Ansatz des Leader-Entwicklers zu diesem Übergang?",
+                options: [
+                    "Alles dokumentieren, damit sie deinen Ansatz nachschlagen können",
+                    "Ihnen helfen, ihren eigenen Führungsstil zu entwickeln, der ihre Stärken nutzt",
+                    "Sie wichtigen Stakeholdern mit deiner Empfehlung vorstellen",
+                    "Offene Projekte abschließen, damit sie frisch starten können"
+                ],
+                correct: 1,
+                feedback: "Dein Nachfolger muss nicht du sein. Ihnen helfen, ihren eigenen Stil zu entwickeln—ihre einzigartigen Stärken nutzend—schafft nachhaltigeren Erfolg als zu versuchen, deinen Ansatz zu replizieren."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function startExam() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('questionScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('scenarioText').textContent = q.scenario;
+            document.getElementById('questionText').textContent = q.question;
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectAnswer(i);
+                container.appendChild(div);
+            });
+            document.getElementById('feedbackBox').classList.remove('show');
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('progressText').textContent = `Frage ${currentQuestion + 1} / 10`;
+            document.getElementById('progressFill').style.width = ((currentQuestion) / 10 * 100) + '%';
+            answered = false;
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                if (i === q.correct) opt.classList.add('correct');
+                else if (i === index) opt.classList.add('incorrect');
+            });
+            if (index === q.correct) score++;
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            feedbackTitle.className = 'feedback-title ' + (index === q.correct ? 'correct' : 'incorrect');
+            feedbackTitle.innerHTML = index === q.correct ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Richtig' : '✗ Nicht ganz';
+            document.getElementById('feedbackText').textContent = q.feedback;
+            document.getElementById('feedbackBox').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').textContent = currentQuestion === 9 ? 'Ergebnisse ansehen' : 'Nächste Frage';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= 10) showResults();
+            else showQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('scoreDisplay').textContent = score + '/10';
+            if (score >= 8) {
+                document.getElementById('resultsTitle').textContent = 'Brown Belt erreicht';
+                document.getElementById('resultsSubtitle').textContent = 'Du verstehst die Entwicklung anderer';
+                document.getElementById('passContent').style.display = 'block';
+                document.getElementById('failContent').style.display = 'none';
+                localStorage.setItem('tap_in_brown_belt_exam_passed', 'true');
+            } else {
+                document.getElementById('resultsTitle').textContent = 'Noch nicht';
+                document.getElementById('resultsSubtitle').textContent = 'Weiter üben';
+                document.getElementById('passContent').style.display = 'none';
+                document.getElementById('failContent').style.display = 'block';
+            }
+        }
+
+        function retryExam() {
+            currentQuestion = 0; score = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+    </script>
+    <script src="js/language-switcher.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

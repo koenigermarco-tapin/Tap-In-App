@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Pricing | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .nav {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .nav-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--green);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--white);
+        }
+        
+        .btn-nav {
+            padding: 10px 20px;
+            background: var(--green);
+            color: var(--black);
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        /* Hero */
+        .hero {
+            text-align: center;
+            padding: 80px 24px 60px;
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+        }
+        
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--light-grey);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        /* Pricing Toggle */
+        .pricing-toggle {
+            display: flex;
+            justify-content: center;
+            margin: 40px 0;
+            gap: 8px;
+        }
+        
+        .toggle-btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: 2px solid var(--mid-grey);
+            background: transparent;
+            color: var(--light-grey);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .toggle-btn.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: var(--black);
+        }
+        
+        .toggle-btn:hover:not(.active) {
+            border-color: var(--green);
+        }
+        
+        .save-badge {
+            background: var(--gold);
+            color: var(--black);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-left: 8px;
+        }
+        
+        /* Pricing Cards */
+        .pricing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+        
+        .pricing-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 24px;
+            padding: 32px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--green);
+        }
+        
+        .pricing-card.popular {
+            border-color: var(--green);
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, var(--dark-grey) 100%);
+        }
+        
+        .popular-badge {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--green);
+            color: var(--black);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+        
+        .plan-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .plan-desc {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            margin-bottom: 24px;
+        }
+        
+        .plan-price {
+            margin-bottom: 24px;
+        }
+        
+        .price-amount {
+            font-size: 3rem;
+            font-weight: 800;
+        }
+        
+        .price-amount .currency {
+            font-size: 1.5rem;
+            vertical-align: top;
+        }
+        
+        .price-period {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        .price-note {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            margin-top: 4px;
+        }
+        
+        /* Features */
+        .features-list {
+            margin-bottom: 32px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 10px 0;
+        }
+        
+        .feature-item svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .feature-item.disabled svg {
+            color: var(--mid-grey);
+        }
+        
+        .feature-item.disabled span {
+            color: var(--light-grey);
+        }
+        
+        .feature-highlight {
+            color: var(--green);
+            font-weight: 600;
+        }
+        
+        /* CTA Button */
+        .plan-cta {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .plan-cta.primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .plan-cta.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .plan-cta.secondary {
+            background: var(--mid-grey);
+            color: var(--white);
+        }
+        
+        .plan-cta.secondary:hover {
+            background: #3a3a4a;
+        }
+        
+        /* FAQ Section */
+        .faq-section {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+        
+        .faq-title {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 40px;
+        }
+        
+        .faq-item {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+        
+        .faq-question {
+            width: 100%;
+            padding: 20px 24px;
+            background: transparent;
+            border: none;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .faq-question svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s;
+        }
+        
+        .faq-item.open .faq-question svg {
+            transform: rotate(180deg);
+        }
+        
+        .faq-answer {
+            padding: 0 24px 20px;
+            color: var(--light-grey);
+            display: none;
+        }
+        
+        .faq-item.open .faq-answer {
+            display: block;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--green) 0%, var(--blue) 100%);
+            padding: 60px 24px;
+            text-align: center;
+        }
+        
+        .cta-section h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            color: var(--white);
+        }
+        
+        .cta-section p {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 24px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .cta-btn {
+            display: inline-block;
+            padding: 16px 32px;
+            background: var(--white);
+            color: var(--black);
+            border-radius: 12px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 40px 24px;
+            text-align: center;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        .footer a {
+            color: var(--light-grey);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            color: var(--white);
+        }
+        
+        @media (max-width: 900px) {
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+            }
+            
+            .hero h1 { font-size: 2rem; }
+            
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-content">
+            <a href="index.html" class="nav-brand">TAP-IN</a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="gym-dashboard.html">The Gym</a>
+                <a href="hub-home-BUSINESS.html">The Hub</a>
+                <a href="business-portal.html" class="btn-nav">Business Portal</a>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Hero -->
+    <div class="hero">
+        <h1>Simple, Transparent Pricing</h1>
+        <p>Choose the plan that's right for your team. All plans include our full leadership development curriculum.</p>
+    </div>
+    
+    <!-- Pricing Toggle -->
+    <div class="pricing-toggle">
+        <button class="toggle-btn active" onclick="togglePricing('monthly')">Monthly</button>
+        <button class="toggle-btn" onclick="togglePricing('annual')">
+            Annual
+            <span class="save-badge">Save 20%</span>
+        </button>
+    </div>
+    
+    <!-- Pricing Cards -->
+    <div class="pricing-container">
+        <div class="pricing-grid">
+            <!-- Free Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Starter</div>
+                <div class="plan-desc">Perfect for individuals or trying out TAP-IN</div>
+                
+                <div class="plan-price">
+                    <div class="price-amount">Free</div>
+                    <div class="price-note">Forever free</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Full belt curriculum access</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>All personal assessments</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>XP tracking & gamification</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Leadership games</span>
+                    </div>
+                    <div class="feature-item disabled">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                        <span>Team dashboard</span>
+                    </div>
+                    <div class="feature-item disabled">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+                        <span>Team reports</span>
+                    </div>
+                </div>
+                
+                <button class="plan-cta secondary" onclick="location.href='gym-dashboard.html'">Start Free</button>
+            </div>
+            
+            <!-- Team Plan -->
+            <div class="pricing-card popular">
+                <div class="popular-badge">Most Popular</div>
+                <div class="plan-name">Team</div>
+                <div class="plan-desc">For managers leading a single team</div>
+                
+                <div class="plan-price">
+                    <div class="price-amount"><span class="currency">$</span><span id="teamPrice">29</span></div>
+                    <div class="price-period">per month</div>
+                    <div class="price-note" id="teamNote">Up to 15 team members</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span><span class="feature-highlight">Everything in Starter</span></span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Team aggregation dashboard</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Five Dysfunctions analysis</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>PDF team health reports</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Email reminders</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Priority email support</span>
+                    </div>
+                </div>
+                
+                <button class="plan-cta primary" onclick="location.href='manager-quick-start.html'">Start Free Trial</button>
+            </div>
+            
+            <!-- Enterprise Plan -->
+            <div class="pricing-card">
+                <div class="plan-name">Enterprise</div>
+                <div class="plan-desc">For organizations with multiple teams</div>
+                
+                <div class="plan-price">
+                    <div class="price-amount"><span class="currency">$</span><span id="enterprisePrice">99</span></div>
+                    <div class="price-period">per month</div>
+                    <div class="price-note" id="enterpriseNote">Unlimited teams & members</div>
+                </div>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span><span class="feature-highlight">Everything in Team</span></span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Unlimited teams</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Org-wide analytics</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>SSO integration</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Custom branding</span>
+                    </div>
+                    <div class="feature-item">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span>Dedicated success manager</span>
+                    </div>
+                </div>
+                
+                <button class="plan-cta secondary" onclick="location.href='mailto:contact@tap-in-academy.com?subject=Enterprise%20Inquiry'">Contact Sales</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="faq-section">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                What's included in the free plan?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer">
+                The free Starter plan includes full access to our belt curriculum (White through Black belt), all individual assessments, XP tracking, gamification features, and leadership games. It's perfect for individual development.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                How does the team trial work?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer">
+                You get 14 days free with the Team plan. No credit card required to start. You can add up to 15 team members during the trial and access all team features including the dashboard, reports, and reminders.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Can I upgrade or downgrade my plan?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer">
+                Yes! You can upgrade or downgrade at any time. If you upgrade, you'll be charged the prorated difference. If you downgrade, you'll receive credit toward future billing.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                What payment methods do you accept?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer">
+                We accept all major credit cards (Visa, Mastercard, American Express) and can arrange invoicing for Enterprise customers.
+            </div>
+        </div>
+        
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+                Is my data secure?
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 9l-7 7-7-7"/></svg>
+            </button>
+            <div class="faq-answer">
+                Absolutely. We use industry-standard encryption, and your data is stored securely. We never share your information with third parties. Enterprise customers can also request custom data retention policies.
+            </div>
+        </div>
+    </div>
+    
+    <!-- CTA Section -->
+    <div class="cta-section">
+        <h2>Ready to transform your team?</h2>
+        <p>Start your free trial today and see why teams love developing with TAP-IN.</p>
+        <a href="manager-quick-start.html" class="cta-btn">Start Free Trial</a>
+    </div>
+    
+    <!-- Footer -->
+    <div class="footer">
+        <p>&copy; 2024 TAP-IN Leadership Development. <a href="privacy-policy.html">Privacy Policy</a> · <a href="terms-of-service.html">Terms of Service</a></p>
+    </div>
+    
+    <script>
+        let isAnnual = false;
+        
+        const pricing = {
+            monthly: {
+                team: 29,
+                enterprise: 99
+            },
+            annual: {
+                team: 23, // 20% off
+                enterprise: 79
+            }
+        };
+        
+        function togglePricing(type) {
+            isAnnual = type === 'annual';
+            
+            document.querySelectorAll('.toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            const prices = isAnnual ? pricing.annual : pricing.monthly;
+            
+            document.getElementById('teamPrice').textContent = prices.team;
+            document.getElementById('enterprisePrice').textContent = prices.enterprise;
+            
+            if (isAnnual) {
+                document.querySelector('.plan-price .price-period').textContent = 'per month, billed annually';
+            } else {
+                document.querySelector('.plan-price .price-period').textContent = 'per month';
+            }
+        }
+        
+        function toggleFaq(button) {
+            const item = button.parentElement;
+            const wasOpen = item.classList.contains('open');
+            
+            // Close all
+            document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+            
+            // Open clicked if it was closed
+            if (!wasOpen) {
+                item.classList.add('open');
+            }
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

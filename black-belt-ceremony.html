@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Black Belt Ceremony | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #0d0d14;
+            --card-bg: #1a1a24;
+            --border: #2a2a3a;
+            --white: #ffffff;
+            --light-grey: #a0a0b0;
+            --green: #10b981;
+            --belt-color: #1a1a1a;
+            --belt-accent: #404040;
+            --gold: #d4a853;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px; height: 10px;
+            animation: fall 4s ease-out forwards;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+        
+        .belt-icon {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 30px;
+            background: linear-gradient(135deg, var(--belt-color), var(--belt-accent));
+            border: 4px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: glow 2s ease-in-out infinite;
+            box-shadow: 0 0 80px rgba(212, 168, 83, 0.5);
+        }
+        
+        .belt-icon svg {
+            width: 70px;
+            height: 70px;
+            color: var(--gold);
+        }
+        
+        @keyframes glow {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 80px rgba(212, 168, 83, 0.5); }
+            50% { transform: scale(1.05); box-shadow: 0 0 120px rgba(212, 168, 83, 0.8); }
+        }
+        
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(135deg, var(--gold), #f5d89a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--light-grey);
+            margin-bottom: 10px;
+        }
+        
+        .hero-desc {
+            font-size: 1rem;
+            color: var(--gold);
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        .xp-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.3), rgba(212, 168, 83, 0.1));
+            border: 2px solid var(--gold);
+            padding: 12px 30px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--gold);
+            margin-top: 25px;
+        }
+        
+        .journey-complete {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.15), rgba(26, 26, 36, 0.5));
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .journey-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .belt-journey {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .belt-dot {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+        }
+        
+        .belt-dot.white { background: #f0f0f0; }
+        .belt-dot.blue { background: #3b82f6; }
+        .belt-dot.purple { background: #8b5cf6; }
+        .belt-dot.brown { background: #a67c00; }
+        .belt-dot.black { background: #1a1a1a; border-color: var(--gold); box-shadow: 0 0 15px rgba(212, 168, 83, 0.5); }
+        
+        .journey-text {
+            color: var(--light-grey);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+        
+        .achievement-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--gold);
+        }
+        
+        .skill-list {
+            list-style: none;
+        }
+        
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .skill-item:last-child {
+            border-bottom: none;
+        }
+        
+        .skill-check {
+            width: 28px;
+            height: 28px;
+            background: var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .skill-check svg {
+            width: 16px;
+            height: 16px;
+            color: var(--dark-bg);
+        }
+        
+        .skill-text {
+            font-size: 1rem;
+        }
+        
+        .quote-section {
+            text-align: center;
+            padding: 40px 20px;
+            margin: 30px 0;
+        }
+        
+        .quote-text {
+            font-size: 1.4rem;
+            font-style: italic;
+            color: var(--white);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .quote-author {
+            color: var(--gold);
+            font-size: 1rem;
+        }
+        
+        .certificate-section {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.1), rgba(26, 26, 36, 0.3));
+            border: 3px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .cert-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        
+        .cert-name {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+        
+        .cert-achievement {
+            font-size: 1.1rem;
+            color: var(--gold);
+            margin-bottom: 25px;
+        }
+        
+        .cert-date {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .whats-next {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        .next-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .next-item:last-child {
+            border-bottom: none;
+        }
+        
+        .next-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(212, 168, 83, 0.15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .next-icon svg {
+            width: 20px;
+            height: 20px;
+            color: var(--gold);
+        }
+        
+        .next-content h4 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .next-content p {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold), #c49a3d);
+            color: var(--dark-bg);
+            width: 100%;
+            margin-bottom: 12px;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(212, 168, 83, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--light-grey);
+            width: 100%;
+        }
+        
+        .share-section {
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .share-title {
+            font-size: 1rem;
+            color: var(--light-grey);
+            margin-bottom: 15px;
+        }
+        
+        .share-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .share-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .share-btn:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+        }
+        
+        .share-btn svg {
+            width: 24px;
+            height: 24px;
+            color: var(--light-grey);
+        }
+        
+        .final-cta {
+            text-align: center;
+            padding: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="black-belt-ceremony.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="black-belt-ceremony-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+    
+    <div class="container">
+        <section class="hero">
+            <div class="belt-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                </svg>
+            </div>
+            <h1 class="hero-title">Black Belt Achieved!</h1>
+            <p class="hero-subtitle">TAP-IN Master</p>
+            <p class="hero-desc">You have completed the entire journey</p>
+            <div class="xp-badge">+1000 XP Earned</div>
+        </section>
+        
+        <section class="journey-complete">
+            <h2 class="journey-title">The Journey Complete</h2>
+            <div class="belt-journey">
+                <div class="belt-dot white" title="White Belt"></div>
+                <div class="belt-dot blue" title="Blue Belt"></div>
+                <div class="belt-dot purple" title="Purple Belt"></div>
+                <div class="belt-dot brown" title="Brown Belt"></div>
+                <div class="belt-dot black" title="Black Belt"></div>
+            </div>
+            <p class="journey-text">From Trust to Conflict to Commitment to Accountability to Results.<br>You've mastered the Five Dysfunctions framework and become a complete team leader.</p>
+        </section>
+        
+        <section class="achievement-section">
+            <h2 class="section-title">Black Belt Mastery</h2>
+            <ul class="skill-list">
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <span class="skill-text">Results Focus & Collective Success</span>
+                </li>
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <span class="skill-text">Mastery Under Pressure</span>
+                </li>
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <span class="skill-text">Teaching Others & The Protégé Effect</span>
+                </li>
+                <li class="skill-item">
+                    <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                    <span class="skill-text">Legacy & Ripple Effect Leadership</span>
+                </li>
+            </ul>
+        </section>
+        
+        <section class="quote-section">
+            <p class="quote-text">"The greatest good you can do for another is not just share your riches, but to reveal to him his own."</p>
+            <p class="quote-author">— Benjamin Disraeli</p>
+        </section>
+        
+        <section class="certificate-section">
+            <p class="cert-title">Certificate of Achievement</p>
+            <p class="cert-name" id="userName">TAP-IN Graduate</p>
+            <p class="cert-achievement">Black Belt in Team Leadership</p>
+            <p class="cert-date" id="certDate"></p>
+        </section>
+        
+        <section class="whats-next">
+            <h3 class="section-title">What's Next?</h3>
+            <div class="next-item">
+                <div class="next-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                </div>
+                <div class="next-content">
+                    <h4>Teach Others</h4>
+                    <p>Share what you've learned. Remember: the Protégé Effect means teaching deepens your own mastery.</p>
+                </div>
+            </div>
+            <div class="next-item">
+                <div class="next-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                </div>
+                <div class="next-content">
+                    <h4>Apply Daily</h4>
+                    <p>Return to the Gym for daily challenges and Open Mat sessions to keep your skills sharp.</p>
+                </div>
+            </div>
+            <div class="next-item">
+                <div class="next-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                </div>
+                <div class="next-content">
+                    <h4>Join the Community</h4>
+                    <p>Connect with other Black Belts in the TAP-IN community to share insights and challenges.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="share-section">
+            <p class="share-title">Share your achievement</p>
+            <div class="share-buttons">
+                <a href="#" class="share-btn" onclick="shareLinkedIn()">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="#" class="share-btn" onclick="shareTwitter()">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="#" class="share-btn" onclick="copyLink()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </a>
+            </div>
+        </section>
+        
+        <section class="final-cta">
+            <a href="gym-dashboard.html" class="btn btn-primary">Return to Gym</a>
+            <a href="learning-hub.html" class="btn btn-secondary">Explore Hub</a>
+        </section>
+    </div>
+
+    <script>
+        // Massive confetti celebration for Black Belt
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#d4a853', '#f5d89a', '#c49a3d', '#10b981', '#ffffff', '#8b5cf6'];
+            
+            for (let i = 0; i < 150; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                    confetti.style.animationDuration = (3 + Math.random() * 2) + 's';
+                    confetti.style.width = (8 + Math.random() * 8) + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    celebration.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 20);
+            }
+        }
+        
+        // Save progress
+        function saveProgress() {
+            localStorage.setItem('tap_in_black_belt_complete', 'true');
+            localStorage.setItem('tap_in_journey_complete', 'true');
+            const progress = JSON.parse(localStorage.getItem('tap_in_progress') || '{}');
+            progress.belt = 'black';
+            progress.xp = (progress.xp || 0) + 1000;
+            progress.journeyComplete = true;
+            localStorage.setItem('tap_in_progress', JSON.stringify(progress));
+        }
+        
+        // Set certificate date
+        document.getElementById('certDate').textContent = new Date().toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+        
+        function shareLinkedIn() {
+            const text = "I just earned my BLACK BELT in TAP-IN! 🥋 Completed the entire leadership journey - from Trust to Results. Mastered coaching, culture, change management, pressure management, teaching, and legacy leadership.";
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${encodeURIComponent(text)}`, '_blank');
+        }
+        
+        function shareTwitter() {
+            const text = "🥋 BLACK BELT ACHIEVED in TAP-IN! Completed the entire leadership journey. From Trust <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Conflict <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Commitment <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Accountability <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Results. Ready to create ripples. #Leadership #TAP_IN";
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+        }
+        
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href);
+            alert('Link copied to clipboard!');
+        }
+        
+        // Initialize
+        createConfetti();
+        saveProgress();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

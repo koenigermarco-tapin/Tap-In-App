@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Verantwortungs-Arena - TAP-IN Spiele</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --orange: #f97316;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --brown: #b45309;
+            --pink: #ec4899;
+            --cyan: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        .back-btn:hover { color: var(--white); }
+        
+        .header-stats { display: flex; gap: 15px; }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .stat.xp { color: var(--gold); }
+        .stat.streak { color: var(--green); }
+        
+        .main-content {
+            padding: 80px 20px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .screen { display: none; animation: fadeIn 0.4s; }
+        .screen.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .intro-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(180, 83, 9, 0.15));
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 40px 25px;
+            text-align: center;
+        }
+        
+        .intro-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+        
+        .intro-title { font-size: 28px; font-weight: 800; margin-bottom: 12px; }
+        .intro-desc { color: var(--light-grey); line-height: 1.6; margin-bottom: 25px; }
+        
+        .intro-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .intro-stat {
+            background: var(--black);
+            border-radius: 10px;
+            padding: 12px;
+        }
+        
+        .intro-stat-value { font-size: 24px; font-weight: 800; color: var(--brown); }
+        .intro-stat-label { font-size: 10px; color: var(--light-grey); text-transform: uppercase; }
+        
+        .start-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(180, 83, 9, 0.4);
+        }
+        
+        .progress-section { margin-bottom: 20px; }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--brown), var(--orange));
+            transition: width 0.5s;
+        }
+        
+        .stakes-section {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stakes-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        
+        .stakes-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+        }
+        
+        .stakes-value { font-weight: 700; font-size: 14px; }
+        .stakes-value.low { color: var(--green); }
+        .stakes-value.medium { color: var(--gold); }
+        .stakes-value.high { color: var(--red); }
+        
+        .stakes-items { display: flex; flex-wrap: wrap; gap: 8px; }
+        
+        .stake-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            padding: 4px 10px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+        }
+        
+        .stake-item.at-risk { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        .stake-item.protected { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+        
+        .scenario-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-type { display: flex; align-items: center; gap: 8px; }
+        
+        .type-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+        
+        .type-icon.work { background: linear-gradient(135deg, var(--blue), var(--cyan)); }
+        .type-icon.friend { background: linear-gradient(135deg, var(--green), var(--cyan)); }
+        .type-icon.family { background: linear-gradient(135deg, var(--orange), var(--gold)); }
+        .type-icon.roommate { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+        .type-icon.community { background: linear-gradient(135deg, var(--pink), var(--red)); }
+        
+        .type-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+        }
+        
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: linear-gradient(135deg, var(--orange), var(--red));
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+        
+        .streak-badge.inactive { background: var(--mid-grey); color: var(--light-grey); }
+        
+        .scenario-situation { font-size: 15px; line-height: 1.6; margin-bottom: 15px; }
+        .scenario-question { font-weight: 700; color: var(--gold); margin-bottom: 15px; }
+        
+        .responses { display: flex; flex-direction: column; gap: 10px; }
+        
+        .response-btn {
+            background: var(--mid-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            color: var(--white);
+            font-size: 14px;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .response-btn:hover:not(:disabled) {
+            border-color: var(--light-grey);
+            transform: translateX(5px);
+        }
+        
+        .response-btn:disabled { cursor: default; }
+        .response-btn.selected { border-color: var(--blue); }
+        .response-btn.excellent { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .response-btn.good { border-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
+        .response-btn.poor { border-color: var(--red); background: rgba(239, 68, 68, 0.1); }
+        
+        .response-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            font-size: 12px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .response-btn.revealed .response-meta { opacity: 1; }
+        
+        .quality-label { font-weight: 700; padding: 3px 10px; border-radius: 4px; }
+        .quality-label.excellent { background: var(--green); color: var(--black); }
+        .quality-label.good { background: var(--gold); color: var(--black); }
+        .quality-label.poor { background: var(--red); color: var(--white); }
+        
+        .points-earned { font-weight: 600; }
+        .points-earned.positive { color: var(--green); }
+        .points-earned.negative { color: var(--red); }
+        
+        .feedback {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        
+        .feedback.excellent .feedback-icon { background: var(--green); }
+        .feedback.good .feedback-icon { background: var(--gold); }
+        .feedback.poor .feedback-icon { background: var(--red); }
+        
+        .feedback-title { font-weight: 700; font-size: 16px; }
+        .feedback-text { color: var(--light-grey); line-height: 1.6; margin-bottom: 15px; }
+        
+        .consequence-box {
+            background: var(--mid-grey);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .consequence-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 6px;
+        }
+        
+        .consequence-text { font-size: 13px; color: var(--white); font-style: italic; }
+        
+        .continue-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+        }
+        
+        .continue-btn.show { display: block; }
+        
+        .results-screen { text-align: center; padding: 30px 0; }
+        .results-title { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+        .results-subtitle { color: var(--light-grey); margin-bottom: 25px; }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .result-card { background: var(--dark-grey); border-radius: 12px; padding: 18px; }
+        .result-value { font-size: 32px; font-weight: 800; margin-bottom: 4px; }
+        .result-value.score { color: var(--brown); }
+        .result-value.xp { color: var(--gold); }
+        .result-value.excellent { color: var(--green); }
+        .result-value.streak { color: var(--orange); }
+        .result-label { font-size: 11px; color: var(--light-grey); text-transform: uppercase; }
+        
+        .style-section {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .style-title { font-weight: 700; margin-bottom: 15px; }
+        
+        .style-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .style-label { width: 90px; font-size: 12px; color: var(--light-grey); }
+        
+        .style-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .style-bar-fill { height: 100%; border-radius: 4px; }
+        .style-value { width: 35px; text-align: right; font-size: 12px; font-weight: 600; }
+        
+        .exit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--brown);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+        
+        .play-again-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--mid-grey);
+            border: none;
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-accountability-arena-v2.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-accountability-arena-v2-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library-de.html" class="back-btn">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+            Beenden
+        </a>
+        <div class="header-stats">
+            <div class="stat xp">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span id="xpDisplay">0</span>
+            </div>
+            <div class="stat streak">
+                <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                <span id="streakDisplay">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-content">
+        <div class="screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-icon">🛡️</div>
+                <h1 class="intro-title">Verantwortungs-Arena</h1>
+                <p class="intro-desc">
+                    Meistere die Kunst, andere zur Verantwortung zu ziehen, ohne Beziehungen zu beschadigen. 
+                    Navigiere durch echte Szenarien, in denen jemand eine Zusage nicht eingehalten hat.
+                </p>
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">12</div>
+                        <div class="intro-stat-label">Szenarien</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">~10</div>
+                        <div class="intro-stat-label">Minuten</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">+100</div>
+                        <div class="intro-stat-label">XP</div>
+                    </div>
+                </div>
+                <button class="start-btn" onclick="startGame()">Arena betreten</button>
+            </div>
+        </div>
+        
+        <div class="screen" id="gameScreen">
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span>Szenario <span id="currentNum">1</span> von <span id="totalNum">12</span></span>
+                    <span id="progressPct">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+            
+            <div class="stakes-section" id="stakesSection">
+                <div class="stakes-header">
+                    <span class="stakes-label">Was auf dem Spiel steht</span>
+                    <span class="stakes-value medium" id="stakesValue">Mittlerer Einsatz</span>
+                </div>
+                <div class="stakes-items" id="stakesItems"></div>
+            </div>
+            
+            <div class="scenario-card" id="scenarioCard">
+                <div class="scenario-header">
+                    <div class="scenario-type">
+                        <div class="type-icon work" id="typeIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                        <span class="type-label" id="typeLabel">Arbeitsplatz</span>
+                    </div>
+                    <div class="streak-badge inactive" id="streakBadge">
+                        <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <span id="streakCount">0</span>
+                    </div>
+                </div>
+                <div class="scenario-situation" id="scenarioText">Laden...</div>
+                <div class="scenario-question" id="scenarioQuestion">Wie gehst du damit um?</div>
+                <div class="responses" id="responses"></div>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-header">
+                    <div class="feedback-icon" id="feedbackIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                    <div class="feedback-title" id="feedbackTitle">Toller Ansatz!</div>
+                </div>
+                <div class="feedback-text" id="feedbackText"></div>
+                <div class="consequence-box">
+                    <div class="consequence-label">Was als Nachstes passiert</div>
+                    <div class="consequence-text" id="consequenceText"></div>
+                </div>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" onclick="nextScenario()">Weiter</button>
+        </div>
+        
+        <div class="screen" id="resultsScreen">
+            <div class="results-screen">
+                <h1 class="results-title">Arena abgeschlossen!</h1>
+                <p class="results-subtitle">So hast du Verantwortlichkeit gehandhabt</p>
+                
+                <div class="results-grid">
+                    <div class="result-card">
+                        <div class="result-value score" id="finalScore">0%</div>
+                        <div class="result-label">Genauigkeit</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value xp" id="finalXP">+0</div>
+                        <div class="result-label">XP verdient</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value excellent" id="excellentCount">0</div>
+                        <div class="result-label">Exzellent</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-value streak" id="maxStreak">0</div>
+                        <div class="result-label">Beste Serie</div>
+                    </div>
+                </div>
+                
+                <div class="style-section">
+                    <div class="style-title">Dein Verantwortlichkeits-Stil</div>
+                    <div id="styleBreakdown"></div>
+                    <p class="feedback-text" id="styleDescription" style="margin-top: 15px;"></p>
+                </div>
+                
+                <button class="exit-btn" onclick="exitGame()">XP einlosen & Beenden</button>
+                <button class="play-again-btn" onclick="playAgain()">Nochmal spielen</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const allScenarios = [
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Arbeitsplatz',
+                stakes: 'medium', stakeItems: ['Team-Vertrauen', 'Projekt-Zeitplan'],
+                situation: "Dein Teamkollege Alex hat versprochen, die API-Dokumentation bis Freitag fertig zu haben. Es ist jetzt Montag und sie ist immer noch nicht fertig. Das Dev-Team ist blockiert.",
+                question: "Wie sprichst du Alex an?",
+                responses: [
+                    { text: "\"Hey Alex, ich habe bemerkt, dass die API-Docs noch nicht fertig sind. Das Team ist blockiert. Was ist passiert, und wie ist dein Plan, sie fertigzustellen?\"", quality: 'excellent', points: 10, feedback: "Direkt, sachlich und losungsorientiert. Du hast die Auswirkungen genannt, ohne anzugreifen, und hast eingeladen, die Losung zu ubernehmen.", consequence: "Alex schatzt den direkten Ansatz. Sie erklaren, dass ein personliches Problem aufkam und verpflichten sich, bis Tagesende fertig zu werden.", style: 'direct' },
+                    { text: "\"Alex, du hast das echt verpatzt. Das ganze Team wartet auf dich.\"", quality: 'poor', points: 0, feedback: "Das ist anklagend und schambasiert. Es wird Alex defensiv machen und Vertrauen beschadigen, ohne das Problem zu losen.", consequence: "Alex wird defensiv und blockt ab. Das Gesprach dreht sich um Schuldzuweisung statt Losungen.", style: 'harsh' },
+                    { text: "Nichts sagen und die Docs selbst machen, um Konflikte zu vermeiden.", quality: 'poor', points: 0, feedback: "Verantwortlichkeit zu vermeiden ermoglicht, dass das Muster weitergeht und erzeugt Groll. Du hast auch Arbeit ubernommen, die nicht deine war.", consequence: "Alex weiss nie, dass es ein Problem gab. Du fuhlst dich grollend. Das Muster setzt sich fort.", style: 'avoidant' },
+                    { text: "\"Alex, ich weiss, du bist beschaftigt. Blockiert dich etwas bei den Docs? Wie kann ich helfen?\"", quality: 'good', points: 5, feedback: "Unterstutzend, aber die Verantwortlichkeitskomponente fehlt. Du solltest auch die Auswirkungen klaren und eine Zusage bekommen.", consequence: "Alex schatzt die Unterstutzung, ubernimmt aber nicht voll die Verantwortung fur die Verzogerung.", style: 'supportive' }
+                ]
+            },
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Arbeitsplatz',
+                stakes: 'high', stakeItems: ['Qualitatsstandards', 'Teamkultur'],
+                situation: "Jordan hat einen Code-Review eingereicht, der mehrere offensichtliche Probleme hat. Das ist das dritte Mal diesen Monat, dass ihre PRs nicht den Team-Standards entsprechen.",
+                question: "Wie sprichst du dieses Muster an?",
+                responses: [
+                    { text: "Den PR trotzdem genehmigen, um Unannehmlichkeiten zu vermeiden, dann die Probleme selbst beheben.", quality: 'poor', points: 0, feedback: "Das untergrabt Standards und ermoglicht das Muster. Es erzeugt auch versteckten Groll und Burnout bei dir.", consequence: "Standards sinken still. Andere Teammitglieder fangen auch an, Abkurzungen zu nehmen.", style: 'avoidant' },
+                    { text: "\"Jordan, ich habe ein Muster in deinen letzten PRs bemerkt. Konnen wir daruber reden, was los ist und wie wir wieder zu unserer Qualitatsanforderung kommen?\"", quality: 'excellent', points: 10, feedback: "Perfekt. Du hast das Muster benannt, Besorgnis statt Urteil signalisiert und zur Zusammenarbeit eingeladen.", consequence: "Jordan offenbart, dass sie uberfordert waren. Ihr lost zusammen Probleme. Die Qualitat verbessert sich.", style: 'direct' },
+                    { text: "Detaillierte Kommentare zu jedem Problem hinterlassen und den PR ohne Diskussion ablehnen.", quality: 'good', points: 5, feedback: "Du haltst Standards aufrecht, verpasst aber die Coaching-Gelegenheit. Ein Gesprach wurde die Ursache ansprechen.", consequence: "Jordan behebt diesen PR, aber das Muster geht weiter. Sie fuhlen sich kritisiert ohne Unterstutzung.", style: 'harsh' },
+                    { text: "Direkt zum Manager eskalieren, ohne zuerst mit Jordan zu sprechen.", quality: 'poor', points: 0, feedback: "Das beschadigt Vertrauen und uberspringt die Peer-Verantwortlichkeit, die am effektivsten ist.", consequence: "Jordan fuhlt sich uberrascht. Deine Beziehung ist beschadigt. Der Manager wunscht, du hattest zuerst geredet.", style: 'escalator' }
+                ]
+            },
+            {
+                context: 'friend', icon: '👋', label: 'Freund',
+                stakes: 'medium', stakeItems: ['Freundschaft', 'Zukunftige Plane'],
+                situation: "Dein Freund hat versprochen, dir am Wochenende beim Umzug zu helfen. Am Umzugstag kommt eine SMS: 'Sorry, mir ist was dazwischengekommen. Kann nicht.' Das ist das dritte Mal, dass sie Plane absagen.",
+                question: "Wie antwortest du?",
+                responses: [
+                    { text: "\"Das ist frustrierend. Das ist das dritte Mal, dass du absagst. Ich schatze unsere Freundschaft und muss wissen, dass ich mich auf dich verlassen kann. Konnen wir daruber reden, was los ist?\"", quality: 'excellent', points: 10, feedback: "Du hast das Muster benannt, die Auswirkung ausgedruckt und Dialog eroffnet. Das ist Verantwortlichkeit mit Fursorge.", consequence: "Dein Freund entschuldigt sich aufrichtig. Sie erklaren, dass sie sich zu viel vorgenommen haben. Ihr legt klarere Erwartungen fest.", style: 'direct' },
+                    { text: "\"Egal, ich regel das\" und anfangen, dich zu distanzieren.", quality: 'poor', points: 0, feedback: "Passiver Ruckzug gibt ihnen keine Chance, es anzusprechen. Groll baut sich ohne Losung auf.", consequence: "Die Freundschaft verblasst langsam. Keiner von euch weiss genau, was passiert ist.", style: 'avoidant' },
+                    { text: "Explodieren: \"Du machst das IMMER! Du bist so unzuverlassig! Ich kann mich auf dich fur nichts verlassen!\"", quality: 'poor', points: 0, feedback: "Mit 'immer' und Etiketten anzugreifen erzeugt Abwehr. Die berechtigte Sorge geht in der Ubermittlung verloren.", consequence: "Dein Freund wird defensiv. Der Streit dreht sich um deine Ubermittlung, nicht ihr Verhalten.", style: 'harsh' },
+                    { text: "\"Kein Problem, hoffe alles ist okay\" und jemand anderen zum Helfen finden.", quality: 'good', points: 5, feedback: "Im Moment gracios, aber du vermeidest das Muster. Das ermoglicht, dass es weitergeht.", consequence: "Du lost das unmittelbare Problem, aber das Muster setzt sich fort.", style: 'supportive' }
+                ]
+            },
+            {
+                context: 'family', icon: '👨‍👩‍👧', label: 'Familie',
+                stakes: 'high', stakeItems: ['Familienharmonie', 'Beziehung'],
+                situation: "Dein Geschwister sagt standig zu Familienveranstaltungen zu und sagt dann im letzten Moment ab. Deine Eltern sind verletzt, und du bist es leid, Ausreden fur sie zu erfinden.",
+                question: "Was machst du?",
+                responses: [
+                    { text: "Ein ehrliches Gesprach fuhren: \"Ich habe bemerkt, dass du viele Familienveranstaltungen absagst. Mama und Papa sind verletzt. Was ist los? Gibt es etwas, das wir anders machen konnen?\"", quality: 'excellent', points: 10, feedback: "Du hast die Auswirkung genannt, Neugier uber die Ursache gezeigt und angeboten, gemeinsam zu losen.", consequence: "Dein Geschwister offnet sich und sagt, dass Familienerwartungen sie uberfordern. Ihr arbeitet zusammen an realistischeren Zusagen.", style: 'direct' },
+                    { text: "Sie bei deinen Eltern decken und hoffen, dass sie es selbst herausfinden.", quality: 'poor', points: 0, feedback: "Das Muster zu ermoglichen schutzt sie vor Konsequenzen, die sie spuren mussen. Es erschopft auch dich.", consequence: "Das Muster geht weiter. Du wirst grollend. Deine Eltern bleiben verletzt. Nichts andert sich.", style: 'avoidant' },
+                    { text: "\"Du bist so egoistisch. Mama und Papa werden nicht ewig da sein. Du musst erwachsen werden und auftauchen.\"", quality: 'poor', points: 0, feedback: "Schuldzuweisungen und Etikettieren erzeugt Abwehr. Selbst wenn wahr, wird diese Ubermittlung keine Veranderung bewirken.", consequence: "Dein Geschwister wird defensiv und zieht sich weiter zuruck. Die Beziehung ist beschadigt.", style: 'harsh' },
+                    { text: "Deinen Eltern sagen, dass dein Geschwister unzuverlassig ist und sie sollten aufhoren, zu erwarten.", quality: 'poor', points: 0, feedback: "Uber sie mit anderen zu reden statt mit ihnen erzeugt Drama und spricht das Problem nicht an.", consequence: "Deine Eltern sind in der Mitte gefangen. Dein Geschwister findet heraus, dass du sie 'ans Messer geliefert' hast.", style: 'escalator' }
+                ]
+            },
+            {
+                context: 'roommate', icon: '🏠', label: 'Mitbewohner',
+                stakes: 'medium', stakeItems: ['Wohnharmonie', 'Gemeinsamer Raum'],
+                situation: "Dein Mitbewohner lasst standig schmutziges Geschirr tagelang in der Spule. Du hast es zweimal beilaufig erwahnt, aber nichts hat sich geandert. Die Kuche wird unbenutzbar.",
+                question: "Wie eskalierst du angemessen?",
+                responses: [
+                    { text: "\"Hey, ich muss uber das Geschirr reden. Ich habe es ein paar Mal erwahnt, aber es passiert weiter. Das funktioniert fur mich nicht. Konnen wir ein System finden, das fur uns beide funktioniert?\"", quality: 'excellent', points: 10, feedback: "Du hast vorherige Versuche anerkannt, dein Bedurfnis klar genannt und kollaboratives Problemlosen vorgeschlagen.", consequence: "Dein Mitbewohner entschuldigt sich und gibt zu, dass sie gestresst waren. Ihr einigt euch auf eine 24-Stunden-Geschirr-Regel.", style: 'direct' },
+                    { text: "Einfach ihr Geschirr machen, wahrend du sie still grollen.", quality: 'poor', points: 0, feedback: "Das ermoglicht das Verhalten und baut Groll auf. Drucke deine Bedurfnisse klar aus.", consequence: "Du wirst der Haushaltsspuler. Groll baut sich auf. Irgendwann explodierst du wegen etwas Kleinem.", style: 'avoidant' },
+                    { text: "Einen passiv-aggressiven Zettel hinterlassen: \"Manche von uns benutzen diese Kuche tatsachlich.\"", quality: 'poor', points: 0, feedback: "Passiv-aggressive Kommunikation beschadigt Beziehungen, ohne Probleme zu losen. Rede direkt.", consequence: "Dein Mitbewohner ist beleidigt durch den Zettel. Jetzt gibt es Spannung UND schmutziges Geschirr.", style: 'indirect' },
+                    { text: "Einen Gruppenchat mit allen Mitbewohnern uber 'Kuchensauberkeit' starten.", quality: 'good', points: 5, feedback: "Gruppenverantwortlichkeit kann helfen, aber da du weisst, wer verantwortlich ist, sprich zuerst direkt mit ihnen.", consequence: "Die Gruppendiskussion fuhlt sich unangenehm an. Dein Mitbewohner weiss, es geht um sie, wurde aber nicht direkt angesprochen.", style: 'indirect' }
+                ]
+            },
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Arbeitsplatz',
+                stakes: 'medium', stakeItems: ['Meeting-Effektivitat', 'Team-Normen'],
+                situation: "Bei Team-Meetings kommt Sam standig 5-10 Minuten zu spat und scrollt auf dem Handy. Andere bemerken es und einige fangen an, dasselbe zu tun.",
+                question: "Was ist dein Zug?",
+                responses: [
+                    { text: "Sam privat beiseite nehmen: \"Hey Sam, alles okay? Ich habe bemerkt, dass du in letzter Zeit zu Meetings zu spat kommst und am Handy bist. Ist was los?\"", quality: 'excellent', points: 10, feedback: "Ein privater, fursorglicher Check-in ist perfekt fur Verhaltensprobleme. Es eroffnet Dialog ohne offentliche Beschamung.", consequence: "Sam offenbart, dass sie mit einem Familienproblem kampfen. Sie schatzen deinen Ansatz und verpflichten sich, prasenter zu sein.", style: 'supportive' },
+                    { text: "Sie im nachsten Meeting blossstellen: \"Sam, nett, dass du dich zu uns gesellt. Kannst du das Handy weglegen?\"", quality: 'poor', points: 0, feedback: "Offentliche Beschamung zerstort Vertrauen und macht alle anderen Angst, verletzlich zu sein. Tu das nie.", consequence: "Sam ist gedemutigt. Das Team wird zuruckhaltend. Meeting-Teilnahme sinkt.", style: 'harsh' },
+                    { text: "Nichts sagen - es ist nicht deine Aufgabe, Meeting-Verhalten zu uberwachen.", quality: 'poor', points: 0, feedback: "Wenn du es nicht ansprichst, sagst du implizit, dass es akzeptabel ist. Standards erodieren durch Schweigen.", consequence: "Das Verhalten breitet sich aus. Bald ist die Halfte des Teams zu spat oder abgelenkt.", style: 'avoidant' },
+                    { text: "Den Meeting-Organisator bitten, eine Erinnerung uber Meeting-Normen an alle zu schicken.", quality: 'good', points: 5, feedback: "Gute Absicht, aber passiv. Direktes Gesprach mit Sam ware effektiver als eine allgemeine Erinnerung.", consequence: "Alle bekommen eine Erinnerung. Sam verbindet es nicht mit ihrem Verhalten. Das Muster geht weiter.", style: 'indirect' }
+                ]
+            },
+            {
+                context: 'family', icon: '👨‍👩‍👧', label: 'Familie',
+                stakes: 'medium', stakeItems: ['Familiengrenzen', 'Deine psychische Gesundheit'],
+                situation: "Dein Elternteil gibt dir standig ungebetene Karriereratschlage, obwohl du sie gebeten hast aufzuhoren. Sie haben es gerade wieder beim Abendessen getan, und du bist frustriert.",
+                question: "Wie antwortest du?",
+                responses: [
+                    { text: "\"Mama/Papa, ich hab dich lieb und ich weiss, du willst das Beste fur mich. Aber ich habe dich gebeten, mich meine Karriere selbst handhaben zu lassen. Wenn du nach meiner Bitte Ratschlage gibst, will ich weniger mit dir teilen.\"", quality: 'excellent', points: 10, feedback: "Du hast die Beziehung bestatigt, die Grenze wiederholt und die Konsequenz erklart. Perfekt.", consequence: "Sie sind uberrascht von der Konsequenz. Nach Nachdenken entschuldigen sie sich und versuchen, deine Grenze zu respektieren.", style: 'direct' },
+                    { text: "Lacheln und nicken, dann spater bei deinem Partner Dampf ablassen.", quality: 'poor', points: 0, feedback: "Das Gesprach zu vermeiden bedeutet, dass das Muster weitergeht und deine Frustration wachst. Sprich es direkt an.", consequence: "Das Muster geht weiter. Du furchtest Familienessen. Dein Partner ist es leid, davon zu horen.", style: 'avoidant' },
+                    { text: "\"Warum kannst du nicht einfach AUFHOREN? Ich bin kein Kind mehr! Du respektierst mich uberhaupt nicht!\"", quality: 'poor', points: 0, feedback: "Explosive Reaktionen eskalieren statt zu losen. Atme durch und sprich es ruhig an.", consequence: "Das Abendessen wird zum Streit. Alle sind verargert. Das eigentliche Problem geht im Konflikt verloren.", style: 'harsh' },
+                    { text: "Das Thema geschickt wechseln und hoffen, sie verstehen den Hinweis.", quality: 'good', points: 5, feedback: "Das funktioniert im Moment, spricht aber nicht das Muster an. Sie bemerken deine Umleitung vielleicht nicht mal.", consequence: "Du hast diesen Fall vermieden, aber das Muster wird weitergehen. Hinweise sind keine klare Kommunikation.", style: 'indirect' }
+                ]
+            },
+            {
+                context: 'work', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', label: 'Arbeitsplatz',
+                stakes: 'high', stakeItems: ['Projekt-Erfolg', 'Team-Lernen'],
+                situation: "Nach einem Projektfehlschlag gibt Morgan dem anderen Team die Schuld: 'Sie haben uns die API nicht rechtzeitig gegeben.' Du weisst, dass Morgan nie nachgehakt hat, als es zu spat kam.",
+                question: "Wie antwortest du?",
+                responses: [
+                    { text: "\"Das ist frustrierend. Haben wir eskaliert, als wir sahen, dass es aus dem Ruder lauft? Was konnten wir nachstes Mal anders machen, um das fruher zu erkennen?\"", quality: 'excellent', points: 10, feedback: "Du hast ihre Frustration validiert und gleichzeitig zu dem umgeleitet, was in ihrer Kontrolle war. Das baut Eigenverantwortung auf.", consequence: "Morgan reflektiert und gibt zu, dass sie fruher hatten eskalieren konnen. Das Team lernt und verbessert seinen Prozess.", style: 'direct' },
+                    { text: "Zustimmen, dass das andere Team das Problem ist, um Konflikte zu vermeiden.", quality: 'poor', points: 0, feedback: "Beim Schuldspiel mitzumachen verhindert Lernen und Verantwortlichkeit. Es fuhlt sich unterstutzend an, ist es aber nicht.", consequence: "Niemand lernt. Dasselbe Muster wird sich wiederholen. Die Schuldzuweisungskultur breitet sich aus.", style: 'avoidant' },
+                    { text: "\"Morgan, das stimmt nicht ganz. Du hast nie nachgehakt, als es spat war.\"", quality: 'good', points: 5, feedback: "Direkt und sachlich, aber potenziell abwehrerzeugend. Die Formulierung konnte sanfter sein.", consequence: "Morgan wird defensiv. Der gultige Punkt geht im Konflikt verloren, wer Recht hat.", style: 'harsh' },
+                    { text: "Dem Management berichten, dass Morgan keine Verantwortung ubernimmt.", quality: 'poor', points: 0, feedback: "Ohne direktes Gesprach zu eskalieren unterhohlt Vertrauen. Versuch zuerst Peer-Feedback.", consequence: "Morgan fuhlt sich verraten. Vertrauen ist gebrochen. Du wirst jetzt als jemand gesehen, der uber Kopfe hinweg geht.", style: 'escalator' }
+                ]
+            }
+        ];
+        
+        let scenarios = [];
+        let currentIndex = 0;
+        let xp = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let excellentCount = 0;
+        let goodCount = 0;
+        let poorCount = 0;
+        let totalQuestions = 12;
+        let styleStats = { direct: 0, supportive: 0, avoidant: 0, harsh: 0, indirect: 0, escalator: 0 };
+        
+        const stakesLabels = { low: 'Niedriger Einsatz', medium: 'Mittlerer Einsatz', high: 'Hoher Einsatz' };
+        
+        function initGame() {
+            const shuffled = [...allScenarios].sort(() => Math.random() - 0.5);
+            scenarios = shuffled.slice(0, totalQuestions);
+            document.getElementById('totalNum').textContent = totalQuestions;
+        }
+        
+        function startGame() {
+            initGame();
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            loadScenario();
+        }
+        
+        function loadScenario() {
+            const s = scenarios[currentIndex];
+            
+            document.getElementById('currentNum').textContent = currentIndex + 1;
+            document.getElementById('progressPct').textContent = Math.round((currentIndex / totalQuestions) * 100) + '%';
+            document.getElementById('progressFill').style.width = (currentIndex / totalQuestions) * 100 + '%';
+            
+            const stakesValue = document.getElementById('stakesValue');
+            stakesValue.textContent = stakesLabels[s.stakes];
+            stakesValue.className = 'stakes-value ' + s.stakes;
+            document.getElementById('stakesItems').innerHTML = s.stakeItems.map(item => `
+                <div class="stake-item at-risk">${item}</div>
+            `).join('');
+            
+            const icon = document.getElementById('typeIcon');
+            icon.textContent = s.icon;
+            icon.className = 'type-icon ' + s.context;
+            document.getElementById('typeLabel').textContent = s.label;
+            
+            document.getElementById('scenarioText').textContent = s.situation;
+            document.getElementById('scenarioQuestion').textContent = s.question;
+            
+            const badge = document.getElementById('streakBadge');
+            document.getElementById('streakCount').textContent = streak;
+            badge.classList.toggle('inactive', streak === 0);
+            
+            const shuffledResponses = [...s.responses].sort(() => Math.random() - 0.5);
+            s.shuffledResponses = shuffledResponses;
+            
+            document.getElementById('responses').innerHTML = shuffledResponses.map((r, i) => `
+                <button class="response-btn" onclick="selectResponse(${i})">
+                    ${r.text}
+                    <div class="response-meta">
+                        <span class="quality-label ${r.quality}">${r.quality === 'excellent' ? 'Exzellent' : r.quality === 'good' ? 'Gut' : 'Schlecht'}</span>
+                        <span class="points-earned ${r.points > 0 ? 'positive' : 'negative'}">+${r.points} Pkt</span>
+                    </div>
+                </button>
+            `).join('');
+            
+            document.getElementById('feedback').classList.remove('show', 'excellent', 'good', 'poor');
+            document.getElementById('continueBtn').classList.remove('show');
+        }
+        
+        function selectResponse(index) {
+            const s = scenarios[currentIndex];
+            const response = s.shuffledResponses[index];
+            
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.classList.add('revealed');
+                const r = s.shuffledResponses[i];
+                btn.classList.add(r.quality);
+                if (i === index) btn.classList.add('selected');
+            });
+            
+            styleStats[response.style] = (styleStats[response.style] || 0) + 1;
+            
+            let bonusXP = 0;
+            if (response.quality === 'excellent') {
+                excellentCount++;
+                streak++;
+                bonusXP = streak > 1 ? streak * 2 : 0;
+                maxStreak = Math.max(maxStreak, streak);
+            } else if (response.quality === 'good') {
+                goodCount++;
+                streak = 0;
+            } else {
+                poorCount++;
+                streak = 0;
+            }
+            
+            xp += response.points + bonusXP;
+            document.getElementById('xpDisplay').textContent = xp;
+            document.getElementById('streakDisplay').textContent = streak;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + response.quality;
+            document.getElementById('feedbackIcon').textContent = response.quality === 'excellent' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>' : response.quality === 'good' ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg>' : '✗';
+            document.getElementById('feedbackTitle').textContent = response.quality === 'excellent' ? 'Ausgezeichneter Ansatz!' : response.quality === 'good' ? 'Guter Ansatz!' : 'Konnte besser sein...';
+            document.getElementById('feedbackText').textContent = response.feedback;
+            document.getElementById('consequenceText').textContent = response.consequence;
+            
+            const stakeItems = document.querySelectorAll('.stake-item');
+            stakeItems.forEach(item => {
+                item.classList.remove('at-risk');
+                item.classList.add(response.quality === 'excellent' ? 'protected' : response.quality === 'good' ? 'protected' : 'at-risk');
+            });
+            
+            document.getElementById('continueBtn').classList.add('show');
+        }
+        
+        function nextScenario() {
+            currentIndex++;
+            if (currentIndex >= totalQuestions) {
+                showResults();
+            } else {
+                loadScenario();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            const accuracy = Math.round((excellentCount / totalQuestions) * 100);
+            const totalXP = xp + 50;
+            
+            document.getElementById('finalScore').textContent = accuracy + '%';
+            document.getElementById('finalXP').textContent = '+' + totalXP;
+            document.getElementById('excellentCount').textContent = excellentCount;
+            document.getElementById('maxStreak').textContent = maxStreak;
+            
+            const relevantStyles = { direct: styleStats.direct || 0, supportive: styleStats.supportive || 0, avoidant: styleStats.avoidant || 0 };
+            const totalStyled = Object.values(relevantStyles).reduce((a, b) => a + b, 0) || 1;
+            
+            const colors = { direct: '#10b981', supportive: '#3b82f6', avoidant: '#ef4444' };
+            const labels = { direct: 'Direkt', supportive: 'Unterstutzend', avoidant: 'Vermeidend' };
+            const descriptions = {
+                direct: "Du neigst dazu, Probleme direkt mit Klarheit und Fursorge anzusprechen. Das ist der effektivste Ansatz fur den Aufbau einer Verantwortlichkeitskultur.",
+                supportive: "Du fuhrst mit Empathie und Unterstutzung, was Beziehungen aufbaut. Stelle sicher, auch klare Erwartungen einzubeziehen.",
+                avoidant: "Du vermeidest manchmal schwierige Gesprache, was Probleme schwaren lassen kann. Ube, Dinge direkt mit Freundlichkeit anzusprechen."
+            };
+            
+            const dominant = Object.entries(relevantStyles).sort((a, b) => b[1] - a[1])[0][0];
+            
+            document.getElementById('styleBreakdown').innerHTML = Object.entries(relevantStyles).map(([style, count]) => {
+                const pct = Math.round((count / totalStyled) * 100);
+                return `
+                    <div class="style-bar-row">
+                        <div class="style-label">${labels[style]}</div>
+                        <div class="style-bar">
+                            <div class="style-bar-fill" style="width: ${pct}%; background: ${colors[style]}"></div>
+                        </div>
+                        <div class="style-value">${pct}%</div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('styleDescription').textContent = descriptions[dominant];
+        }
+        
+        function exitGame() {
+            const totalXP = xp + 50;
+            const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+            localStorage.setItem('totalXP', currentXP + totalXP);
+            window.location.href = 'game-library-de.html';
+        }
+        
+        function playAgain() {
+            currentIndex = 0;
+            xp = 0;
+            streak = 0;
+            maxStreak = 0;
+            excellentCount = 0;
+            goodCount = 0;
+            poorCount = 0;
+            styleStats = { direct: 0, supportive: 0, avoidant: 0, harsh: 0, indirect: 0, escalator: 0 };
+            
+            document.getElementById('xpDisplay').textContent = '0';
+            document.getElementById('streakDisplay').textContent = '0';
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            
+            initGame();
+            loadScenario();
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

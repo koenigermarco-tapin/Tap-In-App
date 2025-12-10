@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>AI Team Insights | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+            --cyan: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-badge {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--purple), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Insights Grid */
+        .insights-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .insight-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .insight-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+        
+        .insight-card.priority-high::before { background: var(--red); }
+        .insight-card.priority-medium::before { background: var(--orange); }
+        .insight-card.priority-low::before { background: var(--green); }
+        
+        .insight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        
+        .insight-type {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .insight-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .insight-icon.trust { background: rgba(16, 185, 129, 0.2); }
+        .insight-icon.trust svg { color: var(--green); }
+        .insight-icon.conflict { background: rgba(239, 68, 68, 0.2); }
+        .insight-icon.conflict svg { color: var(--red); }
+        .insight-icon.commitment { background: rgba(59, 130, 246, 0.2); }
+        .insight-icon.commitment svg { color: var(--blue); }
+        .insight-icon.accountability { background: rgba(251, 191, 36, 0.2); }
+        .insight-icon.accountability svg { color: var(--gold); }
+        .insight-icon.results { background: rgba(139, 92, 246, 0.2); }
+        .insight-icon.results svg { color: var(--purple); }
+        .insight-icon.engagement { background: rgba(6, 182, 212, 0.2); }
+        .insight-icon.engagement svg { color: var(--cyan); }
+        
+        .insight-category {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .priority-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .priority-badge.high { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        .priority-badge.medium { background: rgba(251, 191, 36, 0.2); color: var(--gold); }
+        .priority-badge.low { background: var(--green-dim); color: var(--green); }
+        
+        .insight-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        
+        .insight-body {
+            color: var(--light-grey);
+            margin-bottom: 20px;
+        }
+        
+        /* Action Steps */
+        .action-steps {
+            background: var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .action-steps h4 {
+            font-size: 0.9rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-steps h4 svg {
+            width: 16px;
+            height: 16px;
+            color: var(--green);
+        }
+        
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .action-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .action-number {
+            width: 22px;
+            height: 22px;
+            background: var(--green);
+            color: var(--black);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        
+        /* Resources */
+        .resources {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 0.85rem;
+            transition: all 0.2s;
+        }
+        
+        .resource-link:hover {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .resource-link svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        /* Generate Button */
+        .generate-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-ai {
+            background: linear-gradient(135deg, var(--purple), var(--blue));
+            color: var(--white);
+        }
+        
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+        }
+        
+        .btn-ai:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Loading Animation */
+        .loading {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 20px;
+        }
+        
+        .loading.active { display: flex; }
+        
+        .ai-thinking {
+            width: 80px;
+            height: 80px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+        
+        .ai-thinking::before,
+        .ai-thinking::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+        }
+        
+        .ai-thinking::before {
+            border-top-color: var(--purple);
+            animation: spin 1s linear infinite;
+        }
+        
+        .ai-thinking::after {
+            border-bottom-color: var(--blue);
+            animation: spin 1s linear infinite reverse;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .loading-subtext {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        /* Team Summary */
+        .team-summary {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .summary-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .summary-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .summary-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--purple);
+        }
+        
+        .refresh-btn {
+            padding: 8px 16px;
+            background: var(--mid-grey);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .refresh-btn:hover {
+            background: #3a3a4a;
+        }
+        
+        .refresh-btn svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .summary-stat {
+            text-align: center;
+        }
+        
+        .summary-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .summary-stat-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+        
+        /* Timestamp */
+        .timestamp {
+            text-align: center;
+            color: var(--light-grey);
+            font-size: 0.85rem;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .summary-stats { grid-template-columns: repeat(2, 1fr); }
+            .insight-header { flex-direction: column; gap: 12px; }
+            .resources { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="team-aggregation-dashboard.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--purple)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                AI Team Insights
+                <span class="ai-badge">BETA</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">AI-Powered Team Insights</h1>
+            <p class="page-desc">Get personalized recommendations based on your team's assessment data, powered by advanced pattern recognition.</p>
+        </div>
+        
+        <!-- Generate Section -->
+        <div class="generate-section" id="generateSection">
+            <button class="btn btn-ai" onclick="generateInsights()">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                Generate AI Insights
+            </button>
+        </div>
+        
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="ai-thinking"></div>
+            <div class="loading-text">Analyzing team data...</div>
+            <div class="loading-subtext">This usually takes a few seconds</div>
+        </div>
+        
+        <!-- Results -->
+        <div id="results" style="display:none;">
+            <!-- Team Summary -->
+            <div class="team-summary">
+                <div class="summary-header">
+                    <div class="summary-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                        <span id="teamNameSummary">Your Team</span>
+                    </div>
+                    <button class="refresh-btn" onclick="generateInsights()">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        Refresh
+                    </button>
+                </div>
+                <div class="summary-stats">
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="summaryHealth">72</div>
+                        <div class="summary-stat-label">Health Score</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="summaryMembers">12</div>
+                        <div class="summary-stat-label">Team Members</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="summaryInsights">5</div>
+                        <div class="summary-stat-label">Insights Found</div>
+                    </div>
+                    <div class="summary-stat">
+                        <div class="summary-stat-value" id="summaryActions">12</div>
+                        <div class="summary-stat-label">Action Items</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Insights -->
+            <div class="insights-container" id="insightsContainer">
+                <!-- Generated by JS -->
+            </div>
+            
+            <div class="timestamp" id="timestamp">
+                Last generated: Just now
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Icon SVGs
+        const icons = {
+            trust: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
+            conflict: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+            commitment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            accountability: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+            results: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>',
+            engagement: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+            arrow: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>',
+            check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>'
+        };
+        
+        function getTeamData() {
+            const stored = localStorage.getItem('teamMembers');
+            const dysfunctions = localStorage.getItem('teamDysfunctions');
+            
+            if (!stored) {
+                return {
+                    name: localStorage.getItem('teamName') || 'Your Team',
+                    members: [
+                        { name: 'Sarah Johnson', xp: 450, completion: 80, belt: 'blue' },
+                        { name: 'Mike Chen', xp: 280, completion: 60, belt: 'white' },
+                        { name: 'Lisa Park', xp: 620, completion: 90, belt: 'purple' },
+                        { name: 'Tom Wilson', xp: 120, completion: 40, belt: 'white' },
+                        { name: 'Emma Davis', xp: 0, completion: 0, belt: 'white' }
+                    ],
+                    dysfunctions: { trust: 78, conflict: 62, commitment: 70, accountability: 68, results: 75 }
+                };
+            }
+            
+            return {
+                name: localStorage.getItem('teamName') || 'Your Team',
+                members: JSON.parse(stored),
+                dysfunctions: dysfunctions ? JSON.parse(dysfunctions) : { trust: 78, conflict: 62, commitment: 70, accountability: 68, results: 75 }
+            };
+        }
+        
+        function generateInsights() {
+            document.getElementById('generateSection').style.display = 'none';
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('results').style.display = 'none';
+            
+            // Simulate AI processing
+            setTimeout(() => {
+                const data = getTeamData();
+                const insights = analyzeTeam(data);
+                renderInsights(insights, data);
+                
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('results').style.display = 'block';
+            }, 2000);
+        }
+        
+        function analyzeTeam(data) {
+            const insights = [];
+            const d = data.dysfunctions;
+            const healthScore = Math.round((d.trust + d.conflict + d.commitment + d.accountability + d.results) / 5);
+            
+            // Find lowest dimension
+            const dimensions = [
+                { name: 'Trust', key: 'trust', score: d.trust },
+                { name: 'Conflict', key: 'conflict', score: d.conflict },
+                { name: 'Commitment', key: 'commitment', score: d.commitment },
+                { name: 'Accountability', key: 'accountability', score: d.accountability },
+                { name: 'Results', key: 'results', score: d.results }
+            ].sort((a, b) => a.score - b.score);
+            
+            const lowest = dimensions[0];
+            const highest = dimensions[dimensions.length - 1];
+            
+            // Critical issue insight
+            if (lowest.score < 65) {
+                insights.push({
+                    priority: 'high',
+                    category: lowest.key,
+                    title: `Critical: ${lowest.name} Needs Attention`,
+                    body: `Your team scored ${lowest.score}/100 on ${lowest.name.toLowerCase()}, which is significantly below the healthy threshold of 70. This is your biggest opportunity for improvement and should be addressed urgently.`,
+                    actions: getActionsFor(lowest.key, 'critical'),
+                    resources: getResourcesFor(lowest.key)
+                });
+            }
+            
+            // Engagement insight
+            const notStarted = data.members.filter(m => (m.xp || 0) === 0).length;
+            if (notStarted > 0) {
+                insights.push({
+                    priority: notStarted > 2 ? 'high' : 'medium',
+                    category: 'engagement',
+                    title: `${notStarted} Team Members Haven't Started`,
+                    body: `${notStarted} out of ${data.members.length} team members have 0 XP, meaning they haven't engaged with the platform yet. Getting everyone onboard is crucial for team-wide insights.`,
+                    actions: [
+                        'Send personalized reminder emails to non-starters',
+                        'Schedule a team kickoff session to introduce TAP-IN',
+                        'Pair non-starters with active members as accountability buddies'
+                    ],
+                    resources: [
+                        { name: 'Send Reminders', href: 'team-send-reminders.html' }
+                    ]
+                });
+            }
+            
+            // Strength insight
+            if (highest.score >= 75) {
+                insights.push({
+                    priority: 'low',
+                    category: highest.key,
+                    title: `Strength: ${highest.name} is Your Superpower`,
+                    body: `Your team excels at ${highest.name.toLowerCase()} with a score of ${highest.score}/100. This is a competitive advantage you can leverage and share with other teams.`,
+                    actions: [
+                        `Document what makes your team strong in ${highest.name.toLowerCase()}`,
+                        'Share best practices with other teams in your organization',
+                        'Use this foundation to address weaker areas'
+                    ],
+                    resources: []
+                });
+            }
+            
+            // Second lowest dimension
+            const secondLowest = dimensions[1];
+            if (secondLowest.score < 70) {
+                insights.push({
+                    priority: 'medium',
+                    category: secondLowest.key,
+                    title: `Opportunity: Improve ${secondLowest.name}`,
+                    body: `${secondLowest.name} is your second-lowest dimension at ${secondLowest.score}/100. Addressing this alongside your primary focus area will accelerate overall team health.`,
+                    actions: getActionsFor(secondLowest.key, 'opportunity'),
+                    resources: getResourcesFor(secondLowest.key)
+                });
+            }
+            
+            // XP distribution insight
+            const avgXP = data.members.reduce((sum, m) => sum + (m.xp || 0), 0) / data.members.length;
+            const highPerformers = data.members.filter(m => (m.xp || 0) > avgXP * 1.5).length;
+            const lowPerformers = data.members.filter(m => (m.xp || 0) < avgXP * 0.5 && (m.xp || 0) > 0).length;
+            
+            if (highPerformers > 0 && lowPerformers > 0) {
+                insights.push({
+                    priority: 'medium',
+                    category: 'engagement',
+                    title: 'Engagement Gap Detected',
+                    body: `There's a significant gap between your most engaged (${highPerformers} high performers) and least engaged members (${lowPerformers} falling behind). Consider pairing them up for peer support.`,
+                    actions: [
+                        'Create accountability partnerships between high and low engagers',
+                        'Identify blockers preventing low engagers from participating',
+                        'Celebrate wins publicly to motivate the team'
+                    ],
+                    resources: [
+                        { name: 'Accountability Arena', href: 'game-accountability-arena.html' }
+                    ]
+                });
+            }
+            
+            return insights;
+        }
+        
+        function getActionsFor(dimension, severity) {
+            const actions = {
+                trust: {
+                    critical: [
+                        'Schedule a team vulnerability session using Personal Histories exercise',
+                        'Have leaders model vulnerability by sharing mistakes first',
+                        'Implement weekly 1:1 check-ins between all team pairs'
+                    ],
+                    opportunity: [
+                        'Add personal check-ins at the start of team meetings',
+                        'Use the Trust Builder game monthly',
+                        'Create safe spaces for expressing concerns'
+                    ]
+                },
+                conflict: {
+                    critical: [
+                        'Establish ground rules for healthy debate in meetings',
+                        'Practice Disagree & Commit framework on a real decision',
+                        'Train the team on distinguishing personal vs. ideological conflict'
+                    ],
+                    opportunity: [
+                        'Encourage devil\'s advocate role in meetings',
+                        'Celebrate when someone changes their mind based on new info',
+                        'Use Conflict Navigator game to practice safe conflict'
+                    ]
+                },
+                commitment: {
+                    critical: [
+                        'End every meeting by explicitly stating decisions and owners',
+                        'Address ambiguity immediately - never leave a meeting unclear',
+                        'Have team members publicly commit to decisions'
+                    ],
+                    opportunity: [
+                        'Create a shared decision log visible to all',
+                        'Follow up on commitments in subsequent meetings',
+                        'Celebrate successful execution of committed plans'
+                    ]
+                },
+                accountability: {
+                    critical: [
+                        'Implement weekly accountability check-ins with clear scorecards',
+                        'Train team on giving constructive feedback using SBI format',
+                        'Make goals and progress visible to entire team'
+                    ],
+                    opportunity: [
+                        'Create peer accountability partnerships',
+                        'Practice giving and receiving feedback regularly',
+                        'Celebrate accountability moments publicly'
+                    ]
+                },
+                results: {
+                    critical: [
+                        'Define 3-5 team-level OKRs that everyone owns together',
+                        'Link individual success metrics to team outcomes',
+                        'Review collective results weekly as a team'
+                    ],
+                    opportunity: [
+                        'Celebrate team wins over individual achievements',
+                        'Share how each role contributes to team goals',
+                        'Create team-level incentives and recognition'
+                    ]
+                }
+            };
+            
+            return actions[dimension]?.[severity] || [];
+        }
+        
+        function getResourcesFor(dimension) {
+            const resources = {
+                trust: [
+                    { name: 'Trust Builder Game', href: 'game-trust-builder.html' },
+                    { name: 'Feedback Culture Course', href: 'course-feedback-culture.html' }
+                ],
+                conflict: [
+                    { name: 'Conflict Navigator', href: 'game-conflict-navigator.html' },
+                    { name: 'Disagree & Commit', href: 'disagree-commit.html' }
+                ],
+                commitment: [
+                    { name: 'Daily Dilemma Game', href: 'game-daily-dilemma.html' },
+                    { name: 'Expectation Management', href: 'course-expectation-management.html' }
+                ],
+                accountability: [
+                    { name: 'Accountability Arena', href: 'game-accountability-arena.html' },
+                    { name: 'SBIR Trainer', href: 'game-sbir-trainer.html' }
+                ],
+                results: [
+                    { name: 'Goal Tracker', href: 'tool-goal-tracker-v2.html' },
+                    { name: 'Action Plan', href: 'action-plan.html' }
+                ]
+            };
+            
+            return resources[dimension] || [];
+        }
+        
+        function renderInsights(insights, data) {
+            const d = data.dysfunctions;
+            const healthScore = Math.round((d.trust + d.conflict + d.commitment + d.accountability + d.results) / 5);
+            const totalActions = insights.reduce((sum, i) => sum + i.actions.length, 0);
+            
+            // Update summary
+            document.getElementById('teamNameSummary').textContent = data.name;
+            document.getElementById('summaryHealth').textContent = healthScore;
+            document.getElementById('summaryMembers').textContent = data.members.length;
+            document.getElementById('summaryInsights').textContent = insights.length;
+            document.getElementById('summaryActions').textContent = totalActions;
+            
+            // Render insights
+            const container = document.getElementById('insightsContainer');
+            container.innerHTML = insights.map(insight => `
+                <div class="insight-card priority-${insight.priority}">
+                    <div class="insight-header">
+                        <div class="insight-type">
+                            <div class="insight-icon ${insight.category}">${icons[insight.category]}</div>
+                            <span class="insight-category">${insight.category}</span>
+                        </div>
+                        <span class="priority-badge ${insight.priority}">${insight.priority.toUpperCase()} PRIORITY</span>
+                    </div>
+                    
+                    <h3 class="insight-title">${insight.title}</h3>
+                    <p class="insight-body">${insight.body}</p>
+                    
+                    ${insight.actions.length > 0 ? `
+                        <div class="action-steps">
+                            <h4>${icons.check} Recommended Actions</h4>
+                            <div class="action-list">
+                                ${insight.actions.map((action, i) => `
+                                    <div class="action-item">
+                                        <span class="action-number">${i + 1}</span>
+                                        <span>${action}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    ${insight.resources.length > 0 ? `
+                        <div class="resources">
+                            ${insight.resources.map(r => `
+                                <a href="${r.href}" class="resource-link">
+                                    ${icons.arrow}
+                                    ${r.name}
+                                </a>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+            
+            // Update timestamp
+            document.getElementById('timestamp').textContent = 'Last generated: ' + new Date().toLocaleString();
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if we should auto-generate
+            const autoGenerate = new URLSearchParams(window.location.search).get('auto');
+            if (autoGenerate === 'true') {
+                generateInsights();
+            }
+        });
+    </script>
+</body>
+</html>

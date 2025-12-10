@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Daily Challenge - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        .header {
+            padding: 20px;
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2), rgba(251, 191, 36, 0.05));
+            border: 1px solid var(--gold);
+            padding: 8px 16px;
+            border-radius: 20px;
+        }
+        
+        .streak-icon {
+            color: var(--gold);
+        }
+        
+        .streak-count {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--gold);
+        }
+        
+        .streak-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        /* Calendar Strip */
+        .calendar-strip {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: var(--dark-grey);
+            border-radius: 12px;
+        }
+        
+        .calendar-day {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 8px;
+            border-radius: 8px;
+            min-width: 40px;
+        }
+        
+        .calendar-day.today {
+            background: var(--green);
+        }
+        
+        .calendar-day.completed {
+            background: rgba(16, 185, 129, 0.2);
+        }
+        
+        .calendar-day.completed::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+            margin-top: 2px;
+        }
+        
+        .day-name {
+            font-size: 0.65rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .calendar-day.today .day-name,
+        .calendar-day.today .day-num {
+            color: var(--black);
+        }
+        
+        .day-num {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Challenge Card */
+        .challenge-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .challenge-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--green), var(--blue));
+        }
+        
+        .challenge-category {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--black);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            color: var(--green);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 20px;
+        }
+        
+        .challenge-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+        
+        .challenge-description {
+            color: var(--light-grey);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 25px;
+        }
+        
+        .challenge-timer {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--black);
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        
+        .timer-icon {
+            color: var(--gold);
+        }
+        
+        .timer-text {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .timer-text strong {
+            color: var(--white);
+        }
+        
+        /* Action Steps */
+        .action-steps {
+            margin-bottom: 25px;
+        }
+        
+        .action-step {
+            display: flex;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .action-step:last-child {
+            border-bottom: none;
+        }
+        
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: var(--mid-grey);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .step-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Reflection Input */
+        .reflection-section {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .reflection-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        .reflection-input {
+            width: 100%;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--white);
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+        }
+        
+        .reflection-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        
+        /* Complete Button */
+        .complete-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        
+        .complete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+        
+        .complete-btn:disabled {
+            background: var(--mid-grey);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Completion State */
+        .completed-state {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .completed-state.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .completion-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .completion-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .completion-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        
+        .xp-reward {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid var(--gold);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 600;
+            color: var(--gold);
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+        }
+        
+        .streak-update {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .streak-flames {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .streak-message {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .streak-detail {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .next-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .action-btn {
+            padding: 14px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+        
+        .action-btn.primary {
+            background: var(--green);
+            color: white;
+            border: none;
+        }
+        
+        .action-btn.secondary {
+            background: transparent;
+            color: var(--light-grey);
+            border: 1px solid var(--mid-grey);
+        }
+        
+        /* Already Completed State */
+        .already-done {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .already-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .already-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .already-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        
+        .countdown-timer {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .countdown-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .countdown-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--green);
+        }
+        
+        .hi { width: 24px; height: 24px; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="daily-challenge.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="daily-challenge-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="gym-dashboard.html" class="back-link">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back
+            </a>
+            <div class="streak-badge">
+                <svg class="hi streak-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg>
+                <div>
+                    <div class="streak-count" id="streakCount">0</div>
+                    <div class="streak-label">day streak</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Calendar Strip -->
+        <div class="calendar-strip" id="calendarStrip"></div>
+        
+        <!-- Challenge Content -->
+        <div id="challengeContent">
+            <div class="challenge-card">
+                <div class="challenge-category" id="challengeCategory">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span id="categoryName">Loading...</span>
+                </div>
+                <h1 class="challenge-title" id="challengeTitle">Loading challenge...</h1>
+                <p class="challenge-description" id="challengeDesc">Please wait while we load today's challenge.</p>
+                
+                <div class="challenge-timer">
+                    <svg class="hi timer-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    <span class="timer-text"><strong id="challengeDuration">60</strong> seconds of focused practice</span>
+                </div>
+                
+                <div class="action-steps" id="actionSteps"></div>
+            </div>
+            
+            <div class="reflection-section">
+                <label class="reflection-label">Quick reflection (optional)</label>
+                <textarea class="reflection-input" id="reflectionInput" placeholder="What did you notice? Any insights?"></textarea>
+            </div>
+            
+            <button class="complete-btn" id="completeBtn" onclick="completeChallenge()">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Complete Challenge
+            </button>
+        </div>
+        
+        <!-- Completion State -->
+        <div class="completed-state" id="completedState">
+            <div class="completion-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h2 class="completion-title">Challenge Complete!</h2>
+            <p class="completion-subtitle">Great work on today's practice</p>
+            <div class="xp-reward">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                +25 XP
+            </div>
+            <div class="streak-update">
+                <div class="streak-flames" id="streakFlames"></div>
+                <div class="streak-message" id="streakMessage">Streak updated!</div>
+                <div class="streak-detail" id="streakDetail">Keep it up tomorrow</div>
+            </div>
+            <div class="next-actions">
+                <a href="gym-dashboard.html" class="action-btn primary">Continue Training</a>
+                <a href="game-library.html" class="action-btn secondary">Play a Game</a>
+            </div>
+        </div>
+        
+        <!-- Already Done State -->
+        <div class="already-done" id="alreadyDone" style="display: none;">
+            <div class="already-icon">
+                <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h2 class="already-title">Today's Challenge Complete</h2>
+            <p class="already-subtitle">You've already completed today's practice. Come back tomorrow!</p>
+            <div class="countdown-timer">
+                <div class="countdown-label">Next challenge in</div>
+                <div class="countdown-value" id="nextChallengeTime">--:--:--</div>
+            </div>
+            <div class="next-actions">
+                <a href="gym-dashboard.html" class="action-btn primary">Back to Gym</a>
+                <a href="game-library.html" class="action-btn secondary">Play a Game Instead</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Daily Challenges Database
+        const challenges = [
+            // TRUST CHALLENGES
+            {
+                category: "Trust",
+                title: "The Vulnerability Minute",
+                description: "Share one small struggle or uncertainty with a colleague today. Vulnerability builds trust faster than competence.",
+                duration: 60,
+                steps: [
+                    { title: "Choose the moment", desc: "Find a natural opening in conversation" },
+                    { title: "Share authentically", desc: "\"I'm actually finding X challenging...\"" },
+                    { title: "Notice the response", desc: "Did they open up too? That's trust building." }
+                ],
+                belt: "white"
+            },
+            {
+                category: "Trust",
+                title: "The Follow-Through Check",
+                description: "Review your open commitments. Pick one small promise you made and deliver on it today.",
+                duration: 90,
+                steps: [
+                    { title: "Scan your commitments", desc: "What did you say you'd do?" },
+                    { title: "Pick one", desc: "Choose the smallest one you can complete now" },
+                    { title: "Deliver and close the loop", desc: "Tell them it's done" }
+                ],
+                belt: "white"
+            },
+            {
+                category: "Trust",
+                title: "Assume Positive Intent",
+                description: "When someone frustrates you today, pause and assume they have good intentions. Then respond.",
+                duration: 60,
+                steps: [
+                    { title: "Notice the trigger", desc: "When you feel frustrated or annoyed" },
+                    { title: "Reframe", desc: "\"What positive reason might explain this?\"" },
+                    { title: "Respond from that frame", desc: "Notice how it changes your tone" }
+                ],
+                belt: "white"
+            },
+            
+            // COMMUNICATION CHALLENGES
+            {
+                category: "Communication",
+                title: "The Full Listen",
+                description: "In your next conversation, don't plan your response while they're talking. Just listen fully.",
+                duration: 120,
+                steps: [
+                    { title: "Clear your mind", desc: "Let go of what you want to say" },
+                    { title: "Focus completely", desc: "Notice their words, tone, body language" },
+                    { title: "Pause before responding", desc: "Take 2 seconds after they finish" }
+                ],
+                belt: "blue"
+            },
+            {
+                category: "Communication",
+                title: "Ask, Don't Tell",
+                description: "When someone brings you a problem today, respond with a question instead of advice.",
+                duration: 60,
+                steps: [
+                    { title: "Resist the solve", desc: "Don't jump to solutions" },
+                    { title: "Ask a coaching question", desc: "\"What have you considered?\" or \"What's your instinct?\"" },
+                    { title: "Notice the difference", desc: "Did they discover their own answer?" }
+                ],
+                belt: "blue"
+            },
+            {
+                category: "Communication",
+                title: "The Paraphrase Practice",
+                description: "In a meeting, paraphrase someone's point before adding your own. \"So you're saying...\"",
+                duration: 90,
+                steps: [
+                    { title: "Listen for the core point", desc: "What are they really saying?" },
+                    { title: "Reflect it back", desc: "\"If I understand, you're saying...\"" },
+                    { title: "Get confirmation", desc: "\"Did I get that right?\"" }
+                ],
+                belt: "blue"
+            },
+            
+            // CONFLICT CHALLENGES
+            {
+                category: "Conflict",
+                title: "Name the Elephant",
+                description: "Identify one thing people are avoiding discussing. Find a way to surface it constructively.",
+                duration: 120,
+                steps: [
+                    { title: "Spot the avoidance", desc: "What topic makes people uncomfortable?" },
+                    { title: "Frame it safely", desc: "\"I've noticed we haven't talked about X...\"" },
+                    { title: "Invite discussion", desc: "\"I'm curious what others think.\"" }
+                ],
+                belt: "purple"
+            },
+            {
+                category: "Conflict",
+                title: "Disagree Constructively",
+                description: "Find an opportunity to respectfully disagree with someone today. Focus on the idea, not the person.",
+                duration: 60,
+                steps: [
+                    { title: "Start with curiosity", desc: "\"Help me understand your thinking...\"" },
+                    { title: "Share your view", desc: "\"I see it differently because...\"" },
+                    { title: "Seek understanding", desc: "\"What am I missing?\"" }
+                ],
+                belt: "purple"
+            },
+            {
+                category: "Conflict",
+                title: "The Direct Request",
+                description: "Make one request today that you've been hinting at instead of stating directly.",
+                duration: 60,
+                steps: [
+                    { title: "Identify the hint", desc: "What have you been implying but not saying?" },
+                    { title: "State it clearly", desc: "\"I need X by Y. Can you commit to that?\"" },
+                    { title: "Accept the answer", desc: "A clear no is better than a vague maybe" }
+                ],
+                belt: "purple"
+            },
+            
+            // ACCOUNTABILITY CHALLENGES
+            {
+                category: "Accountability",
+                title: "The Peer Check-In",
+                description: "Check in with a peer on a commitment they made. Not to police—to support.",
+                duration: 90,
+                steps: [
+                    { title: "Choose the commitment", desc: "Something they said they'd do" },
+                    { title: "Ask with care", desc: "\"How's X going? Anything I can help with?\"" },
+                    { title: "Listen for blockers", desc: "Help remove obstacles if you can" }
+                ],
+                belt: "brown"
+            },
+            {
+                category: "Accountability",
+                title: "Own Your Miss",
+                description: "Acknowledge one thing you dropped or delivered late. Own it without excuses.",
+                duration: 60,
+                steps: [
+                    { title: "Identify the miss", desc: "What didn't you deliver as promised?" },
+                    { title: "Own it directly", desc: "\"I said X and didn't deliver. I'm sorry.\"" },
+                    { title: "Commit to fix", desc: "\"Here's what I'm doing about it.\"" }
+                ],
+                belt: "brown"
+            },
+            {
+                category: "Accountability",
+                title: "Clarify the Commitment",
+                description: "In your next meeting, ensure every action item has an owner and deadline stated clearly.",
+                duration: 120,
+                steps: [
+                    { title: "Listen for vague actions", desc: "\"We should...\" or \"Someone needs to...\"" },
+                    { title: "Ask for specifics", desc: "\"Who will do this, by when?\"" },
+                    { title: "Capture it", desc: "Write it down where everyone can see" }
+                ],
+                belt: "brown"
+            },
+            
+            // RESULTS CHALLENGES
+            {
+                category: "Results",
+                title: "The Ego Check",
+                description: "Notice one moment today where ego is driving a decision. Choose results over ego.",
+                duration: 60,
+                steps: [
+                    { title: "Spot the ego", desc: "Am I doing this to be right or to win?" },
+                    { title: "Reframe", desc: "What does the team actually need?" },
+                    { title: "Choose results", desc: "Act on what's best for outcomes" }
+                ],
+                belt: "black"
+            },
+            {
+                category: "Results",
+                title: "Give the Credit",
+                description: "Find an opportunity to publicly credit someone else for a success you contributed to.",
+                duration: 60,
+                steps: [
+                    { title: "Identify a win", desc: "Something that went well recently" },
+                    { title: "Credit specifically", desc: "\"This worked because [name] did [specific thing]\"" },
+                    { title: "Notice your feelings", desc: "Did it feel good or hard? That's data." }
+                ],
+                belt: "black"
+            },
+            {
+                category: "Results",
+                title: "The Legacy Question",
+                description: "Before a decision today, ask: \"Will this matter in 6 months? What choice serves the long game?\"",
+                duration: 90,
+                steps: [
+                    { title: "Pause before deciding", desc: "Create space to think bigger" },
+                    { title: "Ask the question", desc: "\"What matters in 6 months?\"" },
+                    { title: "Decide from that place", desc: "Let long-term thinking guide you" }
+                ],
+                belt: "black"
+            }
+        ];
+        
+        let todayChallenge = null;
+        let currentStreak = 0;
+        
+        function getDateKey(date = new Date()) {
+            return date.toISOString().split('T')[0];
+        }
+        
+        function loadStreak() {
+            const streakData = JSON.parse(localStorage.getItem('tap_in_daily_streak') || '{"count": 0, "lastDate": null}');
+            const today = getDateKey();
+            const yesterday = getDateKey(new Date(Date.now() - 86400000));
+            
+            if (streakData.lastDate === today) {
+                currentStreak = streakData.count;
+            } else if (streakData.lastDate === yesterday) {
+                currentStreak = streakData.count;
+            } else {
+                currentStreak = 0;
+            }
+            
+            document.getElementById('streakCount').textContent = currentStreak;
+        }
+        
+        function updateStreak() {
+            const today = getDateKey();
+            const streakData = JSON.parse(localStorage.getItem('tap_in_daily_streak') || '{"count": 0, "lastDate": null}');
+            const yesterday = getDateKey(new Date(Date.now() - 86400000));
+            
+            if (streakData.lastDate === today) {
+                // Already completed today
+                return streakData.count;
+            }
+            
+            if (streakData.lastDate === yesterday) {
+                // Continuing streak
+                currentStreak = streakData.count + 1;
+            } else {
+                // New streak
+                currentStreak = 1;
+            }
+            
+            localStorage.setItem('tap_in_daily_streak', JSON.stringify({
+                count: currentStreak,
+                lastDate: today
+            }));
+            
+            return currentStreak;
+        }
+        
+        function buildCalendarStrip() {
+            const strip = document.getElementById('calendarStrip');
+            const today = new Date();
+            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+            const completedDates = JSON.parse(localStorage.getItem('tap_in_challenge_dates') || '[]');
+            
+            strip.innerHTML = '';
+            
+            for (let i = -3; i <= 3; i++) {
+                const date = new Date(today);
+                date.setDate(today.getDate() + i);
+                const dateKey = getDateKey(date);
+                
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                if (i === 0) dayDiv.classList.add('today');
+                if (completedDates.includes(dateKey)) dayDiv.classList.add('completed');
+                
+                dayDiv.innerHTML = `
+                    <span class="day-name">${dayNames[date.getDay()]}</span>
+                    <span class="day-num">${date.getDate()}</span>
+                `;
+                
+                strip.appendChild(dayDiv);
+            }
+        }
+        
+        function getTodayChallenge() {
+            const today = getDateKey();
+            const savedChallenge = localStorage.getItem('tap_in_today_challenge');
+            const savedDate = localStorage.getItem('tap_in_challenge_date');
+            
+            if (savedDate === today && savedChallenge) {
+                return JSON.parse(savedChallenge);
+            }
+            
+            // Generate new challenge based on day of year for consistency
+            const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+            const challengeIndex = dayOfYear % challenges.length;
+            const challenge = challenges[challengeIndex];
+            
+            localStorage.setItem('tap_in_today_challenge', JSON.stringify(challenge));
+            localStorage.setItem('tap_in_challenge_date', today);
+            
+            return challenge;
+        }
+        
+        function isTodayCompleted() {
+            const completedDates = JSON.parse(localStorage.getItem('tap_in_challenge_dates') || '[]');
+            return completedDates.includes(getDateKey());
+        }
+        
+        function renderChallenge() {
+            if (isTodayCompleted()) {
+                document.getElementById('challengeContent').style.display = 'none';
+                document.getElementById('alreadyDone').style.display = 'block';
+                startCountdown();
+                return;
+            }
+            
+            todayChallenge = getTodayChallenge();
+            
+            document.getElementById('categoryName').textContent = todayChallenge.category;
+            document.getElementById('challengeTitle').textContent = todayChallenge.title;
+            document.getElementById('challengeDesc').textContent = todayChallenge.description;
+            document.getElementById('challengeDuration').textContent = todayChallenge.duration;
+            
+            const stepsContainer = document.getElementById('actionSteps');
+            stepsContainer.innerHTML = todayChallenge.steps.map((step, i) => `
+                <div class="action-step">
+                    <div class="step-number">${i + 1}</div>
+                    <div class="step-content">
+                        <div class="step-title">${step.title}</div>
+                        <div class="step-desc">${step.desc}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function completeChallenge() {
+            const reflection = document.getElementById('reflectionInput').value;
+            const today = getDateKey();
+            
+            // Save completion
+            const completedDates = JSON.parse(localStorage.getItem('tap_in_challenge_dates') || '[]');
+            if (!completedDates.includes(today)) {
+                completedDates.push(today);
+                localStorage.setItem('tap_in_challenge_dates', JSON.stringify(completedDates));
+            }
+            
+            // Save reflection if provided
+            if (reflection.trim()) {
+                const reflections = JSON.parse(localStorage.getItem('tap_in_challenge_reflections') || '{}');
+                reflections[today] = reflection;
+                localStorage.setItem('tap_in_challenge_reflections', JSON.stringify(reflections));
+            }
+            
+            // Update streak
+            const newStreak = updateStreak();
+            
+            // Add XP
+            let totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+            totalXP += 25;
+            localStorage.setItem('tap_in_xp', totalXP);
+            
+            // Show completion
+            document.getElementById('challengeContent').style.display = 'none';
+            document.getElementById('completedState').classList.add('show');
+            
+            // Update streak display
+            const flames = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>'.repeat(Math.min(newStreak, 7));
+            document.getElementById('streakFlames').textContent = flames || '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>';
+            document.getElementById('streakMessage').textContent = `${newStreak} day streak!`;
+            
+            if (newStreak >= 7) {
+                document.getElementById('streakDetail').textContent = "You're on fire! A full week of practice!";
+            } else if (newStreak >= 3) {
+                document.getElementById('streakDetail').textContent = "Building momentum! Keep it going!";
+            } else {
+                document.getElementById('streakDetail').textContent = "Great start! Come back tomorrow!";
+            }
+            
+            // Update calendar
+            buildCalendarStrip();
+        }
+        
+        function startCountdown() {
+            function update() {
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 0, 0, 0);
+                
+                const diff = tomorrow - now;
+                const hours = Math.floor(diff / 3600000);
+                const mins = Math.floor((diff % 3600000) / 60000);
+                const secs = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('nextChallengeTime').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            }
+            
+            update();
+            setInterval(update, 1000);
+        }
+        
+        // Initialize
+        loadStreak();
+        buildCalendarStrip();
+        renderChallenge();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

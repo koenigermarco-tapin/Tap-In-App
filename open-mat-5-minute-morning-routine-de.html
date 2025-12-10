@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>5-Minuten Morgenroutine | TAP-IN Open Mat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.7;
+        }
+        .lang-switcher {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 101;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-switcher a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .lang-switcher a.active { background: var(--green); color: var(--black); }
+        .lang-switcher a:not(.active) { background: rgba(255,255,255,0.1); color: var(--white); }
+        .header {
+            background: var(--dark-grey);
+            border-bottom: 1px solid var(--mid-grey);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--white); }
+        .xp-badge {
+            background: var(--gold);
+            color: var(--black);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .exercise-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        .exercise-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        .exercise-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .meta-badge {
+            background: var(--mid-grey);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        .meta-badge.quick { background: var(--green); color: white; }
+        .exercise-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+        .exercise-subtitle {
+            font-size: 1.15rem;
+            color: var(--light-grey);
+        }
+        .content-section {
+            margin-bottom: 3rem;
+        }
+        .content-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--green);
+        }
+        .content-section h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+        .content-section p {
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+            color: var(--light-grey);
+            line-height: 1.8;
+        }
+        .content-section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .content-section li {
+            color: var(--light-grey);
+            margin-bottom: 0.75rem;
+        }
+        .routine-container {
+            background: linear-gradient(135deg, var(--dark-grey) 0%, #1a1a2e 100%);
+            border: 1px solid var(--mid-grey);
+            padding: 2.5rem;
+            border-radius: 16px;
+            margin: 3rem 0;
+        }
+        .routine-step {
+            background: var(--black);
+            border-left: 4px solid var(--mid-grey);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            opacity: 0.6;
+            transition: all 0.3s;
+        }
+        .routine-step.active {
+            border-left-color: var(--gold);
+            opacity: 1;
+        }
+        .routine-step.complete {
+            border-left-color: var(--green);
+            opacity: 0.7;
+        }
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        .step-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .step-timer {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--gold);
+        }
+        .step-description {
+            color: var(--light-grey);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        .step-prompt {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+        .step-input {
+            width: 100%;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            color: var(--white);
+            padding: 0.75rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 70px;
+        }
+        .step-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        .step-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+            border: none;
+        }
+        .btn-primary {
+            background: var(--purple);
+            color: white;
+        }
+        .btn-success {
+            background: var(--green);
+            color: white;
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .routine-progress {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple) 0%, var(--green) 100%);
+            transition: width 0.5s;
+            width: 0%;
+        }
+        .progress-text {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        .research-box {
+            background: var(--dark-grey);
+            border: 2px solid var(--purple);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .research-box h3 {
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        .tips-box {
+            background: linear-gradient(135deg, var(--dark-grey) 0%, #2d2020 100%);
+            border: 1px solid #4a3030;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .tips-title {
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 1rem;
+        }
+        .completion-section {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--mid-grey);
+        }
+        .complete-button {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .complete-button:hover { transform: translateY(-2px); }
+        .complete-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        @media (max-width: 768px) {
+            .exercise-container { padding: 2rem 1rem; }
+            .routine-container { padding: 1.5rem; }
+            .routine-step { padding: 1.5rem; }
+            .exercise-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="open-mat-5-minute-morning-routine.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="open-mat-5-minute-morning-routine-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="lang-switcher">
+        <a href="open-mat-5-minute-morning-routine.html">EN</a>
+        <a href="open-mat-5-minute-morning-routine-de.html" class="active">DE</a>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="open-mat-de.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zuruck zu Open Mat</a>
+            <div class="xp-badge">+20 XP</div>
+        </div>
+    </header>
+
+    <div class="exercise-container">
+        <header class="exercise-header">
+            <div class="exercise-meta">
+                <span class="meta-badge quick">Schneller Gewinn</span>
+                <span class="meta-badge">Ubung</span>
+                <span class="meta-badge">5 Min</span>
+                <span class="meta-badge">Alle Gurtel</span>
+            </div>
+            <h1 class="exercise-title">5-Minuten Morgenroutine</h1>
+            <p class="exercise-subtitle">Gewinne den Morgen, gewinne den Tag — wissenschaftlich fundiertes Ritual fur dein Mindset</p>
+        </header>
+
+        <section class="content-section">
+            <h2>Warum das Funktioniert</h2>
+            <p>Die meisten Menschen starten ihren Tag <strong>reaktiv</strong>: Handy checken, E-Mails beantworten, schlechte Nachrichten aufnehmen, um 8 Uhr bereits gestresst.</p>
+            <p>Diese 5-Minuten-Routine macht das Gegenteil — sie setzt deine <strong>psychologische Flugbahn</strong> fur den gesamten Tag.</p>
+
+            <div class="research-box">
+                <h3>Die Wissenschaft</h3>
+                <p>Forschung zeigt, dass Morgenroutinen beeinflussen:</p>
+                <ul>
+                    <li><strong>Cortisol-Regulierung:</strong> Der morgendliche Cortisol-Anstieg ist naturlich, aber wie du darauf reagierst bestimmt dein Stresslevel den ganzen Tag</li>
+                    <li><strong>Entscheidungsmudigkeit:</strong> Mit Absicht zu starten bewahrt Willenskraft fur schwierigere Entscheidungen spater</li>
+                    <li><strong>Emotionaler Ton:</strong> Erste Gedanken primen dein RAS (Reticular Activating System) um Beweise zu bemerken, die diese Stimmung unterstutzen</li>
+                    <li><strong>Proaktiver vs. reaktiver Modus:</strong> Bewusster Morgen = du kontrollierst die Agenda statt auf andere zu reagieren</li>
+                </ul>
+                <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--light-grey);">Quellen: Hal Elrods <em>The Miracle Morning</em>, Dr. Andrew Hubermans Morgenprotokolle, BJ Foggs <em>Tiny Habits</em></p>
+            </div>
+
+            <p><strong>Das Beste daran?</strong> Du brauchst keine Stunde. Funf fokussierte Minuten schlagen 30 unfokussierte Minuten jedes Mal.</p>
+        </section>
+
+        <section class="content-section">
+            <h2>Die 5-Minuten-Routine</h2>
+            <p>Drei Schritte. Je 90 Sekunden. Mach es BEVOR du dein Handy checkst.</p>
+        </section>
+
+        <div class="routine-container">
+            <div class="routine-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="progress-text" id="progressText">0 / 3 Schritte abgeschlossen</div>
+            </div>
+
+            <!-- Schritt 1: Dankbarkeit -->
+            <div class="routine-step active" id="step1">
+                <div class="step-header">
+                    <div class="step-title">1. Dankbarkeit (90 Sek)</div>
+                    <div class="step-timer" id="timer1">1:30</div>
+                </div>
+                <div class="step-description">
+                    Nenne <strong>drei Dinge, fur die du gerade dankbar bist</strong>. Sei spezifisch. Nicht "meine Gesundheit" — versuche "Ich bin schmerzfrei aufgewacht und kann zur Kuche laufen."
+                </div>
+                <div class="step-prompt">
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">Wofur bist du dankbar?</p>
+                    <textarea class="step-input" id="gratitude1" placeholder="1. Ich bin dankbar fur..."></textarea>
+                    <textarea class="step-input" id="gratitude2" placeholder="2. Ich bin dankbar fur..." style="margin-top: 0.5rem;"></textarea>
+                    <textarea class="step-input" id="gratitude3" placeholder="3. Ich bin dankbar fur..." style="margin-top: 0.5rem;"></textarea>
+                </div>
+                <div class="step-actions">
+                    <button class="btn btn-primary" onclick="startTimer(1)">Timer Starten</button>
+                    <button class="btn btn-success" onclick="completeStep(1)" id="complete1" disabled>Nachster Schritt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+            </div>
+
+            <!-- Schritt 2: Absicht -->
+            <div class="routine-step" id="step2">
+                <div class="step-header">
+                    <div class="step-title">2. Absicht (90 Sek)</div>
+                    <div class="step-timer" id="timer2">1:30</div>
+                </div>
+                <div class="step-description">
+                    Was ist <strong>EINE Sache</strong>, die heute zu einem Gewinn machen wurde? Nicht deine ganze To-Do-Liste — die eine Sache, die am meisten zahlt.
+                </div>
+                <div class="step-prompt">
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">Heute wird ein Gewinn wenn ich...</p>
+                    <textarea class="step-input" id="intention" placeholder="Meine eine Prioritat heute ist..."></textarea>
+                </div>
+                <div class="step-actions">
+                    <button class="btn btn-primary" onclick="startTimer(2)">Timer Starten</button>
+                    <button class="btn btn-success" onclick="completeStep(2)" id="complete2" disabled>Nachster Schritt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+            </div>
+
+            <!-- Schritt 3: Visualisierung -->
+            <div class="routine-step" id="step3">
+                <div class="step-header">
+                    <div class="step-title">3. Visualisierung (90 Sek)</div>
+                    <div class="step-timer" id="timer3">1:30</div>
+                </div>
+                <div class="step-description">
+                    Schliesse deine Augen. Stelle dir vor, wie du <strong>deine Absicht ausfuhrst</strong>. Sieh es im Detail: was du tust, wie du dich fuhlst, wie Erfolg aussieht. Mentale Ubung primed Leistung.
+                </div>
+                <div class="step-prompt">
+                    <p style="margin-bottom: 0.5rem; font-weight: 600;">Nach dem Visualisieren, beschreibe was du gesehen hast:</p>
+                    <textarea class="step-input" id="visualization" placeholder="Ich sah mich selbst..."></textarea>
+                </div>
+                <div class="step-actions">
+                    <button class="btn btn-primary" onclick="startTimer(3)">Timer Starten</button>
+                    <button class="btn btn-success" onclick="completeStep(3)" id="complete3" disabled>Routine Beenden <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+                </div>
+            </div>
+        </div>
+
+        <section class="content-section">
+            <h2>Warum Jeder Schritt Wichtig Ist</h2>
+            
+            <h3>Dankbarkeit</h3>
+            <p>Verdrahtet dein Gehirn um das Positive wahrzunehmen. Studien zeigen, dass Dankbarkeitspraxis:</p>
+            <ul>
+                <li>Dopamin und Serotonin erhoht</li>
+                <li>Depressionssymptome um 35% reduziert</li>
+                <li>Dein RAS trainiert, Chancen statt Bedrohungen zu erkennen</li>
+            </ul>
+
+            <h3>Absicht</h3>
+            <p>Fokussiert deine begrenzte Willenskraft auf das, was zahlt. Ohne Absicht:</p>
+            <ul>
+                <li>Reagierst du auf den, der dir zuerst schreibt</li>
+                <li>Fuhlt sich dein Tag produktiv an, aber nichts Wichtiges wird erledigt</li>
+                <li>Entscheidungsmudigkeit trifft dich bis Mittag</li>
+            </ul>
+
+            <h3>Visualisierung</h3>
+            <p>Mentale Ubung aktiviert dieselben neuronalen Pfade wie tatsachliche Leistung:</p>
+            <ul>
+                <li>Olympia-Athleten nutzen das vor Wettkampfen</li>
+                <li>Chirurgen proben Eingriffe mental durch</li>
+                <li>Dein Gehirn unterscheidet nicht zwischen lebendig vorgestelltem und realem — also bekommst du Wiederholungen</li>
+            </ul>
+        </section>
+
+        <section class="content-section">
+            <div class="tips-box">
+                <div class="tips-title">Tipps fur Erfolg</div>
+                <ul>
+                    <li><strong>Mach es VOR dem Handy:</strong> Sobald du E-Mails checkst, bist du im reaktiven Modus. Mach das zuerst.</li>
+                    <li><strong>Gleiche Zeit, gleicher Ort:</strong> Gewohnheitsstapelung funktioniert. Nach dem Morgenkaffee? Vor der Dusche? Wahle einen Auslöser.</li>
+                    <li><strong>Schreib es auf:</strong> Auf dieser Seite tippen zahlt. Schreiben aktiviert andere Gehirnregionen als Denken.</li>
+                    <li><strong>Sei spezifisch:</strong> "Ich bin dankbar fur Gesundheit" ist faul. "Ich bin dankbar, dass ich 7 Stunden geschlafen habe" trifft anders.</li>
+                    <li><strong>Wiederholung ist okay:</strong> Du kannst fur dieselben Dinge dankbar sein. Konsistenz > Neuheit.</li>
+                </ul>
+            </div>
+        </section>
+
+        <div class="completion-section">
+            <p style="margin-bottom: 1.5rem; color: var(--light-grey);">Schliesse alle 3 Schritte ab um 20 XP zu verdienen</p>
+            <button class="complete-button" id="completeButton" onclick="markComplete()" disabled>Abschliessen & XP Verdienen</button>
+        </div>
+    </div>
+
+    <script>
+        let stepTimers = [null, null, null];
+        let stepComplete = [false, false, false];
+        let currentStep = 1;
+
+        function startTimer(step) {
+            const timerDisplay = document.getElementById(`timer${step}`);
+            let timeLeft = 90;
+            
+            if (stepTimers[step - 1]) { clearInterval(stepTimers[step - 1]); }
+            
+            stepTimers[step - 1] = setInterval(() => {
+                timeLeft--;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft === 0) {
+                    clearInterval(stepTimers[step - 1]);
+                    document.getElementById(`complete${step}`).disabled = false;
+                    timerDisplay.textContent = 'Fertig!';
+                    timerDisplay.style.color = 'var(--green)';
+                }
+            }, 1000);
+        }
+
+        function completeStep(step) {
+            stepComplete[step - 1] = true;
+            document.getElementById(`step${step}`).classList.remove('active');
+            document.getElementById(`step${step}`).classList.add('complete');
+            
+            const completedCount = stepComplete.filter(x => x).length;
+            document.getElementById('progressFill').style.width = `${(completedCount / 3) * 100}%`;
+            document.getElementById('progressText').textContent = `${completedCount} / 3 Schritte abgeschlossen`;
+            
+            if (step < 3) {
+                document.getElementById(`step${step + 1}`).classList.add('active');
+                currentStep = step + 1;
+            } else {
+                document.getElementById('completeButton').disabled = false;
+                
+                const routineData = {
+                    date: new Date().toISOString(),
+                    gratitude: [
+                        document.getElementById('gratitude1').value,
+                        document.getElementById('gratitude2').value,
+                        document.getElementById('gratitude3').value
+                    ],
+                    intention: document.getElementById('intention').value,
+                    visualization: document.getElementById('visualization').value
+                };
+                
+                const history = JSON.parse(localStorage.getItem('tapinMorningRoutines') || '[]');
+                history.unshift(routineData);
+                localStorage.setItem('tapinMorningRoutines', JSON.stringify(history.slice(0, 30)));
+            }
+        }
+
+        function markComplete() {
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            const todayKey = new Date().toISOString().split('T')[0];
+            const completionKey = `morning-routine-${todayKey}`;
+            
+            if (!completedContent.includes(completionKey)) {
+                completedContent.push(completionKey);
+                localStorage.setItem('tapinOpenMatCompleted', JSON.stringify(completedContent));
+                
+                const currentXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+                localStorage.setItem('tap_in_total_xp', currentXP + 20);
+                
+                const button = document.getElementById('completeButton');
+                button.textContent = 'Abgeschlossen! (+20 XP)';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Toller Start in deinen Tag! Du hast 20 XP verdient.');
+                }, 300);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            const todayKey = new Date().toISOString().split('T')[0];
+            const completionKey = `morning-routine-${todayKey}`;
+            
+            if (completedContent.includes(completionKey)) {
+                const button = document.getElementById('completeButton');
+                button.textContent = 'Heute Abgeschlossen';
+                button.disabled = true;
+            }
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

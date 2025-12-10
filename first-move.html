@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Your First Move - TAP-IN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --brick-red-light: #c0392b;
+            --blue: #4a6fa5;
+            --purple: #6b5b95;
+            --green: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); }
+        .container { max-width: 700px; margin: 0 auto; padding: 40px 20px; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { display: inline-flex; align-items: center; gap: 10px; font-size: 1.3rem; font-weight: 800; margin-bottom: 10px; text-decoration: none; color: var(--white); }
+        .logo-icon { width: 36px; height: 36px; background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 1rem; }
+        
+        .intro-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 20px; padding: 35px; text-align: center; margin-bottom: 30px; }
+        .intro-badge { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--green); margin-bottom: 20px; }
+        .intro-card h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .intro-card p { color: var(--light-grey); line-height: 1.6; }
+        
+        .move-card { background: linear-gradient(135deg, var(--dark-grey) 0%, var(--mid-grey) 100%); border: 1px solid var(--mid-grey); border-radius: 24px; overflow: hidden; margin-bottom: 30px; }
+        .move-header { background: linear-gradient(135deg, var(--green) 0%, #059669 100%); padding: 25px 30px; display: flex; align-items: center; gap: 15px; }
+        .move-icon { width: 50px; height: 50px; background: rgba(255,255,255,0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .move-header-text h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 3px; }
+        .move-header-text p { font-size: 0.85rem; opacity: 0.9; }
+        .move-body { padding: 30px; }
+        .move-title { font-size: 1.4rem; font-weight: 800; margin-bottom: 15px; letter-spacing: -0.3px; }
+        .move-desc { color: var(--light-grey); line-height: 1.7; margin-bottom: 25px; }
+        
+        .steps-section { margin-bottom: 25px; }
+        .steps-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--purple); margin-bottom: 15px; }
+        .step-item { display: flex; gap: 15px; margin-bottom: 15px; align-items: flex-start; }
+        .step-num { width: 28px; height: 28px; background: var(--mid-grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+        .step-text { color: var(--light-grey); line-height: 1.5; font-size: 0.95rem; }
+        
+        .why-box { background: rgba(107, 91, 149, 0.1); border: 1px solid rgba(107, 91, 149, 0.3); border-radius: 12px; padding: 20px; }
+        .why-title { font-size: 0.9rem; font-weight: 700; margin-bottom: 8px; color: var(--purple); }
+        .why-text { color: var(--light-grey); font-size: 0.9rem; line-height: 1.6; }
+        
+        .complete-section { text-align: center; padding: 25px; background: rgba(255,255,255,0.02); border-top: 1px solid var(--mid-grey); }
+        .complete-btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; background: linear-gradient(135deg, var(--green) 0%, #059669 100%); border-radius: 12px; color: var(--white); border: none; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3); }
+        .complete-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4); }
+        .complete-btn.done { background: var(--mid-grey); box-shadow: none; }
+        
+        .next-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 20px; padding: 30px; text-align: center; }
+        .next-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; }
+        .next-card p { color: var(--light-grey); margin-bottom: 20px; }
+        .next-btn { display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; background: linear-gradient(135deg, var(--brick-red), var(--brick-red-light)); border-radius: 12px; color: var(--white); text-decoration: none; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 20px rgba(169, 50, 38, 0.3); }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(169, 50, 38, 0.4); }
+        
+        @media (max-width: 480px) { .intro-card h1 { font-size: 1.5rem; } .move-title { font-size: 1.2rem; } }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="first-move.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="first-move-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 8px;">
+        <a href="first-move.html" style="padding: 8px 14px; background: #10b981; color: #000; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">EN</a>
+        <a href="first-move-de.html" style="padding: 8px 14px; background: rgba(255,255,255,0.1); color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">DE</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <a href="landing.html" class="logo"><div class="logo-icon">T</div><span>TAP-IN</span></a>
+        </div>
+        
+        <div class="intro-card">
+            <div class="intro-badge">&#9889; Personalized for You</div>
+            <h1>Your First Move</h1>
+            <p>Based on your Leadership DNA, here's a small action you can take today that will have an immediate impact.</p>
+        </div>
+        
+        <div class="move-card">
+            <div class="move-header">
+                <div class="move-icon" id="moveIcon">&#127919;</div>
+                <div class="move-header-text">
+                    <h2 id="moveCategory">Today's Leadership Move</h2>
+                    <p>~2 minutes · High impact</p>
+                </div>
+            </div>
+            <div class="move-body">
+                <div class="move-title" id="moveTitle">Start Your Next Meeting with "Why"</div>
+                <p class="move-desc" id="moveDesc">Before diving into agenda items, take 60 seconds to remind everyone why this work matters. Connect today's tasks to the bigger picture. Watch engagement shift.</p>
+                
+                <div class="steps-section">
+                    <div class="steps-title">How to Do It</div>
+                    <div id="stepsContainer">
+                        <div class="step-item"><div class="step-num">1</div><div class="step-text">Open your next meeting with: "Before we start, let me share why this matters..."</div></div>
+                        <div class="step-item"><div class="step-num">2</div><div class="step-text">Connect the meeting's topic to a larger goal or impact</div></div>
+                        <div class="step-item"><div class="step-num">3</div><div class="step-text">Ask: "Does everyone see how this fits into our bigger picture?"</div></div>
+                    </div>
+                </div>
+                
+                <div class="why-box">
+                    <div class="why-title">&#128161; Why This Works for You</div>
+                    <p class="why-text" id="whyText">As a Visionary Leader, you naturally see connections others miss. Sharing that context helps your team find meaning in their work—and meaning drives motivation.</p>
+                </div>
+            </div>
+            <div class="complete-section">
+                <button class="complete-btn" id="completeBtn" onclick="completeMove()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg>
+                    I Did This Today
+                </button>
+            </div>
+        </div>
+        
+        <div class="next-card">
+            <h3>Ready for More?</h3>
+            <p>Choose your path: personal growth or team tools.</p>
+            <a href="choose-path.html" class="next-btn">Choose Your Path<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+    </div>
+    <script>
+        const moves = {
+            visionary: {
+                icon: "&#127919;",
+                category: "Vision & Purpose",
+                title: "Start Your Next Meeting with 'Why'",
+                desc: "Before diving into agenda items, take 60 seconds to remind everyone why this work matters. Connect today's tasks to the bigger picture. Watch engagement shift.",
+                steps: ["Open your next meeting with: \"Before we start, let me share why this matters...\"", "Connect the meeting's topic to a larger goal or impact", "Ask: \"Does everyone see how this fits into our bigger picture?\""],
+                why: "As a Visionary Leader, you naturally see connections others miss. Sharing that context helps your team find meaning in their work—and meaning drives motivation."
+            },
+            architect: {
+                icon: "&#128203;",
+                category: "Systems & Clarity",
+                title: "Document One Undocumented Process",
+                desc: "Pick one thing your team does that isn't written down. Spend 10 minutes creating a simple step-by-step guide. Share it with the team.",
+                steps: ["Choose a process that causes confusion or repeated questions", "Write 5-7 clear steps with any important notes", "Share it in a place everyone can find it"],
+                why: "As a Strategic Architect, your gift is bringing order to chaos. This small act multiplies your impact—you're not just doing the work, you're making the work easier for everyone, forever."
+            },
+            facilitator: {
+                icon: "&#128172;",
+                category: "Connection & Trust",
+                title: "Send One Unexpected Check-In",
+                desc: "Reach out to someone on your team who seems fine but you haven't connected with personally in a while. No agenda—just genuine curiosity about how they're really doing.",
+                steps: ["Choose someone you haven't had a 1:1 conversation with recently", "Send a message: \"Hey, no agenda—just wanted to check in. How are you really doing?\"", "Listen fully. Don't try to solve anything."],
+                why: "As a Catalyst Coach, you build trust through genuine connection. This unexpected check-in signals that you see people as humans, not just workers—and that's what creates psychological safety."
+            },
+            executor: {
+                icon: "&#9889;",
+                category: "Action & Momentum",
+                title: "Clear One Blocked Item Right Now",
+                desc: "Look at your team's task list. Find something that's been stuck for more than a week. Do whatever it takes in the next 30 minutes to move it forward.",
+                steps: ["Scan your task board for items stuck in 'In Progress' or 'Blocked'", "Pick the one that's been waiting longest", "Take one action right now: make a decision, send the email, schedule the call"],
+                why: "As a Momentum Driver, you cut through blockers that slow everyone down. This immediate action creates ripple effects—when things move, energy increases, and teams gain confidence."
+            }
+        };
+        function loadMove() {
+            const stored = localStorage.getItem('tap_in_profile');
+            const type = stored ? JSON.parse(stored).leadershipType : 'visionary';
+            const move = moves[type] || moves.visionary;
+            document.getElementById('moveIcon').innerHTML = move.icon;
+            document.getElementById('moveCategory').textContent = move.category;
+            document.getElementById('moveTitle').textContent = move.title;
+            document.getElementById('moveDesc').textContent = move.desc;
+            document.getElementById('stepsContainer').innerHTML = move.steps.map((s, i) => `<div class="step-item"><div class="step-num">${i+1}</div><div class="step-text">${s}</div></div>`).join('');
+            document.getElementById('whyText').textContent = move.why;
+            
+            const completed = JSON.parse(localStorage.getItem('tap_in_completed_moves') || '[]');
+            const today = new Date().toISOString().split('T')[0];
+            if (completed.includes(today)) {
+                document.getElementById('completeBtn').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Completed Today!';
+                document.getElementById('completeBtn').classList.add('done');
+            }
+        }
+        function completeMove() {
+            const today = new Date().toISOString().split('T')[0];
+            const completed = JSON.parse(localStorage.getItem('tap_in_completed_moves') || '[]');
+            if (!completed.includes(today)) {
+                completed.push(today);
+                localStorage.setItem('tap_in_completed_moves', JSON.stringify(completed));
+                const progress = JSON.parse(localStorage.getItem('tap_in_progress') || '{}');
+                progress.xp = (progress.xp || 0) + 25;
+                progress.streak = (progress.streak || 0) + 1;
+                localStorage.setItem('tap_in_progress', JSON.stringify(progress));
+            }
+            document.getElementById('completeBtn').innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20,6 9,17 4,12"></polyline></svg> Completed Today!';
+            document.getElementById('completeBtn').classList.add('done');
+        }
+        loadMove();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

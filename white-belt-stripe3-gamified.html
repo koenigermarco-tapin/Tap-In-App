@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>White Belt Stripe 3: Self-Awareness - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --purple: #6b5b95;
+            --green: #10b981;
+            --gold: #d4a853;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--black), transparent);
+        }
+        .back-btn { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; opacity: 0.7; }
+        .back-btn:hover { opacity: 1; }
+        .xp-display { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+
+        .journey-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--mid-grey); z-index: 101; }
+        .journey-progress { height: 100%; background: linear-gradient(90deg, var(--purple), var(--green)); width: 0%; transition: width 0.6s ease; }
+
+        .container { max-width: 500px; margin: 0 auto; padding: 80px 24px 40px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+
+        .beat { display: none; animation: fadeIn 0.5s ease; }
+        .beat.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .beat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--purple); margin-bottom: 20px; opacity: 0.8; }
+        .beat-text { font-size: 1.4rem; font-weight: 500; line-height: 1.5; margin-bottom: 30px; }
+        .beat-text-small { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: rgba(255,255,255,0.9); }
+        .beat-subtext { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; margin-bottom: 25px; }
+
+        .continue-btn { background: none; border: 1px solid var(--mid-grey); color: var(--light-grey); padding: 14px 28px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; margin-top: 10px; }
+        .continue-btn:hover { border-color: var(--light-grey); color: var(--white); }
+        .continue-btn.primary { background: var(--brick-red); border-color: var(--brick-red); color: var(--white); }
+
+        /* Scenario cards */
+        .scenario-options { display: flex; flex-direction: column; gap: 10px; }
+        .scenario-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 10px; padding: 16px 18px; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; line-height: 1.5; }
+        .scenario-card:hover { border-color: var(--purple); }
+        .scenario-card.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+
+        /* Binary */
+        .binary-options { display: flex; flex-direction: column; gap: 12px; }
+        .binary-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.2s; text-align: left; }
+        .binary-card:hover { border-color: var(--purple); transform: translateX(4px); }
+        .binary-card.selected { border-color: var(--purple); background: rgba(107, 91, 149, 0.15); }
+        .binary-card-title { font-weight: 600; margin-bottom: 4px; }
+        .binary-card-sub { font-size: 0.85rem; color: var(--light-grey); }
+
+        /* Slider */
+        .labeled-slider { margin: 30px 0; }
+        .slider-track { height: 8px; background: var(--mid-grey); border-radius: 4px; position: relative; cursor: pointer; }
+        .slider-fill { height: 100%; background: linear-gradient(90deg, var(--brick-red), var(--gold), var(--green)); border-radius: 4px; width: 0%; transition: width 0.2s; }
+        .slider-thumb { position: absolute; top: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; background: var(--white); border-radius: 50%; box-shadow: 0 2px 10px rgba(0,0,0,0.3); display: none; }
+        .slider-thumb.show { display: block; }
+        .slider-labels { display: flex; justify-content: space-between; margin-top: 12px; font-size: 0.75rem; color: var(--light-grey); }
+
+        /* Quote */
+        .quote-block { border-left: 3px solid var(--gold); padding: 20px 25px; margin: 20px 0; background: rgba(0,0,0,0.2); border-radius: 0 12px 12px 0; }
+        .quote-text { font-size: 1.15rem; font-style: italic; line-height: 1.6; color: rgba(255,255,255,0.9); margin-bottom: 12px; }
+        .quote-author { font-size: 0.85rem; color: var(--gold); }
+
+        /* Insight */
+        .insight-reveal { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin: 20px 0; }
+        .insight-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 12px; }
+        .insight-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.85); }
+
+        /* Callback */
+        .callback-box { background: linear-gradient(135deg, rgba(107, 91, 149, 0.15), rgba(16, 185, 129, 0.1)); border: 1px solid var(--purple); border-radius: 16px; padding: 25px; margin: 20px 0; }
+        .callback-text { font-size: 1rem; line-height: 1.6; }
+        .callback-highlight { color: var(--gold); font-weight: 600; }
+
+        /* Trigger grid */
+        .trigger-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 25px 0; }
+        .trigger-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 10px; padding: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .trigger-card:hover { border-color: var(--purple); }
+        .trigger-card.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .trigger-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .trigger-text { font-size: 0.85rem; }
+
+        /* Stress mode selector */
+        .stress-modes { display: flex; flex-direction: column; gap: 10px; margin: 25px 0; }
+        .stress-mode { display: flex; align-items: center; gap: 15px; background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 10px; padding: 16px 18px; cursor: pointer; transition: all 0.2s; }
+        .stress-mode:hover { border-color: var(--purple); }
+        .stress-mode.selected { border-color: var(--purple); background: rgba(107, 91, 149, 0.15); }
+        .stress-icon { font-size: 1.3rem; }
+        .stress-info { flex: 1; }
+        .stress-title { font-weight: 600; font-size: 0.95rem; }
+        .stress-desc { font-size: 0.8rem; color: var(--light-grey); }
+
+        /* Percentage reveal */
+        .percentage-reveal { text-align: center; padding: 30px 0; }
+        .percentage-number { font-size: 4rem; font-weight: 700; color: var(--gold); margin-bottom: 10px; }
+        .percentage-label { font-size: 1rem; color: rgba(255,255,255,0.85); }
+
+        /* Mirror */
+        .mirror-reveal { margin: 30px 0; }
+        .mirror-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); transition: opacity 0.5s ease; }
+        .mirror-item:last-child { border-bottom: none; }
+        .mirror-label { color: var(--light-grey); font-size: 0.9rem; }
+        .mirror-value { font-weight: 600; font-size: 1rem; color: var(--purple); }
+
+        /* Culmination */
+        .culmination-container { text-align: center; }
+        .personal-truth { background: var(--dark-grey); border-left: 3px solid var(--purple); border-radius: 0 12px 12px 0; padding: 20px 24px; margin: 25px 0; text-align: left; }
+        .personal-truth p { font-size: 1rem; line-height: 1.6; color: rgba(255,255,255,0.9); margin: 0; }
+
+        .recap-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 16px 20px; margin: 20px 0; text-align: left; }
+        .recap-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--mid-grey); }
+        .recap-row:last-child { border-bottom: none; }
+        .recap-label { font-size: 0.85rem; color: var(--light-grey); }
+        .recap-value { font-size: 0.85rem; font-weight: 500; color: var(--white); }
+
+        .next-step { background: rgba(212, 168, 83, 0.1); border: 1px solid rgba(212, 168, 83, 0.3); border-radius: 12px; padding: 16px 20px; margin: 20px 0; text-align: left; }
+        .next-step-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 8px; }
+        .next-step-text { font-size: 0.95rem; font-weight: 500; }
+
+        .unlock-reveal { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(107, 91, 149, 0.1)); border: 1px solid var(--green); border-radius: 16px; padding: 25px; margin: 25px 0; animation: unlockPulse 0.6s ease; }
+        @keyframes unlockPulse { 0% { transform: scale(0.95); opacity: 0; } 50% { transform: scale(1.02); } 100% { transform: scale(1); opacity: 1; } }
+        .unlock-icon { font-size: 2rem; margin-bottom: 10px; }
+        .unlock-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 8px; }
+        .unlock-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+        .unlock-desc { font-size: 0.85rem; color: var(--light-grey); }
+
+        .completion-badge { display: inline-flex; align-items: center; gap: 12px; background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 30px; padding: 12px 20px; margin: 15px 0 25px; }
+        .badge-icon { width: 36px; height: 36px; background: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: var(--black); }
+        .badge-text { text-align: left; }
+        .badge-title { display: block; font-weight: 600; font-size: 0.9rem; }
+        .badge-sub { display: block; font-size: 0.75rem; color: var(--light-grey); }
+
+        .xp-earned-final { display: inline-block; background: rgba(212, 168, 83, 0.15); border: 1px solid rgba(212, 168, 83, 0.3); padding: 12px 24px; border-radius: 25px; margin: 20px 0; }
+        .xp-earned-final span { color: var(--gold); font-weight: 700; font-size: 1.2rem; }
+
+        /* Gap analysis */
+        .gap-display { display: flex; justify-content: center; gap: 40px; margin: 30px 0; text-align: center; }
+        .gap-item { }
+        .gap-number { font-size: 2.5rem; font-weight: 700; }
+        .gap-number.self { color: var(--purple); }
+        .gap-number.others { color: var(--green); }
+        .gap-label { font-size: 0.8rem; color: var(--light-grey); margin-top: 5px; }
+        .gap-arrow { font-size: 1.5rem; color: var(--mid-grey); align-self: center; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="white-belt-stripe3-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="white-belt-stripe3-gamified-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="journey-line"><div class="journey-progress" id="journeyProgress"></div></div>
+
+    <header class="header">
+        <a href="gym-dashboard.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Exit</a>
+        <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+    </header>
+
+    <main class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">White Belt · Stripe 3</div>
+            <p class="beat-text">You have a version of yourself that only appears under pressure.</p>
+            <p class="beat-subtext">Most people don't know this version exists until it's too late. Self-awareness is seeing it before others do.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 2: Trigger selection -->
+        <div class="beat" id="beat2">
+            <p class="beat-text-small">What tends to set you off? Pick the one that gets you most.</p>
+            <div class="trigger-grid">
+                <div class="trigger-card" onclick="selectTrigger(this, 'disrespect')">
+                    <div class="trigger-icon">😤</div>
+                    <div class="trigger-text">Feeling disrespected</div>
+                </div>
+                <div class="trigger-card" onclick="selectTrigger(this, 'incompetence')">
+                    <div class="trigger-icon">🤦</div>
+                    <div class="trigger-text">Others' incompetence</div>
+                </div>
+                <div class="trigger-card" onclick="selectTrigger(this, 'unfairness')">
+                    <div class="trigger-icon">⚖️</div>
+                    <div class="trigger-text">Unfairness</div>
+                </div>
+                <div class="trigger-card" onclick="selectTrigger(this, 'control')">
+                    <div class="trigger-icon">🎛️</div>
+                    <div class="trigger-text">Losing control</div>
+                </div>
+                <div class="trigger-card" onclick="selectTrigger(this, 'ignored')">
+                    <div class="trigger-icon">👻</div>
+                    <div class="trigger-text">Being ignored</div>
+                </div>
+                <div class="trigger-card" onclick="selectTrigger(this, 'criticism')">
+                    <div class="trigger-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>
+                    <div class="trigger-text">Being criticized</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 3: Stress mode -->
+        <div class="beat" id="beat3">
+            <p class="beat-text-small">When that trigger hits, what's your default mode?</p>
+            <div class="stress-modes">
+                <div class="stress-mode" onclick="selectStress(this, 'fight')">
+                    <span class="stress-icon">⚔️</span>
+                    <div class="stress-info">
+                        <div class="stress-title">Fight</div>
+                        <div class="stress-desc">Push back, get sharp, defend your position</div>
+                    </div>
+                </div>
+                <div class="stress-mode" onclick="selectStress(this, 'flight')">
+                    <span class="stress-icon">🚪</span>
+                    <div class="stress-info">
+                        <div class="stress-title">Flight</div>
+                        <div class="stress-desc">Withdraw, shut down, disengage</div>
+                    </div>
+                </div>
+                <div class="stress-mode" onclick="selectStress(this, 'freeze')">
+                    <span class="stress-icon">🧊</span>
+                    <div class="stress-info">
+                        <div class="stress-title">Freeze</div>
+                        <div class="stress-desc">Go blank, get stuck, wait it out</div>
+                    </div>
+                </div>
+                <div class="stress-mode" onclick="selectStress(this, 'fawn')">
+                    <span class="stress-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg></span>
+                    <div class="stress-info">
+                        <div class="stress-title">Fawn</div>
+                        <div class="stress-desc">People-please, over-accommodate, smooth it over</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 4: Insight -->
+        <div class="beat" id="beat4">
+            <div class="insight-reveal">
+                <div class="insight-label">The 4 Fs</div>
+                <p class="insight-text">Fight, flight, freeze, fawn—these aren't choices. They're automatic responses wired by evolution and shaped by experience. You can't eliminate your default, but you can learn to catch it faster.</p>
+            </div>
+            <p class="beat-subtext">The goal isn't to never get triggered. It's to shorten the time between trigger and awareness.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 5: Speed of awareness -->
+        <div class="beat" id="beat5">
+            <p class="beat-text-small">How quickly do you usually notice you've been triggered?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(5, 'instant')">In the moment—I feel it right away</div>
+                <div class="scenario-card" onclick="selectScenario(5, 'during')">During—I catch myself mid-reaction</div>
+                <div class="scenario-card" onclick="selectScenario(5, 'after')">After—I realize later what happened</div>
+                <div class="scenario-card" onclick="selectScenario(5, 'told')">When someone tells me</div>
+            </div>
+        </div>
+
+        <!-- Beat 6: The gap -->
+        <div class="beat" id="beat6">
+            <p class="beat-text">There's often a gap between how we see ourselves and how others see us.</p>
+            <p class="beat-subtext">Research calls this the "self-other gap." It's not about being wrong—it's about having different data.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 7: Self-rating -->
+        <div class="beat" id="beat7">
+            <p class="beat-text-small">How would YOU rate your self-awareness?</p>
+            <p class="beat-subtext">Compared to most people you know.</p>
+            <div class="labeled-slider">
+                <div class="slider-track" id="slider7" onclick="selectSlider(event, 7)">
+                    <div class="slider-fill" id="fill7"></div>
+                    <div class="slider-thumb" id="thumb7"></div>
+                </div>
+                <div class="slider-labels">
+                    <span>Below average</span>
+                    <span>Above average</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue7" onclick="nextBeat()" style="opacity: 0.3; pointer-events: none;">Continue</button>
+        </div>
+
+        <!-- Beat 8: The irony stat -->
+        <div class="beat" id="beat8">
+            <div class="percentage-reveal">
+                <div class="percentage-number">95%</div>
+                <div class="percentage-label">of people think they're self-aware.<br>Only about 15% actually are.</div>
+            </div>
+            <p class="beat-subtext">The Dunning-Kruger effect applies to self-awareness too. The less aware you are, the less you know it.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 9: Others' view -->
+        <div class="beat" id="beat9">
+            <p class="beat-text-small">Now honestly: how do you think OTHERS would rate your self-awareness?</p>
+            <div class="labeled-slider">
+                <div class="slider-track" id="slider9" onclick="selectSlider(event, 9)">
+                    <div class="slider-fill" id="fill9"></div>
+                    <div class="slider-thumb" id="thumb9"></div>
+                </div>
+                <div class="slider-labels">
+                    <span>Lower than I think</span>
+                    <span>Higher than I think</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue9" onclick="showGap()" style="opacity: 0.3; pointer-events: none;">See the gap</button>
+        </div>
+
+        <!-- Beat 10: Gap reveal + callback -->
+        <div class="beat" id="beat10">
+            <div class="callback-box">
+                <p class="callback-text" id="callback10"></p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 11: Blind spot question -->
+        <div class="beat" id="beat11">
+            <p class="beat-text-small">Everyone has blind spots. Which of these might be yours?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(11, 'impact')">How my mood affects others</div>
+                <div class="scenario-card" onclick="selectScenario(11, 'tone')">How I come across when I'm stressed</div>
+                <div class="scenario-card" onclick="selectScenario(11, 'listening')">How well I actually listen</div>
+                <div class="scenario-card" onclick="selectScenario(11, 'patterns')">Patterns I keep repeating</div>
+            </div>
+        </div>
+
+        <!-- Beat 12: Quote -->
+        <div class="beat" id="beat12">
+            <div class="quote-block">
+                <p class="quote-text">"Between stimulus and response there is a space. In that space is our power to choose our response."</p>
+                <p class="quote-author">— Viktor Frankl</p>
+            </div>
+            <p class="beat-subtext">Self-awareness is expanding that space. The trigger still fires, but you have more room to choose what happens next.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 13: Feedback relationship -->
+        <div class="beat" id="beat13">
+            <p class="beat-text-small">Do you have someone who tells you the truth about yourself—even when it's uncomfortable?</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(13, 'yes')">
+                    <div class="binary-card-title">Yes</div>
+                    <div class="binary-card-sub">At least one person who gives me honest feedback</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(13, 'no')">
+                    <div class="binary-card-title">Not really</div>
+                    <div class="binary-card-sub">No one calls me out or I haven't asked</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 14: Mirror -->
+        <div class="beat" id="beat14">
+            <p class="beat-text">Your self-awareness profile.</p>
+            <div class="mirror-reveal">
+                <div class="mirror-item" id="mirror1" style="opacity: 0;">
+                    <span class="mirror-label">Your trigger</span>
+                    <span class="mirror-value" id="mirrorTrigger">—</span>
+                </div>
+                <div class="mirror-item" id="mirror2" style="opacity: 0;">
+                    <span class="mirror-label">Your stress response</span>
+                    <span class="mirror-value" id="mirrorStress">—</span>
+                </div>
+                <div class="mirror-item" id="mirror3" style="opacity: 0;">
+                    <span class="mirror-label">Your blind spot</span>
+                    <span class="mirror-value" id="mirrorBlind">—</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue14" onclick="nextBeat()" style="opacity: 0; pointer-events: none;">See what this means</button>
+        </div>
+
+        <!-- Beat 15: Culmination -->
+        <div class="beat" id="beat15">
+            <div class="culmination-container">
+                <p class="beat-text" id="mainInsight">—</p>
+                
+                <div class="personal-truth">
+                    <p id="truthText">—</p>
+                </div>
+
+                <div class="recap-card">
+                    <div class="recap-row">
+                        <span class="recap-label">Main trigger</span>
+                        <span class="recap-value" id="recapTrigger">—</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Default mode</span>
+                        <span class="recap-value" id="recapMode">—</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Awareness speed</span>
+                        <span class="recap-value" id="recapSpeed">—</span>
+                    </div>
+                </div>
+
+                <div class="next-step">
+                    <div class="next-step-label">Your practice</div>
+                    <div class="next-step-text" id="nextStepText">—</div>
+                </div>
+
+                <div class="unlock-reveal" id="unlockReveal" style="display: none;">
+                    <div class="unlock-icon">🔓</div>
+                    <p class="unlock-title">New Training Unlocked</p>
+                    <p class="unlock-name" id="unlockedGame">—</p>
+                    <p class="unlock-desc" id="unlockedDesc">—</p>
+                </div>
+
+                <div class="xp-earned-final">
+                    <span id="finalXP">+40</span> XP
+                </div>
+
+                <div class="completion-badge">
+                    <div class="badge-icon">◯◯◯</div>
+                    <div class="badge-text">
+                        <span class="badge-title">Stripe 3 Complete</span>
+                        <span class="badge-sub">Self-Awareness</span>
+                    </div>
+                </div>
+                
+                <button class="continue-btn primary" onclick="completeStripe()">Continue Journey</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentBeat = 1;
+        const totalBeats = 15;
+        let xp = 0;
+        let answers = {};
+        let unlockedContent = null;
+
+        const unlocks = {
+            'trigger-tracker': { id: 'trigger-tracker', name: 'Trigger Tracker', desc: 'Map your patterns before they map you.', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>' },
+            'feedback-finder': { id: 'feedback-finder', name: 'Feedback Finder', desc: 'Build your personal board of truth-tellers.', icon: '🪞' },
+            'pause-practice': { id: 'pause-practice', name: 'The Pause Practice', desc: 'Expand the space between trigger and reaction.', icon: '⏸️' },
+            'shadow-work': { id: 'shadow-work', name: 'Shadow Work', desc: 'Meet the version of yourself you don\'t show.', icon: '🌑' }
+        };
+
+        function updateProgress() { document.getElementById('journeyProgress').style.width = ((currentBeat / totalBeats) * 100) + '%'; }
+        function addXP(amount) { xp += amount; document.getElementById('xpDisplay').textContent = xp; }
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectTrigger(el, value) {
+            answers.trigger = value;
+            document.querySelectorAll('.trigger-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            addXP(3);
+            setTimeout(() => nextBeat(), 400);
+        }
+
+        function selectStress(el, value) {
+            answers.stressMode = value;
+            document.querySelectorAll('.stress-mode').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            addXP(3);
+            setTimeout(() => nextBeat(), 400);
+        }
+
+        function selectScenario(beat, value) {
+            answers['beat' + beat] = value;
+            document.querySelectorAll('#beat' + beat + ' .scenario-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            addXP(3);
+            setTimeout(() => nextBeat(), 400);
+        }
+
+        function selectSlider(event, beat) {
+            const track = document.getElementById('slider' + beat);
+            const rect = track.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            document.getElementById('fill' + beat).style.width = pct + '%';
+            document.getElementById('thumb' + beat).style.left = pct + '%';
+            document.getElementById('thumb' + beat).classList.add('show');
+            answers['beat' + beat] = pct;
+            addXP(3);
+            document.getElementById('continue' + beat).style.opacity = '1';
+            document.getElementById('continue' + beat).style.pointerEvents = 'auto';
+        }
+
+        function showGap() {
+            const self = answers.beat7 || 50;
+            const others = answers.beat9 || 50;
+            const gap = self - others;
+            
+            let text = '';
+            if (gap > 20) {
+                text = 'You rated yourself <span class="callback-highlight">higher</span> than you think others would. That gap is worth examining. It could mean you see strengths others miss—or it could mean there\'s feedback you\'re not getting. The only way to know is to ask.';
+                answers.gapType = 'overestimate';
+            } else if (gap < -20) {
+                text = 'You think others see you as <span class="callback-highlight">more self-aware</span> than you see yourself. That humility is valuable—but don\'t undersell yourself. Sometimes we\'re harder on ourselves than others are.';
+                answers.gapType = 'underestimate';
+            } else {
+                text = 'Your self-view and your guess about others are <span class="callback-highlight">pretty aligned</span>. That\'s a good sign—it suggests you have realistic expectations. The question is whether those expectations are accurate. Have you tested them?';
+                answers.gapType = 'aligned';
+            }
+            
+            document.getElementById('callback10').innerHTML = text;
+            nextBeat();
+        }
+
+        function selectBinary(beat, value) {
+            answers['beat' + beat] = value;
+            document.querySelectorAll('#beat' + beat + ' .binary-card').forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            addXP(3);
+            setTimeout(() => nextBeat(), 400);
+        }
+
+        function animateMirrorReveal() {
+            const triggerMap = { 'disrespect': 'Disrespect', 'incompetence': 'Incompetence', 'unfairness': 'Unfairness', 'control': 'Losing control', 'ignored': 'Being ignored', 'criticism': 'Criticism' };
+            const stressMap = { 'fight': 'Fight', 'flight': 'Flight', 'freeze': 'Freeze', 'fawn': 'Fawn' };
+            const blindMap = { 'impact': 'Mood impact', 'tone': 'Stressed tone', 'listening': 'Listening quality', 'patterns': 'Repeated patterns' };
+            
+            setTimeout(() => { document.getElementById('mirrorTrigger').textContent = triggerMap[answers.trigger] || '—'; document.getElementById('mirror1').style.opacity = '1'; }, 400);
+            setTimeout(() => { document.getElementById('mirrorStress').textContent = stressMap[answers.stressMode] || '—'; document.getElementById('mirror2').style.opacity = '1'; }, 900);
+            setTimeout(() => { document.getElementById('mirrorBlind').textContent = blindMap[answers.beat11] || '—'; document.getElementById('mirror3').style.opacity = '1'; }, 1400);
+            setTimeout(() => { document.getElementById('continue14').style.opacity = '1'; document.getElementById('continue14').style.pointerEvents = 'auto'; }, 2000);
+        }
+
+        function showFinalResults() {
+            const trigger = answers.trigger;
+            const stress = answers.stressMode;
+            const speed = answers.beat5;
+            const hasFeedback = answers.beat13 === 'yes';
+            const gap = answers.gapType;
+            
+            let mainInsight = '', truthText = '', nextStep = '', unlockKey = 'trigger-tracker';
+
+            // Build insight based on stress mode + trigger combo
+            if (stress === 'fight') {
+                mainInsight = 'You push back when pushed.';
+                if (trigger === 'disrespect' || trigger === 'criticism') {
+                    truthText = 'When you feel questioned or dismissed, you come out swinging. That fire can be useful—it shows you care. But others may experience it as defensive or aggressive before they understand where it\'s coming from. Your edge is catching the heat before it reaches your mouth.';
+                } else {
+                    truthText = 'Your instinct is to engage, not retreat. That directness can be a strength—you don\'t let things fester. But intensity in the moment can damage relationships that matter. Learning to fight for the right things, at the right temperature, is your growth edge.';
+                }
+                nextStep = 'This week, notice when you feel the urge to push back. Pause three seconds before responding.';
+                unlockKey = 'pause-practice';
+            } else if (stress === 'flight') {
+                mainInsight = 'You withdraw when things get heated.';
+                if (trigger === 'control' || trigger === 'unfairness') {
+                    truthText = 'When situations feel out of control or unjust, you pull back rather than engage. This protects you from conflict—but it can also leave issues unresolved and relationships strained by your absence. Your edge is learning to stay present when you want to leave.';
+                } else {
+                    truthText = 'Your instinct is to create distance. That space can be valuable—it prevents escalation. But others may read it as avoidance or disinterest. Learning to withdraw strategically, not automatically, is your growth edge.';
+                }
+                nextStep = 'This week, when you feel the urge to disengage, try staying 30 seconds longer than comfortable.';
+                unlockKey = 'pause-practice';
+            } else if (stress === 'freeze') {
+                mainInsight = 'You lock up under pressure.';
+                truthText = 'When triggered, your system pauses—thoughts slow, words don\'t come. This isn\'t weakness; it\'s your brain protecting you from saying something you\'d regret. But in the moment, it can look like you don\'t care or have nothing to contribute. Your edge is building bridges back from the freeze.';
+                nextStep = 'Practice saying "I need a moment to think about this" when you feel the freeze coming.';
+                unlockKey = 'pause-practice';
+            } else if (stress === 'fawn') {
+                mainInsight = 'You smooth things over—sometimes too fast.';
+                truthText = 'When tension rises, you move to defuse it. You accommodate, agree, make nice. This keeps the peace—but it can mean your real thoughts never surface. Over time, people-pleasing builds resentment. Your edge is learning that some discomfort is okay.';
+                nextStep = 'This week, when you feel the urge to agree just to smooth things over, try asking a question instead.';
+                unlockKey = 'shadow-work';
+            }
+
+            // Modify based on awareness speed
+            if (speed === 'told') {
+                truthText += ' And since you often don\'t see your patterns until someone points them out, building a feedback network is critical for you.';
+                unlockKey = 'feedback-finder';
+                nextStep = 'Ask someone you trust: "How do I come across when I\'m stressed?"';
+            } else if (speed === 'instant' && !hasFeedback) {
+                truthText += ' You catch yourself quickly, which is valuable. But without external feedback, you might be missing patterns you can\'t see alone.';
+            }
+
+            // Modify based on gap
+            if (gap === 'overestimate' && !hasFeedback) {
+                truthText += ' The gap between your self-view and your guess about others suggests there\'s feedback you\'re not getting. Consider actively asking for it.';
+                unlockKey = 'feedback-finder';
+            }
+
+            document.getElementById('mainInsight').textContent = mainInsight;
+            document.getElementById('truthText').textContent = truthText;
+            document.getElementById('nextStepText').textContent = nextStep;
+
+            // Populate recap
+            const triggerMap = { 'disrespect': 'Disrespect', 'incompetence': 'Incompetence', 'unfairness': 'Unfairness', 'control': 'Losing control', 'ignored': 'Being ignored', 'criticism': 'Criticism' };
+            const stressMap = { 'fight': 'Fight', 'flight': 'Flight', 'freeze': 'Freeze', 'fawn': 'Fawn' };
+            const speedMap = { 'instant': 'Immediate', 'during': 'Mid-reaction', 'after': 'After the fact', 'told': 'When told' };
+            
+            document.getElementById('recapTrigger').textContent = triggerMap[trigger] || '—';
+            document.getElementById('recapMode').textContent = stressMap[stress] || '—';
+            document.getElementById('recapSpeed').textContent = speedMap[speed] || '—';
+
+            const unlock = unlocks[unlockKey];
+            unlockedContent = unlock;
+            setTimeout(() => {
+                document.getElementById('unlockedGame').textContent = unlock.name;
+                document.getElementById('unlockedDesc').textContent = unlock.desc;
+                document.getElementById('unlockReveal').style.display = 'block';
+            }, 800);
+            document.getElementById('finalXP').textContent = '+' + (xp + 5);
+        }
+
+        function completeStripe() {
+            localStorage.setItem('tap_in_stripe3_complete', 'true');
+            localStorage.setItem('tap_in_stripe3_answers', JSON.stringify(answers));
+            if (unlockedContent) {
+                let list = JSON.parse(localStorage.getItem('tap_in_unlocks') || '[]');
+                if (!list.includes(unlockedContent.id)) { list.push(unlockedContent.id); localStorage.setItem('tap_in_unlocks', JSON.stringify(list)); }
+            }
+            let totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+            localStorage.setItem('tap_in_xp', totalXP + xp + 5);
+            window.location.href = 'stripe-results.html?belt=white&stripe=3&xp=50&next=white-belt-stripe4-gamified.html';
+        }
+
+        updateProgress();
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((m) => {
+                if (m.target.id === 'beat14' && m.target.classList.contains('active')) animateMirrorReveal();
+                if (m.target.id === 'beat15' && m.target.classList.contains('active')) showFinalResults();
+            });
+        });
+        document.querySelectorAll('.beat').forEach(b => observer.observe(b, { attributes: true, attributeFilter: ['class'] }));
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Lila-Gurt Shark Tank - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root{--black:#0a0a0f;--dark:#12121a;--card:#1a1a25;--border:#2a2a3a;--text:#e2e8f0;--muted:#8a8a9a;--purple-belt:#8b5cf6;--purple-dark:#7c3aed;--accent:#a78bfa;--accent-glow:rgba(139,92,246,0.3);--success:#10b981;--error:#ef4444;--warning:#f59e0b;--gold:#fbbf24;}
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',-apple-system,sans-serif;background:linear-gradient(135deg,var(--black) 0%,#1a0d29 100%);color:var(--text);min-height:100vh;overflow-x:hidden;}
+        .header{position:fixed;top:0;left:0;right:0;padding:15px 20px;background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);z-index:100;display:flex;justify-content:space-between;align-items:center;}
+        .header-left{display:flex;align-items:center;gap:15px;}
+        .back-btn{color:var(--muted);text-decoration:none;font-size:0.9rem;display:flex;align-items:center;gap:5px;}
+        .belt-badge{display:flex;align-items:center;gap:8px;background:rgba(139,92,246,0.15);border:1px solid rgba(139,92,246,0.3);padding:6px 12px;border-radius:20px;font-size:0.8rem;font-weight:600;color:var(--purple-belt);}
+        .belt-dot{width:10px;height:10px;background:var(--purple-belt);border-radius:50%;}
+        .timer-display{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;color:var(--text);}
+        .timer-display.warning{color:var(--warning);}
+        .timer-display.danger{color:var(--error);animation:pulse 0.5s infinite;}
+        @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
+        .container{max-width:700px;margin:0 auto;padding:100px 20px 40px;min-height:100vh;}
+        .phase-indicator{display:flex;justify-content:center;gap:8px;margin-bottom:40px;}
+        .phase-dot{width:40px;height:6px;background:var(--border);border-radius:3px;transition:all 0.3s;}
+        .phase-dot.active{background:var(--accent);box-shadow:0 0 15px var(--accent-glow);}
+        .phase-dot.complete{background:var(--success);}
+        .phase{display:none;animation:fadeIn 0.5s ease;}
+        .phase.active{display:block;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+        .phase-header{text-align:center;margin-bottom:40px;}
+        .phase-label{font-size:0.75rem;text-transform:uppercase;letter-spacing:3px;color:var(--accent);margin-bottom:10px;}
+        .phase-title{font-size:2rem;font-weight:800;margin-bottom:10px;}
+        .phase-subtitle{color:var(--muted);font-size:1rem;}
+        .question-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:30px;margin-bottom:20px;}
+        .question-progress{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;padding-bottom:15px;border-bottom:1px solid var(--border);}
+        .question-number{font-size:0.85rem;color:var(--muted);}
+        .question-timer{display:flex;align-items:center;gap:8px;font-size:1.2rem;font-weight:700;font-variant-numeric:tabular-nums;}
+        .timer-bar{width:100px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;}
+        .timer-fill{height:100%;background:var(--success);transition:width 0.1s linear;}
+        .timer-fill.warning{background:var(--warning);}
+        .timer-fill.danger{background:var(--error);}
+        .question-text{font-size:1.2rem;font-weight:600;line-height:1.5;margin-bottom:25px;}
+        .options{display:flex;flex-direction:column;gap:12px;}
+        .option{padding:16px 20px;background:var(--dark);border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;font-size:1rem;}
+        .option:hover{border-color:var(--accent);transform:translateX(5px);}
+        .option.selected{border-color:var(--accent);background:rgba(139,92,246,0.1);}
+        .option.correct{border-color:var(--success);background:rgba(16,185,129,0.15);}
+        .option.incorrect{border-color:var(--error);background:rgba(239,68,68,0.1);opacity:0.6;}
+        .option.disabled{pointer-events:none;}
+        .feedback{display:none;margin-top:20px;padding:20px;border-radius:12px;background:var(--dark);border-left:4px solid var(--success);}
+        .feedback.show{display:block;animation:fadeIn 0.3s;}
+        .feedback.incorrect{border-left-color:var(--error);}
+        .feedback-title{font-weight:700;margin-bottom:8px;}
+        .feedback-text{color:var(--muted);font-size:0.95rem;line-height:1.5;}
+        .scenario-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:30px;margin-bottom:20px;}
+        .scenario-title{font-size:1.1rem;font-weight:700;margin-bottom:8px;}
+        .scenario-desc{color:var(--muted);line-height:1.6;font-size:0.95rem;}
+        .pitch-box{background:var(--dark);border:1px dashed var(--border);border-radius:14px;padding:18px;margin-top:16px;}
+        .cta-box{background:linear-gradient(135deg,#1a1a25 0%,#0f0f1a 100%);border:1px solid var(--border);border-radius:16px;padding:24px;text-align:center;color:var(--text);margin-top:30px;}
+        .cta-btn{background:linear-gradient(135deg,var(--purple-dark),var(--purple-belt));color:white;padding:14px 24px;border-radius:12px;text-decoration:none;font-weight:700;display:inline-block;margin-top:10px;}
+        .success-msg{color:var(--success);font-weight:700;margin-top:10px;}
+        .fail-msg{color:var(--warning);font-weight:700;margin-top:10px;}
+        .phase-actions{margin-top:24px;display:flex;gap:12px;flex-wrap:wrap;}
+        .pill{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:0.85rem;border:1px solid var(--border);color:var(--muted);}
+        .action-btn{background:linear-gradient(135deg,var(--purple-belt),var(--purple-dark));color:white;border:none;border-radius:12px;padding:14px 20px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+        .action-btn:hover{transform:translateY(-1px);box-shadow:0 8px 20px rgba(139,92,246,0.25);}
+        .results-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;margin-top:24px;}
+        .results-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;color:var(--muted);}
+        .results-score{font-size:2.2rem;font-weight:800;color:var(--accent);}
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <a href="gym-focused-de.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück</a>
+            <div class="belt-badge"><span class="belt-dot"></span><span>Purple Belt</span></div>
+        </div>
+        <div class="timer-display" id="timerDisplay">10:00</div>
+        <div style="display:flex;gap:8px;">
+            <a href="purple-belt-shark-tank.html" style="color:#8a8a9a;text-decoration:none;font-weight:600;">EN</a>
+            <a href="purple-belt-shark-tank-de.html" style="color:#fff;text-decoration:none;font-weight:700;">DE</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="phase-indicator">
+            <div class="phase-dot active" id="dot-1"></div>
+            <div class="phase-dot" id="dot-2"></div>
+            <div class="phase-dot" id="dot-3"></div>
+        </div>
+
+        <!-- Phase 1: Pitch & Clarity -->
+        <div class="phase active" id="phase-1">
+            <div class="phase-header">
+                <div class="phase-label">Phase 1</div>
+                <div class="phase-title">Pitch & Klarheit</div>
+                <div class="phase-subtitle">Bringe dein Vorhaben klar, messbar und mit Nutzen.</div>
+            </div>
+            <div class="scenario-card">
+                <div class="scenario-title">Dein Pitch</div>
+                <div class="scenario-desc">Du stellst eine neue Entscheidung oder Initiative vor. Formuliere klar: Was, warum, Nutzen, Erfolgskriterium.</div>
+                <div class="pitch-box">
+                    <p><strong>Aufgabe:</strong> Schreibe eine klare Entscheidungserklärung mit Nutzen und Messkriterium.</p>
+                </div>
+            </div>
+            <div class="results-card">
+                <div class="results-row"><span>Pitch-Klarheit</span><span id="score-clarity" class="results-score">0</span></div>
+                <div class="results-row"><span>Nutzen aufzeigen</span><span id="score-benefit" class="results-score">0</span></div>
+            </div>
+            <div class="phase-actions">
+                <div class="pill">✅ Klarer Nutzen</div>
+                <div class="pill">✅ Messbares Ergebnis</div>
+                <div class="pill">✅ Kurzer Pitch</div>
+            </div>
+            <button class="action-btn" onclick="completePhase(1)">Phase 1 abschließen</button>
+        </div>
+
+        <!-- Phase 2: Einwände & Buy-in -->
+        <div class="phase" id="phase-2">
+            <div class="phase-header">
+                <div class="phase-label">Phase 2</div>
+                <div class="phase-title">Einwände & Buy-in</div>
+                <div class="phase-subtitle">Höre zu, adressiere Risiken, gewinne echte Zustimmung.</div>
+            </div>
+            <div class="question-card">
+                <div class="question-progress">
+                    <span class="question-number">Einwand-Check</span>
+                    <div class="question-timer">
+                        <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width: 100%;"></div></div>
+                    </div>
+                </div>
+                <div class="question-text" id="objectionText">Stakeholder nennt Top-Einwand:</div>
+                <div class="options" id="objectionOptions"></div>
+                <div class="feedback" id="objectionFeedback">
+                    <div class="feedback-title" id="feedbackTitle">Feedback</div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                </div>
+            </div>
+            <div class="results-card">
+                <div class="results-row"><span>Einwände adressiert</span><span id="score-objections" class="results-score">0</span></div>
+                <div class="results-row"><span>Buy-in erreicht</span><span id="score-buyin" class="results-score">0</span></div>
+            </div>
+            <button class="action-btn" onclick="completePhase(2)">Phase 2 abschließen</button>
+        </div>
+
+        <!-- Phase 3: Commitment & Abschluss -->
+        <div class="phase" id="phase-3">
+            <div class="phase-header">
+                <div class="phase-label">Phase 3</div>
+                <div class="phase-title">Commitment & Abschluss</div>
+                <div class="phase-subtitle">Verbindlichkeit festhalten, nächste Schritte sichern.</div>
+            </div>
+            <div class="scenario-card">
+                <div class="scenario-title">Commitment festhalten</div>
+                <div class="scenario-desc">Liste konkrete Zusagen: Wer, was, bis wann, Erfolgskriterium. Stelle sicher, dass Einwände geschlossen sind.</div>
+            </div>
+            <div class="results-card">
+                <div class="results-row"><span>Commitment-Qualität</span><span id="score-commitment" class="results-score">0</span></div>
+                <div class="results-row"><span>Risiken geschlossen</span><span id="score-risks" class="results-score">0</span></div>
+            </div>
+            <div class="cta-box">
+                <p class="success-msg" id="finalMsg">Führe den Abschluss souverän durch und sichere echte Umsetzung.</p>
+                <a href="purple-belt-ceremony-de.html" class="cta-btn">Zur Gurt-Feier</a>
+            </div>
+            <div class="phase-actions">
+                <div class="pill">✅ Owner & Deadline</div>
+                <div class="pill">✅ Messkriterium</div>
+                <div class="pill">✅ Risiken geklärt</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let timer = 600; // 10 minutes
+        let timerInterval = null;
+
+        const objections = [
+            {
+                text: "„Der Zeitaufwand ist zu hoch – wir sind schon überlastet.“",
+                options: [
+                    { text: "Ignorieren, der Nutzen überwiegt.", correct:false, feedback:"Einwände ernst nehmen – zeige, wie du Zeitaufwand begrenzt oder Prioritäten klärst." },
+                    { text: "Zeitblocker + Prioritäten klären, klarer ROI.", correct:true, feedback:"Richtig: Zeige Zeitbudget, Prioritäten und ROI." },
+                    { text: "Projekt verschieben.", correct:false, feedback:"Wenn das Vorhaben wichtig ist, adressiere die Last statt es zu verschieben." }
+                ]
+            },
+            {
+                text: "„Wir haben keine Beweise, dass es funktioniert.“",
+                options: [
+                    { text: "Pilot mit kleinem Scope + Messkriterium.", correct:true, feedback:"Richtig: Kleiner Pilot mit klaren Metriken baut Vertrauen auf." },
+                    { text: "Groß ausrollen, dann messen.", correct:false, feedback:"Risiko zu hoch – starte mit Pilot." },
+                    { text: "Warten, bis andere es machen.", correct:false, feedback:"Proaktives Lernen durch Pilot ist besser." }
+                ]
+            },
+            {
+                text: "„Andere Teams sind nicht aligned.“",
+                options: [
+                    { text: "Einfach starten, sie ziehen nach.", correct:false, feedback:"Fehlendes Alignment erzeugt Widerstand. Hole Schlüssel-Stakeholder vorher rein." },
+                    { text: "Stakeholder-Map + Pre-Alignment mit Schlüsselpersonen.", correct:true, feedback:"Richtig: Stakeholder mapen, Vorab-Alignment sichern." },
+                    { text: "Mehr Mails senden.", correct:false, feedback:"Mails ersetzen kein Alignment." }
+                ]
+            }
+        ];
+
+        let currentObjection = 0;
+
+        function startTimer(){
+            updateTimer();
+            timerInterval = setInterval(() => {
+                timer--;
+                updateTimer();
+                if (timer <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerDisplay').textContent = '00:00';
+                }
+            }, 1000);
+        }
+
+        function updateTimer(){
+            const display = document.getElementById('timerDisplay');
+            const minutes = String(Math.floor(timer/60)).padStart(2,'0');
+            const seconds = String(timer%60).padStart(2,'0');
+            display.textContent = `${minutes}:${seconds}`;
+            const pct = Math.max(0, (timer / 600) * 100);
+            const fill = document.getElementById('timerFill');
+            fill.style.width = `${pct}%`;
+            fill.classList.remove('warning','danger');
+            if (pct <= 30) fill.classList.add('warning');
+            if (pct <= 10) fill.classList.add('danger');
+            display.classList.remove('warning','danger');
+            if (pct <= 30) display.classList.add('warning');
+            if (pct <= 10) display.classList.add('danger');
+        }
+
+        function completePhase(num){
+            document.getElementById(`dot-${num}`).classList.remove('active');
+            document.getElementById(`dot-${num}`).classList.add('complete');
+            const next = num + 1;
+            const currentPhase = document.getElementById(`phase-${num}`);
+            currentPhase.classList.remove('active');
+            if (next <= 3){
+                document.getElementById(`phase-${next}`).classList.add('active');
+                document.getElementById(`dot-${next}`).classList.add('active');
+                if (next === 2 && !timerInterval) startTimer();
+            }
+        }
+
+        function loadObjection(idx){
+            const obj = objections[idx];
+            document.getElementById('objectionText').textContent = obj.text;
+            const container = document.getElementById('objectionOptions');
+            container.innerHTML = '';
+            obj.options.forEach((opt,i)=>{
+                const div = document.createElement('div');
+                div.className='option';
+                div.textContent=opt.text;
+                div.onclick=()=>selectObjection(div,opt.correct,opt.feedback);
+                container.appendChild(div);
+            });
+            document.getElementById('objectionFeedback').classList.remove('show','incorrect');
+            document.getElementById('feedbackTitle').textContent='Feedback';
+            document.getElementById('feedbackText').textContent='';
+        }
+
+        function selectObjection(el,isCorrect,feedback){
+            document.querySelectorAll('#objectionOptions .option').forEach(o=>o.classList.add('disabled'));
+            if(isCorrect){
+                el.classList.add('correct');
+                document.getElementById('feedbackTitle').textContent='Richtig!';
+                document.getElementById('feedbackTitle').className='feedback-title';
+                document.getElementById('score-objections').textContent='+1';
+                document.getElementById('score-buyin').textContent='+1';
+            } else {
+                el.classList.add('incorrect');
+                document.getElementById('feedbackTitle').textContent='Fast – schärfe deinen Buy-in';
+                document.getElementById('feedbackTitle').className='feedback-title';
+            }
+            document.getElementById('feedbackText').textContent=feedback;
+            document.getElementById('objectionFeedback').classList.add('show');
+            setTimeout(()=>{
+                currentObjection = (currentObjection + 1) % objections.length;
+                loadObjection(currentObjection);
+            },1500);
+        }
+
+        // init
+        loadObjection(currentObjection);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

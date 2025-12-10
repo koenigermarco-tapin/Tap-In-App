@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Blue Belt Shark Tank - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0a0a0f;
+            --dark: #12121a;
+            --card: #1a1a25;
+            --border: #2a2a3a;
+            --text: #e2e8f0;
+            --muted: #8a8a9a;
+            --blue-belt: #2196f3;
+            --blue-dark: #1565c0;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.3);
+            --success: #10b981;
+            --error: #ef4444;
+            --warning: #f59e0b;
+            --gold: #fbbf24;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--black) 0%, #0d1929 100%);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .back-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .belt-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(33, 150, 243, 0.15);
+            border: 1px solid rgba(33, 150, 243, 0.3);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--blue-belt);
+        }
+        
+        .belt-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--blue-belt);
+            border-radius: 50%;
+        }
+        
+        .timer-display {
+            font-size: 1.5rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+            color: var(--text);
+        }
+        
+        .timer-display.warning { color: var(--warning); }
+        .timer-display.danger { color: var(--error); animation: pulse 0.5s infinite; }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+            min-height: 100vh;
+        }
+        
+        .phase-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 40px;
+        }
+        
+        .phase-dot {
+            width: 40px;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            transition: all 0.3s;
+        }
+        
+        .phase-dot.active {
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        
+        .phase-dot.complete {
+            background: var(--success);
+        }
+        
+        .phase {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .phase.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .phase-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .phase-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+        
+        .phase-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .phase-subtitle {
+            color: var(--muted);
+            font-size: 1rem;
+        }
+        
+        .question-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .question-progress {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .question-number {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        
+        .question-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-bar {
+            width: 100px;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: var(--accent);
+            transition: width 1s linear;
+        }
+        
+        .timer-fill.warning { background: var(--warning); }
+        .timer-fill.danger { background: var(--error); }
+        
+        .question-text {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            background: var(--dark);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .option:hover {
+            border-color: var(--accent);
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .option.incorrect {
+            border-color: var(--error);
+            background: rgba(239, 68, 68, 0.1);
+        }
+        
+        .option-letter {
+            width: 32px;
+            height: 32px;
+            background: var(--border);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .option.selected .option-letter { background: var(--accent); }
+        .option.correct .option-letter { background: var(--success); }
+        .option.incorrect .option-letter { background: var(--error); }
+        
+        .option-text { flex: 1; }
+        
+        .feedback {
+            margin-top: 20px;
+            padding: 15px 20px;
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .feedback.show { display: block; animation: fadeIn 0.3s; }
+        .feedback.correct { background: rgba(16, 185, 129, 0.15); border: 1px solid var(--success); }
+        .feedback.incorrect { background: rgba(239, 68, 68, 0.15); border: 1px solid var(--error); }
+        
+        .feedback-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .feedback.correct .feedback-title { color: var(--success); }
+        .feedback.incorrect .feedback-title { color: var(--error); }
+        
+        .feedback-text {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+        
+        .scenario-card {
+            background: linear-gradient(135deg, var(--card) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--accent);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            color: var(--text);
+        }
+        
+        .scenario-textarea {
+            width: 100%;
+            min-height: 120px;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+        }
+        
+        .scenario-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .reflection-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+        }
+        
+        .reflection-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .slider-container {
+            margin: 30px 0;
+        }
+        
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        
+        .slider {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            appearance: none;
+            cursor: pointer;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        
+        .slider-value {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+            margin-top: 15px;
+        }
+        
+        .rating-stars {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .star {
+            font-size: 2rem;
+            cursor: pointer;
+            color: var(--border);
+            transition: all 0.2s;
+        }
+        
+        .star.active { color: var(--gold); transform: scale(1.1); }
+        .star:hover { color: var(--gold); }
+        
+        .result-card {
+            background: linear-gradient(135deg, var(--card) 0%, rgba(59, 130, 246, 0.15) 100%);
+            border: 2px solid var(--accent);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(59, 130, 246, 0.2);
+        }
+        
+        .result-belt-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--blue-belt), var(--blue-dark));
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            box-shadow: 0 10px 30px rgba(33, 150, 243, 0.4);
+        }
+        
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .result-score {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--success), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .result-stat {
+            background: var(--dark);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .result-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+        
+        .result-stat-label {
+            font-size: 0.75rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .strengths-list, .growth-list {
+            text-align: left;
+            margin: 20px 0;
+            padding: 20px;
+            background: var(--dark);
+            border-radius: 12px;
+        }
+        
+        .strengths-list h4, .growth-list h4 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .strengths-list h4 { color: var(--success); }
+        .growth-list h4 { color: var(--warning); }
+        
+        .strengths-list li, .growth-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            color: var(--text);
+            font-size: 0.95rem;
+            list-style: none;
+        }
+        
+        .strengths-list li:last-child, .growth-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-block {
+            width: 100%;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .score-reveal {
+            opacity: 0;
+            transform: scale(0.5);
+            animation: scoreReveal 1s ease forwards;
+            animation-delay: 0.5s;
+        }
+        
+        @keyframes scoreReveal {
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 90px 15px 30px; }
+            .phase-title { font-size: 1.5rem; }
+            .question-text { font-size: 1.1rem; }
+            .result-stats { grid-template-columns: 1fr; }
+            .result-score { font-size: 3rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="blue-belt-shark-tank.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="blue-belt-shark-tank-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <header class="header">
+        <div class="header-left">
+            <a href="gym-dashboard.html" class="back-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Exit
+            </a>
+            <div class="belt-badge">
+                <div class="belt-dot"></div>
+                Blue Belt Shark Tank
+            </div>
+        </div>
+        <div class="timer-display" id="globalTimer">--:--</div>
+    </header>
+    
+    <div class="container">
+        <div class="phase-indicator">
+            <div class="phase-dot active" id="phase1Dot"></div>
+            <div class="phase-dot" id="phase2Dot"></div>
+            <div class="phase-dot" id="phase3Dot"></div>
+            <div class="phase-dot" id="phase4Dot"></div>
+            <div class="phase-dot" id="phase5Dot"></div>
+        </div>
+        
+        <!-- PHASE 1: Intro -->
+        <div class="phase active" id="phase1">
+            <div class="phase-header">
+                <div class="phase-label">Blue Belt Final Assessment</div>
+                <h1 class="phase-title">The Conflict Crucible</h1>
+                <p class="phase-subtitle">Prove your mastery of healthy conflict</p>
+            </div>
+            
+            <div class="question-card">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 4rem; margin-bottom: 20px;">⚔️</div>
+                    <h3 style="font-size: 1.3rem; margin-bottom: 15px;">4 Phases Await You</h3>
+                    <div style="display: grid; gap: 15px; text-align: left; max-width: 400px; margin: 0 auto;">
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Rapid Fire</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">20 questions, 30 sec each</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Difficult Conversations</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">4 challenging scenarios</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;">🪞</span>
+                            <div>
+                                <div style="font-weight: 600;">Self-Reflection</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">Your conflict growth</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 15px; padding: 15px; background: var(--dark); border-radius: 12px;">
+                            <span style="font-size: 1.5rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></span>
+                            <div>
+                                <div style="font-weight: 600;">Your Belt Analysis</div>
+                                <div style="font-size: 0.85rem; color: var(--muted);">Personalized result card</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="startPhase2()" style="margin-top: 30px;">
+                    Enter the Crucible
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- PHASE 2: Rapid Fire -->
+        <div class="phase" id="phase2">
+            <div class="phase-header">
+                <div class="phase-label">Phase 1 of 4</div>
+                <h1 class="phase-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg> Rapid Fire</h1>
+                <p class="phase-subtitle">30 seconds per question. Trust your training.</p>
+            </div>
+            
+            <div class="question-card" id="questionCard">
+                <div class="question-progress">
+                    <span class="question-number" id="questionNumber">Question 1 of 20</span>
+                    <div class="question-timer">
+                        <div class="timer-bar">
+                            <div class="timer-fill" id="timerFill"></div>
+                        </div>
+                        <span id="questionTimer">30</span>
+                    </div>
+                </div>
+                
+                <div class="question-text" id="questionText">Loading question...</div>
+                
+                <div class="options" id="optionsContainer"></div>
+                
+                <div class="feedback" id="feedback">
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                    <div class="feedback-text" id="feedbackText"></div>
+                </div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextQuestionBtn" onclick="nextQuestion()" disabled>
+                    Next Question
+                </button>
+            </div>
+        </div>
+        
+        <!-- PHASE 3: Scenarios -->
+        <div class="phase" id="phase3">
+            <div class="phase-header">
+                <div class="phase-label">Phase 2 of 4</div>
+                <h1 class="phase-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Difficult Conversations</h1>
+                <p class="phase-subtitle">Navigate these challenging situations</p>
+            </div>
+            
+            <div id="scenariosContainer"></div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextScenarioBtn" onclick="nextScenario()">
+                    Continue
+                </button>
+            </div>
+        </div>
+        
+        <!-- PHASE 4: Reflection -->
+        <div class="phase" id="phase4">
+            <div class="phase-header">
+                <div class="phase-label">Phase 3 of 4</div>
+                <h1 class="phase-title">🪞 Self-Reflection</h1>
+                <p class="phase-subtitle">Reflect on your Blue Belt journey</p>
+            </div>
+            
+            <div id="reflectionContainer"></div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-primary btn-block" id="nextReflectionBtn" onclick="nextReflection()">
+                    Continue
+                </button>
+            </div>
+        </div>
+        
+        <!-- PHASE 5: Results -->
+        <div class="phase" id="phase5">
+            <div class="phase-header">
+                <div class="phase-label">Assessment Complete</div>
+                <h1 class="phase-title">Your Blue Belt Analysis</h1>
+            </div>
+            
+            <div class="result-card">
+                <div class="result-belt-icon">🥋</div>
+                <div class="result-title">Blue Belt Mastery</div>
+                <div class="result-score score-reveal" id="resultScore">--</div>
+                
+                <div class="result-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="correctCount">0</div>
+                        <div class="result-stat-label">Correct</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="avgTime">0s</div>
+                        <div class="result-stat-label">Avg Time</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="streakCount">0</div>
+                        <div class="result-stat-label">Best Streak</div>
+                    </div>
+                </div>
+                
+                <div class="strengths-list">
+                    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Your Strengths</h4>
+                    <ul id="strengthsList"><li>Loading...</li></ul>
+                </div>
+                
+                <div class="growth-list">
+                    <h4><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Growth Areas</h4>
+                    <ul id="growthList"><li>Loading...</li></ul>
+                </div>
+                
+                <button class="btn btn-success btn-block" onclick="completeSharkTank()" style="margin-top: 20px;">
+                    Claim Your Blue Belt
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Blue Belt Questions - Conflict, Listening, Feedback, Boundaries
+        const questions = [
+            // Difficult Conversations (Stripe 1)
+            {
+                q: "The most important first step in a difficult conversation is:",
+                options: ["State your position clearly", "Assume positive intent", "Prepare your arguments", "Wait for the right moment"],
+                correct: 1,
+                category: "conversations",
+                explanation: "Assuming positive intent opens dialogue instead of triggering defensiveness."
+            },
+            {
+                q: "When someone becomes defensive during feedback, you should:",
+                options: ["Push harder to make your point", "Pause and acknowledge their perspective", "End the conversation", "Switch to email instead"],
+                correct: 1,
+                category: "conversations",
+                explanation: "Acknowledging their perspective de-escalates and reopens dialogue."
+            },
+            {
+                q: "The 'DESC' script stands for:",
+                options: ["Discuss, Explain, Suggest, Conclude", "Describe, Express, Specify, Consequences", "Define, Elaborate, Summarize, Close", "Direct, Empathize, Solve, Confirm"],
+                correct: 1,
+                category: "conversations",
+                explanation: "DESC: Describe behavior, Express feelings, Specify change, Consequences."
+            },
+            {
+                q: "Healthy conflict in teams leads to:",
+                options: ["Decreased morale", "Better decisions through diverse perspectives", "Longer meetings", "More turnover"],
+                correct: 1,
+                category: "conflict",
+                explanation: "Healthy conflict surfaces diverse views leading to better decisions."
+            },
+            {
+                q: "The opposite of artificial harmony is:",
+                options: ["Constant fighting", "Productive ideological conflict", "Silent treatment", "Aggressive debate"],
+                correct: 1,
+                category: "conflict",
+                explanation: "Productive ideological conflict focuses on ideas, not personal attacks."
+            },
+            // Active Listening (Stripe 2)
+            {
+                q: "Active listening requires you to:",
+                options: ["Plan your response while they talk", "Focus entirely on understanding them", "Interrupt to clarify immediately", "Take detailed notes"],
+                correct: 1,
+                category: "listening",
+                explanation: "Active listening means full presence, not preparing your response."
+            },
+            {
+                q: "Reflective listening involves:",
+                options: ["Giving advice immediately", "Paraphrasing what you heard back to them", "Asking lots of questions", "Sharing similar experiences"],
+                correct: 1,
+                category: "listening",
+                explanation: "Reflecting back shows understanding and invites correction if needed."
+            },
+            {
+                q: "The biggest barrier to listening is:",
+                options: ["Noise in the environment", "Our own internal dialogue", "The speaker talking too fast", "Language differences"],
+                correct: 1,
+                category: "listening",
+                explanation: "Our own thoughts and judgments prevent us from truly hearing others."
+            },
+            {
+                q: "When someone shares a problem, they usually want:",
+                options: ["Immediate solutions", "To be heard and understood first", "You to fix it for them", "Advice from experts"],
+                correct: 1,
+                category: "listening",
+                explanation: "Most people need to feel heard before they can receive solutions."
+            },
+            {
+                q: "Non-verbal cues make up approximately what percentage of communication?",
+                options: ["20%", "40%", "55%", "70%"],
+                correct: 2,
+                category: "listening",
+                explanation: "Research suggests 55% of communication is non-verbal body language."
+            },
+            // Feedback (Stripe 3)
+            {
+                q: "The SBI feedback model stands for:",
+                options: ["Situation, Behavior, Impact", "Summary, Background, Insight", "Specific, Brief, Immediate", "Start, Build, Improve"],
+                correct: 0,
+                category: "feedback",
+                explanation: "SBI: Situation, Behavior, Impact - a clear feedback framework."
+            },
+            {
+                q: "Feedback should be given:",
+                options: ["Only during annual reviews", "As close to the event as possible", "In front of the team for transparency", "Only when negative"],
+                correct: 1,
+                category: "feedback",
+                explanation: "Timely feedback is more relevant and actionable."
+            },
+            {
+                q: "When receiving critical feedback, you should first:",
+                options: ["Defend your actions", "Thank them and seek to understand", "Explain the context", "Ask who else thinks this"],
+                correct: 1,
+                category: "feedback",
+                explanation: "Receiving feedback gracefully opens the door to growth."
+            },
+            {
+                q: "The 'feedback sandwich' (positive-negative-positive) is:",
+                options: ["The best approach always", "Often ineffective because people wait for the 'but'", "Required by HR policies", "Only for serious issues"],
+                correct: 1,
+                category: "feedback",
+                explanation: "The sandwich often dilutes the message and feels manipulative."
+            },
+            {
+                q: "Effective feedback focuses on:",
+                options: ["The person's character", "Specific observable behaviors", "Comparisons to others", "Past mistakes"],
+                correct: 1,
+                category: "feedback",
+                explanation: "Behavior-focused feedback is actionable and less personal."
+            },
+            // Boundaries (Stripe 4)
+            {
+                q: "Setting boundaries is:",
+                options: ["Selfish and unprofessional", "Essential for sustainable relationships", "Only needed with difficult people", "A sign of weakness"],
+                correct: 1,
+                category: "boundaries",
+                explanation: "Boundaries protect your energy and enable better relationships."
+            },
+            {
+                q: "When someone violates your boundary, you should:",
+                options: ["Let it go to keep the peace", "Restate the boundary calmly and consistently", "Get angry to show you're serious", "Avoid them entirely"],
+                correct: 1,
+                category: "boundaries",
+                explanation: "Calm, consistent reinforcement teaches others your limits."
+            },
+            {
+                q: "The difference between a boundary and an ultimatum is:",
+                options: ["There is no difference", "Boundaries are about your behavior, ultimatums control others", "Ultimatums are stronger", "Boundaries are just suggestions"],
+                correct: 1,
+                category: "boundaries",
+                explanation: "Boundaries define what YOU will do, not what others must do."
+            },
+            {
+                q: "Saying 'no' effectively requires:",
+                options: ["Long explanations", "Apologizing profusely", "Being brief and not over-explaining", "Offering alternatives always"],
+                correct: 2,
+                category: "boundaries",
+                explanation: "'No' is a complete sentence. Over-explaining invites negotiation."
+            },
+            {
+                q: "Burnout often results from:",
+                options: ["Working hard", "Poor boundaries and inability to say no", "Having too many meetings", "Difficult colleagues"],
+                correct: 1,
+                category: "boundaries",
+                explanation: "Poor boundaries lead to overcommitment and eventual burnout."
+            }
+        ];
+        
+        const scenarios = [
+            {
+                badge: "Difficult Conversation",
+                title: "The Underperformer",
+                text: "A team member who was once a top performer has been missing deadlines and producing lower quality work for the past month. Others are starting to notice and complain. You need to have a conversation with them. How do you approach this?",
+                placeholder: "Describe how you would start and navigate this conversation..."
+            },
+            {
+                badge: "Active Listening",
+                title: "The Frustrated Colleague",
+                text: "A colleague comes to you visibly upset about a decision made by leadership. They start venting about how unfair it is. You actually agree with leadership's decision. How do you handle this moment?",
+                placeholder: "What would you say and do?"
+            },
+            {
+                badge: "Giving Feedback",
+                title: "The Interrupter",
+                text: "In meetings, a senior colleague consistently interrupts others, especially junior team members. It's affecting team dynamics and you've noticed people stopping to share ideas. How do you address this?",
+                placeholder: "How would you give this feedback?"
+            },
+            {
+                badge: "Setting Boundaries",
+                title: "The Weekend Pinger",
+                text: "Your manager regularly sends Slack messages on weekends expecting responses. You need your personal time but don't want to seem uncommitted. Last weekend they sent 5 messages about a 'urgent' task that could have waited until Monday. What do you do?",
+                placeholder: "How would you set this boundary?"
+            }
+        ];
+        
+        const reflections = [
+            {
+                type: "text",
+                question: "What difficult conversation have you been avoiding? What's holding you back?",
+                placeholder: "Be honest with yourself..."
+            },
+            {
+                type: "slider",
+                question: "How comfortable are you now with healthy conflict?",
+                min: 1,
+                max: 10,
+                labels: ["Avoid at all costs", "Embrace it"]
+            },
+            {
+                type: "text",
+                question: "What's ONE feedback conversation you'll have this week?",
+                placeholder: "Who will you talk to and about what?"
+            },
+            {
+                type: "rating",
+                question: "How valuable was this Blue Belt training?",
+                subtext: "Your feedback helps us improve"
+            }
+        ];
+        
+        // State
+        let currentQuestion = 0;
+        let score = 0;
+        let answers = [];
+        let questionTimer = null;
+        let timeLeft = 30;
+        let currentScenario = 0;
+        let scenarioResponses = [];
+        let currentReflection = 0;
+        let reflectionResponses = [];
+        let totalTime = 0;
+        let bestStreak = 0;
+        let currentStreak = 0;
+        
+        function startPhase2() {
+            document.getElementById('phase1').classList.remove('active');
+            document.getElementById('phase2').classList.add('active');
+            document.getElementById('phase1Dot').classList.remove('active');
+            document.getElementById('phase1Dot').classList.add('complete');
+            document.getElementById('phase2Dot').classList.add('active');
+            loadQuestion();
+        }
+        
+        function loadQuestion() {
+            if (currentQuestion >= questions.length) {
+                startPhase3();
+                return;
+            }
+            
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Question ${currentQuestion + 1} of ${questions.length}`;
+            document.getElementById('questionText').textContent = q.q;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            const letters = ['A', 'B', 'C', 'D'];
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.onclick = () => selectOption(i);
+                div.innerHTML = `<div class="option-letter">${letters[i]}</div><div class="option-text">${opt}</div>`;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('feedback').classList.remove('show', 'correct', 'incorrect');
+            document.getElementById('nextQuestionBtn').disabled = true;
+            
+            timeLeft = 30;
+            updateTimer();
+            questionTimer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    clearInterval(questionTimer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+        
+        function updateTimer() {
+            document.getElementById('questionTimer').textContent = timeLeft;
+            const fill = document.getElementById('timerFill');
+            fill.style.width = `${(timeLeft / 30) * 100}%`;
+            fill.classList.remove('warning', 'danger');
+            if (timeLeft <= 10) fill.classList.add('warning');
+            if (timeLeft <= 5) fill.classList.add('danger');
+        }
+        
+        function selectOption(index) {
+            clearInterval(questionTimer);
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach((opt, i) => {
+                opt.onclick = null;
+                if (i === index) opt.classList.add(index === q.correct ? 'correct' : 'incorrect');
+                if (i === q.correct) opt.classList.add('correct');
+            });
+            
+            const feedback = document.getElementById('feedback');
+            const isCorrect = index === q.correct;
+            
+            if (isCorrect) {
+                score++;
+                currentStreak++;
+                if (currentStreak > bestStreak) bestStreak = currentStreak;
+                feedback.classList.add('correct');
+                document.getElementById('feedbackTitle').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Correct!';
+            } else {
+                currentStreak = 0;
+                feedback.classList.add('incorrect');
+                document.getElementById('feedbackTitle').innerHTML = '✗ Not quite';
+            }
+            
+            document.getElementById('feedbackText').textContent = q.explanation;
+            feedback.classList.add('show');
+            
+            totalTime += (30 - timeLeft);
+            answers.push({ correct: isCorrect, time: 30 - timeLeft, category: q.category });
+            document.getElementById('nextQuestionBtn').disabled = false;
+        }
+        
+        function timeUp() {
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            options.forEach((opt, i) => {
+                opt.onclick = null;
+                if (i === q.correct) opt.classList.add('correct');
+            });
+            
+            currentStreak = 0;
+            const feedback = document.getElementById('feedback');
+            feedback.classList.add('incorrect', 'show');
+            document.getElementById('feedbackTitle').innerHTML = '⏰ Time\'s up!';
+            document.getElementById('feedbackText').textContent = q.explanation;
+            
+            totalTime += 30;
+            answers.push({ correct: false, time: 30, category: q.category });
+            document.getElementById('nextQuestionBtn').disabled = false;
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            loadQuestion();
+        }
+        
+        function startPhase3() {
+            document.getElementById('phase2').classList.remove('active');
+            document.getElementById('phase3').classList.add('active');
+            document.getElementById('phase2Dot').classList.remove('active');
+            document.getElementById('phase2Dot').classList.add('complete');
+            document.getElementById('phase3Dot').classList.add('active');
+            loadScenario();
+        }
+        
+        function loadScenario() {
+            if (currentScenario >= scenarios.length) {
+                startPhase4();
+                return;
+            }
+            
+            const s = scenarios[currentScenario];
+            document.getElementById('scenariosContainer').innerHTML = `
+                <div class="scenario-card">
+                    <div class="scenario-badge">${s.badge}</div>
+                    <h3 class="scenario-title">${s.title}</h3>
+                    <p class="scenario-text">${s.text}</p>
+                    <textarea class="scenario-textarea" id="scenarioInput" placeholder="${s.placeholder}"></textarea>
+                </div>
+            `;
+        }
+        
+        function nextScenario() {
+            const input = document.getElementById('scenarioInput');
+            scenarioResponses.push(input ? input.value : '');
+            currentScenario++;
+            loadScenario();
+        }
+        
+        function startPhase4() {
+            document.getElementById('phase3').classList.remove('active');
+            document.getElementById('phase4').classList.add('active');
+            document.getElementById('phase3Dot').classList.remove('active');
+            document.getElementById('phase3Dot').classList.add('complete');
+            document.getElementById('phase4Dot').classList.add('active');
+            loadReflection();
+        }
+        
+        function loadReflection() {
+            if (currentReflection >= reflections.length) {
+                showResults();
+                return;
+            }
+            
+            const r = reflections[currentReflection];
+            const container = document.getElementById('reflectionContainer');
+            
+            let html = `<div class="reflection-card"><div class="reflection-question">${r.question}</div>`;
+            
+            if (r.type === 'text') {
+                html += `<textarea class="scenario-textarea" id="reflectionInput" placeholder="${r.placeholder}"></textarea>`;
+            } else if (r.type === 'slider') {
+                html += `
+                    <div class="slider-container">
+                        <div class="slider-labels"><span>${r.labels[0]}</span><span>${r.labels[1]}</span></div>
+                        <input type="range" class="slider" id="reflectionSlider" min="${r.min}" max="${r.max}" value="5" oninput="updateSliderValue()">
+                        <div class="slider-value" id="sliderValue">5</div>
+                    </div>`;
+            } else if (r.type === 'rating') {
+                html += `
+                    <p style="color: var(--muted); font-size: 0.9rem; margin-bottom: 15px;">${r.subtext || ''}</p>
+                    <div class="rating-stars" id="ratingStars">
+                        ${[1,2,3,4,5].map(i => `<span class="star" data-value="${i}" onclick="setRating(${i})">★</span>`).join('')}
+                    </div>`;
+            }
+            
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+        
+        function updateSliderValue() {
+            document.getElementById('sliderValue').textContent = document.getElementById('reflectionSlider').value;
+        }
+        
+        function setRating(value) {
+            document.querySelectorAll('.star').forEach((star, i) => star.classList.toggle('active', i < value));
+            document.getElementById('ratingStars').dataset.value = value;
+        }
+        
+        function nextReflection() {
+            const r = reflections[currentReflection];
+            let value;
+            if (r.type === 'text') value = document.getElementById('reflectionInput')?.value || '';
+            else if (r.type === 'slider') value = document.getElementById('reflectionSlider')?.value || 5;
+            else if (r.type === 'rating') value = document.getElementById('ratingStars')?.dataset.value || 0;
+            reflectionResponses.push(value);
+            currentReflection++;
+            loadReflection();
+        }
+        
+        function showResults() {
+            document.getElementById('phase4').classList.remove('active');
+            document.getElementById('phase5').classList.add('active');
+            document.getElementById('phase4Dot').classList.remove('active');
+            document.getElementById('phase4Dot').classList.add('complete');
+            document.getElementById('phase5Dot').classList.add('active');
+            
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('resultScore').textContent = `${percentage}%`;
+            document.getElementById('correctCount').textContent = `${score}/${questions.length}`;
+            document.getElementById('avgTime').textContent = `${Math.round(totalTime / questions.length)}s`;
+            document.getElementById('streakCount').textContent = bestStreak;
+            
+            const categories = {};
+            answers.forEach(a => {
+                if (!categories[a.category]) categories[a.category] = { correct: 0, total: 0 };
+                categories[a.category].total++;
+                if (a.correct) categories[a.category].correct++;
+            });
+            
+            const categoryLabels = {
+                'conversations': 'Difficult Conversations',
+                'conflict': 'Healthy Conflict',
+                'listening': 'Active Listening',
+                'feedback': 'Giving Feedback',
+                'boundaries': 'Setting Boundaries'
+            };
+            
+            const strengths = [];
+            const growth = [];
+            
+            Object.entries(categories).forEach(([cat, data]) => {
+                const pct = (data.correct / data.total) * 100;
+                const label = categoryLabels[cat] || cat;
+                if (pct >= 70) strengths.push(`${label}: Strong skills`);
+                else growth.push(`${label}: Review fundamentals`);
+            });
+            
+            if (bestStreak >= 7) strengths.push('Consistency: Strong focus under pressure');
+            if (totalTime / questions.length < 15) strengths.push('Quick thinking: Fast, accurate responses');
+            
+            if (strengths.length === 0) strengths.push('Completed all assessment phases');
+            if (growth.length === 0) growth.push('Continue practicing in real situations');
+            
+            document.getElementById('strengthsList').innerHTML = strengths.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('growthList').innerHTML = growth.map(g => `<li>${g}</li>`).join('');
+            
+            localStorage.setItem('tap_in_blue_belt_shark_tank', JSON.stringify({
+                belt: 'blue',
+                score: percentage,
+                correct: score,
+                total: questions.length,
+                avgTime: Math.round(totalTime / questions.length),
+                bestStreak,
+                categories,
+                scenarios: scenarioResponses,
+                reflections: reflectionResponses,
+                completedAt: new Date().toISOString()
+            }));
+        }
+        
+        function completeSharkTank() {
+            const progress = JSON.parse(localStorage.getItem('tap_in_progress') || '{}');
+            progress.blueBeltComplete = true;
+            progress.belt = 'purple';
+            progress.currentStripe = 1;
+            localStorage.setItem('tap_in_progress', JSON.stringify(progress));
+            window.location.href = 'blue-belt-ceremony.html';
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

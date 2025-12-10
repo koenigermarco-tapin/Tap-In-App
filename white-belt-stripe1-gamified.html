@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>White Belt Stripe 1: Trust Foundations - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --purple: #6b5b95;
+            --green: #10b981;
+            --gold: #d4a853;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Header */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--black), transparent);
+        }
+        .back-btn { 
+            color: var(--light-grey); 
+            text-decoration: none; 
+            font-size: 0.9rem;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .back-btn:hover { opacity: 1; }
+        .xp-display { 
+            font-size: 0.85rem; 
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Journey Line */
+        .journey-line {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--mid-grey);
+            z-index: 101;
+        }
+        .journey-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple), var(--green));
+            width: 0%;
+            transition: width 0.6s ease;
+        }
+
+        /* Container */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 80px 24px 40px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* Beat Card */
+        .beat {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .beat.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInFast {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* Typography */
+        .beat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple);
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        .beat-text {
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+        .beat-text-small {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            color: rgba(255,255,255,0.9);
+        }
+        .beat-subtext {
+            font-size: 0.95rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+
+        /* Continue Button */
+        .continue-btn {
+            background: none;
+            border: 1px solid var(--mid-grey);
+            color: var(--light-grey);
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 10px;
+        }
+        .continue-btn:hover {
+            border-color: var(--light-grey);
+            color: var(--white);
+        }
+        .continue-btn.primary {
+            background: var(--brick-red);
+            border-color: var(--brick-red);
+            color: var(--white);
+        }
+        .continue-btn.primary:hover {
+            opacity: 0.9;
+        }
+
+        /* Binary Cards */
+        .binary-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .binary-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .binary-card:hover {
+            border-color: var(--purple);
+            transform: translateX(4px);
+        }
+        .binary-card.selected {
+            border-color: var(--purple);
+            background: rgba(107, 91, 149, 0.15);
+        }
+        .binary-card-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        .binary-card-sub {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+
+        /* Spectrum */
+        .spectrum-container {
+            margin: 30px 0;
+        }
+        .spectrum-line {
+            height: 8px;
+            background: linear-gradient(90deg, var(--mid-grey), var(--purple), var(--green));
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+        }
+        .spectrum-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 24px;
+            height: 24px;
+            background: var(--white);
+            border-radius: 50%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            display: none;
+        }
+        .spectrum-marker.show { display: block; }
+        .spectrum-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+
+        /* Scenario Cards */
+        .scenario-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .scenario-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 16px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        .scenario-card:hover {
+            border-color: var(--purple);
+        }
+        .scenario-card.selected {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Stat Reveal */
+        .stat-reveal {
+            text-align: center;
+            padding: 30px 0;
+        }
+        .stat-number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 10px;
+            animation: fadeIn 0.6s ease;
+        }
+        .stat-label {
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.85);
+            line-height: 1.5;
+        }
+
+        /* Horizontal Pills */
+        .pill-options {
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+            margin: 25px 0;
+        }
+        .pill {
+            flex: 1;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 25px;
+            padding: 14px 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+        }
+        .pill:hover {
+            border-color: var(--purple);
+        }
+        .pill.selected {
+            background: var(--purple);
+            border-color: var(--purple);
+        }
+        .pill-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            margin-top: 8px;
+        }
+
+        /* Quote Block */
+        .quote-block {
+            border-left: 3px solid var(--gold);
+            padding: 20px 25px;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.2);
+            border-radius: 0 12px 12px 0;
+        }
+        .quote-text {
+            font-size: 1.15rem;
+            font-style: italic;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 12px;
+        }
+        .quote-author {
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+
+        /* Quick Fire */
+        .quickfire-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .quickfire-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: fadeIn 0.4s ease;
+        }
+        .quickfire-text {
+            flex: 1;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+        .quickfire-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .quickfire-btn {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            color: var(--white);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.15s;
+            font-size: 0.85rem;
+        }
+        .quickfire-btn:hover {
+            border-color: var(--purple);
+        }
+        .quickfire-btn.selected-yes {
+            background: var(--green);
+            border-color: var(--green);
+        }
+        .quickfire-btn.selected-no {
+            background: var(--brick-red);
+            border-color: var(--brick-red);
+        }
+
+        /* Number Scale */
+        .number-scale {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+        .number-btn {
+            width: 48px;
+            height: 48px;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .number-btn:hover {
+            border-color: var(--purple);
+            transform: scale(1.1);
+        }
+        .number-btn.selected {
+            background: var(--purple);
+            border-color: var(--purple);
+            transform: scale(1.15);
+        }
+
+        /* Insight Card */
+        .insight-reveal {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            animation: fadeIn 0.5s ease;
+        }
+        .insight-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple);
+            margin-bottom: 12px;
+        }
+        .insight-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.85);
+        }
+
+        /* Callback */
+        .callback-box {
+            background: linear-gradient(135deg, rgba(107, 91, 149, 0.15), rgba(16, 185, 129, 0.1));
+            border: 1px solid var(--purple);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        .callback-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .callback-highlight {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        /* Results */
+        .results-container {
+            text-align: center;
+        }
+        .results-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+        }
+        .results-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+        .pattern-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .pattern-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        .pattern-row:last-child { border-bottom: none; }
+        .pattern-label { color: var(--light-grey); font-size: 0.85rem; }
+        .pattern-value { font-weight: 600; color: var(--purple); }
+        
+        .final-insight {
+            background: rgba(0,0,0,0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        .final-insight p {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            color: rgba(255,255,255,0.85);
+        }
+        .final-insight p:last-child { margin-bottom: 0; }
+        .value-tag {
+            display: inline-block;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--green);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .struggle-tag {
+            display: inline-block;
+            background: rgba(212, 168, 83, 0.2);
+            color: var(--gold);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+        .opportunity-tag {
+            display: inline-block;
+            background: rgba(107, 91, 149, 0.2);
+            color: var(--purple);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .xp-earned-final {
+            display: inline-block;
+            background: rgba(212, 168, 83, 0.15);
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            padding: 12px 24px;
+            border-radius: 25px;
+            margin: 20px 0;
+        }
+        .xp-earned-final span {
+            color: var(--gold);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* Mirror Reveal */
+        .mirror-reveal {
+            margin: 30px 0;
+        }
+        .mirror-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid var(--mid-grey);
+            transition: opacity 0.5s ease;
+        }
+        .mirror-item:last-child { border-bottom: none; }
+        .mirror-label {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        .mirror-value {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--purple);
+        }
+
+        /* Culmination */
+        .culmination-container {
+            text-align: center;
+        }
+        .personal-truth {
+            background: var(--dark-grey);
+            border-left: 3px solid var(--purple);
+            border-radius: 0 12px 12px 0;
+            padding: 20px 24px;
+            margin: 25px 0;
+            text-align: left;
+        }
+        .personal-truth p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.9);
+            margin: 0;
+        }
+
+        /* Unlock Reveal */
+        .unlock-reveal {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(107, 91, 149, 0.1));
+            border: 1px solid var(--green);
+            border-radius: 16px;
+            padding: 25px;
+            margin: 25px 0;
+            animation: unlockPulse 0.6s ease;
+        }
+        @keyframes unlockPulse {
+            0% { transform: scale(0.95); opacity: 0; }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .unlock-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        .unlock-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--green);
+            margin-bottom: 8px;
+        }
+        .unlock-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .unlock-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+
+        /* Completion Badge */
+        .completion-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 30px;
+            padding: 12px 20px;
+            margin: 15px 0 25px;
+        }
+        .badge-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--black);
+        }
+        .badge-text {
+            text-align: left;
+        }
+        .badge-title {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .badge-sub {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+
+        /* Recap card */
+        .recap-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .recap-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        .recap-row:last-child { border-bottom: none; }
+        .recap-label { font-size: 0.85rem; color: var(--light-grey); }
+        .recap-value { font-size: 0.85rem; font-weight: 500; color: var(--white); }
+
+        /* Next step */
+        .next-step {
+            background: rgba(212, 168, 83, 0.1);
+            border: 1px solid rgba(212, 168, 83, 0.3);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .next-step-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        .next-step-text {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="white-belt-stripe1-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="white-belt-stripe1-gamified-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="journey-line">
+        <div class="journey-progress" id="journeyProgress"></div>
+    </div>
+
+    <header class="header">
+        <a href="gym-dashboard.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Exit</a>
+        <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+    </header>
+
+    <main class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">White Belt · Stripe 1</div>
+            <p class="beat-text">Most people think they know what trust is.</p>
+            <p class="beat-subtext">Google spent years studying what makes groups of people work well together. The answer surprised everyone—and it applies to far more than just work.</p>
+            <button class="continue-btn" onclick="nextBeat()">Show me</button>
+        </div>
+
+        <!-- Beat 2: Binary Choice -->
+        <div class="beat" id="beat2">
+            <p class="beat-text-small">When you make a mistake that affects others, your first instinct is to...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(2, 'admit')">
+                    <div class="binary-card-title">Admit it quickly</div>
+                    <div class="binary-card-sub">Get it out in the open, deal with consequences</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(2, 'minimize')">
+                    <div class="binary-card-title">Frame it carefully first</div>
+                    <div class="binary-card-sub">Think about how to present it, control the narrative</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 3: Earned Insight -->
+        <div class="beat" id="beat3">
+            <div class="insight-reveal">
+                <div class="insight-label">What this reveals</div>
+                <p class="insight-text" id="insight3"></p>
+            </div>
+            <p class="beat-subtext">Neither answer is wrong. But they reveal different trust patterns—in yourself and in your environment.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 4: Spectrum -->
+        <div class="beat" id="beat4">
+            <p class="beat-text-small">How safe do people feel making mistakes around you?</p>
+            <p class="beat-subtext">Tap anywhere on the line.</p>
+            <div class="spectrum-container">
+                <div class="spectrum-line" id="spectrum4" onclick="selectSpectrum(event, 4)">
+                    <div class="spectrum-marker" id="marker4"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>They hide mistakes</span>
+                    <span>They share openly</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue4" onclick="nextBeat()" style="opacity: 0.3; pointer-events: none;">Continue</button>
+        </div>
+
+        <!-- Beat 5: Scenario -->
+        <div class="beat" id="beat5">
+            <p class="beat-text-small">Someone you're responsible for made a costly error. They're walking toward you to confess.</p>
+            <p class="beat-subtext">What do they see in your face?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectScenario(5, 'concern')">Concern—I'm already thinking about how to fix it together</div>
+                <div class="scenario-card" onclick="selectScenario(5, 'neutral')">Neutral—I wait to hear what happened before reacting</div>
+                <div class="scenario-card" onclick="selectScenario(5, 'tension')">Tension—I can feel myself tighten even before they speak</div>
+            </div>
+        </div>
+
+        <!-- Beat 6: Stat Reveal -->
+        <div class="beat" id="beat6">
+            <p class="beat-subtext">Google studied 180 teams to find the #1 predictor of success.</p>
+            <p class="beat-subtext">It wasn't talent. It wasn't experience. It wasn't resources.</p>
+            <div class="stat-reveal">
+                <div class="stat-number">#1</div>
+                <div class="stat-label">Psychological Safety</div>
+            </div>
+            <p class="beat-subtext">The belief that you won't be punished for making mistakes. This applies everywhere—teams, families, friendships, any relationship that matters.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 7: Horizontal Pills -->
+        <div class="beat" id="beat7">
+            <p class="beat-text-small">I ask for help even when I could probably figure it out alone.</p>
+            <div class="pill-options">
+                <div class="pill" onclick="selectPill(7, 1)">1</div>
+                <div class="pill" onclick="selectPill(7, 2)">2</div>
+                <div class="pill" onclick="selectPill(7, 3)">3</div>
+                <div class="pill" onclick="selectPill(7, 4)">4</div>
+                <div class="pill" onclick="selectPill(7, 5)">5</div>
+            </div>
+            <div class="pill-labels">
+                <span>Never</span>
+                <span>Always</span>
+            </div>
+        </div>
+
+        <!-- Beat 8: Reflection / Quote -->
+        <div class="beat" id="beat8">
+            <div class="quote-block">
+                <p class="quote-text">"Trust is knowing that when someone pushes you, they're doing it because they care."</p>
+                <p class="quote-author">— Patrick Lencioni</p>
+            </div>
+            <p class="beat-subtext">Lencioni studied thousands of teams. He found that trust—real trust—isn't about being nice. It's about being real. This is true whether you're leading a company, a kitchen, a classroom, or a family.</p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 9: Forced Choice -->
+        <div class="beat" id="beat9">
+            <p class="beat-text-small">Which would you rather people say about you?</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(9, 'answer')">
+                    <div class="binary-card-title">"They always have the answer"</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(9, 'truth')">
+                    <div class="binary-card-title">"They always tell the truth"</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 10: Callback -->
+        <div class="beat" id="beat10">
+            <div class="callback-box">
+                <p class="callback-text" id="callback10"></p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+
+        <!-- Beat 11: Quick Fire -->
+        <div class="beat" id="beat11">
+            <p class="beat-label">Quick fire</p>
+            <p class="beat-text-small" style="margin-bottom: 25px;">Three rapid questions. Go with your gut.</p>
+            <div class="quickfire-container" id="quickfire">
+                <div class="quickfire-item" id="qf1">
+                    <span class="quickfire-text">I've admitted "I don't know" in the last week.</span>
+                    <div class="quickfire-btns">
+                        <button class="quickfire-btn" onclick="quickfire(1, true)">Yes</button>
+                        <button class="quickfire-btn" onclick="quickfire(1, false)">No</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 12: Metaphor / BJJ -->
+        <div class="beat" id="beat12">
+            <p class="beat-label">From the mat</p>
+            <p class="beat-text">In BJJ, white belts who refuse to tap get injured.</p>
+            <p class="beat-subtext">They think tapping is losing. It's not. It's how you learn. The fastest-progressing students tap early, then ask "what did I miss?"</p>
+            <p class="beat-text-small" style="margin-top: 25px;">When you're caught in a mistake, do you...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(12, 'tap')">
+                    <div class="binary-card-title">Tap early</div>
+                    <div class="binary-card-sub">Acknowledge it, learn, move on</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(12, 'fight')">
+                    <div class="binary-card-title">Fight until caught</div>
+                    <div class="binary-card-sub">Try to escape, minimize, or explain</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 13: Deep Question -->
+        <div class="beat" id="beat13">
+            <p class="beat-text">Be honest with yourself.</p>
+            <p class="beat-text-small">On a scale of 1-10, how safe do people feel admitting mistakes to you?</p>
+            <p class="beat-subtext">Not what you hope. What's real.</p>
+            <div class="number-scale">
+                <div class="number-btn" onclick="selectNumber(13, 1)">1</div>
+                <div class="number-btn" onclick="selectNumber(13, 2)">2</div>
+                <div class="number-btn" onclick="selectNumber(13, 3)">3</div>
+                <div class="number-btn" onclick="selectNumber(13, 4)">4</div>
+                <div class="number-btn" onclick="selectNumber(13, 5)">5</div>
+                <div class="number-btn" onclick="selectNumber(13, 6)">6</div>
+                <div class="number-btn" onclick="selectNumber(13, 7)">7</div>
+                <div class="number-btn" onclick="selectNumber(13, 8)">8</div>
+                <div class="number-btn" onclick="selectNumber(13, 9)">9</div>
+                <div class="number-btn" onclick="selectNumber(13, 10)">10</div>
+            </div>
+        </div>
+
+        <!-- Beat 14: The Mirror -->
+        <div class="beat" id="beat14">
+            <p class="beat-text">Let me show you what I see.</p>
+            <div class="mirror-reveal" id="mirrorReveal">
+                <div class="mirror-item" id="mirror1" style="opacity: 0;">
+                    <span class="mirror-label">How you handle exposure</span>
+                    <span class="mirror-value" id="exposureStyle">—</span>
+                </div>
+                <div class="mirror-item" id="mirror2" style="opacity: 0;">
+                    <span class="mirror-label">The safety you create</span>
+                    <span class="mirror-value" id="safetyStyle">—</span>
+                </div>
+                <div class="mirror-item" id="mirror3" style="opacity: 0;">
+                    <span class="mirror-label">Your recovery pattern</span>
+                    <span class="mirror-value" id="recoveryStyle">—</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue14" onclick="nextBeat()" style="opacity: 0; pointer-events: none;">What does this mean for me?</button>
+        </div>
+
+        <!-- Beat 15: Culmination + Unlock -->
+        <div class="beat" id="beat15">
+            <div class="culmination-container">
+                <p class="beat-text" id="mainInsight">—</p>
+                
+                <div class="personal-truth" id="personalTruth">
+                    <p id="truthText">—</p>
+                </div>
+
+                <div class="recap-card" id="recapCard">
+                    <div class="recap-row">
+                        <span class="recap-label">Your exposure style</span>
+                        <span class="recap-value" id="recapExposure">—</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Safety you create</span>
+                        <span class="recap-value" id="recapSafety">—</span>
+                    </div>
+                    <div class="recap-row">
+                        <span class="recap-label">Recovery pattern</span>
+                        <span class="recap-value" id="recapRecovery">—</span>
+                    </div>
+                </div>
+
+                <div class="next-step" id="nextStep">
+                    <div class="next-step-label">Your opportunity</div>
+                    <div class="next-step-text" id="nextStepText">—</div>
+                </div>
+
+                <div class="unlock-reveal" id="unlockReveal" style="display: none;">
+                    <div class="unlock-icon">🔓</div>
+                    <p class="unlock-title">New Training Unlocked</p>
+                    <p class="unlock-name" id="unlockedGame">—</p>
+                    <p class="unlock-desc" id="unlockedDesc">—</p>
+                </div>
+
+                <div class="xp-earned-final">
+                    <span id="finalXP">+40</span> XP
+                </div>
+
+                <div class="completion-badge">
+                    <div class="badge-icon">◯</div>
+                    <div class="badge-text">
+                        <span class="badge-title">Stripe 1 Complete</span>
+                        <span class="badge-sub">Trust Foundations</span>
+                    </div>
+                </div>
+                
+                <button class="continue-btn primary" onclick="completeStripe()">Continue Journey</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentBeat = 1;
+        const totalBeats = 15;
+        let xp = 0;
+        let answers = {};
+        let quickfireStep = 0;
+        let unlockedContent = null;
+
+        const quickfireQuestions = [
+            "I've admitted \"I don't know\" in the last week.",
+            "Someone close to me openly disagreed with me this month.",
+            "I've asked someone for honest feedback recently."
+        ];
+
+        // Unlockable content based on patterns
+        const unlocks = {
+            'high-vulnerability': {
+                id: 'shame-shaker',
+                name: 'The Shame Shaker',
+                desc: 'Confront what holds you back from going all in.',
+                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>'
+            },
+            'safety-builder': {
+                id: 'armor-removal',
+                name: 'The Armor Removal',
+                desc: 'Learn to lower the walls you didn\'t know you had.',
+                icon: '🛡️'
+            },
+            'fast-recovery': {
+                id: 'fast-forgive',
+                name: 'The Fast Forgive',
+                desc: 'Quick drills for bouncing back from trust breaks.',
+                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>'
+            },
+            'growth-edge': {
+                id: 'mirror-room',
+                name: 'The Mirror Room',
+                desc: 'See yourself the way others see you.',
+                icon: '🪞'
+            }
+        };
+
+        function updateProgress() {
+            const progress = (currentBeat / totalBeats) * 100;
+            document.getElementById('journeyProgress').style.width = progress + '%';
+        }
+
+        function addXP(amount) {
+            xp += amount;
+            document.getElementById('xpDisplay').textContent = xp;
+        }
+
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectBinary(beat, choice) {
+            answers['beat' + beat] = choice;
+            const cards = document.querySelectorAll('#beat' + beat + ' .binary-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            addXP(3);
+            
+            setTimeout(() => {
+                if (beat === 2) {
+                    // Set insight for beat 3
+                    const insight = choice === 'admit' 
+                        ? "You lean toward transparency. This often means you trust your environment—or you've learned that honesty costs less than cover-ups. This is a strength, but watch for over-sharing or not thinking strategically."
+                        : "You process before sharing. This might mean you've been burned before, or your environment rewards careful framing. Neither is wrong—but notice if 'framing' ever becomes 'hiding.'";
+                    document.getElementById('insight3').textContent = insight;
+                    nextBeat();
+                } else if (beat === 9) {
+                    nextBeat();
+                    // Generate callback for beat 10
+                    setTimeout(() => {
+                        generateCallback();
+                    }, 100);
+                } else if (beat === 12) {
+                    nextBeat();
+                }
+            }, 400);
+        }
+
+        function selectSpectrum(event, beat) {
+            const line = document.getElementById('spectrum' + beat);
+            const rect = line.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            
+            const marker = document.getElementById('marker' + beat);
+            marker.style.left = percentage + '%';
+            marker.classList.add('show');
+            
+            answers['beat' + beat] = percentage;
+            addXP(3);
+            
+            document.getElementById('continue' + beat).style.opacity = '1';
+            document.getElementById('continue' + beat).style.pointerEvents = 'auto';
+        }
+
+        function selectScenario(beat, choice) {
+            answers['beat' + beat] = choice;
+            const cards = document.querySelectorAll('#beat' + beat + ' .scenario-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            addXP(3);
+            
+            setTimeout(() => {
+                nextBeat();
+            }, 400);
+        }
+
+        function selectPill(beat, value) {
+            answers['beat' + beat] = value;
+            const pills = document.querySelectorAll('#beat' + beat + ' .pill');
+            pills.forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            addXP(3);
+            
+            setTimeout(() => {
+                nextBeat();
+            }, 400);
+        }
+
+        function generateCallback() {
+            let text = "Interesting. ";
+            
+            if (answers.beat2 === 'admit' && answers.beat9 === 'truth') {
+                text += "You chose to admit mistakes quickly, and you'd rather be known for truth than answers. <span class='callback-highlight'>You value authenticity over image.</span> That's rare—and powerful.";
+            } else if (answers.beat2 === 'minimize' && answers.beat9 === 'answer') {
+                text += "You prefer to frame carefully, and you value being seen as capable. <span class='callback-highlight'>You might be optimizing for competence over connection.</span> Both matter—but trust requires some vulnerability.";
+            } else if (answers.beat2 === 'admit' && answers.beat9 === 'answer') {
+                text += "You admit mistakes quickly, but you want to be known for having answers. <span class='callback-highlight'>There's a tension there.</span> You might be more comfortable with accidental vulnerability than intentional vulnerability.";
+            } else {
+                text += "You frame things carefully, but you value truth over appearance. <span class='callback-highlight'>You're strategic about vulnerability.</span> That works—just make sure strategy doesn't become avoidance.";
+            }
+            
+            document.getElementById('callback10').innerHTML = text;
+        }
+
+        function quickfire(step, value) {
+            answers['qf' + step] = value;
+            const btns = document.querySelectorAll('#qf' + step + ' .quickfire-btn');
+            btns.forEach(b => b.classList.remove('selected-yes', 'selected-no'));
+            event.currentTarget.classList.add(value ? 'selected-yes' : 'selected-no');
+            addXP(2);
+            
+            quickfireStep++;
+            
+            setTimeout(() => {
+                if (quickfireStep < 3) {
+                    const container = document.getElementById('quickfire');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'quickfire-item';
+                    newItem.id = 'qf' + (quickfireStep + 1);
+                    newItem.innerHTML = `
+                        <span class="quickfire-text">${quickfireQuestions[quickfireStep]}</span>
+                        <div class="quickfire-btns">
+                            <button class="quickfire-btn" onclick="quickfire(${quickfireStep + 1}, true)">Yes</button>
+                            <button class="quickfire-btn" onclick="quickfire(${quickfireStep + 1}, false)">No</button>
+                        </div>
+                    `;
+                    container.appendChild(newItem);
+                } else {
+                    setTimeout(() => {
+                        nextBeat();
+                    }, 300);
+                }
+            }, 300);
+        }
+
+        function selectNumber(beat, value) {
+            answers['beat' + beat] = value;
+            const btns = document.querySelectorAll('#beat' + beat + ' .number-btn');
+            btns.forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            addXP(5);
+            
+            setTimeout(() => {
+                nextBeat();
+                animateMirrorReveal();
+            }, 500);
+        }
+
+        function animateMirrorReveal() {
+            // Calculate values first
+            let exposureStyle = 'Measured';
+            if (answers.beat2 === 'admit' && answers.beat12 === 'tap') exposureStyle = 'Open & Direct';
+            if (answers.beat2 === 'minimize' && answers.beat12 === 'fight') exposureStyle = 'Guarded';
+            
+            const safetyNum = answers.beat13 || 5;
+            const spectrumVal = answers.beat4 || 50;
+            let safetyStyle = 'Building';
+            if (safetyNum >= 7 && spectrumVal > 50) safetyStyle = 'Strong';
+            if (safetyNum <= 4 || spectrumVal < 35) safetyStyle = 'Emerging';
+            
+            let recoveryStyle = 'Steady';
+            if (answers.beat5 === 'concern' && answers.beat12 === 'tap') recoveryStyle = 'Quick';
+            if (answers.beat5 === 'tension') recoveryStyle = 'Deliberate';
+            
+            // Store for beat 15
+            answers.exposureStyle = exposureStyle;
+            answers.safetyStyle = safetyStyle;
+            answers.recoveryStyle = recoveryStyle;
+            
+            // Animate reveal
+            setTimeout(() => {
+                document.getElementById('exposureStyle').textContent = exposureStyle;
+                document.getElementById('mirror1').style.opacity = '1';
+            }, 400);
+            
+            setTimeout(() => {
+                document.getElementById('safetyStyle').textContent = safetyStyle;
+                document.getElementById('mirror2').style.opacity = '1';
+            }, 900);
+            
+            setTimeout(() => {
+                document.getElementById('recoveryStyle').textContent = recoveryStyle;
+                document.getElementById('mirror3').style.opacity = '1';
+            }, 1400);
+            
+            setTimeout(() => {
+                document.getElementById('continue14').style.opacity = '1';
+                document.getElementById('continue14').style.pointerEvents = 'auto';
+            }, 2000);
+        }
+
+        function showFinalResults() {
+            const exposure = answers.exposureStyle;
+            const safety = answers.safetyStyle;
+            const recovery = answers.recoveryStyle;
+            
+            // Determine main insight based on pattern combination
+            let mainInsight = '';
+            let truthText = '';
+            let unlockKey = 'growth-edge';
+            let opportunity = '';
+            
+            if (exposure === 'Open & Direct' && safety === 'Strong') {
+                mainInsight = 'You lead with openness.';
+                truthText = 'You\'ve learned that showing your cards first builds trust faster than protecting yourself. This is rare. Your edge now is helping others feel safe enough to do the same.';
+                opportunity = 'Help someone else take the first step this week';
+                unlockKey = 'high-vulnerability';
+            } else if (exposure === 'Open & Direct' && safety !== 'Strong') {
+                mainInsight = 'You\'re braver than your environment.';
+                truthText = 'You\'re willing to be vulnerable, but you may not always create the conditions for others to reciprocate. Your edge is building safety that matches your courage.';
+                opportunity = 'Notice how others react when you open up—are they relaxing or tensing?';
+                unlockKey = 'safety-builder';
+            } else if (exposure === 'Guarded' && recovery === 'Quick') {
+                mainInsight = 'You protect, then repair.';
+                truthText = 'You\'re careful about exposure but quick to recover when things go wrong. This works—but you might build trust faster if you lowered the walls earlier.';
+                opportunity = 'Try opening up before there\'s a problem to solve';
+                unlockKey = 'growth-edge';
+            } else if (safety === 'Strong' && exposure !== 'Open & Direct') {
+                mainInsight = 'You create safety for others more easily than for yourself.';
+                truthText = 'People feel safe around you, but you may hold back your own vulnerability. The trust you build in others, you can build in yourself too.';
+                opportunity = 'Share something small that you\'d normally hold back';
+                unlockKey = 'high-vulnerability';
+            } else if (recovery === 'Quick') {
+                mainInsight = 'You bounce back.';
+                truthText = 'When trust breaks, you repair it fast. This is a strength. Your opportunity is preventing breaks in the first place by building deeper safety upfront.';
+                opportunity = 'Before the next conflict, invest in the relationship';
+                unlockKey = 'fast-recovery';
+            } else if (recovery === 'Deliberate') {
+                mainInsight = 'You process before you move.';
+                truthText = 'You take time with trust—building it slowly, repairing it carefully. This is thorough, but speed matters too. Sometimes the fast repair is the better one.';
+                opportunity = 'Try addressing one thing faster than feels comfortable';
+                unlockKey = 'repair-practice';
+            } else {
+                mainInsight = 'You\'re building your foundation.';
+                truthText = 'Trust is a skill, not a trait. You\'re learning the fundamentals—where you tend to protect yourself, where you create safety, how you recover. Awareness is the first step.';
+                opportunity = 'Pick one area—exposure, safety, or recovery—to focus on this week';
+                unlockKey = 'growth-edge';
+            }
+            
+            document.getElementById('mainInsight').textContent = mainInsight;
+            document.getElementById('truthText').textContent = truthText;
+            
+            // Populate recap card
+            document.getElementById('recapExposure').textContent = exposure || '—';
+            document.getElementById('recapSafety').textContent = safety || '—';
+            document.getElementById('recapRecovery').textContent = recovery || '—';
+            
+            // Populate next step
+            document.getElementById('nextStepText').textContent = opportunity;
+            
+            // Show unlock
+            const unlock = unlocks[unlockKey];
+            unlockedContent = unlock;
+            
+            setTimeout(() => {
+                document.getElementById('unlockedGame').textContent = unlock.name;
+                document.getElementById('unlockedDesc').textContent = unlock.desc;
+                document.getElementById('unlockReveal').style.display = 'block';
+            }, 800);
+            
+            document.getElementById('finalXP').textContent = '+' + (xp + 5);
+        }
+
+        function completeStripe() {
+            // Save completion
+            localStorage.setItem('tap_in_stripe1_complete', 'true');
+            localStorage.setItem('tap_in_stripe1_answers', JSON.stringify(answers));
+            
+            // Save unlock
+            if (unlockedContent) {
+                let unlocks = JSON.parse(localStorage.getItem('tap_in_unlocks') || '[]');
+                if (!unlocks.includes(unlockedContent.id)) {
+                    unlocks.push(unlockedContent.id);
+                    localStorage.setItem('tap_in_unlocks', JSON.stringify(unlocks));
+                }
+            }
+            
+            // Save XP
+            let totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+            totalXP += xp + 5;
+            localStorage.setItem('tap_in_xp', totalXP);
+            
+            // Navigate
+            window.location.href = 'stripe-results.html?belt=white&stripe=1&xp=50&next=white-belt-stripe2-gamified.html';
+        }
+
+        // Initialize
+        updateProgress();
+        
+        // When beat 15 becomes active, show final results
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.target.id === 'beat15' && mutation.target.classList.contains('active')) {
+                    showFinalResults();
+                }
+            });
+        });
+        
+        document.querySelectorAll('.beat').forEach(beat => {
+            observer.observe(beat, { attributes: true, attributeFilter: ['class'] });
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

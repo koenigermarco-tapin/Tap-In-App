@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Accountability Arena - TAP-IN Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --brown: #92400e;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .game-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .score-display {
+            background: var(--dark-grey);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gold);
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+        
+        .game-screen { display: none; animation: fadeIn 0.4s ease; }
+        .game-screen.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Intro Screen */
+        .intro-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(146, 64, 14, 0.1));
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .intro-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .intro-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        
+        .intro-desc {
+            color: var(--light-grey);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+        
+        .intro-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .intro-stat {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .intro-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--brown);
+        }
+        
+        .intro-stat-label {
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--brown), #78350f);
+            color: white;
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(146, 64, 14, 0.3);
+        }
+        
+        /* Scenario Screen */
+        .progress-bar {
+            height: 4px;
+            background: var(--mid-grey);
+            border-radius: 2px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--brown), var(--orange));
+            transition: width 0.3s ease;
+        }
+        
+        .scenario-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .scenario-meta {
+            flex: 1;
+        }
+        
+        .scenario-num {
+            font-size: 0.7rem;
+            color: var(--brown);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .scenario-type {
+            font-weight: 600;
+        }
+        
+        .scenario-situation {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 3px solid var(--brown);
+        }
+        
+        .scenario-label {
+            font-size: 0.7rem;
+            color: var(--brown);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .scenario-text {
+            color: var(--light-grey);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
+        
+        .scenario-question {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+        
+        .response-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .response-option {
+            background: var(--black);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .response-option:hover {
+            border-color: var(--brown);
+            background: rgba(146, 64, 14, 0.1);
+        }
+        
+        .response-option.selected {
+            border-color: var(--brown);
+            background: rgba(146, 64, 14, 0.15);
+        }
+        
+        .response-option.correct {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.15);
+        }
+        
+        .response-option.suboptimal {
+            border-color: var(--orange);
+            background: rgba(249, 115, 22, 0.15);
+        }
+        
+        .response-option.poor {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 0.7;
+        }
+        
+        .response-option.disabled {
+            pointer-events: none;
+        }
+        
+        .response-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--light-grey);
+        }
+        
+        .response-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        /* Feedback */
+        .feedback-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .feedback-card.show { display: block; }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .feedback-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .feedback-icon.excellent { background: rgba(16, 185, 129, 0.2); }
+        .feedback-icon.good { background: rgba(249, 115, 22, 0.2); }
+        .feedback-icon.poor { background: rgba(239, 68, 68, 0.2); }
+        
+        .feedback-title {
+            font-weight: 700;
+        }
+        
+        .feedback-title.excellent { color: var(--green); }
+        .feedback-title.good { color: var(--orange); }
+        .feedback-title.poor { color: var(--red); }
+        
+        .feedback-text {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+        
+        .impact-meter {
+            background: var(--black);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .impact-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .impact-bar {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .impact-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .impact-fill.high { background: var(--green); }
+        .impact-fill.medium { background: var(--orange); }
+        .impact-fill.low { background: var(--red); }
+        
+        .next-btn {
+            width: 100%;
+            margin-top: 20px;
+        }
+        
+        /* Results Screen */
+        .results-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(146, 64, 14, 0.15));
+            border: 2px solid var(--brown);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--brown), var(--orange));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .results-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        
+        .results-score {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--brown);
+            margin-bottom: 20px;
+        }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .result-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .result-stat-label {
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .results-insight {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--brown);
+        }
+        
+        .insight-text {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 500px) {
+            .intro-stats { grid-template-columns: 1fr; }
+            .results-stats { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-accountability-arena.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="game-accountability-arena-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library.html" class="back-btn">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Exit
+        </a>
+        <div class="game-title">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--brown)" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            Accountability Arena
+        </div>
+        <div class="score-display" id="scoreDisplay">0 pts</div>
+    </div>
+    
+    <div class="container">
+        <!-- Intro Screen -->
+        <div class="game-screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-icon">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <h1 class="intro-title">Accountability Arena</h1>
+                <p class="intro-desc">
+                    Practice holding peers accountable without damaging relationships. 
+                    Navigate real scenarios where someone missed a commitment—choose your approach 
+                    and see the impact on trust, performance, and team dynamics.
+                </p>
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">10</div>
+                        <div class="intro-stat-label">Scenarios</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">~8</div>
+                        <div class="intro-stat-label">Minutes</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">+75</div>
+                        <div class="intro-stat-label">XP</div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="startGame()">
+                    Enter the Arena
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Scenario Screen -->
+        <div class="game-screen" id="scenarioScreen">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div id="scenarioContent"></div>
+            <div class="feedback-card" id="feedbackCard">
+                <div class="feedback-header">
+                    <div class="feedback-icon" id="feedbackIcon"></div>
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                </div>
+                <div class="feedback-text" id="feedbackText"></div>
+                <div class="impact-meter">
+                    <div class="impact-label">Relationship Impact</div>
+                    <div class="impact-bar">
+                        <div class="impact-fill" id="impactFill"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary next-btn" onclick="nextScenario()">
+                    Next Scenario
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="game-screen" id="resultsScreen">
+            <div class="results-card">
+                <div class="results-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <h2 class="results-title">Arena Complete!</h2>
+                <p class="results-subtitle">Here's how you handled accountability</p>
+                <div class="results-score" id="finalScore">0%</div>
+                <div class="results-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="excellentCount">0</div>
+                        <div class="result-stat-label">Excellent</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="goodCount">0</div>
+                        <div class="result-stat-label">Good</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="poorCount">0</div>
+                        <div class="result-stat-label">Needs Work</div>
+                    </div>
+                </div>
+                <div class="results-insight">
+                    <div class="insight-title">Your Accountability Style</div>
+                    <div class="insight-text" id="insightText">Loading insight...</div>
+                </div>
+                <button class="btn btn-primary" onclick="playAgain()">
+                    Play Again
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = [
+            {
+                type: "Missed Deadline",
+                situation: "Your teammate Alex promised to finish the API documentation by Friday. It's now Monday, and it's still not done. The dev team is blocked.",
+                question: "How do you approach Alex?",
+                options: [
+                    { label: "A", text: "\"Hey Alex, I noticed the API docs aren't done yet. The team is blocked. What happened, and what's your plan to complete them?\"", quality: "excellent", feedback: "Direct, factual, and solution-focused. You stated the impact without attacking, and invited them to own the solution.", impact: 90 },
+                    { label: "B", text: "\"Alex, you really dropped the ball on this one. The whole team is waiting on you.\"", quality: "poor", feedback: "This is accusatory and shame-based. It will make Alex defensive and damage trust without solving the problem.", impact: 30 },
+                    { label: "C", text: "Say nothing and do the docs yourself to avoid conflict.", quality: "poor", feedback: "Avoiding accountability enables the pattern to continue and creates resentment. You've also taken on work that wasn't yours.", impact: 20 },
+                    { label: "D", text: "\"Alex, I know you're busy. Is there something blocking you on the docs? How can I help?\"", quality: "good", feedback: "Supportive, but missing the accountability piece. You should also clarify the impact and get a commitment for completion.", impact: 65 }
+                ]
+            },
+            {
+                type: "Quality Standards",
+                situation: "Jordan submitted a code review that has several obvious issues. This is the third time this month their PRs haven't met team standards.",
+                question: "How do you address this pattern?",
+                options: [
+                    { label: "A", text: "Approve the PR anyway to avoid awkwardness, then fix the issues yourself.", quality: "poor", feedback: "This erodes standards and enables the pattern. It also creates hidden resentment and burnout for you.", impact: 20 },
+                    { label: "B", text: "\"Jordan, I've noticed a pattern in your recent PRs. Can we talk about what's going on and how we can get back to our quality bar?\"", quality: "excellent", feedback: "Perfect. You named the pattern, signaled concern rather than judgment, and invited collaboration on a solution.", impact: 90 },
+                    { label: "C", text: "Leave detailed comments on every issue and reject the PR without discussion.", quality: "good", feedback: "You're maintaining standards, but missing the coaching opportunity. A conversation would help address the root cause.", impact: 60 },
+                    { label: "D", text: "Escalate directly to the manager without talking to Jordan first.", quality: "poor", feedback: "This damages trust and skips the peer accountability that's most effective. Try direct conversation first.", impact: 25 }
+                ]
+            },
+            {
+                type: "Meeting Behavior",
+                situation: "During team meetings, Sam consistently arrives 5-10 minutes late and scrolls their phone. Others are noticing and some are starting to do the same.",
+                question: "What's your move?",
+                options: [
+                    { label: "A", text: "Mention it casually: \"Hey Sam, everything okay? I've noticed you've been late to a few meetings lately.\"", quality: "excellent", feedback: "A private, low-key check-in is perfect for behavioral issues. It opens the door without public embarrassment.", impact: 85 },
+                    { label: "B", text: "Call them out in the next meeting: \"Sam, nice of you to join us. Can you put the phone away?\"", quality: "poor", feedback: "Public embarrassment destroys trust and makes everyone else afraid to be vulnerable. Never do this.", impact: 15 },
+                    { label: "C", text: "Say nothing - it's not your job to police meeting behavior.", quality: "poor", feedback: "When you don't address it, you're implicitly saying it's acceptable. Standards erode through silence.", impact: 25 },
+                    { label: "D", text: "Ask the meeting organizer to send a reminder about meeting norms to everyone.", quality: "good", feedback: "This is okay but passive. Direct conversation with Sam would be more effective than a blanket reminder.", impact: 55 }
+                ]
+            },
+            {
+                type: "Commitment Follow-Through",
+                situation: "Last week, the team agreed to try a new standup format. Two team members, including a senior person, have reverted to the old way.",
+                question: "How do you reinforce the commitment?",
+                options: [
+                    { label: "A", text: "In the next standup: \"Hey, quick reminder - we agreed to try the new format for 2 weeks. Can we all commit to that?\"", quality: "excellent", feedback: "Perfect. You reminded the group of their commitment without singling anyone out, and asked for recommitment.", impact: 90 },
+                    { label: "B", text: "Let it slide - the old way worked fine and this isn't a big deal.", quality: "poor", feedback: "Small commitments matter. If the team can't hold to a 2-week experiment, bigger commitments will also fail.", impact: 30 },
+                    { label: "C", text: "Talk to the senior person privately: \"I noticed we drifted from the new format. Since you're senior, it would help if you modeled the change.\"", quality: "excellent", feedback: "Great approach. Acknowledging their influence and asking for their help is respectful and effective.", impact: 88 },
+                    { label: "D", text: "Send a Slack message: \"Some people aren't following the new standup format. Please stick to what we agreed.\"", quality: "good", feedback: "Written, indirect callouts can feel passive-aggressive. A direct conversation or group reminder is better.", impact: 50 }
+                ]
+            },
+            {
+                type: "Peer Feedback",
+                situation: "You overheard a teammate, Riley, complaining about another teammate's work to a third party instead of addressing it directly.",
+                question: "Do you get involved?",
+                options: [
+                    { label: "A", text: "Pull Riley aside: \"I heard you venting about Taylor. Have you talked to them directly? I think that would be more effective.\"", quality: "excellent", feedback: "You're modeling accountability culture by encouraging direct feedback. This is exactly right.", impact: 85 },
+                    { label: "B", text: "Mind your own business - this doesn't involve you.", quality: "poor", feedback: "Gossip and indirect feedback poison team culture. As a team member, you have standing to address this.", impact: 25 },
+                    { label: "C", text: "Tell Taylor what Riley said so they can address it themselves.", quality: "poor", feedback: "This creates drama and positions you as the messenger. Better to encourage direct communication.", impact: 20 },
+                    { label: "D", text: "In the next team meeting, remind everyone about direct feedback norms.", quality: "good", feedback: "Good intent, but a direct conversation with Riley would be more effective than a general reminder.", impact: 55 }
+                ]
+            },
+            {
+                type: "Repeated Promises",
+                situation: "Chris has apologized for the same issue three times: not documenting their work. Each time they promise to improve, but nothing changes.",
+                question: "How do you break the cycle?",
+                options: [
+                    { label: "A", text: "Accept the apology again - maybe this time they mean it.", quality: "poor", feedback: "Hope is not a strategy. Three times means the current approach isn't working. Something needs to change.", impact: 20 },
+                    { label: "B", text: "\"Chris, this is the third time. I appreciate the apology, but what specifically will be different this time? What's been blocking you?\"", quality: "excellent", feedback: "Perfect. You acknowledged the pattern, expressed care, and pushed for specifics. This invites real problem-solving.", impact: 92 },
+                    { label: "C", text: "\"Chris, this keeps happening. I'm going to have to escalate if it continues.\"", quality: "good", feedback: "Setting consequences is valid, but jumping to escalation skips the coaching step. Try to understand the blocker first.", impact: 55 },
+                    { label: "D", text: "Stop relying on Chris for anything important until they prove they can change.", quality: "poor", feedback: "Withdrawal damages the relationship and doesn't give Chris a path to improvement. Address it directly instead.", impact: 30 }
+                ]
+            },
+            {
+                type: "Team Norms",
+                situation: "Your team agreed to a 'no meetings Friday' policy. Your manager scheduled a meeting for Friday anyway.",
+                question: "How do you handle up?",
+                options: [
+                    { label: "A", text: "Attend without saying anything - it's your manager after all.", quality: "poor", feedback: "This teaches your manager that norms don't apply to them, and signals to the team that commitments are optional.", impact: 25 },
+                    { label: "B", text: "\"Hey, I noticed this is scheduled for Friday. We have a team norm about no meetings Fridays - is this urgent enough to make an exception?\"", quality: "excellent", feedback: "Perfect. You reminded them of the norm respectfully and gave them a face-saving way to adjust.", impact: 90 },
+                    { label: "C", text: "Decline the meeting with no explanation.", quality: "poor", feedback: "Passive resistance without communication damages your relationship with your manager.", impact: 20 },
+                    { label: "D", text: "Complain to teammates about the manager not respecting norms.", quality: "poor", feedback: "Gossip doesn't solve the problem and undermines your manager. Speak to them directly.", impact: 15 }
+                ]
+            },
+            {
+                type: "Ownership Gap",
+                situation: "A project is struggling because nobody is clearly owning the integration between two teams. Everyone assumes someone else is handling it.",
+                question: "What do you do?",
+                options: [
+                    { label: "A", text: "Wait for leadership to notice and assign someone.", quality: "poor", feedback: "Leadership may not see the gap. Taking initiative is what accountable team members do.", impact: 20 },
+                    { label: "B", text: "Raise it in the next team meeting: \"Who owns the integration? I don't think we've been clear about that.\"", quality: "excellent", feedback: "Naming the gap publicly and asking for clarity is exactly right. You're not blaming, just clarifying.", impact: 90 },
+                    { label: "C", text: "Quietly start doing the integration work yourself.", quality: "good", feedback: "Taking initiative is good, but doing it silently doesn't solve the systemic issue. Surface it.", impact: 55 },
+                    { label: "D", text: "Send a Slack message asking if anyone is working on integration.", quality: "good", feedback: "This is okay but passive. A meeting or direct conversation would be more effective for role clarity.", impact: 60 }
+                ]
+            },
+            {
+                type: "External Blame",
+                situation: "After a missed delivery, Morgan blames the other team: \"They didn't give us the API on time.\" You know Morgan never followed up when it was late.",
+                question: "How do you respond?",
+                options: [
+                    { label: "A", text: "\"That's frustrating. Did we escalate when we saw it was going to be late? What could we do differently next time?\"", quality: "excellent", feedback: "You validated their frustration while gently redirecting to what was in their control. This builds ownership.", impact: 88 },
+                    { label: "B", text: "Agree that the other team is the problem to avoid conflict.", quality: "poor", feedback: "Joining the blame game prevents learning and accountability. It feels supportive but isn't.", impact: 25 },
+                    { label: "C", text: "\"Morgan, that's not entirely true. You didn't follow up when it was late.\"", quality: "good", feedback: "Direct and factual, but potentially defensive-inducing. The framing could be softer.", impact: 55 },
+                    { label: "D", text: "Report to management that Morgan isn't taking responsibility.", quality: "poor", feedback: "Escalating without direct conversation first erodes trust. Try peer feedback before involving management.", impact: 20 }
+                ]
+            },
+            {
+                type: "Silence in Meetings",
+                situation: "In a decision meeting, you notice two quieter team members haven't spoken. You suspect they have concerns but aren't comfortable sharing.",
+                question: "What do you do?",
+                options: [
+                    { label: "A", text: "Nothing - if they have concerns, they should speak up.", quality: "poor", feedback: "Not everyone is comfortable speaking up in groups. Creating space for input is part of team accountability.", impact: 30 },
+                    { label: "B", text: "\"Before we finalize, I want to make sure everyone's weighed in. Jamie, Avery - any thoughts or concerns?\"", quality: "excellent", feedback: "Directly inviting input shows you value their perspective and makes it safe to share concerns.", impact: 90 },
+                    { label: "C", text: "After the meeting, check in with them privately to see if they have concerns.", quality: "good", feedback: "Good follow-up, but better to create space in the meeting itself. Private follow-up is a good addition.", impact: 70 },
+                    { label: "D", text: "Send a survey after the meeting for anonymous feedback.", quality: "good", feedback: "Surveys can help, but they delay resolution. Direct invitation in the moment is more effective.", impact: 50 }
+                ]
+            }
+        ];
+        
+        let currentScenario = 0;
+        let score = 0;
+        let excellent = 0;
+        let good = 0;
+        let poor = 0;
+        
+        function startGame() {
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('scenarioScreen').classList.add('active');
+            showScenario();
+        }
+        
+        function showScenario() {
+            const s = scenarios[currentScenario];
+            document.getElementById('progressFill').style.width = ((currentScenario) / scenarios.length * 100) + '%';
+            
+            document.getElementById('scenarioContent').innerHTML = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="scenario-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <div class="scenario-meta">
+                            <div class="scenario-num">Scenario ${currentScenario + 1} of ${scenarios.length}</div>
+                            <div class="scenario-type">${s.type}</div>
+                        </div>
+                    </div>
+                    <div class="scenario-situation">
+                        <div class="scenario-label">Situation</div>
+                        <div class="scenario-text">${s.situation}</div>
+                    </div>
+                    <div class="scenario-question">${s.question}</div>
+                    <div class="response-options">
+                        ${s.options.map((opt, i) => `
+                            <div class="response-option" onclick="selectOption(${i})">
+                                <div class="response-label">Option ${opt.label}</div>
+                                <div class="response-text">${opt.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('feedbackCard').classList.remove('show');
+        }
+        
+        function selectOption(index) {
+            const s = scenarios[currentScenario];
+            const opt = s.options[index];
+            
+            // Disable all options and mark selection
+            const options = document.querySelectorAll('.response-option');
+            options.forEach((o, i) => {
+                o.classList.add('disabled');
+                o.classList.add(s.options[i].quality);
+            });
+            options[index].classList.add('selected');
+            
+            // Update score
+            if (opt.quality === 'excellent') {
+                score += 10;
+                excellent++;
+            } else if (opt.quality === 'good') {
+                score += 5;
+                good++;
+            } else {
+                poor++;
+            }
+            
+            document.getElementById('scoreDisplay').textContent = score + ' pts';
+            
+            // Show feedback
+            const feedbackCard = document.getElementById('feedbackCard');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            
+            feedbackIcon.className = 'feedback-icon ' + opt.quality;
+            feedbackTitle.className = 'feedback-title ' + opt.quality;
+            
+            if (opt.quality === 'excellent') {
+                feedbackIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                feedbackTitle.textContent = 'Excellent Approach!';
+            } else if (opt.quality === 'good') {
+                feedbackIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+                feedbackTitle.textContent = 'Good, But...';
+            } else {
+                feedbackIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                feedbackTitle.textContent = 'Needs Improvement';
+            }
+            
+            document.getElementById('feedbackText').textContent = opt.feedback;
+            
+            const impactFill = document.getElementById('impactFill');
+            impactFill.style.width = opt.impact + '%';
+            impactFill.className = 'impact-fill ' + (opt.impact >= 75 ? 'high' : opt.impact >= 50 ? 'medium' : 'low');
+            
+            // Update button text for last scenario
+            const nextBtn = feedbackCard.querySelector('.next-btn');
+            if (currentScenario === scenarios.length - 1) {
+                nextBtn.innerHTML = 'See Results <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            }
+            
+            feedbackCard.classList.add('show');
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            if (currentScenario < scenarios.length) {
+                showScenario();
+            } else {
+                showResults();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('scenarioScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            const maxScore = scenarios.length * 10;
+            const percentage = Math.round((score / maxScore) * 100);
+            
+            document.getElementById('finalScore').textContent = percentage + '%';
+            document.getElementById('excellentCount').textContent = excellent;
+            document.getElementById('goodCount').textContent = good;
+            document.getElementById('poorCount').textContent = poor;
+            
+            // Generate insight
+            let insight = '';
+            if (excellent >= 7) {
+                insight = "You're an accountability champion! You naturally balance directness with empathy, address issues promptly, and focus on solutions rather than blame. Keep modeling this for your team.";
+            } else if (excellent >= 4) {
+                insight = "You have good accountability instincts. Focus on being more direct in your feedback while maintaining empathy. Remember: avoiding accountability hurts relationships more than addressing issues.";
+            } else {
+                insight = "You may be avoiding accountability conversations to preserve relationships, but this often backfires. Practice naming issues directly while assuming positive intent. The key is addressing the behavior, not attacking the person.";
+            }
+            
+            document.getElementById('insightText').textContent = insight;
+            
+            // Save progress
+            localStorage.setItem('tap_in_accountability_arena_complete', 'true');
+            localStorage.setItem('tap_in_accountability_arena_score', percentage);
+            
+            let totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+            totalXP += 75;
+            localStorage.setItem('tap_in_xp', totalXP);
+        }
+        
+        function playAgain() {
+            currentScenario = 0;
+            score = 0;
+            excellent = 0;
+            good = 0;
+            poor = 0;
+            document.getElementById('scoreDisplay').textContent = '0 pts';
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').classList.add('active');
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

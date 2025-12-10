@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Data Test | TAP-IN</title>
+    <style>
+        :root { --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981; --gold: #fbbf24; --red: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); padding: 40px 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { margin-bottom: 30px; color: var(--gold); }
+        .card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .card h2 { margin-bottom: 15px; font-size: 1.2rem; }
+        .btn { padding: 14px 24px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; margin: 5px; }
+        .btn-primary { background: var(--green); color: white; }
+        .btn-secondary { background: var(--mid-grey); color: white; }
+        .btn-danger { background: var(--red); color: white; }
+        .output { background: var(--black); border: 1px solid var(--mid-grey); border-radius: 8px; padding: 15px; margin-top: 15px; font-family: monospace; font-size: 0.85rem; max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+        .status { padding: 10px 15px; border-radius: 8px; margin-top: 15px; }
+        .status.success { background: rgba(16, 185, 129, 0.2); border: 1px solid var(--green); }
+        .status.info { background: rgba(59, 130, 246, 0.2); border: 1px solid #3b82f6; }
+        a { color: var(--green); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Team Dashboard Test Utility</h1>
+        
+        <div class="card">
+            <h2>1. Generate Sample Team Data</h2>
+            <p style="color: var(--light-grey); margin-bottom: 15px;">Creates a sample team with 5 members who have completed various assessments.</p>
+            <button class="btn btn-primary" onclick="generateSampleData()">Generate Sample Team</button>
+            <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+            <div id="generateOutput" class="output" style="display: none;"></div>
+        </div>
+        
+        <div class="card">
+            <h2>2. Simulate Assessment Completion</h2>
+            <p style="color: var(--light-grey); margin-bottom: 15px;">Simulate completing assessments for the current user.</p>
+            <button class="btn btn-secondary" onclick="simulateWorkerType('Sprinter')">I'm a Sprinter</button>
+            <button class="btn btn-secondary" onclick="simulateWorkerType('Jogger')">I'm a Jogger</button>
+            <button class="btn btn-secondary" onclick="simulateWorkerType('Ultrarunner')">I'm an Ultrarunner</button>
+            <br><br>
+            <button class="btn btn-secondary" onclick="simulateLeadership('Directive')">Directive Leader</button>
+            <button class="btn btn-secondary" onclick="simulateLeadership('Coaching')">Coaching Leader</button>
+            <button class="btn btn-secondary" onclick="simulateLeadership('Supportive')">Supportive Leader</button>
+            <button class="btn btn-secondary" onclick="simulateLeadership('Delegating')">Delegating Leader</button>
+            <br><br>
+            <button class="btn btn-secondary" onclick="simulateComm('Direct')">Direct Comm</button>
+            <button class="btn btn-secondary" onclick="simulateComm('Analytical')">Analytical Comm</button>
+            <button class="btn btn-secondary" onclick="simulateComm('Expressive')">Expressive Comm</button>
+            <button class="btn btn-secondary" onclick="simulateComm('Amiable')">Amiable Comm</button>
+            <div id="assessmentOutput" class="output" style="display: none;"></div>
+        </div>
+        
+        <div class="card">
+            <h2>3. Verify Data</h2>
+            <p style="color: var(--light-grey); margin-bottom: 15px;">Check what's currently stored in localStorage.</p>
+            <button class="btn btn-primary" onclick="verifyData()">Show Current Data</button>
+            <div id="verifyOutput" class="output" style="display: none;"></div>
+        </div>
+        
+        <div class="card">
+            <h2>4. Test Dashboard</h2>
+            <p style="color: var(--light-grey); margin-bottom: 15px;">Open the team dashboard to see the aggregated data.</p>
+            <a href="team-aggregation-dashboard.html" class="btn btn-primary" style="display: inline-block; text-decoration: none;">Open Team Dashboard</a>
+            <a href="business-portal.html" class="btn btn-secondary" style="display: inline-block; text-decoration: none;">Open Business Portal</a>
+        </div>
+    </div>
+    
+    <script src="js/assessment-team-sync.js"></script>
+    <script>
+        function generateSampleData() {
+            // Create team
+            const teamCode = 'TEAM-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            localStorage.setItem('teamCode', teamCode);
+            localStorage.setItem('teamName', 'Demo Team Alpha');
+            
+            // Create sample team members
+            const members = [
+                { id: 1, name: 'Sarah Johnson', email: 'sarah@company.com', belt: 'blue', stripe: 3, xp: 450, completion: 80, workerType: 'Jogger', leadershipStyle: 'Coaching', commStyle: 'Supportive', lastActive: new Date().toISOString(), joinedDate: '2024-01-15' },
+                { id: 2, name: 'Mike Chen', email: 'mike@company.com', belt: 'white', stripe: 4, xp: 280, completion: 60, workerType: 'Sprinter', leadershipStyle: 'Directive', commStyle: 'Direct', lastActive: new Date().toISOString(), joinedDate: '2024-02-01' },
+                { id: 3, name: 'Lisa Park', email: 'lisa@company.com', belt: 'purple', stripe: 1, xp: 620, completion: 90, workerType: 'Ultrarunner', leadershipStyle: 'Supportive', commStyle: 'Analytical', lastActive: new Date().toISOString(), joinedDate: '2024-01-10' },
+                { id: 4, name: 'Tom Wilson', email: 'tom@company.com', belt: 'white', stripe: 2, xp: 120, completion: 40, workerType: 'Jogger', leadershipStyle: 'Delegating', commStyle: 'Expressive', lastActive: new Date(Date.now() - 7*24*60*60*1000).toISOString(), joinedDate: '2024-03-01' },
+                { id: 5, name: 'Emma Davis', email: 'emma@company.com', belt: 'blue', stripe: 1, xp: 350, completion: 70, workerType: 'Sprinter', leadershipStyle: 'Coaching', commStyle: 'Amiable', lastActive: new Date().toISOString(), joinedDate: '2024-02-15' }
+            ];
+            localStorage.setItem('teamMembers', JSON.stringify(members));
+            
+            // Create team dysfunctions scores
+            const dysfunctions = {
+                trust: 72,
+                conflict: 65,
+                commitment: 78,
+                accountability: 58,
+                results: 70
+            };
+            localStorage.setItem('teamDysfunctions', JSON.stringify(dysfunctions));
+            
+            const output = document.getElementById('generateOutput');
+            output.style.display = 'block';
+            output.innerHTML = `✅ Sample team data generated!
+
+Team Code: ${teamCode}
+Team Name: Demo Team Alpha
+Members: ${members.length}
+
+Worker Types:
+- Sprinters: 2
+- Joggers: 2
+- Ultrarunners: 1
+
+Leadership Styles:
+- Directive: 1
+- Coaching: 2
+- Supportive: 1
+- Delegating: 1
+
+Communication Styles:
+- Direct: 1
+- Analytical: 1
+- Expressive: 1
+- Amiable: 1
+- Supportive: 1
+
+Team Health Scores:
+- Trust: 72%
+- Conflict: 65%
+- Commitment: 78%
+- Accountability: 58%
+- Results: 70%`;
+        }
+        
+        function simulateWorkerType(type) {
+            localStorage.setItem('tapin-worker-type', JSON.stringify({
+                type: type,
+                completedAt: new Date().toISOString(),
+                xp: 300
+            }));
+            if (typeof AssessmentTeamSync !== 'undefined') {
+                AssessmentTeamSync.syncToTeamMember();
+            }
+            showAssessmentOutput(`Worker Type set to: ${type}`);
+        }
+        
+        function simulateLeadership(style) {
+            localStorage.setItem('tapin-leadership-style', JSON.stringify({
+                primary: style,
+                completedAt: new Date().toISOString(),
+                xp: 300
+            }));
+            if (typeof AssessmentTeamSync !== 'undefined') {
+                AssessmentTeamSync.syncToTeamMember();
+            }
+            showAssessmentOutput(`Leadership Style set to: ${style}`);
+        }
+        
+        function simulateComm(style) {
+            localStorage.setItem('tapin-communication-style', JSON.stringify({
+                primary: style,
+                completedAt: new Date().toISOString(),
+                xp: 300
+            }));
+            if (typeof AssessmentTeamSync !== 'undefined') {
+                AssessmentTeamSync.syncToTeamMember();
+            }
+            showAssessmentOutput(`Communication Style set to: ${style}`);
+        }
+        
+        function showAssessmentOutput(msg) {
+            const output = document.getElementById('assessmentOutput');
+            output.style.display = 'block';
+            output.innerHTML = `✅ ${msg}\n\nSync triggered. Check team dashboard to see updated data.`;
+        }
+        
+        function verifyData() {
+            const output = document.getElementById('verifyOutput');
+            output.style.display = 'block';
+            
+            const data = {
+                teamCode: localStorage.getItem('teamCode'),
+                teamName: localStorage.getItem('teamName'),
+                teamMembers: JSON.parse(localStorage.getItem('teamMembers') || '[]'),
+                teamDysfunctions: JSON.parse(localStorage.getItem('teamDysfunctions') || 'null'),
+                userWorkerType: JSON.parse(localStorage.getItem('tapin-worker-type') || 'null'),
+                userLeadership: JSON.parse(localStorage.getItem('tapin-leadership-style') || 'null'),
+                userComm: JSON.parse(localStorage.getItem('tapin-communication-style') || 'null')
+            };
+            
+            output.innerHTML = JSON.stringify(data, null, 2);
+        }
+        
+        function clearAllData() {
+            const keys = ['teamCode', 'teamName', 'teamMembers', 'teamDysfunctions', 
+                          'tapin-worker-type', 'tapin-leadership-style', 'tapin-communication-style',
+                          'tapin-decision-style', 'tapin-values', 'tapin-mental-health',
+                          'tapin-work-life-balance', 'tapin-360-feedback', 'tapin-life-audit'];
+            keys.forEach(k => localStorage.removeItem(k));
+            
+            const output = document.getElementById('generateOutput');
+            output.style.display = 'block';
+            output.innerHTML = '🗑️ All team and assessment data cleared!';
+        }
+    </script>
+</body>
+</html>

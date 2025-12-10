@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Blue Belt: Produktiver Konflikt | TAP-IN</title>
+    
+    <!-- Supabase & Auth -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth-system.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { 
+            --primary-navy: #1a365d; 
+            --secondary-navy: #334155; 
+            --accent-red: #b91c1c; 
+            --accent-purple: #a78bfa; 
+            --accent-blue: #3b82f6;
+            --success-green: #38a169; 
+            --warning-orange: #dd6b20; 
+            --card-bg: #ffffff; 
+            --border-light: #e2e8f0; 
+            --text-dark: #1e293b; 
+            --text-muted: #64748b; 
+            --light-bg: #f8fafc; 
+        }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%); min-height: 100vh; padding: 2rem 1rem; line-height: 1.6; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: white; }
+        .belt-badge { display: inline-block; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.3); padding: 0.75rem 1.5rem; border-radius: 30px; font-size: 1rem; margin-bottom: 1rem; font-weight: 600; }
+        .header h1 { font-size: clamp(2rem, 5vw, 2.75rem); font-weight: 800; margin-bottom: 0.5rem; background: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+        .header p { font-size: 1.2rem; opacity: 0.8; max-width: 600px; margin: 0 auto; }
+        .progress-section { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 1.5rem; margin-bottom: 2rem; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .progress-title { color: white; font-weight: 600; }
+        .progress-count { color: #93c5fd; font-weight: 700; }
+        .stripe-visual { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+        .stripe { height: 8px; flex: 1; border-radius: 4px; background: rgba(255,255,255,0.2); transition: all 0.3s; }
+        .stripe.earned { background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); box-shadow: 0 0 10px rgba(185, 28, 28, 0.5); }
+        .progress-bar-container { background: rgba(255,255,255,0.1); height: 6px; border-radius: 3px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); border-radius: 3px; transition: width 0.5s ease; }
+        .main-card { background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 25px 80px rgba(0,0,0,0.4); }
+        .intro-box { background: var(--light-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+        .intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: var(--primary-navy); }
+        .intro-box.philosophy { background: linear-gradient(135deg, var(--light-bg) 0%, #e2e8f0 100%); border-left: 6px solid var(--primary-navy); }
+        .intro-box.philosophy em { color: var(--accent-purple); }
+        .intro-box.research { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); border: none; }
+        .intro-box.research h3 { color: #fff; }
+        .intro-box.research p { color: #e2e8f0; }
+        .intro-box.research strong { color: var(--accent-purple); }
+        .intro-box.warning { background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%); border-left: 6px solid var(--warning-orange); }
+        .intro-box.warning h3 { color: #92400e; }
+        .intro-box.warning p { color: #78350f; }
+        .stripe-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+        .stripe-card { background: white; border: 2px solid var(--border-light); border-radius: 16px; padding: 1.5rem; transition: all 0.3s; text-decoration: none; display: block; }
+        .stripe-card:hover { border-color: #93c5fd; transform: translateY(-4px); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.15); }
+        .stripe-card.complete { border-color: var(--success-green); background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); }
+        .stripe-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem; }
+        .stripe-number { width: 50px; height: 50px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; flex-shrink: 0; }
+        .stripe-card.complete .stripe-number { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); }
+        .stripe-title { font-weight: 700; color: var(--text-dark); font-size: 1.1rem; }
+        .stripe-subtitle { font-size: 0.85rem; color: var(--text-muted); }
+        .stripe-description { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .stripe-topics { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; }
+        .topic-tag { background: #dbeafe; color: #1e40af; padding: 0.25rem 0.75rem; border-radius: 12px; font-size: 0.8rem; }
+        .principles-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+        .principle-card { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 12px; padding: 1.25rem; text-align: center; }
+        .principle-card .icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .principle-card h4 { color: white; font-size: 0.95rem; margin-bottom: 0.5rem; }
+        .principle-card p { color: #dbeafe; font-size: 0.85rem; }
+        .quote-block { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0; border: 1px solid rgba(255,255,255,0.1); }
+        .quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+        .quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+        .btn { display: inline-block; padding: 1rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: all 0.3s; border: none; cursor: pointer; text-align: center; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3); }
+        .btn-secondary { background: #edf2f7; color: var(--text-dark); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 1rem; margin-top: 2rem; }
+        @media (max-width: 768px) { body { padding: 1rem; } .main-card { padding: 1.5rem; } .header h1 { font-size: 2rem; } .nav-buttons { flex-direction: column; } .btn { width: 100%; text-align: center; } .stripe-grid { grid-template-columns: 1fr; } }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    
+                </div>
+                
+
+        <div class="main-card">
+            <div class="intro-box warning">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Welcome to The Plateau</h3>
+                <p>In Brazilian Jiu-Jitsu, <strong>Blue Belt is where most people quit</strong>. You've learned the basics (White Belt), but now comes the grind—the messy middle where progress feels slow and the work gets uncomfortable.</p>
+                <p>Blue Belt in leadership is the same. You know yourself. Now you have to <strong>express yourself</strong>—especially when it's hard.</p>
+            </div>
+
+            <div class="intro-box">
+                <h3>From Awareness to Action</h3>
+                <p>White Belt was about <strong>knowing yourself</strong>. Blue Belt is about <strong>expressing yourself authentically</strong>—even when it creates tension.</p>
+                <p>Lencioni's second dysfunction is <strong>"Fear of Conflict."</strong> Teams that avoid conflict don't fail because they hate each other—they fail because they're too polite, too careful, too afraid to say what needs to be said.</p>
+                <p><strong>Great teams debate fiercely and decide quickly.</strong> Mediocre teams avoid debate and let resentment build.</p>
+            </div>
+
+            <div class="intro-box philosophy">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> The BJJ Principle: Pressure Testing</h3>
+                <p>In Jiu-Jitsu, Blue Belt is when you start <strong>rolling</strong> (sparring) regularly. Your techniques get tested under pressure. You learn what works, what doesn't, and where your gaps are.</p>
+                <p>It's uncomfortable. You get submitted. You make mistakes. But this is where growth happens—in the discomfort of real resistance.</p>
+                <p>Leadership conflict is the same. <strong>Healthy teams test ideas through debate.</strong> They challenge each other. They say the hard thing. They pressure-test decisions before committing.</p>
+                <p><em>"Comfort is the enemy of progress. Pressure reveals truth."</em></p>
+            </div>
+
+            <div class="intro-box research">
+                <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> The Research</h3>
+                <p><strong>Amy Edmondson's research at Harvard</strong> found that the highest-performing teams report more mistakes—not because they make more errors, but because they're psychologically safe enough to discuss them openly.</p>
+                <p><strong>Lencioni's research</strong> shows that teams with productive conflict make better decisions, implement faster, and have less politics than conflict-avoidant teams.</p>
+                <p>The goal isn't to create drama. It's to <strong>mine for conflict</strong>—to surface the disagreements that already exist and resolve them through honest debate.</p>
+            </div>
+
+            <h2 style="color: var(--text-dark); margin: 1.5rem 0 1rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Blue Belt Principles</h2>
+
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <h4>Healthy Debate</h4>
+                    <p>Challenge ideas vigorously, attack problems not people</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <h4>Say the Hard Thing</h4>
+                    <p>Speak up when everyone else is silent</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon"></div>
+                    <h4>Set Boundaries</h4>
+                    <p>Clear is kind—define your limits explicitly</p>
+                </div>
+                <div class="principle-card">
+                    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <h4>Fast Resolution</h4>
+                    <p>Debate fiercely, decide quickly, commit fully</p>
+                </div>
+            </div>
+
+            <h2 style="color: var(--text-dark); margin: 2rem 0 1rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Your Blue Belt Streifen</h2>
+
+            <div class="stripe-grid">
+                <a href="blue-belt-stripe1-gamified-de.html" class="stripe-card" id="card-1">
+                    <div class="stripe-header">
+                        <div class="stripe-number">1</div>
+                        <div>
+                            <div class="stripe-title">Trust Foundations</div>
+                            <div class="stripe-subtitle">Vulnerability & Safety</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Build trust through vulnerability, psychological safety, and opening up authentically.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Vulnerability</span>
+                        <span class="topic-tag">Trust</span>
+                        <span class="topic-tag">Safety</span>
+                    </div>
+                </a>
+
+                <a href="blue-belt-stripe2-gamified-de.html" class="stripe-card" id="card-2">
+                    <div class="stripe-header">
+                        <div class="stripe-number">2</div>
+                        <div>
+                            <div class="stripe-title">Productive Conflict</div>
+                            <div class="stripe-subtitle">Healthy Debate</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Engage in productive conflict, healthy disagreement, and constructive debate.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Conflict</span>
+                        <span class="topic-tag">Debate</span>
+                        <span class="topic-tag">Engagement</span>
+                    </div>
+                </a>
+
+                <a href="blue-belt-stripe3-gamified-de.html" class="stripe-card" id="card-3">
+                    <div class="stripe-header">
+                        <div class="stripe-number">3</div>
+                        <div>
+                            <div class="stripe-title">Difficult Conversations</div>
+                            <div class="stripe-subtitle">Directness & Feedback</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Master hard talks, address issues directly, and give clear feedback.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Feedback</span>
+                        <span class="topic-tag">Directness</span>
+                        <span class="topic-tag">Clarity</span>
+                    </div>
+                </a>
+
+                <a href="blue-belt-stripe4-gamified-de.html" class="stripe-card" id="card-4">
+                    <div class="stripe-header">
+                        <div class="stripe-number">4</div>
+                        <div>
+                            <div class="stripe-title">Boundaries & Standards</div>
+                            <div class="stripe-subtitle">Setting Limits</div>
+                        </div>
+                    </div>
+                    <p class="stripe-description">Set clear boundaries, maintain standards, and learn to say no effectively.</p>
+                    <div class="stripe-topics">
+                        <span class="topic-tag">Boundaries</span>
+                        <span class="topic-tag">Standards</span>
+                        <span class="topic-tag">Saying No</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="quote-block">
+                <p class="quote">"The quality of your life is determined by the quality of your conversations."</p>
+                <p class="author">— David Whyte, Poet & Philosopher</p>
+            </div>
+
+            <div class="nav-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="gym-dashboard-de.html" class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> GYM Dashboard</a>
+                <a href="white-belt-de.html" class="btn btn-secondary" style="background: #f1f5f9; color: var(--text-dark);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> White Belt</a>
+                <a href="purple-belt-de.html" class="btn btn-primary">Preview Purple Belt <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateStripeProgress() {
+            let completed = 0;
+            for (let i = 1; i <= 4; i++) {
+                if (localStorage.getItem(`blueBeltStripe${i}Complete`) === 'true') {
+                    completed++;
+                    document.getElementById(`stripe-${i}`).classList.add('earned');
+                    document.getElementById(`card-${i}`).classList.add('complete');
+                }
+            }
+            document.getElementById('stripe-count').textContent = `${completed}/4 Streifen`;
+            document.getElementById('progress-fill').style.width = `${(completed / 4) * 100}%`;
+        }
+        updateStripeProgress();
+    </script>
+
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

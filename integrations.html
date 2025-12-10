@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Integrations | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Section */
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Integration Cards */
+        .integration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .integration-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.2s;
+        }
+        
+        .integration-card:hover {
+            border-color: var(--green);
+        }
+        
+        .integration-card.connected {
+            border-color: rgba(16, 185, 129, 0.5);
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, var(--dark-grey) 100%);
+        }
+        
+        .integration-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .integration-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .logo-slack { background: #4A154B; }
+        .logo-teams { background: #5059C9; }
+        .logo-google { background: #EA4335; }
+        .logo-outlook { background: #0078D4; }
+        .logo-notion { background: #000000; border: 1px solid var(--mid-grey); }
+        .logo-zapier { background: #FF4A00; }
+        .logo-jira { background: #0052CC; }
+        .logo-asana { background: #F06A6A; }
+        
+        .integration-info h3 {
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .integration-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        
+        .status-connected { background: var(--green); }
+        .status-disconnected { background: var(--mid-grey); }
+        
+        .integration-desc {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+        
+        .integration-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .feature-tag {
+            padding: 4px 10px;
+            background: var(--mid-grey);
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+        
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            width: 100%;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--mid-grey);
+            color: var(--white);
+        }
+        
+        .btn-secondary:hover {
+            background: #3a3a4a;
+        }
+        
+        .btn-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+        
+        .btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        /* Coming Soon Badge */
+        .coming-soon {
+            display: inline-block;
+            padding: 2px 8px;
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--gold);
+            font-size: 0.7rem;
+            font-weight: 600;
+            border-radius: 8px;
+            margin-left: 8px;
+        }
+        
+        /* API Section */
+        .api-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .api-key-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        
+        .api-key-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        
+        .api-key-input::placeholder {
+            color: var(--light-grey);
+        }
+        
+        .api-info {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .api-info a {
+            color: var(--green);
+            text-decoration: none;
+        }
+        
+        .api-info a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--green);
+            color: var(--black);
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        .toast svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 450px;
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light-grey);
+            cursor: pointer;
+            padding: 4px;
+        }
+        
+        .modal-body {
+            padding: 24px;
+            text-align: center;
+        }
+        
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 2rem;
+        }
+        
+        .modal-body p {
+            color: var(--light-grey);
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid var(--mid-grey);
+            display: flex;
+            gap: 12px;
+        }
+        
+        .modal-footer .btn {
+            flex: 1;
+        }
+        
+        @media (max-width: 600px) {
+            .api-key-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    
+                    </div>
+                    <p class="integration-desc">Schedule team development sessions and sync deadlines with Google Calendar.</p>
+                    
+                
+                <!-- Outlook -->
+                
+                    </div>
+                    <p class="integration-desc">Sync team events and goal deadlines with Outlook Calendar.</p>
+                    
+            </div>
+        </div>
+        
+        <!-- Project Management -->
+        
+                    </div>
+                    <p class="integration-desc">Sync team goals and progress to Notion databases for comprehensive tracking.</p>
+                    
+                
+                <!-- Zapier -->
+                
+                    </div>
+                    <p class="integration-desc">Connect TAP-IN to 5000+ apps through Zapier automation workflows.</p>
+                    
+            </div>
+        </div>
+        
+        <!-- API Access -->
+        <div class="section">
+            <h2 class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                API Access
+            </h2>
+            <div class="api-section">
+                <p class="integration-desc" style="margin-bottom: 16px;">Access your team data programmatically through our REST API.</p>
+                <div class="api-key-container">
+                    <input type="text" class="api-key-input" id="apiKeyInput" placeholder="Click 'Generate' to create an API key" readonly>
+                    <button class="btn btn-primary" onclick="generateApiKey()" style="width: auto; padding: 12px 24px;">Generate Key</button>
+                </div>
+                <p class="api-info">Need help? Check out our <a href="#">API Documentation</a> for endpoints and examples.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Connect Integration</div>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg style="width:24px;height:24px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-icon" id="modalIcon">🔗</div>
+                <p id="modalDesc">You're about to connect this integration. This will allow TAP-IN to send notifications and updates.</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button class="btn btn-primary" id="modalConfirm" onclick="confirmConnect()">Connect</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        <span id="toastMessage">Connected successfully!</span>
+    </div>
+    
+    <script>
+        const integrations = {
+            slack: { connected: false, name: 'Slack' },
+            teams: { connected: false, name: 'Microsoft Teams' }
+        };
+        
+        let currentIntegration = null;
+        
+        // Load saved state
+        function loadIntegrations() {
+            const saved = localStorage.getItem('tapin_integrations');
+            if (saved) {
+                const data = JSON.parse(saved);
+                Object.keys(data).forEach(key => {
+                    if (integrations[key]) {
+                        integrations[key].connected = data[key];
+                        updateIntegrationUI(key);
+                    }
+                });
+            }
+        }
+        
+        function saveIntegrations() {
+            const data = {};
+            Object.keys(integrations).forEach(key => {
+                data[key] = integrations[key].connected;
+            });
+            localStorage.setItem('tapin_integrations', JSON.stringify(data));
+        }
+        
+        function updateIntegrationUI(key) {
+            const card = document.getElementById(`${key}-card`);
+            const status = document.getElementById(`${key}-status`);
+            const statusText = document.getElementById(`${key}-status-text`);
+            const btn = document.getElementById(`${key}-btn`);
+            
+            if (integrations[key].connected) {
+                card.classList.add('connected');
+                status.classList.remove('status-disconnected');
+                status.classList.add('status-connected');
+                statusText.textContent = 'Connected';
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg> Disconnect`;
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-danger');
+            } else {
+                card.classList.remove('connected');
+                status.classList.remove('status-connected');
+                status.classList.add('status-disconnected');
+                statusText.textContent = 'Not connected';
+                btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg> Connect ${integrations[key].name}`;
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-primary');
+            }
+        }
+        
+        function connectIntegration(key) {
+            currentIntegration = key;
+            
+            if (integrations[key].connected) {
+                // Disconnect
+                document.getElementById('modalTitle').textContent = `Disconnect ${integrations[key].name}`;
+                document.getElementById('modalDesc').textContent = `Are you sure you want to disconnect ${integrations[key].name}? You will stop receiving notifications.`;
+                document.getElementById('modalConfirm').textContent = 'Disconnect';
+                document.getElementById('modalConfirm').classList.remove('btn-primary');
+                document.getElementById('modalConfirm').classList.add('btn-danger');
+            } else {
+                // Connect
+                document.getElementById('modalTitle').textContent = `Connect ${integrations[key].name}`;
+                document.getElementById('modalDesc').textContent = `You're about to connect ${integrations[key].name}. This will allow TAP-IN to send notifications and updates.`;
+                document.getElementById('modalConfirm').textContent = 'Connect';
+                document.getElementById('modalConfirm').classList.remove('btn-danger');
+                document.getElementById('modalConfirm').classList.add('btn-primary');
+            }
+            
+            document.getElementById('modalOverlay').classList.add('active');
+        }
+        
+        function confirmConnect() {
+            if (!currentIntegration) return;
+            
+            integrations[currentIntegration].connected = !integrations[currentIntegration].connected;
+            updateIntegrationUI(currentIntegration);
+            saveIntegrations();
+            
+            const message = integrations[currentIntegration].connected 
+                ? `${integrations[currentIntegration].name} connected successfully!`
+                : `${integrations[currentIntegration].name} disconnected`;
+            showToast(message);
+            
+            closeModal();
+        }
+        
+        function closeModal(e) {
+            if (!e || e.target === document.getElementById('modalOverlay')) {
+                document.getElementById('modalOverlay').classList.remove('active');
+            }
+        }
+        
+        function generateApiKey() {
+            const key = 'tap_' + Array.from(crypto.getRandomValues(new Uint8Array(24)))
+                .map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 32);
+            document.getElementById('apiKeyInput').value = key;
+            showToast('API key generated! Keep it secure.');
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadIntegrations);
+    </script>
+</body>
+</html>

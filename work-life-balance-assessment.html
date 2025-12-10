@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work-Life Balance Assessment - TAP-IN</title>
+    <style>
+        :root { --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981; --green-glow: rgba(16,185,129,0.3); --gold: #fbbf24; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%); margin-bottom: 30px; }
+        .header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 15px; background: linear-gradient(135deg, var(--blue) 0%, var(--green) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: var(--light-grey); font-size: 1.1rem; max-width: 500px; margin: 0 auto 25px; }
+        .wheel-preview { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 30px auto; max-width: 400px; }
+        .wheel-item { background: var(--mid-grey); padding: 15px 10px; border-radius: 12px; text-align: center; font-size: 0.8rem; }
+        .wheel-item .icon { font-size: 1.5rem; margin-bottom: 5px; }
+        .start-btn { background: linear-gradient(135deg, var(--green), #059669); color: white; border: none; padding: 18px 50px; font-size: 1.2rem; font-weight: 600; border-radius: 12px; cursor: pointer; }
+        .progress-container { position: sticky; top: 0; background: var(--dark-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--mid-grey); z-index: 100; display: none; }
+        .progress-container.show { display: block; }
+        .progress-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .progress-bar { height: 8px; background: var(--mid-grey); border-radius: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--green)); border-radius: 10px; transition: width 0.5s; }
+        .question-card { background: var(--dark-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; border: 1px solid var(--mid-grey); display: none; }
+        .question-card.active { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .section-header { background: var(--mid-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px; }
+        .section-header .icon { font-size: 2rem; }
+        .section-header .text h3 { font-size: 1.1rem; margin-bottom: 3px; }
+        .section-header .text p { font-size: 0.85rem; color: var(--light-grey); }
+        .question-text { font-size: 1.3rem; font-weight: 600; margin-bottom: 25px; }
+        .rating-scale { display: flex; justify-content: space-between; gap: 8px; margin: 20px 0; }
+        .rating-option { flex: 1; text-align: center; padding: 20px 10px; background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; cursor: pointer; transition: all 0.2s; }
+        .rating-option:hover { border-color: var(--green); }
+        .rating-option.selected { border-color: var(--green); background: rgba(16,185,129,0.15); }
+        .rating-option .value { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .rating-option .label { font-size: 0.7rem; color: var(--light-grey); }
+        .insight-card { background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(16,185,129,0.1)); border-left: 4px solid var(--blue); border-radius: 12px; padding: 25px; margin-top: 25px; display: none; }
+        .insight-card.show { display: block; }
+        .insight-card .title { font-weight: 600; color: var(--blue); margin-bottom: 10px; }
+        .insight-card .content { color: var(--light-grey); margin-bottom: 15px; }
+        .insight-card .quote { font-style: italic; padding: 15px; background: var(--mid-grey); border-radius: 8px; border-left: 3px solid var(--gold); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--green), #059669); color: white; }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .toast { position: fixed; top: 20px; right: 20px; background: var(--green); color: white; padding: 15px 25px; border-radius: 12px; z-index: 1002; display: none; }
+        .toast.show { display: block; }
+        .results-section { display: none; }
+        .results-section.active { display: block; }
+        .result-hero { text-align: center; padding: 50px 30px; border-radius: 20px; margin-bottom: 30px; background: linear-gradient(135deg, var(--dark-grey), var(--mid-grey)); }
+        .overall-score { font-size: 5rem; font-weight: 700; background: linear-gradient(135deg, var(--blue), var(--green)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .score-label { font-size: 1.2rem; color: var(--light-grey); margin-bottom: 20px; }
+        .wheel-scores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; }
+        .wheel-score { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; }
+        .wheel-score .header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .wheel-score .header .icon { font-size: 1.5rem; }
+        .wheel-score .header .name { font-weight: 600; }
+        .wheel-score .bar { height: 8px; background: var(--mid-grey); border-radius: 10px; overflow: hidden; }
+        .wheel-score .bar-fill { height: 100%; border-radius: 10px; }
+        .wheel-score .value { text-align: right; font-size: 0.9rem; color: var(--light-grey); margin-top: 5px; }
+        .result-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .result-card h3 { margin-bottom: 15px; }
+        .result-card ul { list-style: none; }
+        .result-card li { padding: 10px 0; border-bottom: 1px solid var(--mid-grey); color: var(--light-grey); }
+        .result-card li:last-child { border-bottom: none; }
+        .cta-section { background: linear-gradient(135deg, var(--green), #059669); border-radius: 20px; padding: 40px; text-align: center; }
+        .cta-section .btn { background: white; color: var(--green); margin-top: 15px; }
+        .lang-switch { position: fixed; top: 20px; right: 20px; display: flex; gap: 5px; background: var(--dark-grey); padding: 5px; border-radius: 8px; z-index: 100; }
+        .lang-btn { padding: 8px 14px; border: none; border-radius: 6px; cursor: pointer; background: transparent; color: var(--light-grey); }
+        .lang-btn.active { background: var(--green); color: white; }
+        .celebration { position: fixed; inset: 0; background: rgba(13,13,20,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .celebration.show { display: flex; }
+        .celebration-content { text-align: center; }
+        .celebration-icon { font-size: 5rem; margin-bottom: 20px; }
+        .celebration-text { font-size: 1.5rem; font-weight: 600; margin-bottom: 30px; }
+        @media (max-width: 600px) { .nav-buttons { flex-direction: column; } .btn { width: 100%; } .rating-scale { flex-wrap: wrap; } .rating-option { min-width: calc(33% - 6px); } .wheel-scores, .wheel-preview { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+    <div class="lang-switch"><button class="lang-btn active">EN</button><button class="lang-btn" onclick="switchLang('de')">DE</button></div>
+    <div class="toast" id="toast">+20 XP</div>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <h1>Work-Life Balance Assessment</h1>
+                <p class="subtitle">Measure satisfaction across 8 life dimensions. Discover where you're thriving and where you need attention.</p>
+                <div class="wheel-preview">
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>Career</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>Finance</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>Relationships</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/><path d="M12 5v14"/><path d="M9 18h6"/></svg></div>Health</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>Growth</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg></div>Fun</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>Environment</div>
+                    <div class="wheel-item"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>Purpose</div>
+                </div>
+                <button class="start-btn" onclick="startAssessment()">Start Assessment</button>
+                <p style="margin-top: 20px; color: var(--light-grey);">~5 minutes • 16 questions • Visual results</p>
+            </div>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-top"><span id="progressLabel">Question 1 of 16</span><span id="progressXP" style="color: var(--gold);">+0 XP</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="results-section" id="resultsSection"><div id="resultsContent"></div></div>
+    </div>
+    <div class="celebration" id="celebration"><div class="celebration-content"><div class="celebration-icon" id="celebrationIcon"></div><div class="celebration-text" id="celebrationText"></div><button class="btn btn-primary" onclick="closeCelebration()">Continue</button></div></div>
+    <script>
+        const categories = [
+            { id: 'career', name: 'Career', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>', color: '#3b82f6', questions: [
+                { q: 'I find my work meaningful and fulfilling', insight: { title: 'Purpose at Work', content: 'Gallup research: People who find meaning at work are 3x more likely to stay and 1.7x more satisfied.', quote: '"Choose a job you love, and you will never work a day in your life." - Confucius' }},
+                { q: 'I have opportunities to grow professionally', insight: { title: 'Growth Trajectory', content: 'LinkedIn data: #1 reason people leave jobs is lack of growth opportunity, not compensation.', quote: '"The only thing worse than training employees and losing them is not training them and keeping them." - Zig Ziglar' }}
+            ]},
+            { id: 'finance', name: 'Finance', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>', color: '#10b981', questions: [
+                { q: 'I feel financially secure and stable', insight: { title: 'Financial Peace', content: 'APA research: Financial stress is the #1 source of anxiety for Americans, affecting sleep and relationships.', quote: '"Financial peace isn\'t the acquisition of stuff. It\'s learning to live on less than you make." - Dave Ramsey' }},
+                { q: 'I\'m making progress toward my financial goals', insight: { title: 'Financial Progress', content: 'Those who write financial goals are 42% more likely to achieve them (Dominican University study).', quote: '"A budget is telling your money where to go instead of wondering where it went." - Dave Ramsey' }}
+            ]},
+            { id: 'relationships', name: 'Relationships', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>', color: '#ef4444', questions: [
+                { q: 'I have deep, meaningful connections with loved ones', insight: { title: 'Quality Connections', content: 'Harvard\'s 80-year study: Quality of relationships is the #1 predictor of happiness and longevity.', quote: '"The quality of your relationships determines the quality of your life." - Esther Perel' }},
+                { q: 'I invest adequate time in my most important relationships', insight: { title: 'Relationship Investment', content: 'Research shows we need 200+ hours to form a close friendship. Most adults have shrinking friend circles.', quote: '"In the end, it\'s not the years in your life that count. It\'s the life in your years." - Abraham Lincoln' }}
+            ]},
+            { id: 'health', name: 'Health', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/><path d="M12 5v14"/><path d="M9 18h6"/></svg>', color: '#f59e0b', questions: [
+                { q: 'I take good care of my physical health', insight: { title: 'Physical Foundation', content: 'Exercise improves cognitive function by 20% and reduces depression risk by 30%.', quote: '"Take care of your body. It\'s the only place you have to live." - Jim Rohn' }},
+                { q: 'I manage stress effectively and sleep well', insight: { title: 'Recovery Matters', content: 'Sleep deprivation costs US businesses $411 billion annually in lost productivity (RAND study).', quote: '"Sleep is the best meditation." - Dalai Lama' }}
+            ]},
+            { id: 'growth', name: 'Personal Growth', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', color: '#8b5cf6', questions: [
+                { q: 'I\'m actively learning and developing new skills', insight: { title: 'Continuous Learning', content: 'World Economic Forum: 50% of employees need reskilling by 2025. Growth mindset is essential.', quote: '"Live as if you were to die tomorrow. Learn as if you were to live forever." - Gandhi' }},
+                { q: 'I\'m making progress on personal goals', insight: { title: 'Goal Progress', content: 'People who write goals are 10x more likely to achieve them than those who don\'t (Harvard MBA study).', quote: '"A goal without a plan is just a wish." - Antoine de Saint-Exupéry' }}
+            ]},
+            { id: 'fun', name: 'Fun & Recreation', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>', color: '#ec4899', questions: [
+                { q: 'I regularly engage in activities I enjoy', insight: { title: 'Joy Factor', content: 'Play and recreation increase creativity by 60% and reduce burnout risk by 40%.', quote: '"We don\'t stop playing because we grow old; we grow old because we stop playing." - George Bernard Shaw' }},
+                { q: 'I have hobbies and interests outside of work', insight: { title: 'Interest Diversity', content: 'Research shows diverse interests correlate with higher resilience and life satisfaction.', quote: '"Almost everything will work again if you unplug it for a few minutes, including you." - Anne Lamott' }}
+            ]},
+            { id: 'environment', name: 'Physical Environment', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>', color: '#06b6d4', questions: [
+                { q: 'My living space supports my wellbeing', insight: { title: 'Environmental Impact', content: 'Environmental psychology: Clutter increases cortisol by 30%. Your space affects your mind.', quote: '"Have nothing in your house that you do not know to be useful or believe to be beautiful." - William Morris' }},
+                { q: 'I feel comfortable and at peace in my surroundings', insight: { title: 'Sanctuary Creation', content: 'Japanese concept of "Ba": The right environment enables better thinking and creativity.', quote: '"Your home should be the antidote to stress, not the cause of it." - Peter Walsh' }}
+            ]},
+            { id: 'purpose', name: 'Purpose & Meaning', icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>', color: '#84cc16', questions: [
+                { q: 'I have a clear sense of purpose in life', insight: { title: 'Life Purpose', content: 'Ikigai research: Those with clear purpose live 7 years longer and report 50% higher satisfaction.', quote: '"He who has a why to live can bear almost any how." - Friedrich Nietzsche' }},
+                { q: 'My daily activities align with my values', insight: { title: 'Values Alignment', content: 'When actions align with values, stress decreases 40% and engagement increases 60%.', quote: '"Happiness is when what you think, what you say, and what you do are in harmony." - Gandhi' }}
+            ]}
+        ];
+        const scores = {}; categories.forEach(c => scores[c.id] = []);
+        let currentQ = 0, totalXP = 0;
+        const allQuestions = categories.flatMap(c => c.questions.map(q => ({ ...q, category: c })));
+
+        function startAssessment() { document.getElementById('introScreen').style.display = 'none'; document.getElementById('progressContainer').classList.add('show'); renderQ(); }
+        
+        function renderQ() {
+            const q = allQuestions[currentQ];
+            const isNewSection = currentQ === 0 || allQuestions[currentQ - 1].category.id !== q.category.id;
+            document.getElementById('questionsContainer').innerHTML = `
+                <div class="question-card active">
+                    ${isNewSection ? `<div class="section-header"><div class="icon">${q.category.icon}</div><div class="text"><h3>${q.category.name}</h3><p>Rate your satisfaction in this area</p></div></div>` : ''}
+                    <div class="question-text">${q.q}</div>
+                    <div class="rating-scale">
+                        ${[1,2,3,4,5,6,7,8,9,10].map(n => `<div class="rating-option" onclick="rate(${n})"><div class="value">${n}</div><div class="label">${n <= 3 ? 'Low' : n <= 6 ? 'Med' : 'High'}</div></div>`).join('')}
+                    </div>
+                    <div class="insight-card" id="insightCard"><div class="title">${q.insight.title}</div><div class="content">${q.insight.content}</div><div class="quote">${q.insight.quote}</div></div>
+                    <div class="nav-buttons">${currentQ > 0 ? '<button class="btn btn-secondary" onclick="prev()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back</button>' : '<div></div>'}<button class="btn btn-primary" id="nextBtn" onclick="next()" disabled>${currentQ === allQuestions.length - 1 ? 'See Results' : 'Continue'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>
+                </div>`;
+            document.getElementById('progressFill').style.width = `${(currentQ / allQuestions.length) * 100}%`;
+            document.getElementById('progressLabel').textContent = `Question ${currentQ + 1} of ${allQuestions.length}`;
+        }
+
+        function rate(n) {
+            document.querySelectorAll('.rating-option').forEach(o => o.classList.remove('selected'));
+            event.target.closest('.rating-option').classList.add('selected');
+            scores[allQuestions[currentQ].category.id].push(n);
+            document.getElementById('insightCard').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+            totalXP += 20;
+            document.getElementById('progressXP').textContent = `+${totalXP} XP`;
+            const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1500);
+        }
+
+        function next() { 
+            if (currentQ < allQuestions.length - 1) { 
+                currentQ++; 
+                renderQ(); 
+                if (currentQ === 8) showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', 'Halfway through!'); 
+            } else showResults(); 
+        }
+        function prev() { if (currentQ > 0) { scores[allQuestions[currentQ].category.id].pop(); currentQ--; renderQ(); } }
+        function showCelebration(icon, text) { document.getElementById('celebrationIcon').textContent = icon; document.getElementById('celebrationText').textContent = text; document.getElementById('celebration').classList.add('show'); }
+        function closeCelebration() { document.getElementById('celebration').classList.remove('show'); }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.display = 'none';
+            const catScores = categories.map(c => ({ ...c, score: Math.round(scores[c.id].reduce((a,b) => a+b, 0) / scores[c.id].length * 10) }));
+            const overall = Math.round(catScores.reduce((a, c) => a + c.score, 0) / catScores.length);
+            const sorted = [...catScores].sort((a, b) => a.score - b.score);
+            const lowest = sorted[0], highest = sorted[sorted.length - 1];
+            showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>', `Assessment complete! +${totalXP} XP`);
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="result-hero"><div class="overall-score">${overall}%</div><div class="score-label">Overall Life Balance</div><p style="color: var(--light-grey); max-width: 400px; margin: 0 auto;">${overall >= 70 ? 'Great balance! Focus on maintaining and fine-tuning.' : overall >= 50 ? 'Good foundation with room for growth in key areas.' : 'Several areas need attention. Start with one focus area.'}</p></div>
+                <div class="wheel-scores">${catScores.map(c => `<div class="wheel-score"><div class="header"><div class="icon">${c.icon}</div><div class="name">${c.name}</div></div><div class="bar"><div class="bar-fill" style="width: ${c.score}%; background: ${c.color};"></div></div><div class="value">${c.score}%</div></div>`).join('')}</div>
+                <div class="result-card"><h3>Strongest Area: ${highest.name} (${highest.score}%)</h3><ul><li>This is your foundation. Use it to support growth in other areas.</li><li>What practices here can you apply elsewhere?</li></ul></div>
+                <div class="result-card"><h3>Focus Area: ${lowest.name} (${lowest.score}%)</h3><ul><li>Small improvements here will have the biggest impact on overall satisfaction.</li><li>Start with one small change this week.</li></ul></div>
+                <div class="result-card"><h3>30-Day Challenge</h3><ul><li><strong>Week 1:</strong> Identify one specific change in ${lowest.name}</li><li><strong>Week 2:</strong> Implement daily for 7 days</li><li><strong>Week 3:</strong> Add a second practice</li><li><strong>Week 4:</strong> Re-assess and adjust</li></ul></div>
+                <div class="cta-section"><h3>Build Better Balance</h3><p>The TAP-IN Belt System includes tools for every life dimension.</p><a href="gym-dashboard.html" class="btn">Explore Belt System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`;
+            localStorage.setItem('tapin-work-life-balance', JSON.stringify({ overall, categories: catScores.map(c => ({ id: c.id, score: c.score })), completedAt: new Date().toISOString(), xp: totalXP }));
+        }
+        function switchLang(lang) { if (lang === 'de') window.location.href = 'work-life-balance-assessment-de.html'; }
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+</body>
+</html>

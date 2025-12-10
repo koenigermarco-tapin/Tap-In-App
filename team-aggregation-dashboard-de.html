@@ -1,0 +1,1205 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Team-Dashboard | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .back-link:hover { 
+            color: var(--white); 
+            background: var(--mid-grey);
+        }
+        
+        .team-badge {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .team-name {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+        
+        .team-code {
+            padding: 6px 12px;
+            background: var(--green-dim);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            color: var(--green);
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-family: monospace;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--mid-grey);
+            color: var(--white);
+        }
+        .btn-secondary:hover {
+            background: #3a3a4a;
+        }
+        
+        /* Main Content */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--green);
+            transform: translateY(-2px);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--green);
+            line-height: 1;
+        }
+        
+        .stat-value.gold { color: var(--gold); }
+        .stat-value.blue { color: var(--blue); }
+        .stat-value.purple { color: var(--purple); }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 8px;
+        }
+        
+        .stat-trend {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+        
+        .stat-trend.up { color: var(--green); }
+        .stat-trend.down { color: var(--red); }
+        
+        /* Main Grid Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 24px;
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Health Score Card */
+        .health-score-card {
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .health-score-ring {
+            width: 200px;
+            height: 200px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+        
+        .health-score-value {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: var(--white);
+        }
+        
+        .health-score-label {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            margin-bottom: 16px;
+        }
+        
+        .health-trend {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.95rem;
+            color: var(--green);
+        }
+        
+        /* Radar Chart */
+        .radar-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Insights Cards */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+        
+        .insight-card {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .insight-card.strength {
+            border-left: 4px solid var(--green);
+        }
+        
+        .insight-card.opportunity {
+            border-left: 4px solid var(--orange);
+        }
+        
+        .insight-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--light-grey);
+            margin-bottom: 6px;
+        }
+        
+        .insight-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        
+        .insight-title.green { color: var(--green); }
+        .insight-title.orange { color: var(--orange); }
+        
+        .insight-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Mitglieder-Fortschritt Section */
+        .progress-section {
+            grid-column: 1 / -1;
+        }
+        
+        .member-progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .member-row {
+            display: grid;
+            grid-template-columns: 200px 1fr 80px 100px 80px;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--black);
+            border-radius: 12px;
+            transition: all 0.2s;
+        }
+        
+        .member-row:hover {
+            background: var(--mid-grey);
+        }
+        
+        .member-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        
+        .member-name {
+            font-weight: 600;
+        }
+        
+        .member-email {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+        
+        .progress-bar-container {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-bar-fill.excellent { background: var(--green); }
+        .progress-bar-fill.good { background: var(--blue); }
+        .progress-bar-fill.moderate { background: var(--gold); }
+        .progress-bar-fill.low { background: var(--orange); }
+        .progress-bar-fill.none { background: var(--red); }
+        
+        .progress-pct {
+            font-weight: 700;
+            text-align: right;
+        }
+        
+        .belt-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .belt-badge.white { background: rgba(255,255,255,0.1); color: #fff; }
+        .belt-badge.blue { background: rgba(59,130,246,0.2); color: #60a5fa; }
+        .belt-badge.purple { background: rgba(139,92,246,0.2); color: #a78bfa; }
+        .belt-badge.brown { background: rgba(161,98,7,0.2); color: #d97706; }
+        .belt-badge.black { background: rgba(0,0,0,0.5); color: #fff; border: 1px solid #444; }
+        
+        .member-xp {
+            font-weight: 700;
+            color: var(--gold);
+            text-align: right;
+        }
+        
+        /* Handlungsbedarf Section */
+        .action-section {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 1px solid rgba(249, 115, 22, 0.3);
+        }
+        
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .action-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 12px 16px;
+            background: var(--black);
+            border-radius: 10px;
+        }
+        
+        .action-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(249, 115, 22, 0.2);
+            color: var(--orange);
+        }
+        
+        .action-text {
+            flex: 1;
+        }
+        
+        .action-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .action-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .action-btn {
+            padding: 8px 16px;
+            background: var(--orange);
+            color: var(--black);
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        
+        /* Distribution Charts */
+        .distribution-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 30px;
+        }
+        
+        .distribution-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .distribution-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .distribution-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .dist-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .dist-label {
+            width: 90px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .dist-bar {
+            flex: 1;
+            height: 24px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .dist-fill {
+            height: 100%;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            padding-left: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--black);
+            transition: width 0.5s ease;
+        }
+        
+        .dist-fill.sprinter { background: var(--red); }
+        .dist-fill.jogger { background: var(--blue); }
+        .dist-fill.ultrarunner { background: var(--green); }
+        
+        .dist-fill.commander { background: #ef4444; }
+        .dist-fill.collaborator { background: #3b82f6; }
+        .dist-fill.catalyst { background: #f59e0b; }
+        .dist-fill.coach { background: #10b981; }
+        
+        .dist-fill.direct { background: #ef4444; }
+        .dist-fill.analytical { background: #3b82f6; }
+        .dist-fill.supportive { background: #10b981; }
+        .dist-fill.expressive { background: #f59e0b; }
+        
+        .dist-count {
+            width: 30px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .stats-grid { grid-template-columns: repeat(3, 1fr); }
+            .dashboard-grid { grid-template-columns: 1fr; }
+            .member-row { grid-template-columns: 1fr; gap: 12px; }
+            .distribution-grid { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .header-content { flex-direction: column; gap: 16px; }
+            .header-actions { width: 100%; justify-content: center; }
+            .insights-grid { grid-template-columns: 1fr; }
+        }
+        
+        /* Heroicon styles */
+        .hi {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-grey);
+        }
+        
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+        
+        /* Language Switcher */
+        .lang-switch {
+            padding: 6px 12px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: 0.8rem;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .lang-switch:hover {
+            background: #3a3a4a;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <a href="business-portal.html" class="back-link">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Zurück zum Portal
+                </a>
+                <div class="team-badge">
+                    <span class="team-name" id="teamNameDisplay">Dein Team</span>
+                    <span class="team-code" id="teamCodeDisplay">TEAM-XXXXXX</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <a href="team-aggregation-dashboard.html" class="lang-switch">EN</a>
+                <button class="btn btn-secondary" onclick="sendReminders()">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    Erinnerungen senden
+                </button>
+                <button class="btn btn-primary" onclick="generateReport()">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Bericht erstellen
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalMembers">0</div>
+                <div class="stat-label">Teammitglieder</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value blue" id="completedAssessments">0</div>
+                <div class="stat-label">Abgeschlossene Tests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value gold" id="avgXP">0</div>
+                <div class="stat-label">Durchschn. XP</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value purple" id="activeWeek">0</div>
+                <div class="stat-label">Diese Woche aktiv</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="completionRate">0%</div>
+                <div class="stat-label">Abschlussrate</div>
+                <div class="stat-trend up" id="completionTrend">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg>
+                    +5% vs. letzten Monat
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Team-Gesundheitswert -->
+            <div class="card health-score-card">
+                <div class="card-title" style="justify-content: center; margin-bottom: 20px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                    Team-Gesundheitswert
+                </div>
+                <div class="health-score-ring">
+                    <canvas id="healthRingChart"></canvas>
+                    <div class="health-score-value" id="healthScore">--</div>
+                </div>
+                <div class="health-score-label">Basierend auf Five Dysfunctions Bewertung</div>
+                <div class="health-trend" id="healthTrend">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 15l7-7 7 7"/></svg>
+                    Verbesserung
+                </div>
+            </div>
+            
+            <!-- Five Dysfunctions Radar -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Five Dysfunctions Analyse
+                    </div>
+                    <a href="team-assessment-enhanced-v2.html" class="btn btn-secondary" style="padding: 6px 12px; font-size: 0.8rem;">
+                        Test starten
+                    </a>
+                </div>
+                <div class="radar-container">
+                    <canvas id="dysfunctionsRadar"></canvas>
+                </div>
+                
+                <div class="insights-grid">
+                    <div class="insight-card strength">
+                        <div class="insight-label">Größte Stärke</div>
+                        <div class="insight-title green" id="topStrength">Trust</div>
+                        <div class="insight-desc" id="topStrengthDesc">Dein Team fühlt sich sicher verletzlich zu sein</div>
+                    </div>
+                    <div class="insight-card opportunity">
+                        <div class="insight-label">Entwicklungsbereich</div>
+                        <div class="insight-title orange" id="topOpportunity">Conflict</div>
+                        <div class="insight-desc" id="topOpportunityDesc">Team vermeidet schwierige Gespräche</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mitglieder-Fortschritt -->
+            <div class="card progress-section">
+                <div class="card-header">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                        Mitglieder-Fortschritt
+                    </div>
+                    <span style="color: var(--light-grey); font-size: 0.9rem;" id="memberCountLabel">0 Mitglieder</span>
+                </div>
+                
+                <div class="member-progress-list" id="memberProgressList">
+                    <!-- Members will be inserted here -->
+                </div>
+            </div>
+            
+            <!-- Actions Required -->
+            <div class="card action-section" id="actionSection" style="display: none;">
+                <div class="card-header">
+                    <div class="card-title" style="color: var(--orange);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        Handlungsbedarf
+                    </div>
+                </div>
+                
+                <div class="action-list" id="actionList">
+                    <!-- Actions will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Distribution Charts -->
+        <div class="distribution-grid">
+            <!-- Arbeitstyp-Verteilung -->
+            <div class="distribution-card">
+                <div class="distribution-title">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    Arbeitstyp-Verteilung
+                </div>
+                <div class="distribution-bars" id="workerTypeDist">
+                    <div class="dist-row">
+                        <span class="dist-label">Sprinter</span>
+                        <div class="dist-bar"><div class="dist-fill sprinter" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Jogger</span>
+                        <div class="dist-bar"><div class="dist-fill jogger" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Ultrarunner</span>
+                        <div class="dist-bar"><div class="dist-fill ultrarunner" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leadership Style Distribution -->
+            <div class="distribution-card">
+                <div class="distribution-title">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    Führungsstile
+                </div>
+                <div class="distribution-bars" id="leadershipDist">
+                    <div class="dist-row">
+                        <span class="dist-label">Commander</span>
+                        <div class="dist-bar"><div class="dist-fill commander" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Collaborator</span>
+                        <div class="dist-bar"><div class="dist-fill collaborator" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Catalyst</span>
+                        <div class="dist-bar"><div class="dist-fill catalyst" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Coach</span>
+                        <div class="dist-bar"><div class="dist-fill coach" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Communication Style Distribution -->
+            <div class="distribution-card">
+                <div class="distribution-title">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    Kommunikationsstile
+                </div>
+                <div class="distribution-bars" id="commDist">
+                    <div class="dist-row">
+                        <span class="dist-label">Direct</span>
+                        <div class="dist-bar"><div class="dist-fill direct" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Analytical</span>
+                        <div class="dist-bar"><div class="dist-fill analytical" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Supportive</span>
+                        <div class="dist-bar"><div class="dist-fill supportive" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                    <div class="dist-row">
+                        <span class="dist-label">Expressive</span>
+                        <div class="dist-bar"><div class="dist-fill expressive" style="width: 0%"></div></div>
+                        <span class="dist-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Team Dashboard Controller
+        const TeamDashboard = {
+            // Get team data from localStorage
+            getTeamData() {
+                return {
+                    code: localStorage.getItem('teamCode') || 'TEAM-XXXXXX',
+                    name: localStorage.getItem('teamName') || 'Dein Team',
+                    Mitglieder: JSON.parse(localStorage.getItem('teamMembers') || '[]'),
+                    dysfunctions: JSON.parse(localStorage.getItem('teamDysfunctions') || 'null'),
+                    distributions: JSON.parse(localStorage.getItem('teamDistributions') || 'null')
+                };
+            },
+            
+            // Calculate team health score
+            calculateHealthScore(dysfunctions) {
+                if (!dysfunctions) return null;
+                const scores = [
+                    dysfunctions.trust || 0,
+                    dysfunctions.conflict || 0,
+                    dysfunctions.commitment || 0,
+                    dysfunctions.accountability || 0,
+                    dysfunctions.results || 0
+                ];
+                return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+            },
+            
+            // Get progress class based on percentage
+            getProgressClass(pct) {
+                if (pct >= 80) return 'excellent';
+                if (pct >= 60) return 'good';
+                if (pct >= 40) return 'moderate';
+                if (pct > 0) return 'low';
+                return 'none';
+            },
+            
+            // Get initials from name
+            getInitials(name) {
+                return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+            },
+            
+            // Render member progress list
+            renderMemberProgress(Mitglieder) {
+                const container = document.getElementById('memberProgressList');
+                
+                if (Mitglieder.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                                <circle cx="9" cy="7" r="4"/>
+                                <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                            </svg>
+                            <h3>No Teammitglieder Yet</h3>
+                            <p>Add Mitglieder from the Business Portal to see their progress here.</p>
+                            <a href="business-portal.html" class="btn btn-primary" style="margin-top: 16px;">Mitglieder hinzufügen</a>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = Mitglieder.map(member => {
+                    const completion = member.completion || Math.min(100, (member.xp / 500) * 100);
+                    const progressClass = this.getProgressClass(completion);
+                    
+                    return `
+                        <div class="member-row">
+                            <div class="member-info">
+                                <div class="member-avatar">${this.getInitials(member.name)}</div>
+                                <div>
+                                    <div class="member-name">${member.name}</div>
+                                    <div class="member-email">${member.email}</div>
+                                </div>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar-fill ${progressClass}" style="width: ${completion}%"></div>
+                            </div>
+                            <div class="progress-pct">${Math.round(completion)}%</div>
+                            <div class="belt-badge ${member.belt || 'white'}">
+                                ${(member.belt || 'White').charAt(0).toUpperCase() + (member.belt || 'white').slice(1)} ${member.stripe || 1}/4
+                            </div>
+                            <div class="member-xp">${member.xp || 0} XP</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('memberCountLabel').textContent = `${Mitglieder.length} member${Mitglieder.length !== 1 ? 's' : ''}`;
+            },
+            
+            // Render action items
+            renderActions(Mitglieder) {
+                const container = document.getElementById('actionList');
+                const section = document.getElementById('actionSection');
+                const actions = [];
+                
+                // Check for Mitglieder who haven't started
+                const notStarted = Mitglieder.filter(m => (m.xp || 0) === 0);
+                if (notStarted.length > 0) {
+                    actions.push({
+                        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                        title: `${notStarted.length} member${notStarted.length > 1 ? 's haven\'t' : ' hasn\'t'} started`,
+                        desc: notStarted.map(m => m.name).slice(0, 3).join(', ') + (notStarted.length > 3 ? '...' : ''),
+                        action: 'Erinnerung senden'
+                    });
+                }
+                
+                // Check for stalled progress
+                const stalled = Mitglieder.filter(m => {
+                    const lastActive = new Date(m.lastActive);
+                    const twoWeeksAgo = new Date();
+                    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+                    return (m.xp || 0) > 0 && lastActive < twoWeeksAgo;
+                });
+                
+                if (stalled.length > 0) {
+                    actions.push({
+                        icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+                        title: `${stalled.length} member${stalled.length > 1 ? 's' : ''} stalled`,
+                        desc: 'Keine Aktivität in den letzten 2 Wochen',
+                        action: 'Reaktivieren'
+                    });
+                }
+                
+                if (actions.length === 0) {
+                    section.style.display = 'none';
+                    return;
+                }
+                
+                section.style.display = 'block';
+                container.innerHTML = actions.map(action => `
+                    <div class="action-item">
+                        <div class="action-icon">${action.icon}</div>
+                        <div class="action-text">
+                            <div class="action-title">${action.title}</div>
+                            <div class="action-desc">${action.desc}</div>
+                        </div>
+                        <button class="action-btn">${action.action}</button>
+                    </div>
+                `).join('');
+            },
+            
+            // Render distribution charts
+            renderDistributions(Mitglieder) {
+                // Worker Types
+                const workerCounts = { sprinter: 0, jogger: 0, ultrarunner: 0 };
+                Mitglieder.forEach(m => {
+                    const type = (m.workerType || 'jogger').toLowerCase();
+                    if (workerCounts.hasOwnProperty(type)) workerCounts[type]++;
+                });
+                this.updateDistBars('workerTypeDist', workerCounts, Mitglieder.length);
+                
+                // Führungsstile
+                const leaderCounts = { commander: 0, collaborator: 0, catalyst: 0, coach: 0 };
+                Mitglieder.forEach(m => {
+                    const style = (m.leadershipStyle || 'collaborator').toLowerCase();
+                    if (leaderCounts.hasOwnProperty(style)) leaderCounts[style]++;
+                });
+                this.updateDistBars('leadershipDist', leaderCounts, Mitglieder.length);
+                
+                // Kommunikationsstile
+                const commCounts = { direct: 0, analytical: 0, supportive: 0, expressive: 0 };
+                Mitglieder.forEach(m => {
+                    const comm = (m.commStyle || 'supportive').toLowerCase();
+                    if (commCounts.hasOwnProperty(comm)) commCounts[comm]++;
+                });
+                this.updateDistBars('commDist', commCounts, Mitglieder.length);
+            },
+            
+            updateDistBars(containerId, counts, total) {
+                const container = document.getElementById(containerId);
+                const rows = container.querySelectorAll('.dist-row');
+                
+                rows.forEach(row => {
+                    const label = row.querySelector('.dist-label').textContent.toLowerCase();
+                    const count = counts[label] || 0;
+                    const pct = total > 0 ? (count / total) * 100 : 0;
+                    
+                    row.querySelector('.dist-fill').style.width = pct + '%';
+                    row.querySelector('.dist-count').textContent = count;
+                });
+            },
+            
+            // Initialize charts
+            initCharts(dysfunctions) {
+                // Health Ring Chart
+                const healthCtx = document.getElementById('healthRingChart').getContext('2d');
+                const healthScore = this.calculateHealthScore(dysfunctions) || 0;
+                
+                new Chart(healthCtx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [healthScore, 100 - healthScore],
+                            backgroundColor: ['#10b981', '#2a2a3a'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        cutout: '80%',
+                        plugins: { legend: { display: false } },
+                        responsive: true,
+                        maintainAspectRatio: true
+                    }
+                });
+                
+                document.getElementById('healthScore').textContent = healthScore || '--';
+                
+                // Five Dysfunctions Radar
+                const radarCtx = document.getElementById('dysfunctionsRadar').getContext('2d');
+                
+                const radarData = dysfunctions ? [
+                    dysfunctions.trust || 0,
+                    dysfunctions.conflict || 0,
+                    dysfunctions.commitment || 0,
+                    dysfunctions.accountability || 0,
+                    dysfunctions.results || 0
+                ] : [0, 0, 0, 0, 0];
+                
+                new Chart(radarCtx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['Trust', 'Conflict', 'Commitment', 'Accountability', 'Results'],
+                        datasets: [{
+                            label: 'Team Score',
+                            data: radarData,
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            borderColor: '#10b981',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#10b981'
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100,
+                                ticks: {
+                                    stepSize: 20,
+                                    color: '#8a8a9a',
+                                    backdropColor: 'transparent'
+                                },
+                                grid: { color: '#2a2a3a' },
+                                angleLines: { color: '#2a2a3a' },
+                                pointLabels: {
+                                    color: '#ffffff',
+                                    font: { size: 12, weight: '600' }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                
+                // Update insights based on scores
+                if (dysfunctions) {
+                    const scores = {
+                        'Trust': dysfunctions.trust,
+                        'Conflict': dysfunctions.conflict,
+                        'Commitment': dysfunctions.commitment,
+                        'Accountability': dysfunctions.accountability,
+                        'Results': dysfunctions.results
+                    };
+                    
+                    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+                    const top = sorted[0];
+                    const bottom = sorted[sorted.length - 1];
+                    
+                    document.getElementById('topStrength').textContent = top[0];
+                    document.getElementById('topOpportunity').textContent = bottom[0];
+                    
+                    const insights = {
+                        'Trust': { strength: 'Team feels safe being vulnerable', opportunity: 'Build psychological safety first' },
+                        'Conflict': { strength: 'Team engages in healthy debate', opportunity: 'Team vermeidet schwierige Gespräche' },
+                        'Commitment': { strength: 'Team commits to decisions fully', opportunity: 'Decisions lack buy-in' },
+                        'Accountability': { strength: 'Team holds each other accountable', opportunity: 'Standards slip without pushback' },
+                        'Results': { strength: 'Team prioritizes collective outcomes', opportunity: 'Individual goals override team goals' }
+                    };
+                    
+                    document.getElementById('topStrengthDesc').textContent = insights[top[0]].strength;
+                    document.getElementById('topOpportunityDesc').textContent = insights[bottom[0]].opportunity;
+                }
+            },
+            
+            // Update stats
+            updateStats(Mitglieder) {
+                const total = Mitglieder.length;
+                const completed = Mitglieder.filter(m => (m.xp || 0) > 0).length;
+                const avgXP = total > 0 ? Math.round(Mitglieder.reduce((sum, m) => sum + (m.xp || 0), 0) / total) : 0;
+                
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
+                const activeWeek = Mitglieder.filter(m => new Date(m.lastActive) >= weekAgo).length;
+                
+                const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
+                
+                document.getElementById('totalMembers').textContent = total;
+                document.getElementById('completedAssessments').textContent = completed;
+                document.getElementById('avgXP').textContent = avgXP;
+                document.getElementById('activeWeek').textContent = activeWeek;
+                document.getElementById('completionRate').textContent = rate + '%';
+            },
+            
+            // Initialize dashboard
+            init() {
+                const data = this.getTeamData();
+                
+                // Update header
+                document.getElementById('teamCodeDisplay').textContent = data.code;
+                document.getElementById('teamNameDisplay').textContent = data.name;
+                
+                // Demo data if no team data exists
+                if (data.Mitglieder.length === 0) {
+                    // Add demo data for preview
+                    data.Mitglieder = [
+                        { id: 1, name: 'Sarah Johnson', email: 'sarah@company.com', belt: 'blue', stripe: 3, xp: 450, completion: 80, workerType: 'Jogger', leadershipStyle: 'Collaborator', commStyle: 'Supportive', lastActive: new Date().toISOString(), joinedDate: '2024-01-15' },
+                        { id: 2, name: 'Mike Chen', email: 'mike@company.com', belt: 'white', stripe: 4, xp: 280, completion: 60, workerType: 'Sprinter', leadershipStyle: 'Commander', commStyle: 'Direct', lastActive: new Date().toISOString(), joinedDate: '2024-02-01' },
+                        { id: 3, name: 'Lisa Park', email: 'lisa@company.com', belt: 'purple', stripe: 1, xp: 620, completion: 90, workerType: 'Ultrarunner', leadershipStyle: 'Coach', commStyle: 'Analytical', lastActive: new Date().toISOString(), joinedDate: '2024-01-10' },
+                        { id: 4, name: 'Tom Wilson', email: 'tom@company.com', belt: 'white', stripe: 2, xp: 120, completion: 40, workerType: 'Jogger', leadershipStyle: 'Catalyst', commStyle: 'Expressive', lastActive: '2024-11-01', joinedDate: '2024-03-01' },
+                        { id: 5, name: 'Emma Davis', email: 'emma@company.com', belt: 'white', stripe: 1, xp: 0, completion: 0, workerType: null, leadershipStyle: null, commStyle: null, lastActive: '2024-12-01', joinedDate: '2024-12-01' }
+                    ];
+                    
+                    data.dysfunctions = {
+                        trust: 78,
+                        conflict: 62,
+                        commitment: 70,
+                        accountability: 68,
+                        results: 75
+                    };
+                }
+                
+                // Render everything
+                this.updateStats(data.Mitglieder);
+                this.renderMemberProgress(data.Mitglieder);
+                this.renderActions(data.Mitglieder);
+                this.renderDistributions(data.Mitglieder);
+                this.initCharts(data.dysfunctions);
+            }
+        };
+        
+        // Global functions
+        function generateReport() {
+            window.location.href = 'team-health-report-de.html';
+        }
+        
+        function sendReminders() {
+            window.location.href = 'team-send-reminders-de.html';
+        }
+        
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', () => {
+            TeamDashboard.init();
+        });
+    </script>
+</body>
+</html>

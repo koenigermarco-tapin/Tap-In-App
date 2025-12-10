@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Konflikt-Navigator - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--black); min-height: 100vh; color: var(--white); }
+        .lang-switcher { position: fixed; top: 15px; right: 80px; z-index: 101; display: flex; gap: 8px; }
+        .lang-switcher a { padding: 6px 12px; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.8rem; }
+        .lang-switcher a.active { background: var(--green); color: var(--black); }
+        .lang-switcher a:not(.active) { background: rgba(255,255,255,0.1); color: var(--white); }
+        .header { position: fixed; top: 0; left: 0; right: 0; padding: 15px 20px; background: linear-gradient(to bottom, var(--black), transparent); z-index: 100; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+        .stats { display: flex; gap: 15px; }
+        .stat { display: flex; align-items: center; gap: 5px; font-size: 0.85rem; }
+        .xp-stat { color: var(--gold); }
+        .container { max-width: 500px; margin: 0 auto; padding: 80px 20px 100px; }
+        .progress-section { margin-bottom: 25px; }
+        .progress-label { display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--light-grey); margin-bottom: 8px; }
+        .progress-bar { height: 6px; background: var(--mid-grey); border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), #1d4ed8); transition: width 0.5s ease; }
+        .scenario-card { background: var(--dark-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .difficulty-badge { display: inline-flex; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; margin-bottom: 15px; }
+        .difficulty-badge.easy { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .difficulty-badge.medium { background: rgba(212, 168, 83, 0.15); color: var(--gold); }
+        .difficulty-badge.hard { background: rgba(239, 68, 68, 0.15); color: var(--red); }
+        .scenario-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 15px; color: var(--blue); }
+        .scenario-context { background: var(--mid-grey); border-radius: 10px; padding: 15px; margin-bottom: 15px; font-size: 0.95rem; line-height: 1.6; }
+        .scenario-prompt { font-size: 1rem; font-weight: 600; margin-bottom: 20px; color: var(--gold); }
+        .responses { display: flex; flex-direction: column; gap: 10px; }
+        .response-btn { background: var(--mid-grey); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 16px; text-align: left; color: var(--white); font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+        .response-btn:hover { border-color: var(--blue); transform: translateX(5px); }
+        .response-btn.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .response-btn.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        .response-btn.best { border-color: var(--gold); background: rgba(212, 168, 83, 0.15); }
+        .feedback { background: var(--dark-grey); border-radius: 16px; padding: 20px; margin-top: 20px; display: none; animation: fadeIn 0.4s ease; }
+        .feedback.show { display: block; }
+        .feedback-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+        .feedback-title { font-weight: 600; font-size: 1rem; }
+        .feedback.positive .feedback-title { color: var(--green); }
+        .feedback.negative .feedback-title { color: var(--red); }
+        .feedback.best .feedback-title { color: var(--gold); }
+        .feedback-text { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; margin-bottom: 15px; }
+        .xp-earned { display: inline-flex; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; background: rgba(212, 168, 83, 0.15); color: var(--gold); }
+        .continue-btn { width: 100%; padding: 16px; background: var(--blue); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; margin-top: 20px; display: none; }
+        .continue-btn.show { display: block; }
+        .results { display: none; text-align: center; padding: 40px 20px; }
+        .results.show { display: block; }
+        .results-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--blue), #1d4ed8); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .results-icon svg { width: 40px; height: 40px; color: white; }
+        .results-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+        .results-subtitle { color: var(--light-grey); margin-bottom: 30px; }
+        .results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .result-stat { background: var(--dark-grey); border-radius: 12px; padding: 20px 15px; }
+        .result-value { font-size: 1.8rem; font-weight: 800; color: var(--gold); margin-bottom: 5px; }
+        .result-label { font-size: 0.75rem; color: var(--light-grey); text-transform: uppercase; }
+        .insight-box { background: var(--dark-grey); border-left: 3px solid var(--blue); padding: 20px; text-align: left; margin-bottom: 25px; border-radius: 0 12px 12px 0; }
+        .insight-text { font-style: italic; color: var(--white); line-height: 1.6; margin-bottom: 8px; }
+        .insight-author { font-size: 0.85rem; color: var(--blue); }
+        .exit-btn { width: 100%; padding: 18px; background: var(--blue); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-conflict-navigator.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-conflict-navigator-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="lang-switcher">
+        <a href="game-conflict-navigator.html">EN</a>
+        <a href="game-conflict-navigator-de.html" class="active">DE</a>
+    </div>
+    
+    <div class="header">
+        <a href="#" class="back-btn" onclick="exitGame()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Beenden
+        </a>
+        <div class="stats">
+            <div class="stat xp-stat">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <span id="xpDisplay">0</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div id="gameSection">
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>Szenario <span id="currentScenario">1</span> von <span id="totalScenarios">5</span></span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <div class="scenario-card" id="scenarioCard">
+                <span class="difficulty-badge easy" id="difficultyBadge">Einfach</span>
+                <h2 class="scenario-title" id="scenarioTitle">Lade...</h2>
+                <div class="scenario-context" id="scenarioContext">Lade Szenario...</div>
+                <div class="scenario-prompt" id="scenarioPrompt">Was sagst du?</div>
+                <div class="responses" id="responses"></div>
+            </div>
+            
+            <div class="feedback" id="feedback">
+                <div class="feedback-header">
+                    <span class="feedback-title" id="feedbackTitle">Gute Wahl!</span>
+                </div>
+                <p class="feedback-text" id="feedbackText"></p>
+                <span class="xp-earned" id="xpEarnedDisplay">+5 XP</span>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" onclick="nextScenario()">Weiter</button>
+        </div>
+        
+        <div class="results" id="resultsSection">
+            <div class="results-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h2 class="results-title">Konflikt-Navigator Abgeschlossen!</h2>
+            <p class="results-subtitle">Du hast gesunde Konfliktfahigkeiten geubt</p>
+            
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-value" id="finalScore">80%</div>
+                    <div class="result-label">Punktzahl</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="bestChoices">4</div>
+                    <div class="result-label">Beste Wahlen</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="totalXpEarned">+20</div>
+                    <div class="result-label">XP Verdient</div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <p class="insight-text">"Das Ziel von Konflikten ist nicht zu gewinnen, sondern zu verstehen. Wenn beide Parteien sich gehort fuhlen, entstehen Losungen naturlich."</p>
+                <p class="insight-author">— Patrick Lencioni</p>
+            </div>
+            
+            <button class="exit-btn" onclick="exitGame()">Zuruck zum Training</button>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = [
+            {
+                difficulty: 'einfach',
+                title: 'Die Verpasste Deadline',
+                context: 'Dein Kollege hat eine Deadline verpasst, die deine Arbeit beeinflusst hat. Du musstest Uberstunden machen um es auszugleichen. Er hat es nicht anerkannt.',
+                prompt: 'Wie sprichst du das an?',
+                responses: [
+                    { text: "Nichts sagen und hoffen, dass es nicht wieder passiert", type: 'negative', xp: 0, feedback: "Das Gesprach zu vermeiden lasst Groll aufbauen. Das Problem wird sich wahrscheinlich wiederholen." },
+                    { text: "Sich bei deinem Manager uber ihn beschweren", type: 'negative', xp: 0, feedback: "Um ihn herum zu gehen bricht Vertrauen. Sprich Bedenken zuerst direkt an." },
+                    { text: "'Hey, ich wollte uber die Deadline sprechen. Ich musste Uberstunden machen - konnen wir herausfinden, wie wir das verhindern?'", type: 'best', xp: 5, feedback: "Direkt, spezifisch und losungsorientiert. Du hast die Auswirkung genannt ohne anzugreifen." },
+                    { text: "Eine passive-aggressive E-Mail mit CC an das Team senden", type: 'negative', xp: 0, feedback: "Offentliches Blossstellen zerstort psychologische Sicherheit. Zuerst private Gesprache." }
+                ]
+            },
+            {
+                difficulty: 'mittel',
+                title: 'Meinungsverschiedenheit im Meeting',
+                context: 'In einem Team-Meeting schlagt ein Kollege einen Plan vor, den du fur schwer fehlerhaft haltst. Andere scheinen zuzunicken.',
+                prompt: 'Was tust du?',
+                responses: [
+                    { text: "Still bleiben - du willst keinen Konflikt verursachen", type: 'negative', xp: 0, feedback: "Kunstliche Harmonie schadet dem Team. Deine Perspektive zahlt." },
+                    { text: "'Das ist eine schreckliche Idee' sagen und erklaren warum", type: 'negative', xp: 1, feedback: "Du hast dich geaussert, aber die Idee als 'schrecklich' anzugreifen macht ihn defensiv." },
+                    { text: "Klarende Fragen stellen: 'Hilf mir zu verstehen, wie das X behandelt?' Dann deine Bedenken teilen", type: 'best', xp: 5, feedback: "Neugier vor Kritik. Du versuchst zu verstehen bevor du widersprichst." },
+                    { text: "Jetzt zustimmen, dann privat mit anderen uber Bedenken reden", type: 'negative', xp: 0, feedback: "Das schafft Hinterzimmer-Politik. Offen widersprechen, dann gemeinsam committen." }
+                ]
+            },
+            {
+                difficulty: 'mittel',
+                title: 'Der Wiederholte Unterbrecher',
+                context: 'Ein Teamkollege unterbricht dich standig in Meetings. Es ist mehrmals passiert und du wirst frustriert.',
+                prompt: 'Wie gehst du damit um?',
+                responses: [
+                    { text: "Anfangen, sie auch zu unterbrechen", type: 'negative', xp: 0, feedback: "Vergeltung eskaliert Konflikte. Sei das Vorbild fur das Verhalten, das du sehen willst." },
+                    { text: "Im Moment: 'Ich mochte meinen Gedanken zu Ende bringen.' Spater, privat: 'Mir ist aufgefallen, dass wir uns manchmal uber den Mund fahren. Konnen wir daran arbeiten?'", type: 'best', xp: 5, feedback: "Sprich es im Moment ruhig an, dann fuhre ein privates Gesprach uber das Muster." },
+                    { text: "Nie in Meetings mit ihnen sprechen", type: 'negative', xp: 0, feedback: "Ruckzug lost das Problem nicht. Du schweigst dich selbst." },
+                    { text: "Sofort anprangern: 'Hor auf mich zu unterbrechen!'", type: 'negative', xp: 1, feedback: "Offentliche Konfrontation schafft Abwehr. Sei direkt aber nicht angreifend." }
+                ]
+            },
+            {
+                difficulty: 'schwer',
+                title: 'Feedback das Schmerzt',
+                context: 'Dein Manager gibt dir kritisches Feedback, das sich unfair anfuhlt. Du bist verletzt und defensiv, aber er wartet auf deine Antwort.',
+                prompt: 'Was sagst du?',
+                responses: [
+                    { text: "Dich verteidigen und erklaren warum sie falsch liegen", type: 'negative', xp: 0, feedback: "Sofortige Verteidigung verhindert Lernen. Selbst wenn du nicht zustimmst, hor zuerst zu." },
+                    { text: "'Okay' sagen und schnell gehen bevor du etwas sagst, das du bereust", type: 'negative', xp: 1, feedback: "Besser als zu explodieren, aber du hast eine Chance verpasst zu verstehen und verstanden zu werden." },
+                    { text: "'Danke furs Teilen. Ich brauche einen Moment um das zu verarbeiten. Kann ich ein paar klarende Fragen stellen und dann meine Perspektive teilen?'", type: 'best', xp: 5, feedback: "Du hast das Feedback anerkannt, Zeit zum Regulieren gewonnen und einen Dialog eingerichtet." },
+                    { text: "Uberschwanglich entschuldigen und versprechen es besser zu machen", type: 'negative', xp: 1, feedback: "Uber-Entschuldigen ohne Verstandnis ist nicht produktiv. Suche zuerst Klarheit." }
+                ]
+            },
+            {
+                difficulty: 'schwer',
+                title: 'Der Werte-Konflikt',
+                context: 'Ein Kollege handhabt eine Situation auf eine Weise, die mit deinen Werten kollidiert. Es war nicht direkt falsch, aber es hat dich tief gestort.',
+                prompt: 'Wie naherst du dich dem?',
+                responses: [
+                    { text: "Sie still verurteilen und dich distanzieren", type: 'negative', xp: 0, feedback: "Unausgesprochene Urteile schaffen unsichtbare Wande. Versuche ihre Perspektive zu verstehen." },
+                    { text: "Ihnen sagen, dass sie falsch lagen und sich andern sollten", type: 'negative', xp: 0, feedback: "Deine Werte ohne Neugier aufzuzwingen schafft Widerstand, nicht Veranderung." },
+                    { text: "'Mir ist aufgefallen, wie du X gehandhabt hast. Ich bin neugierig auf dein Denken. Ich hatte es vielleicht anders angegangen - konnen wir daruber reden?'", type: 'best', xp: 5, feedback: "Du hast Neugier ausgedruckt, deine Perspektive geteilt und Dialog ohne Urteil eroffnet." },
+                    { text: "Sie bei HR wegen unprofessionellem Verhalten melden", type: 'negative', xp: 0, feedback: "Wenn es kein Richtlinienverstos ist, schadet diese Eskalation dem Vertrauen. Zuerst reden." }
+                ]
+            }
+        ];
+        
+        let currentScenario = 0;
+        let xp = 0;
+        let bestChoices = 0;
+        let totalPossible = 0;
+        
+        function init() {
+            totalPossible = scenarios.length * 5;
+            loadScenario();
+        }
+        
+        function loadScenario() {
+            const scenario = scenarios[currentScenario];
+            
+            document.getElementById('currentScenario').textContent = currentScenario + 1;
+            document.getElementById('totalScenarios').textContent = scenarios.length;
+            document.getElementById('progressPercent').textContent = Math.round((currentScenario / scenarios.length) * 100) + '%';
+            document.getElementById('progressFill').style.width = (currentScenario / scenarios.length) * 100 + '%';
+            
+            const badge = document.getElementById('difficultyBadge');
+            const diffMap = { 'einfach': 'easy', 'mittel': 'medium', 'schwer': 'hard' };
+            badge.textContent = scenario.difficulty.charAt(0).toUpperCase() + scenario.difficulty.slice(1);
+            badge.className = 'difficulty-badge ' + diffMap[scenario.difficulty];
+            
+            document.getElementById('scenarioTitle').textContent = scenario.title;
+            document.getElementById('scenarioContext').textContent = scenario.context;
+            document.getElementById('scenarioPrompt').textContent = scenario.prompt;
+            
+            const responsesContainer = document.getElementById('responses');
+            responsesContainer.innerHTML = scenario.responses.map((r, i) => 
+                `<button class="response-btn" onclick="selectResponse(${i})">${r.text}</button>`
+            ).join('');
+            
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('continueBtn').classList.remove('show');
+        }
+        
+        function selectResponse(index) {
+            const scenario = scenarios[currentScenario];
+            const response = scenario.responses[index];
+            
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.onclick = null;
+                const resp = scenario.responses[i];
+                if (i === index) {
+                    btn.classList.add(resp.type === 'best' ? 'best' : resp.type === 'positive' ? 'correct' : 'incorrect');
+                } else if (resp.type === 'best') {
+                    btn.classList.add('best');
+                }
+            });
+            
+            xp += response.xp;
+            if (response.type === 'best') bestChoices++;
+            document.getElementById('xpDisplay').textContent = xp;
+            
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + (response.type === 'negative' ? 'negative' : response.type === 'best' ? 'best' : 'positive');
+            document.getElementById('feedbackTitle').textContent = 
+                response.type === 'best' ? 'Ausgezeichneter Ansatz!' :
+                response.type === 'positive' ? 'Gutes Denken!' : 'Bedenke dies...';
+            document.getElementById('feedbackText').textContent = response.feedback;
+            document.getElementById('xpEarnedDisplay').textContent = '+' + response.xp + ' XP';
+            
+            document.getElementById('continueBtn').classList.add('show');
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            if (currentScenario >= scenarios.length) { showResults(); }
+            else { loadScenario(); }
+        }
+        
+        function showResults() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('resultsSection').classList.add('show');
+            
+            const score = Math.round((xp / totalPossible) * 100);
+            document.getElementById('finalScore').textContent = score + '%';
+            document.getElementById('bestChoices').textContent = bestChoices;
+            document.getElementById('totalXpEarned').textContent = '+' + (xp + 10);
+        }
+        
+        function earnXP(amount) {
+            const currentXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', (currentXP + amount).toString());
+        }
+        
+        function exitGame() {
+            earnXP(xp + 10);
+            const returnUrl = localStorage.getItem('tap_in_return_url');
+            if (returnUrl) { localStorage.removeItem('tap_in_return_url'); window.location.href = returnUrl; }
+            else { window.location.href = 'gym-focused-de.html'; }
+        }
+        
+        init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Erfolge | TAP-IN Leadership</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/core-styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-navy: #1a365d;
+            --secondary-navy: #334155;
+            --accent-purple: #a78bfa;
+            --success-green: #38a169;
+            --warning-orange: #dd6b20;
+            --card-bg: #ffffff;
+            --border-light: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+            --light-bg: #f8fafc;
+            --gold: #fbbf24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        .achievements-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+        }
+        .achievements-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .achievements-header p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .progress-summary {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 1.25rem 2rem;
+            border-radius: 16px;
+            text-align: center;
+            min-width: 140px;
+        }
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--gold);
+            line-height: 1;
+        }
+        .stat-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.3);
+        }
+
+        .category-section {
+            margin-bottom: 2.5rem;
+        }
+        .category-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--border-light);
+        }
+        .category-icon {
+            font-size: 1.5rem;
+        }
+        .category-header h2 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            flex: 1;
+        }
+        .category-count {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .badge-card {
+            background: var(--light-bg);
+            border: 2px solid var(--border-light);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        .badge-card.unlocked {
+            border-color: var(--success-green);
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            box-shadow: 0 4px 20px rgba(56, 161, 105, 0.2);
+        }
+        .badge-card.locked {
+            opacity: 0.6;
+            filter: grayscale(0.8);
+        }
+        .badge-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .badge-icon {
+            font-size: 3rem;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        .badge-name {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-dark);
+        }
+        .badge-description {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+        .badge-xp {
+            display: inline-block;
+            font-size: 0.8rem;
+            color: var(--success-green);
+            font-weight: 700;
+            background: rgba(56, 161, 105, 0.1);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+        }
+
+        .unlocked-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--success-green);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .locked-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            font-size: 1.25rem;
+            opacity: 0.5;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-light);
+        }
+        .btn {
+            display: inline-block;
+            padding: 0.875rem 1.75rem;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .btn-secondary {
+            background: var(--light-bg);
+            color: var(--text-dark);
+            border: 1px solid var(--border-light);
+        }
+        .btn-secondary:hover {
+            background: var(--border-light);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+        .empty-state p {
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .main-content { padding: 1.5rem; }
+            .progress-summary { gap: 1rem; }
+            .stat-card { padding: 1rem 1.5rem; min-width: 100px; }
+            .stat-value { font-size: 2rem; }
+            .badges-grid { grid-template-columns: 1fr; }
+            .nav-buttons { flex-direction: column; }
+            .btn { width: 100%; text-align: center; }
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="achievements-header">
+            <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Erfolge</h1>
+            <p>Verfolge deine Führungsreise durch freischaltbare Badges. Meistere Herausforderungen, um XP und Anerkennung zu verdienen.</p>
+        </div>
+
+        <div class="progress-summary">
+            <div class="stat-card">
+                <div class="stat-value" id="unlockedCount">0</div>
+                <div class="stat-label">Freigeschaltet</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="totalCount">0</div>
+                <div class="stat-label">Gesamt-Badges</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="percentage">0%</div>
+                <div class="stat-label">Vollständig</div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div id="achievementsContainer">
+                <div class="empty-state">
+                    <p>Lade Erfolge...</p>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <a href="gym-dashboard-de.html" class="btn btn-secondary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück zum Dashboard</a>
+                <a href="learning-hub-de.html" class="btn btn-primary">Lern-Hub <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/analytics.js"></script>
+    <script>
+        function displayAchievements() {
+            const container = document.getElementById('achievementsContainer');
+
+            // Check if AchievementSystem is loaded
+            if (typeof AchievementSystem === 'undefined') {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 3rem; margin-bottom: 1rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                        <p>Fehler beim Laden des Erfolgs-Systems</p>
+                    </div>
+                `;
+                console.error('AchievementSystem not loaded');
+                return;
+            }
+
+            // Track page view
+            if (typeof TapInAnalytics !== 'undefined') {
+                TapInAnalytics.track('achievements_viewed', {
+                    language: document.documentElement.lang
+                });
+            }
+
+            const progress = AchievementSystem.getProgress();
+            const byCategory = AchievementSystem.getBadgesByCategory();
+
+            // Update summary stats
+            document.getElementById('unlockedCount').textContent = progress.unlocked;
+            document.getElementById('totalCount').textContent = progress.total;
+            document.getElementById('percentage').textContent = progress.percentage + '%';
+
+            // Show empty state if no achievements yet
+            if (progress.unlocked === 0) {
+                container.innerHTML = `
+                    <div class="empty-state" style="text-align: center; padding: 3rem;">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                        <h3 style="color: var(--text-dark); margin-bottom: 0.5rem;">Noch keine Erfolge!</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Beginne deine Reise, um Badges freizuschalten!</p>
+                        <a href="gym-dashboard-de.html" class="btn btn-primary">Zum Dashboard</a>
+                    </div>
+                `;
+                // Still show categories below
+            }
+
+            // Build categories HTML
+            container.innerHTML = '';
+
+            for (const [catId, category] of Object.entries(byCategory)) {
+                const unlockedInCat = category.badges.filter(b => b.unlocked).length;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+
+                // Category header (German names come from AchievementSystem based on lang="de")
+                const header = document.createElement('div');
+                header.className = 'category-header';
+                header.innerHTML = `
+                    <span class="category-icon">${category.icon}</span>
+                    <h2>${category.name}</h2>
+                    <span class="category-count">${unlockedInCat}/${category.badges.length}</span>
+                `;
+                section.appendChild(header);
+
+                // Badges grid
+                const grid = document.createElement('div');
+                grid.className = 'badges-grid';
+
+                category.badges.forEach(badge => {
+                    const card = document.createElement('div');
+                    card.className = `badge-card ${badge.unlocked ? 'unlocked' : 'locked'}`;
+
+                    card.innerHTML = `
+                        ${badge.unlocked
+                            ? '<span class="unlocked-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Freigeschaltet</span>'
+                            : '<span class="locked-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>'}
+                        <span class="badge-icon">${badge.icon}</span>
+                        <div class="badge-name">${badge.name}</div>
+                        <div class="badge-description">${badge.description}</div>
+                        ${badge.xpReward ? `<span class="badge-xp">+${badge.xpReward} XP</span>` : ''}
+                    `;
+
+                    grid.appendChild(card);
+                });
+
+                section.appendChild(grid);
+                container.appendChild(section);
+            }
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', displayAchievements);
+        } else {
+            displayAchievements();
+        }
+
+        // Refresh when new achievements unlocked
+        window.addEventListener('achievementUnlocked', displayAchievements);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

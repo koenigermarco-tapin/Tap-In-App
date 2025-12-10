@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>SBIR Trainer - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-glow: rgba(16, 185, 129, 0.3);
+            --gold: #d4a853;
+            --gold-glow: rgba(212, 168, 83, 0.3);
+            --red: #ef4444;
+            --red-glow: rgba(239, 68, 68, 0.3);
+            --blue: #3b82f6;
+            --blue-glow: rgba(59, 130, 246, 0.3);
+            --purple: #8b5cf6;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        /* Header */
+        .game-header {
+            padding: 15px 20px;
+            background: var(--dark-grey);
+            border-bottom: 1px solid var(--mid-grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .back-btn {
+            background: none;
+            border: none;
+            color: var(--light-grey);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .game-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        
+        .streak-display {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: var(--mid-grey);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .streak-fire { color: #ff6b35; }
+        .streak-count { color: var(--gold); }
+        
+        /* Main Container */
+        .game-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: calc(100vh - 70px);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 12px 16px;
+            background: var(--dark-grey);
+            border-radius: 12px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .level-badge {
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        /* XP Progress */
+        .xp-progress {
+            margin-bottom: 25px;
+        }
+        
+        .xp-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.8rem;
+        }
+        
+        .xp-label { color: var(--light-grey); }
+        .xp-value { color: var(--gold); font-weight: 600; }
+        
+        .xp-bar {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .xp-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--gold), #f59e0b);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Mode Selection */
+        .mode-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .mode-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .mode-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+        .mode-card.locked { opacity: 0.5; cursor: not-allowed; }
+        .mode-card.locked:hover { border-color: var(--mid-grey); transform: none; }
+        
+        .mode-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--mid-grey);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        
+        .mode-info { flex: 1; }
+        .mode-title { font-weight: 600; margin-bottom: 4px; }
+        .mode-desc { font-size: 0.8rem; color: var(--light-grey); }
+        .mode-unlock { font-size: 0.75rem; color: var(--gold); margin-top: 4px; }
+        
+        /* Scenario Card */
+        .scenario-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .difficulty-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            width: fit-content;
+        }
+        
+        .difficulty-green { background: rgba(16, 185, 129, 0.2); color: var(--green); }
+        .difficulty-yellow { background: rgba(234, 179, 8, 0.2); color: #eab308; }
+        .difficulty-orange { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+        .difficulty-red { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+        
+        .scenario-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-context {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .scenario-text {
+            font-size: 1.05rem;
+            line-height: 1.6;
+            color: var(--white);
+        }
+        
+        /* Timer */
+        .timer-bar {
+            height: 4px;
+            background: var(--mid-grey);
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: var(--green);
+            transition: width 0.1s linear, background 0.3s;
+            border-radius: 2px;
+        }
+        
+        .timer-fill.warning { background: #eab308; }
+        .timer-fill.danger { background: var(--red); }
+        
+        /* Response Options */
+        .responses {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .response-btn {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.15s;
+            color: var(--white);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .response-btn:hover:not(:disabled) {
+            border-color: var(--blue);
+            transform: scale(1.02);
+        }
+        
+        .response-btn:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+        
+        .response-btn.correct {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.15);
+            box-shadow: 0 0 20px var(--green-glow);
+        }
+        
+        .response-btn.incorrect {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 0.6;
+        }
+        
+        .response-btn.highlight {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .response-btn:disabled {
+            cursor: default;
+        }
+        
+        /* Feedback Panel */
+        .feedback-panel {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .feedback-icon.correct { background: rgba(16, 185, 129, 0.2); }
+        .feedback-icon.incorrect { background: rgba(239, 68, 68, 0.2); }
+        
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .feedback-title.correct { color: var(--green); }
+        .feedback-title.incorrect { color: var(--red); }
+        
+        .feedback-xp {
+            margin-left: auto;
+            background: rgba(212, 168, 83, 0.2);
+            color: var(--gold);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .feedback-text {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .sbir-breakdown {
+            background: var(--black);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .sbir-item {
+            display: flex;
+            gap: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .sbir-item:last-child { border-bottom: none; }
+        
+        .sbir-letter {
+            width: 28px;
+            height: 28px;
+            background: var(--blue);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        
+        .sbir-content {
+            flex: 1;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .sbir-label {
+            color: var(--white);
+            font-weight: 500;
+        }
+        
+        /* Continue Button */
+        .continue-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--blue), var(--purple));
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .continue-btn:active {
+            transform: scale(0.98);
+        }
+        
+        /* Results Screen */
+        .results-screen {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .results-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+        
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .results-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+        }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .result-stat {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px 10px;
+        }
+        
+        .result-stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+        }
+        
+        .result-stat-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .level-up-banner {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.2), rgba(249, 115, 22, 0.2));
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 var(--gold-glow); }
+            50% { box-shadow: 0 0 20px 10px var(--gold-glow); }
+        }
+        
+        .level-up-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .level-up-detail {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        /* Hidden */
+        .hidden { display: none !important; }
+        
+        /* Animations */
+        @keyframes correctPulse {
+            0% { box-shadow: 0 0 0 0 var(--green-glow); }
+            70% { box-shadow: 0 0 0 20px transparent; }
+            100% { box-shadow: 0 0 0 0 transparent; }
+        }
+        
+        .pulse-correct {
+            animation: correctPulse 0.6s ease-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.3s ease-out;
+        }
+        
+        /* Streak Animation */
+        .streak-bonus {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+            text-shadow: 0 0 30px var(--gold-glow);
+            animation: streakPop 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        @keyframes streakPop {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 0; transform: translate(-50%, -80%) scale(1); }
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-sbir-trainer.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="game-sbir-trainer-de.html" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <!-- Header -->
+    <div class="game-header">
+        <button class="back-btn" onclick="exitGame()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+        <div class="game-title">SBIR Trainer</div>
+        <div class="streak-display">
+            <span class="streak-fire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span>
+            <span class="streak-count" id="streakCount">0</span>
+        </div>
+    </div>
+    
+    <div class="game-container">
+        <!-- Menu Screen -->
+        <div id="menuScreen">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="menuLevel">1</div>
+                    <div class="stat-label">Level</div>
+                </div>
+                <div class="stat-item">
+                    <div class="level-badge" id="menuTitle">Novice</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="menuCorrect">0</div>
+                    <div class="stat-label">Correct</div>
+                </div>
+            </div>
+            
+            <div class="xp-progress">
+                <div class="xp-header">
+                    <span class="xp-label">XP to Next Level</span>
+                    <span class="xp-value"><span id="menuXP">0</span> / <span id="menuXPNeeded">100</span></span>
+                </div>
+                <div class="xp-bar">
+                    <div class="xp-fill" id="menuXPBar" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <h3 style="margin-bottom: 15px; color: var(--light-grey); font-size: 0.9rem;">SELECT MODE</h3>
+            
+            <div class="mode-selection">
+                <div class="mode-card" onclick="startMode('quickfire')">
+                    <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="mode-info">
+                        <div class="mode-title">Quick Fire</div>
+                        <div class="mode-desc">Pick the best SBIR response. 5 seconds per question.</div>
+                    </div>
+                </div>
+                
+                <div class="mode-card" id="buildModeCard" onclick="startMode('build')">
+                    <div class="mode-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="mode-info">
+                        <div class="mode-title">Build Your Own</div>
+                        <div class="mode-desc">Construct the perfect SBIR piece by piece.</div>
+                        <div class="mode-unlock hidden" id="buildUnlock">Unlocks at Level 3</div>
+                    </div>
+                </div>
+                
+                <div class="mode-card" id="forbiddenModeCard" onclick="startMode('forbidden')">
+                    <div class="mode-icon"></div>
+                    <div class="mode-info">
+                        <div class="mode-title">Forbidden Words</div>
+                        <div class="mode-desc">Avoid trigger phrases while delivering feedback.</div>
+                        <div class="mode-unlock hidden" id="forbiddenUnlock">Unlocks at Level 5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div id="gameScreen" class="hidden">
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value" id="gameRound">1</div>
+                    <div class="stat-label">Round</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="gameScore">0</div>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="gameMultiplier">1x</div>
+                    <div class="stat-label">Multiplier</div>
+                </div>
+            </div>
+            
+            <div class="scenario-section">
+                <div class="difficulty-badge difficulty-green" id="difficultyBadge">
+                    <span></span> Easy
+                </div>
+                
+                <div class="scenario-card">
+                    <div class="scenario-context" id="scenarioContext">WORKPLACE SCENARIO</div>
+                    <div class="scenario-text" id="scenarioText">Loading scenario...</div>
+                </div>
+                
+                <div class="timer-bar">
+                    <div class="timer-fill" id="timerFill" style="width: 100%"></div>
+                </div>
+                
+                <div class="responses" id="responsesContainer">
+                    <!-- Responses loaded dynamically -->
+                </div>
+                
+                <div class="feedback-panel hidden" id="feedbackPanel">
+                    <div class="feedback-header">
+                        <div class="feedback-icon correct" id="feedbackIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                        <div class="feedback-title correct" id="feedbackTitle">Great Choice!</div>
+                        <div class="feedback-xp" id="feedbackXP">+10 XP</div>
+                    </div>
+                    <div class="feedback-text" id="feedbackText">
+                        This response follows the SBIR framework effectively.
+                    </div>
+                    <div class="sbir-breakdown" id="sbirBreakdown">
+                        <div class="sbir-item">
+                            <div class="sbir-letter">S</div>
+                            <div class="sbir-content"><span class="sbir-label">Situation:</span> Specific context established</div>
+                        </div>
+                        <div class="sbir-item">
+                            <div class="sbir-letter">B</div>
+                            <div class="sbir-content"><span class="sbir-label">Behavior:</span> Observable action described</div>
+                        </div>
+                        <div class="sbir-item">
+                            <div class="sbir-letter">I</div>
+                            <div class="sbir-content"><span class="sbir-label">Impact:</span> Effect clearly stated</div>
+                        </div>
+                        <div class="sbir-item">
+                            <div class="sbir-letter">R</div>
+                            <div class="sbir-content"><span class="sbir-label">Request:</span> Clear ask for change</div>
+                        </div>
+                    </div>
+                    <button class="continue-btn" onclick="nextRound()">Continue</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="hidden">
+            <div class="results-screen">
+                <div class="results-icon" id="resultsIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                <h2 class="results-title" id="resultsTitle">Session Complete!</h2>
+                <p class="results-subtitle" id="resultsSubtitle">Great practice session</p>
+                
+                <div class="level-up-banner hidden" id="levelUpBanner">
+                    <div class="level-up-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> LEVEL UP!</div>
+                    <div class="level-up-detail" id="levelUpDetail">You reached Level 2: Apprentice</div>
+                </div>
+                
+                <div class="results-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="resultScore">0</div>
+                        <div class="result-stat-label">Score</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="resultCorrect">0/10</div>
+                        <div class="result-stat-label">Correct</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="resultXP">+0</div>
+                        <div class="result-stat-label">XP Earned</div>
+                    </div>
+                </div>
+                
+                <button class="continue-btn" onclick="playAgain()">Play Again</button>
+                <button class="continue-btn" style="background: var(--mid-grey); margin-top: 10px;" onclick="backToMenu()">Back to Menu</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // ========== GAME DATA ==========
+        const scenarios = {
+            green: [
+                {
+                    context: "WORKPLACE",
+                    text: "Your colleague frequently arrives 10-15 minutes late to meetings, causing delays for the whole team.",
+                    correct: 0,
+                    options: [
+                        "In our Monday planning meetings, when you arrive 10-15 minutes late, it delays our start and we lose that time from everyone's schedule. Could you aim to be on time or let us know in advance if you'll be late?",
+                        "You're always late and it's really disrespectful to everyone.",
+                        "Maybe you should set more alarms or something?",
+                        "I've noticed some timing issues lately that we should probably discuss sometime."
+                    ],
+                    explanation: "Option 1 uses SBIR: specific situation (Monday meetings), behavior (arriving late), impact (delays, lost time), and a clear request (arrive on time or notify)."
+                },
+                {
+                    context: "WORKPLACE",
+                    text: "A team member hasn't been responding to your messages for important project updates.",
+                    correct: 1,
+                    options: [
+                        "You never respond to my messages. This is really unprofessional.",
+                        "Over the past week on Project X, I've sent three messages about deadline changes that haven't gotten responses. This means I can't confirm you have the updated timeline. Could you acknowledge project messages within 24 hours?",
+                        "I think we have a communication problem.",
+                        "Hey, just wondering if you got my messages?"
+                    ],
+                    explanation: "Option 2 follows SBIR: situation (Project X, past week), behavior (no responses to 3 messages), impact (can't confirm timeline received), request (acknowledge within 24 hours)."
+                },
+                {
+                    context: "WORKPLACE",
+                    text: "Your manager keeps adding last-minute tasks that derail your planned priorities.",
+                    correct: 2,
+                    options: [
+                        "You're always dumping work on me at the last minute!",
+                        "I'm feeling really overwhelmed lately.",
+                        "This week, I received three urgent requests on top of my planned deliverables. When priorities shift suddenly, I struggle to deliver quality on any of them. Could we have a quick check-in before new urgent items are assigned?",
+                        "I guess I'll just work late again..."
+                    ],
+                    explanation: "Option 3 uses SBIR: situation (this week), behavior (three urgent requests added), impact (struggle to deliver quality), request (check-in before new items)."
+                },
+                {
+                    context: "PERSONAL",
+                    text: "Your roommate leaves dishes in the sink for days.",
+                    correct: 3,
+                    options: [
+                        "You're so messy. I can't live like this.",
+                        "The kitchen is always a disaster.",
+                        "I wish things were cleaner around here.",
+                        "I've noticed dishes have been in the sink since Monday. When they pile up, it makes cooking difficult and attracts bugs. Could you wash your dishes within a day of using them?"
+                    ],
+                    explanation: "Option 4 uses SBIR: situation (since Monday), behavior (dishes in sink), impact (difficult to cook, bugs), request (wash within a day)."
+                },
+                {
+                    context: "WORKPLACE",
+                    text: "A coworker interrupts you during presentations.",
+                    correct: 0,
+                    options: [
+                        "In yesterday's client presentation, I was interrupted three times while explaining our proposal. This made it hard to maintain my train of thought and may have confused the client. Could you save questions for the Q&A section?",
+                        "Stop interrupting me all the time!",
+                        "You really need to work on your meeting etiquette.",
+                        "That presentation didn't go as well as I'd hoped."
+                    ],
+                    explanation: "Option 1 follows SBIR: situation (yesterday's presentation), behavior (interrupted three times), impact (lost train of thought, client confusion), request (save questions for Q&A)."
+                }
+            ],
+            yellow: [
+                {
+                    context: "WORKPLACE",
+                    text: "Your direct report has been missing deadlines and seems distracted during meetings.",
+                    correct: 1,
+                    options: [
+                        "Your performance has really declined lately. What's going on?",
+                        "Over the past two sprints, you've missed three deadlines and I've noticed you've been quieter in our standups. This affects our team's delivery commitments. I'd like to understand what's happening - can we schedule a one-on-one to discuss how I can support you?",
+                        "I'm concerned about you. Is everything okay at home?",
+                        "You need to step it up or there will be consequences."
+                    ],
+                    explanation: "Option 2 uses SBIR with care: situation (past two sprints), behavior (missed deadlines, quieter), impact (team delivery), and a supportive request (one-on-one to understand and support)."
+                },
+                {
+                    context: "WORKPLACE",
+                    text: "A peer keeps taking credit for ideas you shared in private conversations.",
+                    correct: 2,
+                    options: [
+                        "You're stealing my ideas!",
+                        "I've noticed my contributions aren't being recognized.",
+                        "In last week's leadership meeting, the process improvement I shared with you privately was presented as your idea. When this happens, my work isn't visible to leadership and it affects my professional growth. Could we agree to attribute ideas to whoever originally proposed them?",
+                        "I need you to be more careful about giving credit."
+                    ],
+                    explanation: "Option 3 follows SBIR: situation (last week's meeting), behavior (presented private idea as own), impact (work not visible, affects growth), request (agree to attribute ideas properly)."
+                },
+                {
+                    context: "PERSONAL",
+                    text: "Your partner frequently checks their phone during your conversations.",
+                    correct: 3,
+                    options: [
+                        "You're always on your phone. You don't care about what I have to say.",
+                        "Can you please put your phone away?",
+                        "I feel like you're not listening to me.",
+                        "When we were discussing our weekend plans last night, you checked your phone four times in ten minutes. When that happens, I feel like what I'm saying isn't important to you. Could we try having phone-free conversations during dinner?"
+                    ],
+                    explanation: "Option 4 uses SBIR: situation (last night's conversation), behavior (checked phone four times), impact (feels unimportant), request (phone-free dinner conversations)."
+                }
+            ],
+            orange: [
+                {
+                    context: "WORKPLACE",
+                    text: "Your manager gave you a poor performance review that you feel was unfair and based on incomplete information.",
+                    correct: 2,
+                    options: [
+                        "This review is completely unfair. You don't know what you're talking about.",
+                        "I'm really disappointed with this review.",
+                        "In my review, the rating on stakeholder management was marked 'needs improvement,' but it didn't mention the three cross-functional projects I led this quarter. Without that context, the rating doesn't reflect my full performance, which affects my promotion timeline. Could we revisit this section with the complete project data?",
+                        "I guess I'll just have to work harder next quarter."
+                    ],
+                    explanation: "Option 3 uses SBIR even with authority: situation (the review), behavior (specific rating without context), impact (doesn't reflect performance, affects promotion), request (revisit with complete data)."
+                },
+                {
+                    context: "PERSONAL",
+                    text: "A family member keeps giving unsolicited advice about your career choices.",
+                    correct: 0,
+                    options: [
+                        "At dinner last Sunday, when you suggested I should take the corporate job instead of the startup, it made me feel like you don't trust my judgment. I value your perspective, but I'd prefer to ask for career advice when I need it. Can we agree that I'll come to you when I want input?",
+                        "Please stop telling me what to do with my life!",
+                        "You don't understand my industry at all.",
+                        "I appreciate your concern, but I've got it figured out."
+                    ],
+                    explanation: "Option 1 uses SBIR with respect: situation (dinner last Sunday), behavior (suggested corporate job), impact (feels like distrust), request (will ask when wants input)."
+                }
+            ],
+            red: [
+                {
+                    context: "WORKPLACE",
+                    text: "You witnessed a senior leader take credit for a junior employee's innovation in a board meeting, and the junior employee came to you upset.",
+                    correct: 1,
+                    options: [
+                        "That's terrible. You should file an HR complaint.",
+                        "I saw what happened in the board meeting - when your inventory solution was presented without attribution, it was clear you did the work. Beyond the recognition issue, this kind of thing can make people stop sharing innovative ideas, which hurts us all. I'd like to support you in addressing this. Would you be comfortable if I raised it with [leader] privately, or would you prefer to approach them together?",
+                        "Senior leaders do that sometimes. It's just how things work here.",
+                        "You should confront them and demand credit."
+                    ],
+                    explanation: "Option 2 uses SBIR with nuance: situation (board meeting), behavior (presented without attribution), impact (recognition + broader effect on innovation), request (offers support with options)."
+                }
+            ]
+        };
+        
+        const levels = [
+            { name: "Novice", xp: 0 },
+            { name: "Apprentice", xp: 100 },
+            { name: "Practitioner", xp: 300 },
+            { name: "Skilled", xp: 600 },
+            { name: "Expert", xp: 1000 },
+            { name: "Master", xp: 1500 },
+            { name: "Grandmaster", xp: 2500 },
+            { name: "Sensei", xp: 4000 }
+        ];
+        
+        // ========== GAME STATE ==========
+        let gameState = {
+            xp: parseInt(localStorage.getItem('sbir_xp') || '0'),
+            level: 1,
+            totalCorrect: parseInt(localStorage.getItem('sbir_correct') || '0'),
+            currentMode: 'quickfire',
+            currentRound: 0,
+            sessionScore: 0,
+            sessionCorrect: 0,
+            sessionXP: 0,
+            streak: 0,
+            maxStreak: 0,
+            multiplier: 1,
+            timerInterval: null,
+            timeRemaining: 5,
+            currentScenario: null,
+            answered: false,
+            roundsPerSession: 10
+        };
+        
+        // ========== INITIALIZATION ==========
+        function init() {
+            calculateLevel();
+            updateMenuDisplay();
+            checkModeUnlocks();
+        }
+        
+        function calculateLevel() {
+            for (let i = levels.length - 1; i >= 0; i--) {
+                if (gameState.xp >= levels[i].xp) {
+                    gameState.level = i + 1;
+                    return;
+                }
+            }
+            gameState.level = 1;
+        }
+        
+        function updateMenuDisplay() {
+            document.getElementById('menuLevel').textContent = gameState.level;
+            document.getElementById('menuTitle').textContent = levels[gameState.level - 1].name;
+            document.getElementById('menuCorrect').textContent = gameState.totalCorrect;
+            
+            const currentLevelXP = levels[gameState.level - 1].xp;
+            const nextLevelXP = gameState.level < levels.length ? levels[gameState.level].xp : currentLevelXP + 1000;
+            const progressXP = gameState.xp - currentLevelXP;
+            const neededXP = nextLevelXP - currentLevelXP;
+            const percentage = Math.min((progressXP / neededXP) * 100, 100);
+            
+            document.getElementById('menuXP').textContent = progressXP;
+            document.getElementById('menuXPNeeded').textContent = neededXP;
+            document.getElementById('menuXPBar').style.width = percentage + '%';
+        }
+        
+        function checkModeUnlocks() {
+            // Build mode: Level 3
+            if (gameState.level >= 3) {
+                document.getElementById('buildModeCard').classList.remove('locked');
+                document.getElementById('buildUnlock').classList.add('hidden');
+            } else {
+                document.getElementById('buildModeCard').classList.add('locked');
+                document.getElementById('buildUnlock').classList.remove('hidden');
+            }
+            
+            // Forbidden mode: Level 5
+            if (gameState.level >= 5) {
+                document.getElementById('forbiddenModeCard').classList.remove('locked');
+                document.getElementById('forbiddenUnlock').classList.add('hidden');
+            } else {
+                document.getElementById('forbiddenModeCard').classList.add('locked');
+                document.getElementById('forbiddenUnlock').classList.remove('hidden');
+            }
+        }
+        
+        // ========== GAME MODES ==========
+        function startMode(mode) {
+            if (mode === 'build' && gameState.level < 3) return;
+            if (mode === 'forbidden' && gameState.level < 5) return;
+            
+            gameState.currentMode = mode;
+            gameState.currentRound = 0;
+            gameState.sessionScore = 0;
+            gameState.sessionCorrect = 0;
+            gameState.sessionXP = 0;
+            gameState.streak = 0;
+            gameState.multiplier = 1;
+            
+            document.getElementById('menuScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            
+            nextRound();
+        }
+        
+        // ========== QUICK FIRE MODE ==========
+        function loadScenario() {
+            // Select difficulty based on level
+            let pool = [];
+            if (gameState.level >= 6) pool = [...scenarios.green, ...scenarios.yellow, ...scenarios.orange, ...scenarios.red];
+            else if (gameState.level >= 4) pool = [...scenarios.green, ...scenarios.yellow, ...scenarios.orange];
+            else if (gameState.level >= 2) pool = [...scenarios.green, ...scenarios.yellow];
+            else pool = [...scenarios.green];
+            
+            // Random scenario
+            gameState.currentScenario = pool[Math.floor(Math.random() * pool.length)];
+            
+            // Determine difficulty color
+            let difficulty = 'green';
+            let difficultyText = 'Easy';
+            let difficultyEmoji = '';
+            
+            if (scenarios.red.includes(gameState.currentScenario)) {
+                difficulty = 'red'; difficultyText = 'Expert'; difficultyEmoji = '<span class="belt-indicator red"></span>';
+            } else if (scenarios.orange.includes(gameState.currentScenario)) {
+                difficulty = 'orange'; difficultyText = 'Hard'; difficultyEmoji = '';
+            } else if (scenarios.yellow.includes(gameState.currentScenario)) {
+                difficulty = 'yellow'; difficultyText = 'Medium'; difficultyEmoji = '';
+            }
+            
+            // Update UI
+            const badge = document.getElementById('difficultyBadge');
+            badge.className = 'difficulty-badge difficulty-' + difficulty;
+            badge.innerHTML = '<span>' + difficultyEmoji + '</span> ' + difficultyText;
+            
+            document.getElementById('scenarioContext').textContent = gameState.currentScenario.context + ' SCENARIO';
+            document.getElementById('scenarioText').textContent = gameState.currentScenario.text;
+            
+            // Render options
+            const container = document.getElementById('responsesContainer');
+            container.innerHTML = '';
+            
+            gameState.currentScenario.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'response-btn';
+                btn.textContent = option;
+                btn.onclick = () => selectAnswer(index);
+                container.appendChild(btn);
+            });
+            
+            // Update round display
+            document.getElementById('gameRound').textContent = gameState.currentRound;
+            document.getElementById('gameScore').textContent = gameState.sessionScore;
+            document.getElementById('gameMultiplier').textContent = gameState.multiplier + 'x';
+            
+            // Start timer
+            startTimer();
+        }
+        
+        function startTimer() {
+            gameState.timeRemaining = 5;
+            gameState.answered = false;
+            
+            const timerFill = document.getElementById('timerFill');
+            timerFill.style.width = '100%';
+            timerFill.classList.remove('warning', 'danger');
+            
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeRemaining -= 0.1;
+                const percentage = (gameState.timeRemaining / 5) * 100;
+                timerFill.style.width = percentage + '%';
+                
+                if (gameState.timeRemaining <= 2) timerFill.classList.add('danger');
+                else if (gameState.timeRemaining <= 3) timerFill.classList.add('warning');
+                
+                if (gameState.timeRemaining <= 0) {
+                    clearInterval(gameState.timerInterval);
+                    if (!gameState.answered) timeOut();
+                }
+            }, 100);
+        }
+        
+        function selectAnswer(index) {
+            if (gameState.answered) return;
+            gameState.answered = true;
+            clearInterval(gameState.timerInterval);
+            
+            const buttons = document.querySelectorAll('.response-btn');
+            const correct = index === gameState.currentScenario.correct;
+            
+            // Calculate XP
+            let baseXP = 5;
+            if (scenarios.yellow.includes(gameState.currentScenario)) baseXP = 10;
+            if (scenarios.orange.includes(gameState.currentScenario)) baseXP = 20;
+            if (scenarios.red.includes(gameState.currentScenario)) baseXP = 40;
+            
+            let earnedXP = 0;
+            
+            if (correct) {
+                gameState.streak++;
+                gameState.multiplier = Math.min(1 + Math.floor(gameState.streak / 3) * 0.5, 3);
+                earnedXP = Math.round(baseXP * gameState.multiplier);
+                gameState.sessionCorrect++;
+                gameState.sessionScore += earnedXP;
+                
+                buttons[index].classList.add('correct', 'pulse-correct');
+                
+                // Streak animation
+                if (gameState.streak > 0 && gameState.streak % 5 === 0) {
+                    showStreakBonus(gameState.streak);
+                }
+            } else {
+                gameState.streak = 0;
+                gameState.multiplier = 1;
+                earnedXP = 2; // Participation XP
+                
+                buttons[index].classList.add('incorrect', 'shake');
+                buttons[gameState.currentScenario.correct].classList.add('highlight');
+            }
+            
+            gameState.sessionXP += earnedXP;
+            document.getElementById('streakCount').textContent = gameState.streak;
+            document.getElementById('gameMultiplier').textContent = gameState.multiplier + 'x';
+            
+            // Show feedback
+            showFeedback(correct, earnedXP);
+        }
+        
+        function timeOut() {
+            gameState.answered = true;
+            gameState.streak = 0;
+            gameState.multiplier = 1;
+            
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons[gameState.currentScenario.correct].classList.add('highlight');
+            
+            document.getElementById('streakCount').textContent = '0';
+            document.getElementById('gameMultiplier').textContent = '1x';
+            
+            showFeedback(false, 0, true);
+        }
+        
+        function showFeedback(correct, xp, timeout = false) {
+            const panel = document.getElementById('feedbackPanel');
+            const icon = document.getElementById('feedbackIcon');
+            const title = document.getElementById('feedbackTitle');
+            const xpDisplay = document.getElementById('feedbackXP');
+            const text = document.getElementById('feedbackText');
+            
+            if (timeout) {
+                icon.textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>';
+                icon.className = 'feedback-icon incorrect';
+                title.textContent = 'Time\'s Up!';
+                title.className = 'feedback-title incorrect';
+                xpDisplay.textContent = '+0 XP';
+            } else if (correct) {
+                icon.textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg>';
+                icon.className = 'feedback-icon correct';
+                title.textContent = gameState.streak >= 5 ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> On Fire!' : 'Great Choice!';
+                title.className = 'feedback-title correct';
+                xpDisplay.textContent = '+' + xp + ' XP';
+            } else {
+                icon.textContent = '✗';
+                icon.className = 'feedback-icon incorrect';
+                title.textContent = 'Not Quite';
+                title.className = 'feedback-title incorrect';
+                xpDisplay.textContent = '+' + xp + ' XP';
+            }
+            
+            text.textContent = gameState.currentScenario.explanation;
+            panel.classList.remove('hidden');
+        }
+        
+        function showStreakBonus(streak) {
+            const bonus = document.createElement('div');
+            bonus.className = 'streak-bonus';
+            bonus.textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ' + streak + ' STREAK!';
+            document.body.appendChild(bonus);
+            setTimeout(() => bonus.remove(), 1000);
+        }
+        
+        function nextRound() {
+            document.getElementById('feedbackPanel').classList.add('hidden');
+            
+            gameState.currentRound++;
+            
+            if (gameState.currentRound > gameState.roundsPerSession) {
+                endSession();
+                return;
+            }
+            
+            loadScenario();
+        }
+        
+        function endSession() {
+            clearInterval(gameState.timerInterval);
+            
+            // Save progress
+            const previousLevel = gameState.level;
+            gameState.xp += gameState.sessionXP;
+            gameState.totalCorrect += gameState.sessionCorrect;
+            
+            localStorage.setItem('sbir_xp', gameState.xp);
+            localStorage.setItem('sbir_correct', gameState.totalCorrect);
+            
+            calculateLevel();
+            const leveledUp = gameState.level > previousLevel;
+            
+            // Show results
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('resultsScreen').classList.remove('hidden');
+            
+            document.getElementById('resultScore').textContent = gameState.sessionScore;
+            document.getElementById('resultCorrect').textContent = gameState.sessionCorrect + '/' + gameState.roundsPerSession;
+            document.getElementById('resultXP').textContent = '+' + gameState.sessionXP;
+            
+            // Results messaging
+            const percentage = gameState.sessionCorrect / gameState.roundsPerSession;
+            if (percentage >= 0.9) {
+                document.getElementById('resultsIcon').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                document.getElementById('resultsTitle').textContent = 'Outstanding!';
+                document.getElementById('resultsSubtitle').textContent = 'SBIR Master in the making';
+            } else if (percentage >= 0.7) {
+                document.getElementById('resultsIcon').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                document.getElementById('resultsTitle').textContent = 'Great Session!';
+                document.getElementById('resultsSubtitle').textContent = 'Your feedback skills are improving';
+            } else if (percentage >= 0.5) {
+                document.getElementById('resultsIcon').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                document.getElementById('resultsTitle').textContent = 'Good Effort!';
+                document.getElementById('resultsSubtitle').textContent = 'Keep practicing the SBIR framework';
+            } else {
+                document.getElementById('resultsIcon').textContent = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                document.getElementById('resultsTitle').textContent = 'Keep Learning!';
+                document.getElementById('resultsSubtitle').textContent = 'Review SBIR: Situation, Behavior, Impact, Request';
+            }
+            
+            // Level up banner
+            if (leveledUp) {
+                document.getElementById('levelUpBanner').classList.remove('hidden');
+                document.getElementById('levelUpDetail').textContent = 'You reached Level ' + gameState.level + ': ' + levels[gameState.level - 1].name;
+            } else {
+                document.getElementById('levelUpBanner').classList.add('hidden');
+            }
+        }
+        
+        function playAgain() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            startMode(gameState.currentMode);
+        }
+        
+        function backToMenu() {
+            document.getElementById('resultsScreen').classList.add('hidden');
+            document.getElementById('menuScreen').classList.remove('hidden');
+            updateMenuDisplay();
+            checkModeUnlocks();
+        }
+        
+        // XP System Integration
+    function earnXP(amount) {
+        const currentXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+        localStorage.setItem('tap_in_total_xp', (currentXP + amount).toString());
+        localStorage.setItem('tap_in_game_xp_earned', amount.toString());
+    }
+    
+    function exitGame() {
+        // Save XP earned
+        earnXP(25);
+        
+        // Check if we should return to a specific page
+        const returnUrl = localStorage.getItem('tap_in_return_url');
+        if (returnUrl) {
+            localStorage.removeItem('tap_in_return_url');
+            window.location.href = returnUrl;
+        } else {
+            window.location.href = 'gym-dashboard.html';
+        }
+    } else {
+                if (confirm('Exit game? Your session progress will be lost.')) {
+                    backToMenu();
+                }
+            }
+        }
+        
+        // Initialize
+        init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

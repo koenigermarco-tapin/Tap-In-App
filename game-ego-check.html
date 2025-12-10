@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Ego Check - TAP-IN Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4af37;
+            --red: #ef4444;
+            --charcoal: #1a1a1a;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .game-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat-badge {
+            background: var(--dark-grey);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .stat-badge.streak { color: var(--gold); }
+        .stat-badge.score { color: var(--green); }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 100px 20px 40px;
+        }
+        
+        .game-screen { display: none; animation: fadeIn 0.4s ease; }
+        .game-screen.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* Intro */
+        .intro-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(26, 26, 26, 0.5));
+            border: 2px solid var(--charcoal);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .intro-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--charcoal), #2a2a2a);
+            border: 2px solid var(--gold);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .intro-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--white), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .intro-desc {
+            color: var(--light-grey);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+        }
+        
+        .rules-box {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+        
+        .rules-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--gold);
+        }
+        
+        .rule {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .rule-icon { font-size: 1.2rem; }
+        
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--charcoal), #2a2a2a);
+            border: 2px solid var(--gold);
+            color: var(--gold);
+            width: 100%;
+        }
+        
+        .btn-primary:hover {
+            background: var(--gold);
+            color: var(--black);
+        }
+        
+        /* Game Play */
+        .timer-bar {
+            height: 6px;
+            background: var(--mid-grey);
+            border-radius: 3px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        
+        .timer-fill {
+            height: 100%;
+            background: var(--gold);
+            transition: width 0.1s linear;
+        }
+        
+        .timer-fill.warning { background: var(--red); }
+        
+        .scenario-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 25px;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .round-number {
+            font-size: 0.75rem;
+            color: var(--gold);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .scenario-text {
+            font-size: 1.15rem;
+            line-height: 1.6;
+            text-align: center;
+        }
+        
+        .choice-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .choice-btn {
+            padding: 25px 20px;
+            border-radius: 16px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid var(--mid-grey);
+            background: var(--dark-grey);
+            color: var(--white);
+        }
+        
+        .choice-btn:hover {
+            transform: scale(1.02);
+        }
+        
+        .choice-btn.ego {
+            border-color: var(--red);
+        }
+        
+        .choice-btn.ego:hover {
+            background: rgba(239, 68, 68, 0.15);
+        }
+        
+        .choice-btn.results {
+            border-color: var(--green);
+        }
+        
+        .choice-btn.results:hover {
+            background: rgba(16, 185, 129, 0.15);
+        }
+        
+        .choice-btn.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--green);
+            animation: pulse 0.3s ease;
+        }
+        
+        .choice-btn.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--red);
+            animation: shake 0.3s ease;
+        }
+        
+        .choice-btn.disabled {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        
+        .feedback-banner {
+            text-align: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 20px;
+            font-weight: 600;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .feedback-banner.show { display: block; }
+        
+        .feedback-banner.correct {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--green);
+            color: var(--green);
+        }
+        
+        .feedback-banner.incorrect {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--red);
+            color: var(--red);
+        }
+        
+        .streak-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 2rem;
+            color: var(--gold);
+            display: none;
+        }
+        
+        .streak-display.show {
+            display: block;
+            animation: streakPop 0.5s ease;
+        }
+        
+        @keyframes streakPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Results */
+        .results-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(212, 175, 55, 0.1));
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--charcoal), #2a2a2a);
+            border: 2px solid var(--gold);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .results-score {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--gold);
+            margin: 20px 0;
+        }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .result-stat {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        
+        .result-stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        
+        .result-stat-label {
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .insight-box {
+            background: var(--black);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--gold);
+        }
+        
+        .insight-text {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 500px) {
+            .results-stats { grid-template-columns: 1fr; }
+            .stats-row { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-ego-check.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="game-ego-check-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library.html" class="back-btn">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Exit
+        </a>
+        <div class="game-title">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            Ego Check
+        </div>
+        <div class="stats-row">
+            <div class="stat-badge streak" id="streakBadge">0x</div>
+            <div class="stat-badge score" id="scoreBadge">0</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Intro Screen -->
+        <div class="game-screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-icon">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h1 class="intro-title">Ego Check</h1>
+                <p class="intro-desc">
+                    Can you spot when ego is driving decisions? 
+                    Read each scenario and decide: is this leader focused on 
+                    <strong>EGO</strong> or <strong>RESULTS</strong>?
+                </p>
+                <div class="rules-box">
+                    <div class="rules-title">How to Play</div>
+                    <div class="rule">
+                        <span class="rule-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M12 9v2m0 4h.01"/><circle cx="12" cy="12" r="10"/></svg>
+                        </span>
+                        <span><strong>EGO</strong> = Personal glory, credit, image, being right</span>
+                    </div>
+                    <div class="rule">
+                        <span class="rule-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                        </span>
+                        <span><strong>RESULTS</strong> = Team wins, collective success, mission first</span>
+                    </div>
+                    <div class="rule">
+                        <span class="rule-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        </span>
+                        <span><strong>Timer</strong> = 8 seconds per round. Trust your gut!</span>
+                    </div>
+                </div>
+                <button class="btn btn-primary" onclick="startGame()">
+                    Start Game
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="timer-bar">
+                <div class="timer-fill" id="timerFill" style="width: 100%"></div>
+            </div>
+            <div class="scenario-card">
+                <div class="round-number" id="roundNumber">Round 1 of 15</div>
+                <div class="scenario-text" id="scenarioText">Loading...</div>
+            </div>
+            <div class="choice-buttons">
+                <button class="choice-btn ego" id="egoBtn" onclick="makeChoice('ego')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 5px;"><path d="M12 9v2m0 4h.01"/><circle cx="12" cy="12" r="10"/></svg>
+                    <br>EGO
+                </button>
+                <button class="choice-btn results" id="resultsBtn" onclick="makeChoice('results')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-bottom: 5px;"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+                    <br>RESULTS
+                </button>
+            </div>
+            <div class="feedback-banner" id="feedbackBanner"></div>
+            <div class="streak-display" id="streakDisplay"></div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="game-screen" id="resultsScreen">
+            <div class="results-card">
+                <div class="results-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <h2 class="results-title">Game Complete!</h2>
+                <div class="results-score" id="finalScore">0%</div>
+                <div class="results-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="correctCount">0</div>
+                        <div class="result-stat-label">Correct</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="maxStreak">0</div>
+                        <div class="result-stat-label">Best Streak</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value" id="avgTime">0s</div>
+                        <div class="result-stat-label">Avg Time</div>
+                    </div>
+                </div>
+                <div class="insight-box">
+                    <div class="insight-title">Your Ego Radar</div>
+                    <div class="insight-text" id="insightText">Loading...</div>
+                </div>
+                <button class="btn btn-primary" onclick="playAgain()">
+                    Play Again
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = [
+            { text: "The leader volunteers to present to executives because they want face time with the C-suite.", answer: "ego" },
+            { text: "The leader lets a junior team member present their own work to build their skills and visibility.", answer: "results" },
+            { text: "After a success, the leader says 'The team did amazing work' in public and 'I'm so proud of what I built' in private.", answer: "ego" },
+            { text: "The leader asks their skip-level reports what's really going on, even if it might surface their own blind spots.", answer: "results" },
+            { text: "When their idea gets rejected, the leader says 'They'll see I was right eventually.'", answer: "ego" },
+            { text: "The leader promotes their top performer even though it means losing them to another team.", answer: "results" },
+            { text: "The leader takes on a high-profile project that's outside their expertise rather than delegate to someone qualified.", answer: "ego" },
+            { text: "After a failure, the leader tells the team: 'I should have given you more support. This is on me.'", answer: "results" },
+            { text: "The leader disagrees with a decision but commits fully and supports it publicly.", answer: "results" },
+            { text: "The leader subtly undermines a decision they disagreed with by being 'too busy' to help.", answer: "ego" },
+            { text: "The leader gives credit to the team in the all-hands but expects them to know who really made it happen.", answer: "ego" },
+            { text: "The leader cancels their vacation when a critical project needs help, without making a big deal of it.", answer: "results" },
+            { text: "The leader argues for their bonus based on team metrics, not their personal contributions.", answer: "results" },
+            { text: "The leader insists on being CC'd on all emails so they 'stay in the loop' and can 'add value.'", answer: "ego" },
+            { text: "The leader admits to the team: 'I don't know the answer here. Who has ideas?'", answer: "results" },
+            { text: "The leader rewrites a team member's doc 'to make it better' rather than coaching them.", answer: "ego" },
+            { text: "The leader measures their success by whether the team can operate without them.", answer: "results" },
+            { text: "The leader drops hints about their Ivy League MBA when meeting new people.", answer: "ego" },
+            { text: "The leader actively recruits people smarter than themselves.", answer: "results" },
+            { text: "The leader attributes the team's struggles to 'the people I inherited.'", answer: "ego" },
+            { text: "The leader says 'We failed' instead of 'They failed' when talking to their boss.", answer: "results" },
+            { text: "The leader turns down a promotion because the team isn't ready to lose them yet.", answer: "results" },
+            { text: "The leader name-drops their previous company constantly: 'Well, at Google we...'", answer: "ego" },
+            { text: "The leader shares the spotlight by inviting team members to present to leadership.", answer: "results" },
+            { text: "The leader feels resentful when a direct report gets recognized for work they enabled.", answer: "ego" }
+        ];
+        
+        let currentRound = 0;
+        let score = 0;
+        let streak = 0;
+        let maxStreak = 0;
+        let totalTime = 0;
+        let timer = null;
+        let timeLeft = 8;
+        let shuffledScenarios = [];
+        const TOTAL_ROUNDS = 15;
+        
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        
+        function startGame() {
+            shuffledScenarios = shuffle(scenarios).slice(0, TOTAL_ROUNDS);
+            currentRound = 0;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            totalTime = 0;
+            
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('gameScreen').classList.add('active');
+            showRound();
+        }
+        
+        function showRound() {
+            const scenario = shuffledScenarios[currentRound];
+            document.getElementById('roundNumber').textContent = `Round ${currentRound + 1} of ${TOTAL_ROUNDS}`;
+            document.getElementById('scenarioText').textContent = scenario.text;
+            
+            // Reset buttons
+            const egoBtn = document.getElementById('egoBtn');
+            const resultsBtn = document.getElementById('resultsBtn');
+            egoBtn.classList.remove('correct', 'incorrect', 'disabled');
+            resultsBtn.classList.remove('correct', 'incorrect', 'disabled');
+            
+            // Hide feedback
+            document.getElementById('feedbackBanner').classList.remove('show');
+            document.getElementById('streakDisplay').classList.remove('show');
+            
+            // Start timer
+            timeLeft = 8;
+            document.getElementById('timerFill').style.width = '100%';
+            document.getElementById('timerFill').classList.remove('warning');
+            
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                const percent = (timeLeft / 8) * 100;
+                document.getElementById('timerFill').style.width = percent + '%';
+                
+                if (timeLeft <= 3) {
+                    document.getElementById('timerFill').classList.add('warning');
+                }
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    makeChoice(null); // Time's up
+                }
+            }, 100);
+        }
+        
+        function makeChoice(choice) {
+            if (timer) clearInterval(timer);
+            
+            const scenario = shuffledScenarios[currentRound];
+            const isCorrect = choice === scenario.answer;
+            const responseTime = 8 - timeLeft;
+            totalTime += responseTime;
+            
+            // Disable buttons
+            const egoBtn = document.getElementById('egoBtn');
+            const resultsBtn = document.getElementById('resultsBtn');
+            egoBtn.classList.add('disabled');
+            resultsBtn.classList.add('disabled');
+            
+            // Mark correct answer
+            if (scenario.answer === 'ego') {
+                egoBtn.classList.add('correct');
+            } else {
+                resultsBtn.classList.add('correct');
+            }
+            
+            // Mark wrong choice if made
+            if (choice && !isCorrect) {
+                if (choice === 'ego') {
+                    egoBtn.classList.add('incorrect');
+                } else {
+                    resultsBtn.classList.add('incorrect');
+                }
+            }
+            
+            // Update score and streak
+            if (isCorrect) {
+                score++;
+                streak++;
+                maxStreak = Math.max(maxStreak, streak);
+                
+                document.getElementById('feedbackBanner').textContent = 'Correct! +1';
+                document.getElementById('feedbackBanner').className = 'feedback-banner show correct';
+                
+                if (streak >= 3) {
+                    document.getElementById('streakDisplay').textContent = streak + 'x STREAK!';
+                    document.getElementById('streakDisplay').classList.add('show');
+                }
+            } else {
+                streak = 0;
+                document.getElementById('feedbackBanner').textContent = choice ? 'Wrong!' : 'Time\'s up!';
+                document.getElementById('feedbackBanner').className = 'feedback-banner show incorrect';
+            }
+            
+            // Update display
+            document.getElementById('scoreBadge').textContent = score;
+            document.getElementById('streakBadge').textContent = streak + 'x';
+            
+            // Next round after delay
+            setTimeout(() => {
+                currentRound++;
+                if (currentRound < TOTAL_ROUNDS) {
+                    showRound();
+                } else {
+                    showResults();
+                }
+            }, 1500);
+        }
+        
+        function showResults() {
+            document.getElementById('gameScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            const percentage = Math.round((score / TOTAL_ROUNDS) * 100);
+            const avgTime = (totalTime / TOTAL_ROUNDS).toFixed(1);
+            
+            document.getElementById('finalScore').textContent = percentage + '%';
+            document.getElementById('correctCount').textContent = score + '/' + TOTAL_ROUNDS;
+            document.getElementById('maxStreak').textContent = maxStreak + 'x';
+            document.getElementById('avgTime').textContent = avgTime + 's';
+            
+            // Generate insight
+            let insight = '';
+            if (percentage >= 85) {
+                insight = "Exceptional ego radar! You consistently spot when leaders are prioritizing personal glory over team results. This awareness is the foundation of Level 5 leadership.";
+            } else if (percentage >= 70) {
+                insight = "Good instincts! You catch most ego-driven behavior, though some subtle patterns may slip past you. Pay extra attention to behaviors that look helpful but serve the leader's image.";
+            } else if (percentage >= 50) {
+                insight = "Developing awareness. Ego often disguises itself as helpfulness or dedication. Ask yourself: 'Who really benefits from this action?' The answer reveals the motivation.";
+            } else {
+                insight = "Ego is sneaky! It often masquerades as confidence, dedication, or 'high standards.' Practice asking: 'Is this about the mission or about me?' in your own decisions.";
+            }
+            
+            document.getElementById('insightText').textContent = insight;
+            
+            // Save progress
+            localStorage.setItem('tap_in_ego_check_complete', 'true');
+            localStorage.setItem('tap_in_ego_check_score', percentage);
+            
+            let totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+            totalXP += 50;
+            localStorage.setItem('tap_in_xp', totalXP);
+        }
+        
+        function playAgain() {
+            currentRound = 0;
+            score = 0;
+            streak = 0;
+            maxStreak = 0;
+            totalTime = 0;
+            
+            document.getElementById('scoreBadge').textContent = '0';
+            document.getElementById('streakBadge').textContent = '0x';
+            
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').classList.add('active');
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

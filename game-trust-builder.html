@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Trust Builder - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+        }
+        
+        /* Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 15px 20px;
+            background: linear-gradient(to bottom, var(--black), transparent);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.85rem;
+        }
+        
+        .stat-icon {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .xp-stat { color: var(--gold); }
+        .trust-stat { color: var(--green); }
+        
+        /* Container */
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 80px 20px 100px;
+        }
+        
+        /* Progress */
+        .progress-section {
+            margin-bottom: 30px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        
+        .progress-bar {
+            height: 6px;
+            background: var(--mid-grey);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue), var(--green));
+            transition: width 0.5s ease;
+        }
+        
+        /* Trust Meter */
+        .trust-meter {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .trust-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .trust-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--green);
+            margin-bottom: 5px;
+        }
+        
+        .trust-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Scenario Card */
+        .scenario-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .scenario-context {
+            font-size: 0.75rem;
+            color: var(--blue);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+        
+        .scenario-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .scenario-question {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        /* Response Options */
+        .responses {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .response-btn {
+            background: var(--mid-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: left;
+            color: var(--white);
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .response-btn:hover {
+            border-color: var(--blue);
+            transform: translateX(5px);
+        }
+        
+        .response-btn.selected {
+            border-color: var(--blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .response-btn.correct {
+            border-color: var(--green);
+            background: rgba(16, 185, 129, 0.15);
+        }
+        
+        .response-btn.incorrect {
+            border-color: var(--red);
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 0.6;
+        }
+        
+        .response-btn.best {
+            border-color: var(--gold);
+            background: rgba(212, 168, 83, 0.15);
+        }
+        
+        /* Feedback */
+        .feedback {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        
+        .feedback.show { display: block; }
+        
+        .feedback-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .feedback-icon {
+            width: 24px;
+            height: 24px;
+        }
+        
+        .feedback-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .feedback.positive .feedback-icon { color: var(--green); }
+        .feedback.positive .feedback-title { color: var(--green); }
+        .feedback.negative .feedback-icon { color: var(--red); }
+        .feedback.negative .feedback-title { color: var(--red); }
+        .feedback.best .feedback-icon { color: var(--gold); }
+        .feedback.best .feedback-title { color: var(--gold); }
+        
+        .feedback-text {
+            font-size: 0.95rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .trust-change {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .trust-change.positive {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--green);
+        }
+        
+        .trust-change.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--red);
+        }
+        
+        /* Continue Button */
+        .continue-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--green);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .continue-btn.show { display: block; }
+        
+        /* Results Screen */
+        .results {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+        
+        .results.show { display: block; }
+        
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .results-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .results-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+        }
+        
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .result-stat {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px 15px;
+        }
+        
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 5px;
+        }
+        
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+        }
+        
+        .insight-box {
+            background: var(--dark-grey);
+            border-left: 3px solid var(--gold);
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 25px;
+            border-radius: 0 12px 12px 0;
+        }
+        
+        .insight-text {
+            font-style: italic;
+            color: var(--white);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        
+        .insight-author {
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+        
+        .exit-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--green);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-trust-builder.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="game-trust-builder-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <a href="#" class="back-btn" onclick="exitGame()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Exit
+        </a>
+        <div class="stats">
+            <div class="stat xp-stat">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span id="xpDisplay">0</span>
+            </div>
+            <div class="stat trust-stat">
+                <svg class="stat-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span id="trustDisplay">50</span>%
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Game Section -->
+        <div id="gameSection">
+            <!-- Progress -->
+            <div class="progress-section">
+                <div class="progress-label">
+                    <span>Scenario <span id="currentScenario">1</span> of <span id="totalScenarios">5</span></span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+            </div>
+            
+            <!-- Trust Meter -->
+            <div class="trust-meter">
+                <div class="trust-label">Team Trust Level</div>
+                <div class="trust-value" id="trustValue">50%</div>
+                <div class="trust-desc" id="trustDesc">Building foundation</div>
+            </div>
+            
+            <!-- Scenario -->
+            <div class="scenario-card" id="scenarioCard">
+                <div class="scenario-context" id="scenarioContext">Workplace Scenario</div>
+                <div class="scenario-text" id="scenarioText">Loading scenario...</div>
+                <div class="scenario-question" id="scenarioQuestion">What do you do?</div>
+                
+                <div class="responses" id="responses"></div>
+            </div>
+            
+            <!-- Feedback -->
+            <div class="feedback" id="feedback">
+                <div class="feedback-header">
+                    <svg class="feedback-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span class="feedback-title" id="feedbackTitle">Good choice!</span>
+                </div>
+                <p class="feedback-text" id="feedbackText"></p>
+                <span class="trust-change" id="trustChange">+10% Trust</span>
+            </div>
+            
+            <button class="continue-btn" id="continueBtn" onclick="nextScenario()">Continue</button>
+        </div>
+        
+        <!-- Results Section -->
+        <div class="results" id="resultsSection">
+            <div class="results-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <h2 class="results-title">Trust Builder Complete!</h2>
+            <p class="results-subtitle">You've practiced building trust through vulnerability</p>
+            
+            <div class="results-stats">
+                <div class="result-stat">
+                    <div class="result-value" id="finalTrust">75%</div>
+                    <div class="result-label">Final Trust</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="bestChoices">4</div>
+                    <div class="result-label">Best Choices</div>
+                </div>
+                <div class="result-stat">
+                    <div class="result-value" id="xpEarned">+15</div>
+                    <div class="result-label">XP Earned</div>
+                </div>
+            </div>
+            
+            <div class="insight-box">
+                <p class="insight-text">"Trust is built in very small moments. Every time we choose courage over comfort, we strengthen the foundation."</p>
+                <p class="insight-author">— Brené Brown</p>
+            </div>
+            
+            <button class="exit-btn" onclick="exitGame()">Return to Training</button>
+        </div>
+    </div>
+    
+    <script>
+        // Scenarios
+        const scenarios = [
+            {
+                context: "Team Meeting",
+                text: "Your team just failed to hit a major deadline. The client is upset and your manager wants answers. You know the real reason was a miscommunication between you and a colleague, but they haven't spoken up.",
+                question: "How do you respond in the meeting?",
+                responses: [
+                    { text: "Stay quiet and let others explain", trust: -10, type: 'negative', feedback: "Staying silent protects you short-term but erodes trust. Your team needs honesty to improve." },
+                    { text: "Blame the colleague who miscommunicated", trust: -20, type: 'negative', feedback: "Blaming others destroys psychological safety. Now everyone fears being thrown under the bus." },
+                    { text: "Take shared responsibility and explain what happened", trust: +15, type: 'best', feedback: "Taking ownership without blaming shows vulnerability and builds trust. Others will feel safe admitting mistakes too." },
+                    { text: "Apologize but don't explain the details", trust: +5, type: 'positive', feedback: "Apologizing is good, but without transparency, the team can't learn and improve." }
+                ]
+            },
+            {
+                context: "One-on-One",
+                text: "A teammate asks for your honest feedback on their presentation. You noticed several issues, but they seem really proud of their work and you don't want to hurt their feelings.",
+                question: "What do you say?",
+                responses: [
+                    { text: "\"It was great, nice job!\"", trust: -10, type: 'negative', feedback: "Empty praise feels good but prevents growth. They'll eventually discover the issues - and lose trust in your feedback." },
+                    { text: "Point out everything that's wrong", trust: -5, type: 'negative', feedback: "Brutally honest feedback without care damages the relationship. Truth without compassion is cruelty." },
+                    { text: "Share specific feedback with genuine care for their growth", trust: +15, type: 'best', feedback: "Caring enough to give honest, specific feedback is an act of trust. You're investing in their success." },
+                    { text: "Say it's good but suggest they ask someone more senior", trust: 0, type: 'neutral', feedback: "Deflecting doesn't help them. You missed an opportunity to build trust through honest dialogue." }
+                ]
+            },
+            {
+                context: "Project Challenge",
+                text: "You're struggling with a task and falling behind. You could probably figure it out eventually, but asking for help would mean admitting you don't know everything.",
+                question: "What do you do?",
+                responses: [
+                    { text: "Keep struggling alone - you'll figure it out", trust: -10, type: 'negative', feedback: "Pride prevents progress. Teams with high trust ask for help freely - it's a strength, not a weakness." },
+                    { text: "Ask a trusted colleague for guidance", trust: +15, type: 'best', feedback: "Asking for help shows vulnerability and invites others to do the same. This is how trust grows." },
+                    { text: "Quietly Google solutions and hope no one notices", trust: -5, type: 'negative', feedback: "Working around the team creates distance. Shared problems become shared solutions." },
+                    { text: "Tell your manager you need more time", trust: +5, type: 'positive', feedback: "Honesty about timelines is good, but you missed the chance to connect with teammates who could help." }
+                ]
+            },
+            {
+                context: "Conflict Situation",
+                text: "A colleague makes a decision you strongly disagree with. You have concerns it will cause problems, but they seem confident and the team is moving forward.",
+                question: "How do you handle this?",
+                responses: [
+                    { text: "Stay silent and let it play out", trust: -15, type: 'negative', feedback: "Silence when you see problems isn't loyalty - it's fear. High-trust teams speak up." },
+                    { text: "Complain to other teammates later", trust: -20, type: 'negative', feedback: "Talking behind someone's back destroys trust faster than anything. Address concerns directly." },
+                    { text: "Share your concerns directly and respectfully", trust: +15, type: 'best', feedback: "Disagreeing openly while respecting the person builds trust. It shows you care about the outcome AND the relationship." },
+                    { text: "Send an email documenting your concerns", trust: 0, type: 'neutral', feedback: "Covering yourself in writing instead of talking directly signals distrust. Have the conversation." }
+                ]
+            },
+            {
+                context: "Personal Moment",
+                text: "Your team is doing icebreakers and sharing something personal. You could share something safe and generic, or something more meaningful that shows who you really are.",
+                question: "What do you share?",
+                responses: [
+                    { text: "Something generic like your favorite food", trust: 0, type: 'neutral', feedback: "Safe shares don't build connection. You've missed an opportunity to deepen relationships." },
+                    { text: "A meaningful challenge you've overcome", trust: +15, type: 'best', feedback: "Sharing something real invites others to do the same. Vulnerability is contagious - in a good way." },
+                    { text: "Skip your turn or make a joke", trust: -10, type: 'negative', feedback: "Avoiding vulnerability signals you don't trust the group. Others will follow your lead and stay guarded." },
+                    { text: "Something slightly personal but not too deep", trust: +5, type: 'positive', feedback: "A step in the right direction. As trust grows, you can go deeper." }
+                ]
+            }
+        ];
+        
+        let currentScenario = 0;
+        let trustLevel = 50;
+        let xp = 0;
+        let bestChoices = 0;
+        
+        function init() {
+            loadScenario();
+        }
+        
+        function loadScenario() {
+            const scenario = scenarios[currentScenario];
+            
+            document.getElementById('currentScenario').textContent = currentScenario + 1;
+            document.getElementById('totalScenarios').textContent = scenarios.length;
+            document.getElementById('progressPercent').textContent = Math.round((currentScenario / scenarios.length) * 100) + '%';
+            document.getElementById('progressFill').style.width = (currentScenario / scenarios.length) * 100 + '%';
+            
+            document.getElementById('scenarioContext').textContent = scenario.context;
+            document.getElementById('scenarioText').textContent = scenario.text;
+            document.getElementById('scenarioQuestion').textContent = scenario.question;
+            
+            // Render responses
+            const responsesContainer = document.getElementById('responses');
+            responsesContainer.innerHTML = scenario.responses.map((r, i) => `
+                <button class="response-btn" onclick="selectResponse(${i})">${r.text}</button>
+            `).join('');
+            
+            // Hide feedback
+            document.getElementById('feedback').classList.remove('show');
+            document.getElementById('continueBtn').classList.remove('show');
+            
+            updateTrustDisplay();
+        }
+        
+        function selectResponse(index) {
+            const scenario = scenarios[currentScenario];
+            const response = scenario.responses[index];
+            
+            // Disable all buttons
+            const buttons = document.querySelectorAll('.response-btn');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                btn.onclick = null;
+                
+                const resp = scenario.responses[i];
+                if (i === index) {
+                    btn.classList.add(resp.type === 'best' ? 'best' : resp.type === 'positive' ? 'correct' : 'incorrect');
+                } else if (resp.type === 'best') {
+                    btn.classList.add('best');
+                }
+            });
+            
+            // Update trust
+            trustLevel = Math.max(0, Math.min(100, trustLevel + response.trust));
+            updateTrustDisplay();
+            
+            // Update XP
+            if (response.type === 'best') {
+                xp += 5;
+                bestChoices++;
+            } else if (response.type === 'positive') {
+                xp += 2;
+            }
+            document.getElementById('xpDisplay').textContent = xp;
+            
+            // Show feedback
+            const feedback = document.getElementById('feedback');
+            feedback.className = 'feedback show ' + (response.type === 'negative' ? 'negative' : response.type === 'best' ? 'best' : 'positive');
+            
+            document.getElementById('feedbackTitle').textContent = 
+                response.type === 'best' ? 'Excellent choice!' :
+                response.type === 'positive' ? 'Good choice!' :
+                response.type === 'negative' ? 'Consider this...' : 'Okay choice';
+            
+            document.getElementById('feedbackText').textContent = response.feedback;
+            
+            const trustChange = document.getElementById('trustChange');
+            trustChange.textContent = (response.trust >= 0 ? '+' : '') + response.trust + '% Trust';
+            trustChange.className = 'trust-change ' + (response.trust >= 0 ? 'positive' : 'negative');
+            
+            // Show continue button
+            document.getElementById('continueBtn').classList.add('show');
+        }
+        
+        function updateTrustDisplay() {
+            document.getElementById('trustValue').textContent = trustLevel + '%';
+            document.getElementById('trustDisplay').textContent = trustLevel;
+            
+            const desc = trustLevel >= 80 ? 'High trust environment' :
+                        trustLevel >= 60 ? 'Growing trust' :
+                        trustLevel >= 40 ? 'Building foundation' :
+                        trustLevel >= 20 ? 'Trust needs work' : 'Critical - rebuild trust';
+            document.getElementById('trustDesc').textContent = desc;
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            
+            if (currentScenario >= scenarios.length) {
+                showResults();
+            } else {
+                loadScenario();
+            }
+        }
+        
+        function showResults() {
+            document.getElementById('gameSection').style.display = 'none';
+            document.getElementById('resultsSection').classList.add('show');
+            
+            document.getElementById('finalTrust').textContent = trustLevel + '%';
+            document.getElementById('bestChoices').textContent = bestChoices;
+            document.getElementById('xpEarned').textContent = '+' + (xp + 10); // Base XP + earned
+        }
+        
+        // XP System Integration
+        function earnXP(amount) {
+            const currentXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', (currentXP + amount).toString());
+            localStorage.setItem('tap_in_game_xp_earned', amount.toString());
+        }
+        
+        function exitGame() {
+            // Save XP earned
+            earnXP(xp + 10);
+            
+            // Check if we should return to a specific page
+            const returnUrl = localStorage.getItem('tap_in_return_url');
+            if (returnUrl) {
+                localStorage.removeItem('tap_in_return_url');
+                window.location.href = returnUrl;
+            } else {
+                window.location.href = 'gym-dashboard.html';
+            }
+        }
+        
+        init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="version" content="1.0.0">
+    <title>The Gym - TAP-IN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            padding-bottom: 100px;
+        }
+        .container { max-width: 600px; margin: 0 auto; }
+
+        /* Header */
+        .gym-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding: 15px 0;
+        }
+        .gym-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+        .gym-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #a93226 0%, #7a1f1f 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .gym-logo h1 { font-size: 1.3rem; font-weight: 700; }
+        .header-actions { display: flex; gap: 10px; }
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+        .icon-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+        /* Main Journey Card */
+        .journey-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        .journey-header {
+            background: linear-gradient(135deg, #a93226 0%, #7a1f1f 100%);
+            padding: 25px;
+            color: white;
+            position: relative;
+        }
+        .belt-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .belt-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #f0f0f0;
+        }
+        .belt-dot.blue { background: #2196f3; }
+        .belt-dot.purple { background: #9c27b0; }
+        .belt-dot.brown { background: #795548; }
+        .belt-dot.black { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.3); }
+        
+        .journey-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 5px; opacity: 0.9; }
+        .journey-progress-text { font-size: 1.5rem; font-weight: 800; margin-bottom: 15px; }
+        
+        .progress-bar-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 12px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .journey-body { padding: 25px; }
+        .next-lesson {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+        .lesson-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #a93226 0%, #7a1f1f 100%);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        .lesson-info { flex: 1; }
+        .lesson-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #9ca3af; font-weight: 600; margin-bottom: 4px; }
+        .lesson-title { font-size: 1.1rem; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+        .lesson-meta { font-size: 0.85rem; color: #6b7280; }
+
+        .continue-btn {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #a93226 0%, #7a1f1f 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .continue-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(169, 50, 38, 0.3); }
+
+        /* Stats Card */
+        .stats-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .stat-item { text-align: center; }
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1a1a2e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .stat-value .icon { font-size: 1.2rem; }
+        .stat-label { font-size: 0.75rem; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+
+        /* Section Cards */
+        .section-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .section-header:hover { background: #f8f9fa; }
+        .section-left { display: flex; align-items: center; gap: 12px; }
+        .section-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        .section-icon.tools { background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); }
+        .section-icon.openmat { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
+        .section-icon.research { background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%); }
+        .section-title { font-weight: 600; color: #1a1a2e; }
+        .section-subtitle { font-size: 0.8rem; color: #9ca3af; }
+        .section-badge {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-locked { background: #f3f4f6; color: #9ca3af; }
+        .badge-new { background: #dcfce7; color: #16a34a; }
+        .chevron { color: #9ca3af; font-size: 1.2rem; }
+
+        /* Pulse Check */
+        .pulse-card {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.3);
+        }
+        .pulse-content h3 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+        .pulse-content p { font-size: 0.85rem; opacity: 0.9; }
+        .pulse-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+        .pulse-btn:hover { background: white; color: #059669; }
+
+        /* Community CTA */
+        .community-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef2ff 100%);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px dashed #c7d2fe;
+        }
+        .community-card h3 { color: #1a1a2e; font-size: 1.1rem; margin-bottom: 8px; }
+        .community-card p { color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; }
+        .community-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        .community-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3); }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-around;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            color: #9ca3af;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: color 0.2s ease;
+        }
+        .nav-item.active { color: #a93226; }
+        .nav-item:hover { color: #a93226; }
+        .nav-icon { font-size: 1.4rem; }
+
+        /* View DNA Card link */
+        .view-dna-link {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .view-dna-link:hover { background: rgba(255, 255, 255, 0.3); }
+
+        @media (max-width: 480px) {
+            body { padding: 15px; padding-bottom: 90px; }
+            .journey-header { padding: 20px; }
+            .journey-body { padding: 20px; }
+            .stats-grid { gap: 10px; }
+            .stat-value { font-size: 1.3rem; }
+        }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="gym-focused-old.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="gym-focused-old-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 8px;">
+        <a href="gym-dashboard.html" style="padding: 8px 14px; background: #10b981; color: #000; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">EN</a>
+        <a href="gym-focused-de.html" style="padding: 8px 14px; background: rgba(255,255,255,0.1); color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">DE</a>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="gym-header">
+            <div class="gym-logo">
+                <div class="gym-logo-icon">&#127947;</div>
+                <h1>The Gym</h1>
+            </div>
+            <div class="header-actions">
+                <a href="leadership-dna.html" class="icon-btn" title="My DNA Card">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </a>
+                <a href="learning-hub.html" class="icon-btn" title="Team Hub">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Journey Card -->
+        <div class="journey-card">
+            <div class="journey-header">
+                <a href="leadership-dna.html" class="view-dna-link">View Card</a>
+                <div class="belt-badge">
+                    <span class="belt-dot" id="beltDot"></span>
+                    <span id="beltName">White Belt</span>
+                </div>
+                <div class="journey-title">YOUR JOURNEY</div>
+                <div class="journey-progress-text" id="progressText">Stripe 1 of 4</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" id="progressBar" style="width: 25%;"></div>
+                </div>
+            </div>
+            <div class="journey-body">
+                <div class="next-lesson">
+                    <div class="lesson-icon" id="lessonIcon">&#128218;</div>
+                    <div class="lesson-info">
+                        <div class="lesson-label">Next Up</div>
+                        <div class="lesson-title" id="lessonTitle">Know Your Rhythm</div>
+                        <div class="lesson-meta" id="lessonMeta">~15 min · +50 XP</div>
+                    </div>
+                </div>
+                <a href="white-belt-stripe1-gamified.html" class="continue-btn" id="continueBtn">
+                    Continue Training &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-card">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value"><span class="icon">&#128293;</span><span id="streakCount">0</span></div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><span class="icon">&#11088;</span><span id="xpCount">0</span></div>
+                    <div class="stat-label">Total XP</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value"><span class="icon">&#127942;</span><span id="badgeCount">0</span></div>
+                    <div class="stat-label">Badges</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Pulse -->
+        <div class="pulse-card">
+            <div class="pulse-content">
+                <h3>&#128200; Weekly Pulse</h3>
+                <p>Track your leadership energy</p>
+            </div>
+            <a href="weekly-pulse.html" class="pulse-btn">Check In</a>
+        </div>
+
+        <!-- Sections -->
+        <div class="section-card" id="toolsSection">
+            <div class="section-header" onclick="toggleSection('tools')">
+                <div class="section-left">
+                    <div class="section-icon tools">&#9889;</div>
+                    <div>
+                        <div class="section-title">Quick Tools</div>
+                        <div class="section-subtitle">2-minute practices</div>
+                    </div>
+                </div>
+                <span class="section-badge badge-locked" id="toolsBadge">Stripe 2</span>
+            </div>
+        </div>
+
+        <div class="section-card" id="openmatSection">
+            <div class="section-header" onclick="toggleSection('openmat')">
+                <div class="section-left">
+                    <div class="section-icon openmat">&#129351;</div>
+                    <div>
+                        <div class="section-title">Open Mat</div>
+                        <div class="section-subtitle">Deeper practice sessions</div>
+                    </div>
+                </div>
+                <span class="section-badge badge-locked" id="openmatBadge">Blue Belt</span>
+            </div>
+        </div>
+
+        <div class="section-card" id="researchSection">
+            <div class="section-header" onclick="toggleSection('research')">
+                <div class="section-left">
+                    <div class="section-icon research">&#128218;</div>
+                    <div>
+                        <div class="section-title">Research Lab</div>
+                        <div class="section-subtitle">Articles and deep dives</div>
+                    </div>
+                </div>
+                <span class="section-badge badge-locked" id="researchBadge">Purple Belt</span>
+            </div>
+        </div>
+
+        <!-- Community -->
+        <div class="community-card">
+            <h3>&#128172; Ready for More?</h3>
+            <p>Connect with leaders working on the same challenges.</p>
+            <a href="https://www.skool.com/tap-in" target="_blank" class="community-btn">
+                Join the Community
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+            </a>
+        </div>
+    </div>
+
+    <!-- Bottom Nav -->
+    <div class="bottom-nav">
+        <a href="gym-dashboard.html" class="nav-item active">
+            <span class="nav-icon">&#127947;</span>
+            Gym
+        </a>
+        <a href="learning-hub.html" class="nav-item">
+            <span class="nav-icon">&#128101;</span>
+            Hub
+        </a>
+        <a href="leadership-dna.html" class="nav-item">
+            <span class="nav-icon">&#127919;</span>
+            Profile
+        </a>
+        <a href="weekly-pulse.html" class="nav-item">
+            <span class="nav-icon">&#128200;</span>
+            Pulse
+        </a>
+    </div>
+
+    <script>
+        const beltData = {
+            white: { name: 'White Belt', class: '', stripes: 4 },
+            blue: { name: 'Blue Belt', class: 'blue', stripes: 4 },
+            purple: { name: 'Purple Belt', class: 'purple', stripes: 4 },
+            brown: { name: 'Brown Belt', class: 'brown', stripes: 4 },
+            black: { name: 'Black Belt', class: 'black', stripes: 4 }
+        };
+
+        const lessonsByBelt = {
+            white: [
+                { title: 'Know Yourself', link: 'white-belt-stripe1-gamified.html', icon: '&#128218;' },
+                { title: 'Your Energy Rhythm', link: 'white-belt-stripe2-gamified.html', icon: '&#9889;' },
+                { title: 'Core Values', link: 'white-belt-stripe3-gamified.html', icon: '&#127919;' },
+                { title: 'Your Leadership Style', link: 'white-belt-stripe4-gamified.html', icon: '&#128081;' }
+            ],
+            blue: [
+                { title: 'Difficult Conversations', link: 'blue-belt-stripe1-gamified.html', icon: '&#128172;' },
+                { title: 'Active Listening', link: 'blue-belt-stripe2-gamified.html', icon: '&#128066;' },
+                { title: 'Feedback Systems', link: 'blue-belt-stripe3-gamified.html', icon: '&#128221;' },
+                { title: 'Healthy Boundaries', link: 'blue-belt-stripe4-gamified.html', icon: '&#128737;' }
+            ],
+            purple: [
+                { title: 'Conflict Resolution', link: 'purple-belt-stripe1-gamified.html', icon: '&#128293;' },
+                { title: 'Strategic Thinking', link: 'purple-belt-stripe2-gamified.html', icon: '&#127919;' },
+                { title: 'Team Dynamics', link: 'purple-belt-stripe3-gamified.html', icon: '&#129309;' },
+                { title: 'Influence & Persuasion', link: 'purple-belt-stripe4-gamified.html', icon: '&#128161;' }
+            ],
+            brown: [
+                { title: 'Mentoring Others', link: 'brown-belt-stripe1-gamified.html', icon: '&#127891;' },
+                { title: 'Advanced Leadership', link: 'brown-belt-stripe2-gamified.html', icon: '&#128081;' },
+                { title: 'Crisis Management', link: 'brown-belt-stripe3-gamified.html', icon: '&#9888;' },
+                { title: 'Culture Building', link: 'brown-belt-stripe4-gamified.html', icon: '&#127793;' }
+            ],
+            black: [
+                { title: 'Visionary Leadership', link: 'black-belt-stripe1-gamified.html', icon: '&#128302;' },
+                { title: 'Legacy Building', link: 'black-belt-stripe2-gamified.html', icon: '&#127942;' },
+                { title: 'Systems Thinking', link: 'black-belt-stripe3-gamified.html', icon: '&#128300;' },
+                { title: 'Master Coaching', link: 'black-belt-stripe4-gamified.html', icon: '&#11088;' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProgress();
+        });
+
+        function loadProgress() {
+            const progress = JSON.parse(localStorage.getItem('tap_in_progress') || '{}');
+            const profile = JSON.parse(localStorage.getItem('tap_in_profile') || '{}');
+            
+            // Belt and progress
+            const belt = profile.belt || progress.belt || 'white';
+            const stripe = progress.currentStripe || 1;
+            const completedStripes = progress.completedStripes || 0;
+            
+            const beltInfo = beltData[belt] || beltData.white;
+            document.getElementById('beltName').textContent = beltInfo.name;
+            if (beltInfo.class) {
+                document.getElementById('beltDot').classList.add(beltInfo.class);
+            }
+            
+            document.getElementById('progressText').textContent = `Stripe ${stripe} of ${beltInfo.stripes}`;
+            document.getElementById('progressBar').style.width = `${(stripe / beltInfo.stripes) * 100}%`;
+            
+            // Next lesson
+            const lessons = lessonsByBelt[belt] || lessonsByBelt.white;
+            const nextLesson = lessons[stripe - 1] || lessons[0];
+            document.getElementById('lessonTitle').textContent = nextLesson.title;
+            document.getElementById('lessonIcon').innerHTML = nextLesson.icon;
+            document.getElementById('continueBtn').href = nextLesson.link;
+            
+            // Stats
+            document.getElementById('streakCount').textContent = progress.streak || 0;
+            document.getElementById('xpCount').textContent = progress.xp || 0;
+            document.getElementById('badgeCount').textContent = progress.badges || 0;
+            
+            // Unlock sections based on progress
+            updateSectionUnlocks(belt, completedStripes);
+        }
+
+        function updateSectionUnlocks(belt, completedStripes) {
+            const beltOrder = ['white', 'blue', 'purple', 'brown', 'black'];
+            const currentBeltIndex = beltOrder.indexOf(belt);
+            
+            // Tools: Unlock at Stripe 2
+            if (completedStripes >= 1) {
+                document.getElementById('toolsBadge').textContent = 'Available';
+                document.getElementById('toolsBadge').className = 'section-badge badge-new';
+            }
+            
+            // Open Mat: Unlock at Blue Belt
+            if (currentBeltIndex >= 1) {
+                document.getElementById('openmatBadge').textContent = 'Available';
+                document.getElementById('openmatBadge').className = 'section-badge badge-new';
+            }
+            
+            // Research: Unlock at Purple Belt
+            if (currentBeltIndex >= 2) {
+                document.getElementById('researchBadge').textContent = 'Available';
+                document.getElementById('researchBadge').className = 'section-badge badge-new';
+            }
+        }
+
+        function toggleSection(section) {
+            // For now, just show locked message or navigate
+            const progress = JSON.parse(localStorage.getItem('tap_in_progress') || '{}');
+            const completedStripes = progress.completedStripes || 0;
+            
+            if (section === 'tools' && completedStripes < 1) {
+                alert('Complete Stripe 1 to unlock Quick Tools!');
+            } else if (section === 'openmat') {
+                alert('Reach Blue Belt to unlock Open Mat sessions!');
+            } else if (section === 'research') {
+                alert('Reach Purple Belt to unlock the Research Lab!');
+            }
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

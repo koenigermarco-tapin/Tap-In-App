@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Daily Dilemma - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981;
+            --gold: #d4a853; --red: #ef4444; --blue: #3b82f6; --purple: #8b5cf6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--black); min-height: 100vh; min-height: 100dvh; color: var(--white); }
+        
+        .header { padding: 15px 20px; background: var(--dark-grey); border-bottom: 1px solid var(--mid-grey); display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { background: none; border: none; color: var(--light-grey); font-size: 1.5rem; cursor: pointer; }
+        .header-center { text-align: center; }
+        .game-title { font-size: 1rem; font-weight: 700; }
+        .streak-badge { display: flex; align-items: center; gap: 5px; background: var(--mid-grey); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; color: var(--gold); }
+        
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; }
+        
+        /* Date Display */
+        .date-display { text-align: center; margin-bottom: 20px; }
+        .date-day { font-size: 0.75rem; color: var(--light-grey); text-transform: uppercase; letter-spacing: 2px; }
+        .date-full { font-size: 1.2rem; font-weight: 700; color: var(--gold); }
+        
+        /* Dilemma Card */
+        .dilemma-card { background: linear-gradient(135deg, var(--dark-grey), #1f1f2e); border: 1px solid var(--mid-grey); border-radius: 20px; padding: 25px; margin-bottom: 20px; }
+        .dilemma-category { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--purple); margin-bottom: 12px; font-weight: 600; }
+        .dilemma-text { font-size: 1.05rem; line-height: 1.6; margin-bottom: 20px; }
+        .dilemma-question { font-size: 0.95rem; font-weight: 600; color: var(--gold); }
+        
+        /* Options */
+        .options-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .option-btn { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 14px; padding: 16px; text-align: left; cursor: pointer; transition: all 0.2s; display: flex; align-items: flex-start; gap: 12px; }
+        .option-btn:hover { border-color: var(--purple); }
+        .option-btn.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .option-btn.locked { pointer-events: none; }
+        .option-letter { width: 28px; height: 28px; background: var(--mid-grey); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+        .option-btn.selected .option-letter { background: var(--green); }
+        .option-text { font-size: 0.9rem; line-height: 1.4; }
+        
+        .submit-btn { width: 100%; padding: 18px; background: var(--purple); border: none; border-radius: 14px; color: white; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .submit-btn:disabled { background: var(--mid-grey); cursor: not-allowed; }
+        .submit-btn:hover:not(:disabled) { opacity: 0.9; }
+        
+        /* Results */
+        .results-section { display: none; }
+        .results-section.show { display: block; animation: fadeIn 0.4s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .results-header { text-align: center; margin-bottom: 25px; }
+        .results-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 8px; }
+        .results-subtitle { color: var(--light-grey); font-size: 0.9rem; }
+        
+        .vote-bars { margin-bottom: 25px; }
+        .vote-item { margin-bottom: 16px; }
+        .vote-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .vote-label { font-size: 0.85rem; font-weight: 600; }
+        .vote-label.your-choice { color: var(--green); }
+        .vote-pct { font-size: 0.85rem; font-weight: 700; color: var(--gold); }
+        .vote-bar { height: 8px; background: var(--mid-grey); border-radius: 4px; overflow: hidden; }
+        .vote-fill { height: 100%; background: var(--purple); border-radius: 4px; transition: width 0.8s ease; }
+        .vote-fill.your-choice { background: var(--green); }
+        
+        .expert-box { background: var(--dark-grey); border: 1px solid var(--gold); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .expert-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--gold); margin-bottom: 10px; font-weight: 600; }
+        .expert-text { font-size: 0.95rem; line-height: 1.6; color: var(--light-grey); }
+        
+        .share-btn { width: 100%; padding: 16px; background: var(--mid-grey); border: none; border-radius: 12px; color: var(--white); font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-bottom: 10px; }
+        .return-btn { width: 100%; padding: 16px; background: var(--green); border: none; border-radius: 12px; color: white; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        
+        /* Already Completed */
+        .completed-state { text-align: center; padding: 40px 20px; }
+        .completed-icon { font-size: 4rem; margin-bottom: 20px; }
+        .completed-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .completed-text { color: var(--light-grey); margin-bottom: 20px; }
+        .countdown-box { background: var(--dark-grey); border-radius: 16px; padding: 25px; margin-bottom: 25px; }
+        .countdown-label { font-size: 0.8rem; color: var(--light-grey); margin-bottom: 10px; }
+        .countdown-time { font-size: 2.5rem; font-weight: 800; color: var(--gold); font-variant-numeric: tabular-nums; }
+        .streak-display-large { background: linear-gradient(135deg, rgba(212,168,83,0.2), rgba(212,168,83,0.05)); border: 1px solid var(--gold); border-radius: 16px; padding: 20px; margin-bottom: 20px; }
+        .streak-number { font-size: 3rem; font-weight: 900; color: var(--gold); }
+        .streak-text { font-size: 0.9rem; color: var(--light-grey); }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-daily-dilemma.html" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-daily-dilemma-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="header">
+        <button class="back-btn" onclick="exitGame()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button>
+        <div class="header-center">
+            <div class="game-title">DAILY DILEMMA</div>
+        </div>
+        <div class="streak-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> <span id="streakCount">0</span> day streak</div>
+    </div>
+    
+    <div class="container">
+        <div id="mainContent">
+            <div class="date-display">
+                <div class="date-day" id="dateDay">Today's Challenge</div>
+                <div class="date-full" id="dateFull">Loading...</div>
+            </div>
+            
+            <div id="questionSection">
+                <div class="dilemma-card">
+                    <div class="dilemma-category" id="dilemmaCategory">LEADERSHIP</div>
+                    <div class="dilemma-text" id="dilemmaText">Loading today's dilemma...</div>
+                    <div class="dilemma-question">What would you do?</div>
+                </div>
+                
+                <div class="options-list" id="optionsList"></div>
+                
+                <button class="submit-btn" id="submitBtn" onclick="submitChoice()" disabled>Lock In My Choice</button>
+            </div>
+            
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <div class="results-title">How the world voted</div>
+                    <div class="results-subtitle" id="voteCount">1,247 people answered today</div>
+                </div>
+                
+                <div class="vote-bars" id="voteBars"></div>
+                
+                <div class="expert-box">
+                    <div class="expert-label">Expert Analysis</div>
+                    <div class="expert-text" id="expertText"></div>
+                </div>
+                
+                <button class="share-btn" onclick="shareResult()">Share My Choice</button>
+                <button class="return-btn" onclick="exitGame()">Return to Gym</button>
+            </div>
+        </div>
+        
+        <div id="completedState" class="completed-state" style="display: none;">
+            <div class="completed-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+            <div class="completed-title">Already Completed!</div>
+            <div class="completed-text">You've answered today's dilemma. Come back tomorrow!</div>
+            
+            <div class="countdown-box">
+                <div class="countdown-label">Next dilemma in</div>
+                <div class="countdown-time" id="countdownTime">00:00:00</div>
+            </div>
+            
+            <div class="streak-display-large">
+                <div class="streak-number" id="streakLarge">0</div>
+                <div class="streak-text">day streak</div>
+            </div>
+            
+            <button class="return-btn" onclick="exitGame()">Return to Gym</button>
+        </div>
+    </div>
+    
+    <script>
+    // 30 days of dilemmas (cycles)
+    const dilemmas = [
+        {
+            category: "LEADERSHIP",
+            text: "Your top performer is also your most toxic team member. They deliver 2x anyone else but three people have complained about their behavior.",
+            options: [
+                "Keep them and work on behavior through coaching",
+                "Let them go—culture matters more than performance",
+                "Isolate them from the team to minimize damage",
+                "Give them one final warning with clear consequences"
+            ],
+            votes: [32, 28, 15, 25],
+            expert: "Research shows toxic high performers cost more than they contribute when you factor in the talent they drive away. However, the 'right' answer depends on your values. Option B prioritizes culture; Options A and D prioritize rehabilitation. There's no universally correct answer—but there IS a wrong approach: ignoring it."
+        },
+        {
+            category: "ETHICS",
+            text: "Your company asks you to exaggerate results in a client presentation. It's not technically lying, but it's misleading. Your bonus depends on winning this deal.",
+            options: [
+                "Present accurate data even if you lose the deal",
+                "Use the exaggerated version—everyone does it",
+                "Push back on leadership and ask for accurate materials",
+                "Present it but document your objection in writing"
+            ],
+            votes: [35, 12, 28, 25],
+            expert: "This is a values test. Short-term, options B and D might 'work.' Long-term, your reputation and self-respect matter more than any single deal. Option C is underrated—sometimes leaders don't realize what they're asking. If they insist, that tells you something important about the company."
+        },
+        {
+            category: "CONFLICT",
+            text: "Two senior team members are having a conflict that's splitting the team into factions. They've asked you to mediate, but you're not their manager.",
+            options: [
+                "Facilitate a conversation between them",
+                "Stay out of it—not your problem",
+                "Escalate to their manager to handle it",
+                "Meet with each separately first to understand perspectives"
+            ],
+            votes: [22, 18, 24, 36],
+            expert: "Option D gives you the most information before choosing your approach. Option A is risky without understanding the dynamics. Option C might be appropriate if it's affecting work significantly. Option B is valid—you don't HAVE to mediate—but if you were asked, they trust you."
+        },
+        {
+            category: "PRIORITIES",
+            text: "You're behind on a critical deadline, but a direct report is clearly struggling with a personal issue and needs support.",
+            options: [
+                "Focus on the deadline—business needs come first",
+                "Stop and support your person—deadlines can be moved",
+                "Offer brief support and schedule a longer conversation later",
+                "Delegate some deadline work to free up time for them"
+            ],
+            votes: [15, 22, 38, 25],
+            expert: "This is the manager's dilemma. Option C is often the most practical—acknowledge the person, show you care, but be honest about constraints. The key insight: how you handle this moment defines what kind of leader you are. People remember how you treat them when it's hard."
+        },
+        {
+            category: "CAREER",
+            text: "You're offered a promotion, but you'd be managing people who were previously your peers—including your best friend at work.",
+            options: [
+                "Take it—this is what you've worked for",
+                "Decline—the friendship isn't worth risking",
+                "Take it but have an honest conversation with your friend first",
+                "Ask if you can lead a different team instead"
+            ],
+            votes: [18, 12, 45, 25],
+            expert: "Option C is most emotionally intelligent. The friendship may change regardless—acknowledging that openly gives it the best chance. Option D is worth asking but shouldn't be your only option. Declining a promotion for a friendship rarely works out well for either party."
+        },
+        {
+            category: "FEEDBACK",
+            text: "Your manager just criticized your work harshly in front of the whole team. The feedback has some merit, but the delivery was inappropriate.",
+            options: [
+                "Address it publicly in the same meeting",
+                "Let it go—fighting back will make it worse",
+                "Request a private conversation to discuss the feedback AND the delivery",
+                "Go to HR immediately"
+            ],
+            votes: [8, 22, 55, 15],
+            expert: "Option C threads the needle: you're not being a pushover, but you're not escalating publicly either. Acknowledge the valid feedback while addressing the delivery. 'I appreciate the feedback on X, and I'd like to discuss it further—as well as how these conversations happen in the future.'"
+        },
+        {
+            category: "TRUST",
+            text: "A colleague confides they're interviewing for another job and asks you to keep it secret. Later, your manager asks if you know of any flight risks.",
+            options: [
+                "Tell your manager what you know",
+                "Keep your colleague's confidence completely",
+                "Say 'I'm not comfortable answering that' to your manager",
+                "Encourage your colleague to talk to their manager first"
+            ],
+            votes: [8, 35, 28, 29],
+            expert: "This tests competing loyalties. Option B preserves trust but may put you in a difficult position. Option C is honest without betraying anyone. Option D is ideal if there's time—help your colleague own the situation. Option A may be 'safe' but damages your reputation as someone who can be trusted."
+        },
+        {
+            category: "DECISION",
+            text: "Your team has two options for a project approach. Half strongly prefer Option A, half prefer Option B. Both could work. You need to decide.",
+            options: [
+                "Go with Option A—you have to pick something",
+                "Let the team vote and go with majority",
+                "Hybrid both approaches into something new",
+                "Meet with key stakeholders to understand what 'success' really means, then decide"
+            ],
+            votes: [15, 22, 20, 43],
+            expert: "Option D is often overlooked. Before choosing HOW to do something, clarify WHAT success looks like. Sometimes the debate dissolves when you get clear on outcomes. If you must choose quickly, Options A or B with a commitment to evaluate and course-correct is better than endless hybrid compromises."
+        },
+        {
+            category: "GROWTH",
+            text: "You've been in your role for 3 years. You're comfortable and well-compensated, but you've stopped learning. A risky opportunity appears.",
+            options: [
+                "Stay—stability matters, especially now",
+                "Take the risk—growth requires discomfort",
+                "Negotiate: try to grow in your current role first",
+                "Take the opportunity but negotiate a fallback option"
+            ],
+            votes: [20, 28, 30, 22],
+            expert: "There's no universally right answer here—it depends on your life circumstances, risk tolerance, and values. But the research is clear: long-term career success correlates more with learning rate than current position. Option C is often possible but requires initiative. Option D is shrewd if you can get it."
+        },
+        {
+            category: "BOUNDARIES",
+            text: "Your company has a culture of working weekends. You have young kids and want boundaries, but everyone else seems to accept it.",
+            options: [
+                "Conform to the culture—career growth requires sacrifice",
+                "Set firm boundaries and accept any career consequences",
+                "Work weekends now, renegotiate when you have leverage",
+                "Be selectively available—emergencies only, with clear communication"
+            ],
+            votes: [12, 25, 18, 45],
+            expert: "Option D often works better than all-or-nothing approaches. The key is communication: 'I'm offline weekends except for emergencies. Here's how to reach me if something is truly urgent.' Most 'urgent' things aren't. And you'd be surprised how many colleagues wish someone would model better boundaries."
+        },
+        {
+            category: "LEADERSHIP",
+            text: "You just learned your company is planning layoffs. Your team doesn't know yet. A team member asks you directly if their job is safe.",
+            options: [
+                "Lie and say everything is fine",
+                "Tell them the truth about the layoffs",
+                "Say 'I can't discuss that, but I'd encourage you to have options'",
+                "Say 'I don't have that information' (technically true)"
+            ],
+            votes: [8, 22, 42, 28],
+            expert: "This is genuinely hard. Option A destroys trust when truth emerges. Option B may violate confidentiality. Option C is a middle path that doesn't lie but signals something. Option D is technically honest but evasive. The 'right' answer depends on your values and the specific relationship."
+        },
+        {
+            category: "CULTURE",
+            text: "A new hire is struggling. They have potential but aren't meeting expectations at 90 days. Your team is split on whether to let them go.",
+            options: [
+                "Let them go—90 days is enough signal",
+                "Give them more time—hiring is expensive",
+                "Create a clear 30-day improvement plan with specific milestones",
+                "Move them to a different role that might fit better"
+            ],
+            votes: [18, 22, 40, 20],
+            expert: "Option C respects both the person and the organization. Clear expectations and timeline give them a fair chance while limiting organizational risk. Option D is worth considering if the issue is role fit, not capability. Options A and B are both defensible but skip the middle ground."
+        },
+        {
+            category: "INTEGRITY",
+            text: "You discover a senior leader has been inflating their team's metrics. Nothing illegal, but clearly misleading. They're well-liked and powerful.",
+            options: [
+                "Report it through official channels",
+                "Confront them directly first",
+                "Document it but don't act yet",
+                "Let it go—not worth the political risk"
+            ],
+            votes: [30, 25, 28, 17],
+            expert: "This tests your courage. Option D is understandable but has a cost: you now carry that knowledge. Option C buys time but doesn't resolve it. Option B gives them a chance to correct before escalation. Option A is the 'right' thing but has real career risks. Know your values."
+        },
+        {
+            category: "DIFFICULT",
+            text: "A peer you respect shares a business plan that you think will fail. They're excited and ask for your honest opinion.",
+            options: [
+                "Be supportive—it's their decision",
+                "Tell them directly it won't work",
+                "Ask questions that help them see the flaws themselves",
+                "Offer to be a thought partner and challenge assumptions together"
+            ],
+            votes: [12, 15, 35, 38],
+            expert: "Options C and D are more effective than telling. People rarely accept direct criticism of their ideas. Socratic questioning helps them discover issues themselves and preserves the relationship. Option A isn't really friendship—real friends tell hard truths, just thoughtfully."
+        },
+        {
+            category: "STRATEGY",
+            text: "Your company is pursuing a strategy you believe is wrong. You've raised concerns, but leadership is committed to the direction.",
+            options: [
+                "Execute anyway—you could be wrong",
+                "Continue advocating loudly for change",
+                "Look for a new job",
+                "Disagree and commit—execute fully while documenting your concerns"
+            ],
+            votes: [18, 15, 22, 45],
+            expert: "Option D is the professional standard. You've given input, it wasn't accepted, now you execute. Continuing to fight undermines the team. Looking for a new job (Option C) is valid if the strategy violates your values. The worst option is half-hearted execution that proves you right."
+        },
+        {
+            category: "PERSONAL",
+            text: "Your partner complains you work too much. You're in a critical career phase. Something has to give.",
+            options: [
+                "Career comes first right now—they'll understand later",
+                "Relationship comes first—scale back work immediately",
+                "Have an honest conversation about timeline and compromises",
+                "Try to do both and hope for the best"
+            ],
+            votes: [15, 18, 52, 15],
+            expert: "Option C is the only one that treats your partner as a partner. Unilateral decisions (A or B) breed resentment. 'I need 6 months of intense work, then I'll have more flexibility. What would make this period bearable for us?' Option D is how burnout and divorce happen."
+        },
+        {
+            category: "INNOVATION",
+            text: "You have an idea that could significantly improve your company, but it would make your boss's project obsolete. They'd likely feel threatened.",
+            options: [
+                "Pursue it anyway—good ideas should win",
+                "Let it go—not worth the political cost",
+                "Share the idea with your boss first and give them co-ownership",
+                "Plant the seed and let them think it's their idea"
+            ],
+            votes: [22, 12, 40, 26],
+            expert: "Option C is often the most effective. Your boss has power you don't—making them an ally rather than an enemy helps the idea AND your career. Option D can work but feels manipulative. Option A is idealistic but ignores organizational reality. Ideas don't win—people with ideas win."
+        },
+        {
+            category: "HIRING",
+            text: "You're hiring and your top candidate is significantly more expensive than budget allows. They're clearly the best person for the role.",
+            options: [
+                "Negotiate down to budget",
+                "Fight for more budget",
+                "Hire the second-best candidate who fits budget",
+                "Get creative: different title, equity, signing bonus, or delayed raise"
+            ],
+            votes: [18, 28, 22, 32],
+            expert: "Option D expands the solution space. Before giving up, explore every lever. Option B is worth trying but may not work. Option C settles and you'll wonder 'what if.' Option A might work but risks losing them. The best hires often cost more than you planned—factor that in."
+        },
+        {
+            category: "FAILURE",
+            text: "A project you championed failed publicly. Everyone knows it was your initiative. Your reputation has taken a hit.",
+            options: [
+                "Distance yourself from the failure",
+                "Own it fully and share what you learned",
+                "Move on quickly without dwelling on it",
+                "Identify and share the systemic issues that contributed"
+            ],
+            votes: [8, 45, 22, 25],
+            expert: "Option B is the counterintuitive best response. Owning failure publicly demonstrates maturity and builds trust. People respect vulnerability. Option A destroys credibility faster than the failure itself. Option D can be valuable but feels like excuse-making if done without first owning your part."
+        },
+        {
+            category: "DELEGATION",
+            text: "You need to delegate an important project, but you know you could do it better yourself. The deadline is tight.",
+            options: [
+                "Do it yourself—too risky to delegate now",
+                "Delegate and accept lower quality",
+                "Delegate with clear guardrails and frequent check-ins",
+                "Delegate the execution but own the strategy yourself"
+            ],
+            votes: [15, 12, 45, 28],
+            expert: "Option A is the trap that keeps managers from becoming leaders. Option C balances development with risk management. Option D is appropriate for high-stakes situations. The uncomfortable truth: if you're doing it yourself, you're not developing your team and you'll NEVER have time for higher-level work."
+        },
+        {
+            category: "CHANGE",
+            text: "Your organization is implementing a change you think is poorly planned. You've been asked to be a 'change champion.'",
+            options: [
+                "Decline—you can't champion something you don't believe in",
+                "Accept and advocate genuinely for the change",
+                "Accept but voice your concerns privately to leadership",
+                "Accept and help shape the implementation to address your concerns"
+            ],
+            votes: [18, 12, 28, 42],
+            expert: "Option D gives you influence. Being inside the tent is more powerful than complaining from outside. You can't change direction, but you CAN improve execution. Option A has integrity but sacrifices influence. Option B requires you to fake belief, which is unsustainable."
+        },
+        {
+            category: "RECOGNITION",
+            text: "You contributed significantly to a successful project, but the public recognition went entirely to your manager.",
+            options: [
+                "Let it go—good work speaks for itself",
+                "Ask your manager to acknowledge your contribution publicly",
+                "Ensure key stakeholders know your role through casual conversation",
+                "Document your contributions for your next performance review"
+            ],
+            votes: [22, 25, 28, 25],
+            expert: "Option A is naive—visibility matters for careers. Option B is direct but requires a good relationship with your manager. Option C is pragmatic but can feel political. Option D is the minimum. Ideally, combine B and D: ask for appropriate recognition while building your case."
+        },
+        {
+            category: "SUPPORT",
+            text: "A team member confides they're dealing with a mental health challenge. You're not trained for this but want to help.",
+            options: [
+                "Listen and offer to help however you can",
+                "Immediately refer them to professional resources",
+                "Listen first, then ask what kind of support would be helpful",
+                "Keep the conversation work-focused—you're not their therapist"
+            ],
+            votes: [22, 20, 45, 13],
+            expert: "Option C is most respectful. Listen before acting. Ask what they need—sometimes it's just to be heard. Option B jumps to solutions. Option D might feel protective but ignores their humanity. Option A is well-intentioned but unlimited help isn't sustainable. Set appropriate boundaries."
+        },
+        {
+            category: "PRESSURE",
+            text: "Your team is exhausted from months of crunch. Leadership is asking for another push. You believe more work will actually reduce output.",
+            options: [
+                "Push the team anyway—leadership must know something you don't",
+                "Refuse and protect your team",
+                "Present data to leadership showing diminishing returns",
+                "Negotiate for recovery time after this push"
+            ],
+            votes: [10, 25, 38, 27],
+            expert: "Option C is most likely to actually change behavior. Leaders often don't see what's happening on the ground. Present facts, not emotions. Option D is pragmatic if C fails—at least get something for the team. Option B might be necessary if leadership ignores evidence repeatedly."
+        },
+        {
+            category: "COMPETITION",
+            text: "A peer is clearly undermining you to advance their own career. Others have noticed but no one addresses it.",
+            options: [
+                "Confront them directly and ask them to stop",
+                "Play the same game and undermine them back",
+                "Document incidents and raise with your manager",
+                "Focus on your own performance and let your work speak"
+            ],
+            votes: [28, 8, 32, 32],
+            expert: "Option A has integrity but may not work with someone acting in bad faith. Option C builds a paper trail if things escalate. Option D is mature but may not be sufficient if the undermining is effective. Option B starts a destructive cycle. Choose based on severity and organizational culture."
+        },
+        {
+            category: "HONESTY",
+            text: "In a job interview, you're asked about a skill gap you have. Admitting it might cost you the job, but lying feels wrong.",
+            options: [
+                "Emphasize your strengths and avoid the topic",
+                "Admit the gap and explain how you're addressing it",
+                "Spin the gap as something you're 'developing'",
+                "Be fully honest about the gap and let them decide"
+            ],
+            votes: [15, 45, 20, 20],
+            expert: "Option B is typically best—it shows self-awareness and growth mindset. Interviewers often know more than you think; dishonesty gets caught. Option D is admirable but misses the chance to show your plan. Option A invites follow-up questions. The best companies hire for learning ability, not perfection."
+        },
+        {
+            category: "LOYALTY",
+            text: "Your company is acquired. The new owners offer you a retention bonus to stay, but you know they'll be laying off many of your colleagues.",
+            options: [
+                "Take the bonus and stay—you need to look out for yourself",
+                "Decline on principle—you won't benefit from others' loss",
+                "Take it but use your position to advocate for your colleagues",
+                "Negotiate better terms for colleagues as a condition of staying"
+            ],
+            votes: [25, 15, 35, 25],
+            expert: "No obviously right answer here. Option A isn't selfish—you have obligations to yourself and family. Option C lets you help from inside. Option D has leverage but may not work. Option B is principled but sacrifices your ability to help anyone. What matters is that you can live with your choice."
+        },
+        {
+            category: "VALUES",
+            text: "You discover your company's product causes more harm than you realized. You believe in the mission but struggle with the impact.",
+            options: [
+                "Quit immediately on principle",
+                "Stay and try to change things from inside",
+                "Start looking for another job while continuing to work",
+                "Raise your concerns formally before deciding"
+            ],
+            votes: [18, 28, 25, 29],
+            expert: "Option D gathers information before deciding. Maybe leadership doesn't know, or there are mitigating factors. Option B requires sustained energy for uncertain outcome. Option C is pragmatic but feels dishonest. Option A has integrity but may be premature. The severity of the harm matters—there are things that warrant immediate departure."
+        },
+        {
+            category: "POWER",
+            text: "You're promoted to a position with significant authority. Within a week, you notice people treating you differently—more deferential, less honest.",
+            options: [
+                "Accept it—this is what leadership feels like",
+                "Work hard to stay 'one of the team'",
+                "Actively create structures for people to give you honest feedback",
+                "Be more vulnerable yourself to encourage others to be honest"
+            ],
+            votes: [8, 20, 40, 32],
+            expert: "Options C and D together are most effective. You CAN'T stay 'one of the team'—the power dynamic changed whether you like it or not. But you CAN create safety for truth. Ask specific questions, thank people for disagreeing, and NEVER punish honesty. This requires ongoing effort."
+        },
+        {
+            category: "RISK",
+            text: "You have information that suggests a major company decision will fail. You're not 100% certain, and challenging leadership publicly is risky.",
+            options: [
+                "Stay quiet—you could be wrong and the cost of speaking is high",
+                "Speak up publicly in the meeting",
+                "Raise concerns privately with a trusted senior leader first",
+                "Document your concerns in writing so you're on record"
+            ],
+            votes: [12, 18, 45, 25],
+            expert: "Option C tests your concerns with someone who has more context before going public. They might know something you don't, or they might amplify your concern. Option D is CYA without real impact. Option B is brave but risky if not well-positioned. Option A is understandable but may haunt you."
+        }
+    ];
+
+    let selectedOption = null;
+    let todaysDilemma = null;
+    let userStreak = 0;
+
+    function getTodayString() {
+        return new Date().toISOString().split('T')[0];
+    }
+
+    function getTodaysDilemma() {
+        // Use date to pick dilemma (cycles through 30)
+        const dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+        return dilemmas[dayOfYear % dilemmas.length];
+    }
+
+    function loadSavedData() {
+        const saved = JSON.parse(localStorage.getItem('tap_in_daily_dilemma') || '{}');
+        userStreak = saved.streak || 0;
+        document.getElementById('streakCount').textContent = userStreak;
+        return saved;
+    }
+
+    function init() {
+        const saved = loadSavedData();
+        const today = getTodayString();
+        todaysDilemma = getTodaysDilemma();
+        
+        // Format date
+        const dateObj = new Date();
+        document.getElementById('dateFull').textContent = dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+        
+        // Check if already completed today
+        if (saved.lastCompleted === today) {
+            showCompletedState(saved);
+            return;
+        }
+        
+        // Render dilemma
+        document.getElementById('dilemmaCategory').textContent = todaysDilemma.category;
+        document.getElementById('dilemmaText').textContent = todaysDilemma.text;
+        
+        const letters = ['A', 'B', 'C', 'D'];
+        document.getElementById('optionsList').innerHTML = todaysDilemma.options.map((opt, i) => 
+            `<button class="option-btn" onclick="selectOption(${i})" data-index="${i}">
+                <span class="option-letter">${letters[i]}</span>
+                <span class="option-text">${opt}</span>
+            </button>`
+        ).join('');
+    }
+
+    function selectOption(index) {
+        selectedOption = index;
+        document.querySelectorAll('.option-btn').forEach((btn, i) => {
+            btn.classList.toggle('selected', i === index);
+        });
+        document.getElementById('submitBtn').disabled = false;
+    }
+
+    function submitChoice() {
+        if (selectedOption === null) return;
+        
+        const saved = loadSavedData();
+        const today = getTodayString();
+        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+        
+        // Update streak
+        if (saved.lastCompleted === yesterday) {
+            userStreak = (saved.streak || 0) + 1;
+        } else if (saved.lastCompleted !== today) {
+            userStreak = 1;
+        }
+        
+        // Save
+        saved.lastCompleted = today;
+        saved.streak = userStreak;
+        saved.todayChoice = selectedOption;
+        saved.history = saved.history || [];
+        saved.history.push({ date: today, choice: selectedOption });
+        localStorage.setItem('tap_in_daily_dilemma', JSON.stringify(saved));
+        
+        // Add XP
+        const globalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+        localStorage.setItem('tap_in_xp', globalXP + 15);
+        
+        document.getElementById('streakCount').textContent = userStreak;
+        
+        // Lock options and show results
+        document.querySelectorAll('.option-btn').forEach(btn => btn.classList.add('locked'));
+        showResults(selectedOption);
+    }
+
+    function showResults(choiceIndex) {
+        document.getElementById('questionSection').style.display = 'none';
+        document.getElementById('resultsSection').classList.add('show');
+        
+        // Simulate global votes (using stored percentages + randomness)
+        const baseVotes = todaysDilemma.votes;
+        const totalVoters = 1000 + Math.floor(Math.random() * 500);
+        document.getElementById('voteCount').textContent = totalVoters.toLocaleString() + ' people answered today';
+        
+        const letters = ['A', 'B', 'C', 'D'];
+        document.getElementById('voteBars').innerHTML = todaysDilemma.options.map((opt, i) => {
+            const pct = baseVotes[i] + Math.floor(Math.random() * 6) - 3;
+            const isYours = i === choiceIndex;
+            return `<div class="vote-item">
+                <div class="vote-header">
+                    <span class="vote-label ${isYours ? 'your-choice' : ''}">Option ${letters[i]} ${isYours ? '(Your choice)' : ''}</span>
+                    <span class="vote-pct">${pct}%</span>
+                </div>
+                <div class="vote-bar"><div class="vote-fill ${isYours ? 'your-choice' : ''}" style="width: ${pct}%"></div></div>
+            </div>`;
+        }).join('');
+        
+        document.getElementById('expertText').textContent = todaysDilemma.expert;
+    }
+
+    function showCompletedState(saved) {
+        document.getElementById('mainContent').style.display = 'none';
+        document.getElementById('completedState').style.display = 'block';
+        document.getElementById('streakLarge').textContent = saved.streak || 0;
+        
+        // Countdown to midnight
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+
+    function updateCountdown() {
+        const now = new Date();
+        const midnight = new Date(now);
+        midnight.setHours(24, 0, 0, 0);
+        const diff = midnight - now;
+        
+        const hours = Math.floor(diff / 3600000);
+        const mins = Math.floor((diff % 3600000) / 60000);
+        const secs = Math.floor((diff % 60000) / 1000);
+        
+        document.getElementById('countdownTime').textContent = 
+            String(hours).padStart(2, '0') + ':' + 
+            String(mins).padStart(2, '0') + ':' + 
+            String(secs).padStart(2, '0');
+    }
+
+    function shareResult() {
+        const text = `I just answered today's Daily Dilemma on TAP-IN! \n\n"${todaysDilemma.text.substring(0, 100)}..."\n\n<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${userStreak} day streak`;
+        
+        if (navigator.share) {
+            navigator.share({ text: text });
+        } else {
+            navigator.clipboard.writeText(text);
+            alert('Copied to clipboard!');
+        }
+    }
+
+    function exitGame() {
+        window.location.href = 'gym-dashboard.html';
+    }
+
+    init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

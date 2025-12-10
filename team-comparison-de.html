@@ -1,0 +1,923 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Team-Vergleich | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+            --cyan: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Team Selector */
+        .team-selector {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .team-select-card {
+            flex: 1;
+            min-width: 280px;
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .team-select-card h3 {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .team-dropdown {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--mid-grey);
+            background: var(--black);
+            color: var(--white);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        
+        .team-dropdown option {
+            background: var(--dark-grey);
+        }
+        
+        .team-color {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .color-a { background: var(--green); }
+        .color-b { background: var(--blue); }
+        
+        /* Comparison Grid */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        
+        .comparison-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+        }
+        
+        .comparison-card.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Health Score Comparison */
+        .health-comparison {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .health-score {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        
+        .score-circle.team-a {
+            background: linear-gradient(135deg, var(--green) 0%, rgba(16, 185, 129, 0.3) 100%);
+            border: 3px solid var(--green);
+        }
+        
+        .score-circle.team-b {
+            background: linear-gradient(135deg, var(--blue) 0%, rgba(59, 130, 246, 0.3) 100%);
+            border: 3px solid var(--blue);
+        }
+        
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+        
+        .score-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .team-name {
+            font-weight: 600;
+            color: var(--white);
+        }
+        
+        .vs-badge {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--mid-grey);
+        }
+        
+        .score-diff {
+            margin-top: 8px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .score-diff.positive {
+            background: var(--green-dim);
+            color: var(--green);
+        }
+        
+        .score-diff.negative {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--red);
+        }
+        
+        /* Radar Comparison */
+        .radar-container {
+            height: 350px;
+        }
+        
+        /* Bar Comparison */
+        .metric-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .metric-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .metric-label {
+            width: 100px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .metric-bar-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .metric-bar {
+            flex: 1;
+            height: 24px;
+            background: var(--mid-grey);
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .metric-fill {
+            height: 100%;
+            border-radius: 12px;
+            transition: width 0.5s ease;
+        }
+        
+        .metric-fill.team-a { background: var(--green); }
+        .metric-fill.team-b { background: var(--blue); }
+        
+        .metric-value {
+            width: 45px;
+            text-align: right;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .metric-value.team-a { color: var(--green); }
+        .metric-value.team-b { color: var(--blue); }
+        
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .legend-dot.team-a { background: var(--green); }
+        .legend-dot.team-b { background: var(--blue); }
+        
+        /* Insights */
+        .insights-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+        
+        .insight-card {
+            background: var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        
+        .insight-icon.green { background: var(--green-dim); }
+        .insight-icon.blue { background: rgba(59, 130, 246, 0.2); }
+        .insight-icon.gold { background: rgba(251, 191, 36, 0.2); }
+        .insight-icon.purple { background: rgba(139, 92, 246, 0.2); }
+        
+        .insight-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+        
+        .insight-icon.green svg { color: var(--green); }
+        .insight-icon.blue svg { color: var(--blue); }
+        .insight-icon.gold svg { color: var(--gold); }
+        .insight-icon.purple svg { color: var(--purple); }
+        
+        .insight-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .insight-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Stats Table */
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .stats-table th {
+            text-align: left;
+            padding: 12px;
+            font-weight: 600;
+            color: var(--light-grey);
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .stats-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .stats-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .stats-table .team-a-val { color: var(--green); font-weight: 600; }
+        .stats-table .team-b-val { color: var(--blue); font-weight: 600; }
+        
+        .winner-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        
+        .winner-badge.a { background: var(--green-dim); color: var(--green); }
+        .winner-badge.b { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        
+        /* No Teams Message */
+        .no-teams {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-grey);
+        }
+        
+        .no-teams svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .no-teams h3 {
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            margin-top: 16px;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        @media (max-width: 900px) {
+            .comparison-grid { grid-template-columns: 1fr; }
+            .team-selector { flex-direction: column; }
+            .health-comparison { flex-direction: column; gap: 20px; }
+            .vs-badge { display: none; }
+            .insights-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="business-portal-de.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Zurück zum Portal
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                Team Comparison
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Teams vergleichen</h1>
+            <p class="page-desc">Analysiere Unterschiede in Team-Gesundheit, Zusammensetzung und Leistung in deiner Organisation.</p>
+        </div>
+        
+        <!-- Team Selector -->
+        <div class="team-selector">
+            <div class="team-select-card">
+                <h3><span class="team-color color-a"></span>Team A</h3>
+                <select class="team-dropdown" id="teamASelect" onchange="updateComparison()">
+                    <option value="">Team auswählen...</option>
+                </select>
+            </div>
+            <div class="team-select-card">
+                <h3><span class="team-color color-b"></span>Team B</h3>
+                <select class="team-dropdown" id="teamBSelect" onchange="updateComparison()">
+                    <option value="">Team auswählen...</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Comparison Content -->
+        <div id="comparisonContent" style="display:none;">
+            <!-- Legend -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-dot team-a"></div>
+                    <span id="legendA">Team A</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot team-b"></div>
+                    <span id="legendB">Team B</span>
+                </div>
+            </div>
+            
+            <div class="comparison-grid">
+                <!-- Health Score Comparison -->
+                <div class="comparison-card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        Team-Gesundheitswert
+                    </div>
+                    <div class="health-comparison">
+                        <div class="health-score">
+                            <div class="score-circle team-a">
+                                <span class="score-value" id="scoreA">72</span>
+                                <span class="score-label">/100</span>
+                            </div>
+                            <div class="team-name" id="nameA">Team A</div>
+                        </div>
+                        <div class="vs-badge">VS</div>
+                        <div class="health-score">
+                            <div class="score-circle team-b">
+                                <span class="score-value" id="scoreB">68</span>
+                                <span class="score-label">/100</span>
+                            </div>
+                            <div class="team-name" id="nameB">Team B</div>
+                        </div>
+                    </div>
+                    <div style="text-align:center;margin-top:16px;">
+                        <span class="score-diff positive" id="scoreDiff">+4 points</span>
+                    </div>
+                </div>
+                
+                <!-- Schnellstatistik -->
+                <div class="comparison-card">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        Schnellstatistik
+                    </div>
+                    <table class="stats-table">
+                        <tr>
+                            <th>Metric</th>
+                            <th>Team A</th>
+                            <th>Team B</th>
+                        </tr>
+                        <tr>
+                            <td>Mitglieder</td>
+                            <td class="team-a-val" id="membersA">12</td>
+                            <td class="team-b-val" id="membersB">8</td>
+                        </tr>
+                        <tr>
+                            <td>Avg XP</td>
+                            <td class="team-a-val" id="xpA">340<span class="winner-badge a">Höher</span></td>
+                            <td class="team-b-val" id="xpB">280</td>
+                        </tr>
+                        <tr>
+                            <td>Abschluss</td>
+                            <td class="team-a-val" id="completionA">75%</td>
+                            <td class="team-b-val" id="completionB">82%<span class="winner-badge b">Höher</span></td>
+                        </tr>
+                        <tr>
+                            <td>Aktivitätsrate</td>
+                            <td class="team-a-val" id="activeA">67%</td>
+                            <td class="team-b-val" id="activeB">75%<span class="winner-badge b">Höher</span></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <!-- Radar Comparison -->
+                <div class="comparison-card full-width">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Five Dysfunctions Vergleich
+                    </div>
+                    <div class="radar-container">
+                        <canvas id="comparisonRadar"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Dysfunction Bars -->
+                <div class="comparison-card full-width">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Dimensions-Vergleich
+                    </div>
+                    <div class="metric-bars" id="dysfunctionBars">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+                
+                <!-- Wichtige Erkenntnisse -->
+                <div class="comparison-card full-width">
+                    <div class="card-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        Wichtige Erkenntnisse
+                    </div>
+                    <div class="insights-grid" id="insightsGrid">
+                        <!-- Generated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- No Teams Message -->
+        <div id="noTeamsMessage" class="no-teams">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            <h3>Wähle zwei Teams zum Vergleichen</h3>
+            <p>Wähle Teams aus den Dropdowns oben, um einen detaillierten Vergleich zu sehen.</p>
+        </div>
+    </div>
+    
+    <script>
+        let radarChart = null;
+        
+        // Demo teams data
+        const demoTeams = [
+            {
+                id: 'team1',
+                name: 'Engineering Squad',
+                members: 12,
+                avgXP: 420,
+                completion: 78,
+                activeRate: 75,
+                dysfunctions: { trust: 82, conflict: 65, commitment: 74, accountability: 70, results: 78 }
+            },
+            {
+                id: 'team2',
+                name: 'Marketing Team',
+                members: 8,
+                avgXP: 340,
+                completion: 85,
+                activeRate: 88,
+                dysfunctions: { trust: 75, conflict: 72, commitment: 80, accountability: 68, results: 72 }
+            },
+            {
+                id: 'team3',
+                name: 'Sales Division',
+                members: 15,
+                avgXP: 280,
+                completion: 62,
+                activeRate: 60,
+                dysfunctions: { trust: 68, conflict: 58, commitment: 65, accountability: 72, results: 80 }
+            },
+            {
+                id: 'team4',
+                name: 'Product Team',
+                members: 6,
+                avgXP: 520,
+                completion: 92,
+                activeRate: 83,
+                dysfunctions: { trust: 88, conflict: 78, commitment: 82, accountability: 85, results: 86 }
+            }
+        ];
+        
+        function loadTeams() {
+            // In production, load from localStorage or API
+            const stored = localStorage.getItem('organizationTeams');
+            const teams = stored ? JSON.parse(stored) : demoTeams;
+            
+            const selectA = document.getElementById('teamASelect');
+            const selectB = document.getElementById('teamBSelect');
+            
+            teams.forEach(team => {
+                const optA = document.createElement('option');
+                optA.value = team.id;
+                optA.textContent = team.name;
+                selectA.appendChild(optA);
+                
+                const optB = document.createElement('option');
+                optB.value = team.id;
+                optB.textContent = team.name;
+                selectB.appendChild(optB);
+            });
+            
+            // Store for later use
+            window.teamsData = teams;
+        }
+        
+        function updateComparison() {
+            const teamAId = document.getElementById('teamASelect').value;
+            const teamBId = document.getElementById('teamBSelect').value;
+            
+            if (!teamAId || !teamBId || teamAId === teamBId) {
+                document.getElementById('comparisonContent').style.display = 'none';
+                document.getElementById('noTeamsMessage').style.display = 'block';
+                return;
+            }
+            
+            const teamA = window.teamsData.find(t => t.id === teamAId);
+            const teamB = window.teamsData.find(t => t.id === teamBId);
+            
+            if (!teamA || !teamB) return;
+            
+            document.getElementById('comparisonContent').style.display = 'block';
+            document.getElementById('noTeamsMessage').style.display = 'none';
+            
+            // Update legend
+            document.getElementById('legendA').textContent = teamA.name;
+            document.getElementById('legendB').textContent = teamB.name;
+            
+            // Calculate health scores
+            const healthA = calculateHealth(teamA.dysfunctions);
+            const healthB = calculateHealth(teamB.dysfunctions);
+            
+            // Update health scores
+            document.getElementById('scoreA').textContent = healthA;
+            document.getElementById('scoreB').textContent = healthB;
+            document.getElementById('nameA').textContent = teamA.name;
+            document.getElementById('nameB').textContent = teamB.name;
+            
+            const diff = healthA - healthB;
+            const diffEl = document.getElementById('scoreDiff');
+            diffEl.textContent = (diff > 0 ? '+' : '') + diff + ' points';
+            diffEl.className = 'score-diff ' + (diff >= 0 ? 'positive' : 'negative');
+            
+            // Update stats table
+            updateStats(teamA, teamB);
+            
+            // Update radar chart
+            updateRadarChart(teamA, teamB);
+            
+            // Update dysfunction bars
+            updateDysfunctionBars(teamA, teamB);
+            
+            // Generate insights
+            generateInsights(teamA, teamB);
+        }
+        
+        function calculateHealth(d) {
+            return Math.round((d.trust + d.conflict + d.commitment + d.accountability + d.results) / 5);
+        }
+        
+        function updateStats(teamA, teamB) {
+            document.getElementById('membersA').innerHTML = teamA.members + (teamA.members > teamB.members ? '<span class="winner-badge a">Größer</span>' : '');
+            document.getElementById('membersB').innerHTML = teamB.members + (teamB.members > teamA.members ? '<span class="winner-badge b">Größer</span>' : '');
+            
+            document.getElementById('xpA').innerHTML = teamA.avgXP + (teamA.avgXP > teamB.avgXP ? '<span class="winner-badge a">Höher</span>' : '');
+            document.getElementById('xpB').innerHTML = teamB.avgXP + (teamB.avgXP > teamA.avgXP ? '<span class="winner-badge b">Höher</span>' : '');
+            
+            document.getElementById('completionA').innerHTML = teamA.completion + '%' + (teamA.completion > teamB.completion ? '<span class="winner-badge a">Höher</span>' : '');
+            document.getElementById('completionB').innerHTML = teamB.completion + '%' + (teamB.completion > teamA.completion ? '<span class="winner-badge b">Höher</span>' : '');
+            
+            document.getElementById('activeA').innerHTML = teamA.activeRate + '%' + (teamA.activeRate > teamB.activeRate ? '<span class="winner-badge a">Höher</span>' : '');
+            document.getElementById('activeB').innerHTML = teamB.activeRate + '%' + (teamB.activeRate > teamA.activeRate ? '<span class="winner-badge b">Höher</span>' : '');
+        }
+        
+        function updateRadarChart(teamA, teamB) {
+            const ctx = document.getElementById('comparisonRadar').getContext('2d');
+            
+            if (radarChart) radarChart.destroy();
+            
+            radarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Trust', 'Conflict', 'Commitment', 'Accountability', 'Results'],
+                    datasets: [
+                        {
+                            label: teamA.name,
+                            data: [teamA.dysfunctions.trust, teamA.dysfunctions.conflict, teamA.dysfunctions.commitment, teamA.dysfunctions.accountability, teamA.dysfunctions.results],
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            borderColor: '#10b981',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#10b981'
+                        },
+                        {
+                            label: teamB.name,
+                            data: [teamB.dysfunctions.trust, teamB.dysfunctions.conflict, teamB.dysfunctions.commitment, teamB.dysfunctions.accountability, teamB.dysfunctions.results],
+                            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                            borderColor: '#3b82f6',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#3b82f6'
+                        }
+                    ]
+                },
+                options: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: { stepSize: 20, color: '#8a8a9a' },
+                            grid: { color: '#2a2a3a' },
+                            angleLines: { color: '#2a2a3a' },
+                            pointLabels: {
+                                font: { size: 12, weight: '600' },
+                                color: '#ffffff'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: { color: '#ffffff' }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateDysfunctionBars(teamA, teamB) {
+            const container = document.getElementById('dysfunctionBars');
+            const dimensions = ['Trust', 'Conflict', 'Commitment', 'Accountability', 'Results'];
+            
+            container.innerHTML = dimensions.map(dim => {
+                const key = dim.toLowerCase();
+                const valA = teamA.dysfunctions[key];
+                const valB = teamB.dysfunctions[key];
+                
+                return `
+                    <div class="metric-row">
+                        <div class="metric-label">${dim}</div>
+                        <div class="metric-bar-wrapper">
+                            <span class="metric-value team-a">${valA}</span>
+                            <div class="metric-bar">
+                                <div class="metric-fill team-a" style="width:${valA}%"></div>
+                            </div>
+                        </div>
+                        <div class="metric-bar-wrapper">
+                            <div class="metric-bar">
+                                <div class="metric-fill team-b" style="width:${valB}%"></div>
+                            </div>
+                            <span class="metric-value team-b">${valB}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function generateInsights(teamA, teamB) {
+            const container = document.getElementById('insightsGrid');
+            const insights = [];
+            
+            // Compare trust
+            const trustDiff = teamA.dysfunctions.trust - teamB.dysfunctions.trust;
+            if (Math.abs(trustDiff) > 10) {
+                insights.push({
+                    icon: 'green',
+                    title: 'Trust Gap',
+                    desc: `${trustDiff > 0 ? teamA.name : teamB.name} has significantly higher trust (${Math.abs(trustDiff)} points). Consider cross-team trust exercises.`
+                });
+            }
+            
+            // Compare conflict
+            const conflictDiff = teamA.dysfunctions.conflict - teamB.dysfunctions.conflict;
+            if (Math.abs(conflictDiff) > 10) {
+                const higher = conflictDiff > 0 ? teamA : teamB;
+                insights.push({
+                    icon: 'blue',
+                    title: 'Conflict Handling',
+                    desc: `${higher.name} handles conflict better. Share their practices with the other team.`
+                });
+            }
+            
+            // XP comparison
+            const xpDiff = teamA.avgXP - teamB.avgXP;
+            if (Math.abs(xpDiff) > 100) {
+                insights.push({
+                    icon: 'gold',
+                    title: 'Engagement Gap',
+                    desc: `${xpDiff > 0 ? teamA.name : teamB.name} has ${Math.abs(xpDiff)} more avg XP. Check what's driving higher engagement.`
+                });
+            }
+            
+            // Completion rate
+            const compDiff = teamA.completion - teamB.completion;
+            if (Math.abs(compDiff) > 15) {
+                insights.push({
+                    icon: 'purple',
+                    title: 'Completion Rate',
+                    desc: `${compDiff > 0 ? teamA.name : teamB.name} completes ${Math.abs(compDiff)}% more assessments. Consider time allocation.`
+                });
+            }
+            
+            // Overall health
+            const healthA = calculateHealth(teamA.dysfunctions);
+            const healthB = calculateHealth(teamB.dysfunctions);
+            if (Math.abs(healthA - healthB) > 5) {
+                const healthier = healthA > healthB ? teamA : teamB;
+                insights.push({
+                    icon: 'green',
+                    title: 'Team Health Leader',
+                    desc: `${healthier.name} is the healthier team. They could mentor the other on team dynamics.`
+                });
+            }
+            
+            // Add default if no significant insights
+            if (insights.length === 0) {
+                insights.push({
+                    icon: 'green',
+                    title: 'Well Balanced',
+                    desc: 'Both teams are performing similarly. Focus on specific dimension improvements.'
+                });
+            }
+            
+            const iconSvgs = {
+                green: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>',
+                blue: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>',
+                gold: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+                purple: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>'
+            };
+            
+            container.innerHTML = insights.map(i => `
+                <div class="insight-card">
+                    <div class="insight-icon ${i.icon}">${iconSvgs[i.icon]}</div>
+                    <div class="insight-title">${i.title}</div>
+                    <div class="insight-desc">${i.desc}</div>
+                </div>
+            `).join('');
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTeams();
+        });
+    </script>
+</body>
+</html>

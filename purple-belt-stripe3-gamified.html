@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Purple Belt Stripe 3: Win-Win Solutions - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --purple-dark: #7c3aed;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white); 
+            padding: 0;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(139, 92, 246, 0.15) 0%, transparent 100%);
+            padding: 20px;
+            border-bottom: 1px solid var(--mid-grey);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .belt-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--purple);
+            font-weight: 600;
+        }
+        .belt-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--purple);
+            border-radius: 50%;
+        }
+        .xp-display {
+            background: var(--dark-grey);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--gold);
+            font-weight: 600;
+        }
+        
+        .progress-container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .progress-bar {
+            height: 4px;
+            background: var(--mid-grey);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--purple), var(--purple-dark));
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px 20px 100px;
+        }
+        
+        .beat {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+        .beat.active { display: block; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .beat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--purple);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .beat-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.3;
+        }
+        
+        .beat-text {
+            font-size: 1.05rem;
+            color: var(--light-grey);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+        .beat-text strong { color: var(--white); }
+        
+        .insight-box {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05));
+            border: 1px solid var(--purple);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .insight-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--purple);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .insight-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .quote-box {
+            border-left: 3px solid var(--gold);
+            padding-left: 20px;
+            margin: 25px 0;
+        }
+        .quote-text {
+            font-size: 1.1rem;
+            font-style: italic;
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+        .quote-author {
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+        
+        /* Quadrant Grid */
+        .quadrant-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 25px 0;
+        }
+        .quadrant {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+        }
+        .quadrant.win-win { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .quadrant.win-lose { border-color: var(--red); }
+        .quadrant.lose-win { border-color: var(--gold); }
+        .quadrant.lose-lose { border-color: var(--mid-grey); }
+        .quadrant-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .quadrant.win-win .quadrant-title { color: var(--green); }
+        .quadrant.win-lose .quadrant-title { color: var(--red); }
+        .quadrant.lose-win .quadrant-title { color: var(--gold); }
+        .quadrant.lose-lose .quadrant-title { color: var(--light-grey); }
+        .quadrant-desc {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+        
+        /* Position vs Interest */
+        .comparison-box {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .comparison-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .comparison-row:last-child { margin-bottom: 0; }
+        .comparison-item {
+            flex: 1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .comparison-item.position {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--red);
+        }
+        .comparison-item.interest {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--green);
+        }
+        .comparison-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .comparison-item.position .comparison-label { color: var(--red); }
+        .comparison-item.interest .comparison-label { color: var(--green); }
+        .comparison-text {
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+        
+        /* Response Cards */
+        .response-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .response-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .response-card:hover { border-color: var(--light-grey); }
+        .response-card.selected { 
+            border-color: var(--purple); 
+            background: rgba(139, 92, 246, 0.1);
+        }
+        .response-card.correct { 
+            border-color: var(--green); 
+            background: rgba(16, 185, 129, 0.1);
+        }
+        .response-card.incorrect { 
+            border-color: var(--red); 
+            background: rgba(239, 68, 68, 0.1);
+            opacity: 0.6;
+        }
+        .response-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--mid-grey);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .response-text {
+            font-size: 0.9rem;
+            color: var(--white);
+        }
+        
+        /* Framework Steps */
+        .framework-steps {
+            margin: 25px 0;
+        }
+        .framework-step {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 18px;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+        .step-num {
+            width: 36px;
+            height: 36px;
+            background: var(--purple);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .step-content { flex: 1; }
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--white);
+        }
+        .step-desc {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        /* Scenario Box */
+        .scenario-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.05));
+            border: 1px solid var(--blue);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .scenario-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        .scenario-text {
+            font-size: 1rem;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        /* Reveal Box */
+        .reveal-box {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s;
+        }
+        .reveal-box.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-title {
+            font-weight: 600;
+            color: var(--green);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .reveal-text {
+            font-size: 0.95rem;
+            color: var(--light-grey);
+            line-height: 1.6;
+        }
+        
+        /* Builder */
+        .builder-section {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .builder-label {
+            font-size: 0.8rem;
+            color: var(--purple);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        .builder-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        .builder-card {
+            background: var(--mid-grey);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .builder-card:hover { border-color: var(--light-grey); }
+        .builder-card.selected { 
+            border-color: var(--purple); 
+            background: rgba(139, 92, 246, 0.2);
+        }
+        .builder-preview {
+            background: var(--black);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            min-height: 60px;
+        }
+        .builder-preview-label {
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        .builder-preview-text {
+            font-size: 0.95rem;
+            color: var(--green);
+            font-style: italic;
+        }
+        
+        /* Buttons */
+        .continue-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--purple);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+        .continue-btn:hover { opacity: 0.9; }
+        .continue-btn:disabled {
+            background: var(--mid-grey);
+            color: var(--light-grey);
+            cursor: not-allowed;
+        }
+        .continue-btn.pacing {
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .continue-btn .countdown {
+            margin-left: 8px;
+            font-size: 0.85rem;
+            color: var(--gold);
+        }
+        
+        /* Completion */
+        .completion-card {
+            background: var(--dark-grey);
+            border: 2px solid var(--purple);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+        }
+        .completion-icon { font-size: 4rem; margin-bottom: 20px; }
+        .completion-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .completion-subtitle { color: var(--light-grey); margin-bottom: 25px; }
+        .xp-earned {
+            display: inline-block;
+            background: rgba(212, 168, 83, 0.2);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--gold);
+            margin-bottom: 20px;
+        }
+        .skills-learned {
+            text-align: left;
+            background: var(--black);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        .skill-item:last-child { border-bottom: none; }
+        .skill-check {
+            width: 24px;
+            height: 24px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .hi { width: 20px; height: 20px; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="purple-belt-stripe3-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="purple-belt-stripe3-gamified-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <div class="belt-badge">
+                <span class="belt-dot"></span>
+                Purple Belt · Stripe 3
+            </div>
+            <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+        </div>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">Purple Belt · Stripe 3</div>
+            <h1 class="beat-title">Most people negotiate like it's a zero-sum game.</h1>
+            <p class="beat-text">
+                They think: for me to win, you have to lose. So they fight for every inch. They hide information. They see compromise as defeat.
+            </p>
+            <p class="beat-text">
+                <strong>They're playing the wrong game.</strong>
+            </p>
+            <p class="beat-text">
+                The best negotiators don't split the pie. They make the pie bigger.
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 2: Four Quadrants -->
+        <div class="beat" id="beat2">
+            <div class="beat-label">The Framework</div>
+            <h1 class="beat-title">Every negotiation ends in one of four places.</h1>
+            <div class="quadrant-grid">
+                <div class="quadrant win-win">
+                    <div class="quadrant-title">Win-Win</div>
+                    <div class="quadrant-desc">Both parties get what they need. Relationship strengthens.</div>
+                </div>
+                <div class="quadrant win-lose">
+                    <div class="quadrant-title">Win-Lose</div>
+                    <div class="quadrant-desc">You win now, but damage the relationship for later.</div>
+                </div>
+                <div class="quadrant lose-win">
+                    <div class="quadrant-title">Lose-Win</div>
+                    <div class="quadrant-desc">You give in to keep peace. Resentment builds.</div>
+                </div>
+                <div class="quadrant lose-lose">
+                    <div class="quadrant-title">Lose-Lose</div>
+                    <div class="quadrant-desc">Both suffer. Often happens when egos take over.</div>
+                </div>
+            </div>
+            <p class="beat-text">
+                Win-Win isn't naive idealism. <strong>It's the only outcome that's sustainable.</strong>
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 3: The Secret -->
+        <div class="beat" id="beat3">
+            <div class="beat-label">The Insight</div>
+            <h1 class="beat-title">Positions vs. Interests: the key to everything.</h1>
+            <p class="beat-text">
+                This is the core insight from "Getting to Yes," the Harvard Negotiation Project's landmark work:
+            </p>
+            <div class="comparison-box">
+                <div class="comparison-row">
+                    <div class="comparison-item position">
+                        <div class="comparison-label">Position</div>
+                        <div class="comparison-text">What you SAY you want</div>
+                    </div>
+                    <div class="comparison-item interest">
+                        <div class="comparison-label">Interest</div>
+                        <div class="comparison-text">WHY you want it</div>
+                    </div>
+                </div>
+            </div>
+            <div class="insight-box">
+                <div class="insight-label">The Classic Example</div>
+                <p class="insight-text">Two people fight over an orange. They compromise: each gets half. But one wanted the peel for baking, the other wanted the juice. <strong>Both could have had 100% of what they needed.</strong></p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 4: Practice Identification -->
+        <div class="beat" id="beat4">
+            <div class="beat-label">Practice</div>
+            <h1 class="beat-title">Spot the interest behind the position.</h1>
+            <div class="scenario-box">
+                <div class="scenario-label">Situation</div>
+                <p class="scenario-text">Your colleague says: "I need this report by Friday—no exceptions."</p>
+            </div>
+            <p class="beat-text">
+                What might be the underlying interest?
+            </p>
+            <div class="response-grid">
+                <div class="response-card" onclick="selectResponse(this, 'power', 4)">
+                    <div class="response-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 10c0-5-3-7-3-7s-3 2-3 7"/><path d="M14 10h6"/><path d="M20 10v4a2 2 0 0 1-2 2h-2"/><path d="M4 10h6"/><path d="M4 10v4a2 2 0 0 0 2 2h2"/></svg></div>
+                    <div class="response-text">They want to assert authority over you</div>
+                </div>
+                <div class="response-card" onclick="selectResponse(this, 'correct', 4)" data-correct="true">
+                    <div class="response-icon">📅</div>
+                    <div class="response-text">They have a Monday presentation and need weekend prep time</div>
+                </div>
+                <div class="response-card" onclick="selectResponse(this, 'lazy', 4)">
+                    <div class="response-icon">😤</div>
+                    <div class="response-text">They're being inflexible for no reason</div>
+                </div>
+            </div>
+            <div class="reveal-box" id="reveal4">
+                <div class="reveal-title">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    Exactly
+                </div>
+                <div class="reveal-text">The position is "Friday, no exceptions." The interest is likely prep time for a presentation. Once you know that, you might offer: "What if I get you the key data Thursday and the full report Monday morning?" Same interest met, different solution.</div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()" id="beat4Btn" disabled>Continue</button>
+        </div>
+        
+        <!-- Beat 5: The Question -->
+        <div class="beat" id="beat5">
+            <div class="beat-label">The Tool</div>
+            <h1 class="beat-title">The magic question: "Help me understand why."</h1>
+            <p class="beat-text">
+                When someone states a position, don't argue against it. Instead, get curious about what's driving it.
+            </p>
+            <div class="quote-box">
+                <p class="quote-text">"Help me understand why that's important to you."</p>
+                <p class="quote-author">— Your new favorite phrase</p>
+            </div>
+            <p class="beat-text">
+                This does three things: <strong>reveals their real interest</strong>, makes them feel heard, and shifts from adversarial to collaborative.
+            </p>
+            <p class="beat-text">
+                Variations: "What problem does that solve for you?" or "What happens if we can't do that?"
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 6: The Framework -->
+        <div class="beat" id="beat6">
+            <div class="beat-label">The Process</div>
+            <h1 class="beat-title">Four steps to Win-Win.</h1>
+            <div class="framework-steps">
+                <div class="framework-step">
+                    <div class="step-num">1</div>
+                    <div class="step-content">
+                        <div class="step-title">Separate people from problem</div>
+                        <div class="step-desc">Attack the issue, not each other. Stay curious, not defensive.</div>
+                    </div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-num">2</div>
+                    <div class="step-content">
+                        <div class="step-title">Focus on interests, not positions</div>
+                        <div class="step-desc">Ask "why" and "why not." Dig beneath the surface demand.</div>
+                    </div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-num">3</div>
+                    <div class="step-content">
+                        <div class="step-title">Generate options together</div>
+                        <div class="step-desc">Brainstorm before deciding. Quantity over quality at first.</div>
+                    </div>
+                </div>
+                <div class="framework-step">
+                    <div class="step-num">4</div>
+                    <div class="step-content">
+                        <div class="step-title">Use objective criteria</div>
+                        <div class="step-desc">Base decisions on fair standards, not who's more powerful.</div>
+                    </div>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 7: Option Generation -->
+        <div class="beat" id="beat7">
+            <div class="beat-label">Deep Dive</div>
+            <h1 class="beat-title">Step 3 is where the magic happens.</h1>
+            <p class="beat-text">
+                Most negotiations fail because people jump to solutions before fully understanding the problem. <strong>Options expand the pie.</strong>
+            </p>
+            <div class="insight-box">
+                <div class="insight-label">The Brainstorm Rules</div>
+                <p class="insight-text">
+                    • Separate inventing from deciding<br>
+                    • Go for quantity—wild ideas welcome<br>
+                    • Look for shared interests<br>
+                    • Ask: "What would make this easy for you to say yes?"
+                </p>
+            </div>
+            <p class="beat-text">
+                The question that unlocks options: <strong>"What if we...?"</strong>
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 8: Scenario Practice -->
+        <div class="beat" id="beat8">
+            <div class="beat-label">Practice</div>
+            <h1 class="beat-title">Build a Win-Win response.</h1>
+            <div class="scenario-box">
+                <div class="scenario-label">Real Situation</div>
+                <p class="scenario-text">You want to work from home on Fridays. Your manager says no—the team needs to be together for collaboration.</p>
+            </div>
+            <p class="beat-text">
+                Using the framework, build your approach:
+            </p>
+            <div class="builder-section">
+                <div class="builder-label">Step 1: Understand their interest</div>
+                <div class="builder-cards" id="step1Cards">
+                    <div class="builder-card" onclick="selectBuilder(this, 1, 'collab')">Team collaboration</div>
+                    <div class="builder-card" onclick="selectBuilder(this, 1, 'visible')">Seeing you work</div>
+                    <div class="builder-card" onclick="selectBuilder(this, 1, 'avail')">Quick availability</div>
+                </div>
+            </div>
+            <div class="builder-section">
+                <div class="builder-label">Step 2: State your interest</div>
+                <div class="builder-cards" id="step2Cards">
+                    <div class="builder-card" onclick="selectBuilder(this, 2, 'focus')">Deep focus time</div>
+                    <div class="builder-card" onclick="selectBuilder(this, 2, 'commute')">Skip commute</div>
+                    <div class="builder-card" onclick="selectBuilder(this, 2, 'balance')">Work-life balance</div>
+                </div>
+            </div>
+            <div class="builder-section">
+                <div class="builder-label">Step 3: Propose an option</div>
+                <div class="builder-cards" id="step3Cards">
+                    <div class="builder-card" onclick="selectBuilder(this, 3, 'trial')">2-week trial</div>
+                    <div class="builder-card" onclick="selectBuilder(this, 3, 'partial')">Work remotely PM only</div>
+                    <div class="builder-card" onclick="selectBuilder(this, 3, 'metrics')">Agree on metrics</div>
+                </div>
+            </div>
+            <div class="builder-preview">
+                <div class="builder-preview-label">Your approach:</div>
+                <div class="builder-preview-text" id="builderPreview">Select options above to build your response...</div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()" id="beat8Btn" disabled>Continue</button>
+        </div>
+        
+        <!-- Beat 9: Your BATNA -->
+        <div class="beat" id="beat9">
+            <div class="beat-label">Advanced</div>
+            <h1 class="beat-title">Know your BATNA.</h1>
+            <p class="beat-text">
+                BATNA = Best Alternative To Negotiated Agreement. It's what you'll do if this negotiation fails.
+            </p>
+            <div class="insight-box">
+                <div class="insight-label">Why BATNA Matters</div>
+                <p class="insight-text">Your power in any negotiation comes from your ability to walk away. If you have no alternative, you have no leverage. <strong>Before any important conversation, know your BATNA.</strong></p>
+            </div>
+            <p class="beat-text">
+                Example: If your manager won't approve remote work, your BATNA might be accepting it, asking HR, or finding a new job. The stronger your BATNA, the more confident you can be.
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 10: Common Traps -->
+        <div class="beat" id="beat10">
+            <div class="beat-label">Watch Out</div>
+            <h1 class="beat-title">Three traps that kill Win-Win.</h1>
+            <div class="response-grid">
+                <div class="response-card" style="cursor: default;">
+                    <div class="response-icon">🎭</div>
+                    <div class="response-text"><strong>Positional bargaining:</strong> Arguing over positions instead of exploring interests</div>
+                </div>
+                <div class="response-card" style="cursor: default;">
+                    <div class="response-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.29 1.51 4.04 3 5.5l7 7Z"/><path d="M12 5v14"/><path d="M9 18h6"/></svg></div>
+                    <div class="response-text"><strong>Premature closure:</strong> Jumping to the first solution instead of generating options</div>
+                </div>
+                <div class="response-card" style="cursor: default;">
+                    <div class="response-icon">🤐</div>
+                    <div class="response-text"><strong>Hiding information:</strong> Treating negotiation as combat instead of problem-solving</div>
+                </div>
+            </div>
+            <p class="beat-text">
+                The antidote to all three: <strong>stay curious, share openly, take time.</strong>
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 11: The Mindset -->
+        <div class="beat" id="beat11">
+            <div class="beat-label">The Shift</div>
+            <h1 class="beat-title">Win-Win is a mindset, not a tactic.</h1>
+            <p class="beat-text">
+                You can't fake it. If you're secretly trying to "win" while appearing collaborative, people sense it.
+            </p>
+            <div class="quote-box">
+                <p class="quote-text">"Seek first to understand, then to be understood."</p>
+                <p class="quote-author">— Stephen Covey</p>
+            </div>
+            <p class="beat-text">
+                The genuine belief: <strong>"There's probably a solution here that works for both of us. Let's find it."</strong>
+            </p>
+            <p class="beat-text">
+                This isn't being soft. It's being smart. Win-Win preserves relationships you'll need for the next negotiation.
+            </p>
+            <button class="continue-btn" onclick="nextBeat()">Continue</button>
+        </div>
+        
+        <!-- Beat 12: Commitment -->
+        <div class="beat" id="beat12">
+            <div class="beat-label">Your Challenge</div>
+            <h1 class="beat-title">This week: find the hidden interest.</h1>
+            <p class="beat-text">
+                In your next disagreement, before responding, ask: "Help me understand why that's important to you."
+            </p>
+            <p class="beat-text">
+                Where will you practice?
+            </p>
+            <div class="response-grid">
+                <div class="response-card" onclick="selectCommitment(this, 'work')">
+                    <div class="response-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
+                    <div class="response-text">At work—with a colleague or manager</div>
+                </div>
+                <div class="response-card" onclick="selectCommitment(this, 'home')">
+                    <div class="response-icon">🏠</div>
+                    <div class="response-text">At home—with family or partner</div>
+                </div>
+                <div class="response-card" onclick="selectCommitment(this, 'service')">
+                    <div class="response-icon">🛎️</div>
+                    <div class="response-text">In a service situation—vendor, landlord, etc.</div>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="completeStripe()" id="beat12Btn" disabled>Complete Stripe</button>
+        </div>
+        
+        <!-- Beat 13: Completion -->
+        <div class="beat" id="beat13">
+            <div class="completion-card">
+                <div class="completion-icon">🥋</div>
+                <h2 class="completion-title">Stripe 3 Complete</h2>
+                <p class="completion-subtitle">Purple Belt: Win-Win Solutions</p>
+                
+                <div class="xp-earned">+45 XP</div>
+                
+                <div class="skills-learned">
+                    <div class="skill-item">
+                        <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                        <span>Positions vs. Interests</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                        <span>Four-Step Win-Win Process</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg></div>
+                        <span>BATNA & Negotiation Power</span>
+                    </div>
+                </div>
+                
+                <button class="continue-btn" onclick="goToNext()">Continue to Stripe 4</button>
+                <button class="continue-btn" style="margin-top: 10px; background: #2a2a3a; color: #fff;" onclick="goToHub()">Return to Hub</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/gamification.js"></script>
+    <script>
+        let currentBeat = 1;
+        const totalBeats = 13;
+        let xp = 0;
+        let responses = {};
+        let builderSelections = { 1: '', 2: '', 3: '' };
+        
+        const PACING_DELAY = 3;
+        
+        function updateProgress() {
+            const pct = ((currentBeat - 1) / (totalBeats - 1)) * 100;
+            document.getElementById('progressFill').style.width = pct + '%';
+        }
+        
+        function addXP(amount) {
+            xp += amount;
+            document.getElementById('xpDisplay').textContent = xp;
+        }
+        
+        function applyPacing(beatNum) {
+            const beat = document.getElementById('beat' + beatNum);
+            if (!beat) return;
+            
+            const btn = beat.querySelector('.continue-btn:not([id])');
+            if (!btn) return;
+            
+            btn.classList.add('pacing');
+            let remaining = PACING_DELAY;
+            
+            let countdown = btn.querySelector('.countdown');
+            if (!countdown) {
+                countdown = document.createElement('span');
+                countdown.className = 'countdown';
+                btn.appendChild(countdown);
+            }
+            countdown.textContent = '(' + remaining + 's)';
+            
+            const timer = setInterval(() => {
+                remaining--;
+                if (remaining > 0) {
+                    countdown.textContent = '(' + remaining + 's)';
+                } else {
+                    countdown.textContent = '';
+                    btn.classList.remove('pacing');
+                    clearInterval(timer);
+                }
+            }, 1000);
+        }
+        
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            applyPacing(currentBeat);
+            
+            if (currentBeat % 3 === 0) addXP(5);
+        }
+        
+        function selectResponse(card, value, beat) {
+            const isCorrect = card.dataset.correct === 'true';
+            
+            document.querySelectorAll('#beat' + beat + ' .response-card').forEach(c => {
+                c.classList.remove('selected');
+                if (c.dataset.correct === 'true') {
+                    c.classList.add('correct');
+                } else if (c === card && !isCorrect) {
+                    c.classList.add('incorrect');
+                }
+            });
+            
+            card.classList.add('selected');
+            responses['beat' + beat] = value;
+            
+            const reveal = document.getElementById('reveal' + beat);
+            if (reveal) reveal.classList.add('show');
+            
+            document.getElementById('beat' + beat + 'Btn').disabled = false;
+            addXP(isCorrect ? 8 : 3);
+        }
+        
+        function selectBuilder(card, step, value) {
+            document.querySelectorAll('#step' + step + 'Cards .builder-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            builderSelections[step] = value;
+            addXP(2);
+            
+            updateBuilderPreview();
+        }
+        
+        function updateBuilderPreview() {
+            const s1 = builderSelections[1];
+            const s2 = builderSelections[2];
+            const s3 = builderSelections[3];
+            
+            const labels = {
+                collab: 'team collaboration',
+                visible: 'visibility',
+                avail: 'quick availability',
+                focus: 'deep focus time',
+                commute: 'avoiding the commute',
+                balance: 'better work-life balance',
+                trial: 'a 2-week trial',
+                partial: 'working remotely in the afternoon',
+                metrics: 'agreeing on clear metrics'
+            };
+            
+            let preview = '';
+            if (s1 && s2 && s3) {
+                preview = `"I understand ${labels[s1]} is important to you. For me, it's about ${labels[s2]}. What if we tried ${labels[s3]} to address both?"`;
+                document.getElementById('beat8Btn').disabled = false;
+            } else if (s1 || s2 || s3) {
+                const parts = [];
+                if (s1) parts.push(`Their interest: ${labels[s1]}`);
+                if (s2) parts.push(`Your interest: ${labels[s2]}`);
+                if (s3) parts.push(`Option: ${labels[s3]}`);
+                preview = parts.join(' • ');
+            } else {
+                preview = 'Select options above to build your response...';
+            }
+            
+            document.getElementById('builderPreview').textContent = preview;
+        }
+        
+        function selectCommitment(card, value) {
+            document.querySelectorAll('#beat12 .response-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            responses.commitment = value;
+            document.getElementById('beat12Btn').disabled = false;
+            addXP(5);
+        }
+        
+        function completeStripe() {
+            localStorage.setItem('tap_in_purple_stripe3_complete', 'true');
+            localStorage.setItem('tap_in_purple_stripe3_answers', JSON.stringify(responses));
+            
+            let totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0');
+            totalXP += xp + 10;
+            localStorage.setItem('tap_in_xp', totalXP);
+            
+            nextBeat();
+            
+            if (typeof TapInGame !== 'undefined') {
+                TapInGame.showStripeComplete(3, 'purple');
+            }
+        }
+        
+        function goToNext() { window.location.href = 'purple-belt-stripe4-gamified.html'; }
+        function goToHub() {
+            window.location.href = 'gym-dashboard.html';
+        }
+        
+        updateProgress();
+        applyPacing(1);
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Stripe Complete - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --belt-primary: #3b82f6;
+            --belt-secondary: #1d4ed8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--black); min-height: 100vh; color: var(--white); padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; padding-top: 40px; }
+        .celebration { text-align: center; margin-bottom: 30px; animation: fadeInUp 0.6s ease; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .stripe-badge { width: 100px; height: 100px; margin: 0 auto 20px; background: linear-gradient(135deg, var(--belt-primary), var(--belt-secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 40px rgba(59, 130, 246, 0.4); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 40px rgba(59, 130, 246, 0.4); } 50% { box-shadow: 0 0 60px rgba(59, 130, 246, 0.6); } }
+        .stripe-badge svg { width: 50px; height: 50px; color: white; }
+        .celebration h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 8px; background: linear-gradient(135deg, var(--belt-primary), var(--white)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .celebration p { color: var(--light-grey); font-size: 1rem; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; animation: fadeInUp 0.6s ease 0.2s both; }
+        .stat-card { background: var(--dark-grey); border-radius: 12px; padding: 18px 12px; text-align: center; }
+        .stat-value { font-size: 1.5rem; font-weight: 800; color: var(--belt-primary); margin-bottom: 4px; }
+        .stat-label { font-size: 0.7rem; color: var(--light-grey); text-transform: uppercase; }
+        .xp-earned { background: linear-gradient(135deg, rgba(212, 168, 83, 0.15), rgba(212, 168, 83, 0.05)); border: 1px solid var(--gold); border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 25px; animation: fadeInUp 0.6s ease 0.3s both; }
+        .xp-earned-label { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .xp-earned-value { font-size: 2.5rem; font-weight: 800; color: var(--gold); }
+        .xp-earned-value span { font-size: 1rem; font-weight: 600; }
+        .analysis-section { background: var(--dark-grey); border-radius: 16px; padding: 25px; margin-bottom: 25px; animation: fadeInUp 0.6s ease 0.4s both; }
+        .analysis-title { font-size: 1rem; font-weight: 600; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; color: var(--belt-primary); }
+        .analysis-title svg { width: 20px; height: 20px; }
+        .analysis-item { background: var(--mid-grey); border-radius: 12px; padding: 15px; margin-bottom: 12px; }
+        .analysis-item:last-child { margin-bottom: 0; }
+        .analysis-label { font-size: 0.75rem; color: var(--light-grey); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .analysis-content { font-size: 0.95rem; color: var(--white); line-height: 1.5; }
+        .analysis-insight { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--dark-grey); font-size: 0.85rem; color: var(--green); font-style: italic; }
+        .badges-row { display: flex; gap: 10px; margin-top: 15px; flex-wrap: wrap; }
+        .badge { display: inline-flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+        .badge.strength { background: rgba(16, 185, 129, 0.15); color: var(--green); }
+        .badge.growth { background: rgba(212, 168, 83, 0.15); color: var(--gold); }
+        .badge svg { width: 14px; height: 14px; }
+        .takeaway-box { background: linear-gradient(135deg, rgba(139, 92, 246, 0.15), rgba(139, 92, 246, 0.05)); border: 1px solid var(--purple); border-radius: 16px; padding: 20px; margin-bottom: 25px; animation: fadeInUp 0.6s ease 0.5s both; }
+        .takeaway-label { font-size: 0.75rem; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+        .takeaway-label svg { width: 14px; height: 14px; }
+        .takeaway-text { font-size: 1rem; color: var(--white); line-height: 1.6; }
+        .actions { animation: fadeInUp 0.6s ease 0.6s both; }
+        .primary-btn { width: 100%; padding: 18px; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; justify-content: center; gap: 10px; background: linear-gradient(135deg, var(--green), #059669); color: white; margin-bottom: 12px; transition: all 0.2s; }
+        .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3); }
+        .primary-btn svg { width: 20px; height: 20px; }
+        .secondary-btn { width: 100%; padding: 15px; border-radius: 12px; font-size: 0.95rem; font-weight: 500; cursor: pointer; border: 1px solid var(--mid-grey); background: transparent; color: var(--white); margin-bottom: 10px; transition: all 0.2s; }
+        .secondary-btn:hover { border-color: var(--light-grey); }
+        #confetti { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="stripe-results.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="stripe-results-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <canvas id="confetti"></canvas>
+    <div class="container">
+        <div class="celebration">
+            <div class="stripe-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h1 id="stripeTitle">Stripe 1 Complete!</h1>
+            <p id="stripeSubtitle">Difficult Conversations Mastered</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="statResponses">8</div>
+                <div class="stat-label">Responses</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statScore">85%</div>
+                <div class="stat-label">Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="statTime">6m</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+        
+        <div class="xp-earned">
+            <div class="xp-earned-label">Experience Earned</div>
+            <div class="xp-earned-value" id="xpValue">+60 <span>XP</span></div>
+        </div>
+        
+        <div class="analysis-section">
+            <h3 class="analysis-title">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+                Your Personal Analysis
+            </h3>
+            <div id="analysisContent"></div>
+            <div class="badges-row" id="badgesRow"></div>
+        </div>
+        
+        <div class="takeaway-box">
+            <div class="takeaway-label">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Your Key Takeaway
+            </div>
+            <p class="takeaway-text" id="takeawayText">Based on your responses, focus on separating facts from stories in your next difficult conversation.</p>
+        </div>
+        
+        <div class="actions">
+            <button class="primary-btn" id="practiceBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Practice to Reinforce
+            </button>
+            <button class="secondary-btn" id="continueBtn">Continue to Next Stripe</button>
+            <button class="secondary-btn" id="gymBtn">Return to Gym</button>
+        </div>
+    </div>
+    
+    <script>
+        const CONFIG = { belt: 'blue', stripe: 1, xpEarned: 60, nextPage: 'blue-belt-stripe2-gamified.html', requiredXP: 100 };
+        const BELT_COLORS = {
+            white: { primary: '#e2e8f0', secondary: '#94a3b8' },
+            blue: { primary: '#3b82f6', secondary: '#1d4ed8' },
+            purple: { primary: '#8b5cf6', secondary: '#7c3aed' },
+            brown: { primary: '#a16207', secondary: '#854d0e' },
+            black: { primary: '#d4a853', secondary: '#b8860b' }
+        };
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('belt')) CONFIG.belt = urlParams.get('belt');
+        if (urlParams.get('stripe')) CONFIG.stripe = parseInt(urlParams.get('stripe'));
+        if (urlParams.get('xp')) CONFIG.xpEarned = parseInt(urlParams.get('xp'));
+        if (urlParams.get('next')) CONFIG.nextPage = urlParams.get('next');
+        CONFIG.nextStripe = CONFIG.stripe + 1;
+        
+        const XP_REQ = { white: { 1: 75, 2: 100, 3: 125, 4: 150 }, blue: { 1: 100, 2: 125, 3: 150, 4: 175 } };
+        CONFIG.requiredXP = XP_REQ[CONFIG.belt]?.[CONFIG.stripe] || 100;
+        
+        const STRIPE_NAMES = {
+            white: { 1: 'Trust Foundations', 2: 'Practicing Vulnerability', 3: 'Self-Awareness', 4: 'Trust Mastery' },
+            blue: { 1: 'Difficult Conversations', 2: 'Active Listening', 3: 'Feedback Mastery', 4: 'Boundaries & Resolution' }
+        };
+        
+        function init() {
+            const colors = BELT_COLORS[CONFIG.belt] || BELT_COLORS.blue;
+            document.documentElement.style.setProperty('--belt-primary', colors.primary);
+            document.documentElement.style.setProperty('--belt-secondary', colors.secondary);
+            
+            const stripeName = STRIPE_NAMES[CONFIG.belt]?.[CONFIG.stripe] || 'Stripe Complete';
+            document.getElementById('stripeTitle').textContent = `Stripe ${CONFIG.stripe} Complete!`;
+            document.getElementById('stripeSubtitle').textContent = `${stripeName} Mastered`;
+            document.getElementById('xpValue').innerHTML = `+${CONFIG.xpEarned} <span>XP</span>`;
+            
+            const responses = getPlayerResponses();
+            updateStats(responses);
+            generateAnalysis(responses);
+            generateTakeaway(responses);
+            saveXP();
+            setupButtons();
+            setTimeout(fireConfetti, 300);
+        }
+        
+        function getPlayerResponses() {
+            return {
+                avoidedConvo: localStorage.getItem('tap_in_avoided_convo') || '',
+                stateFacts: localStorage.getItem('tap_in_state_facts') || '',
+                stateStory: localStorage.getItem('tap_in_state_story') || '',
+                scenarioChoice: localStorage.getItem('tap_in_scenario_choice') || '',
+                whoChoice: localStorage.getItem('tap_in_who_choice') || '',
+                whatChoice: localStorage.getItem('tap_in_what_choice') || '',
+                storyChoice: localStorage.getItem('tap_in_story_choice') || '',
+                spectrumValue: parseInt(localStorage.getItem('tap_in_spectrum_value') || '0'),
+                responseCount: parseInt(localStorage.getItem('tap_in_response_count') || '8'),
+                // Blue S2 specific
+                s2TriggerWho: localStorage.getItem('tap_in_s2_trigger_who') || '',
+                s2TriggerWhat: localStorage.getItem('tap_in_s2_trigger_what') || '',
+                s2Trigger: localStorage.getItem('tap_in_s2_trigger') || '',
+                s2ListenFor: localStorage.getItem('tap_in_s2_listen_for') || ''
+            };
+        }
+        
+        function updateStats(r) {
+            document.getElementById('statResponses').textContent = r.responseCount || 8;
+            const hasContent = r.avoidedConvo || r.stateFacts || r.whoChoice || r.s2TriggerWho;
+            document.getElementById('statScore').textContent = hasContent ? '90%' : '70%';
+        }
+        
+        function generateAnalysis(r) {
+            const container = document.getElementById('analysisContent');
+            const badges = document.getElementById('badgesRow');
+            let html = '';
+            let badgeHtml = '';
+            
+            const whoLabels = { manager: 'your manager', colleague: 'a colleague', report: 'someone you manage', partner: 'partner/family', friend: 'a friend', other: 'someone' };
+            const whatLabels = { performance: 'performance', boundaries: 'boundaries', feedback: 'feedback', conflict: 'conflict', expectations: 'expectations', change: 'change', feelings: 'feelings', other: 'an important topic' };
+            const s2WhoLabels = { partner: 'your partner', parent: 'a parent', manager: 'your manager', colleague: 'a colleague', report: 'a direct report', friend: 'a close friend' };
+            const s2WhatLabels = { criticized: 'feeling criticized', advice: 'receiving advice', repeat: 'hearing repetition', emotional: 'emotional moments', disagree: 'disagreement', boring: 'fatigue/boredom' };
+            const listenLabels = { emotions: 'their emotions', needs: 'unspoken needs', body: 'body language', values: 'their values', fears: 'hidden fears', wants: 'what they really want' };
+            
+            if (CONFIG.belt === 'blue' && CONFIG.stripe === 1) {
+                // Conversation identified
+                if (r.whoChoice && r.whatChoice) {
+                    const who = whoLabels[r.whoChoice] || 'someone';
+                    const what = whatLabels[r.whatChoice] || 'something';
+                    html += `<div class="analysis-item"><div class="analysis-label">Conversation Identified</div><div class="analysis-content">You need to talk to <strong>${who}</strong> about <strong>${what}</strong>.</div><div class="analysis-insight">Naming the conversation is the first step. You've broken the avoidance pattern.</div></div>`;
+                    badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Self-Aware</span>';
+                } else if (r.avoidedConvo) {
+                    html += `<div class="analysis-item"><div class="analysis-label">Conversation Identified</div><div class="analysis-content">"${r.avoidedConvo}"</div><div class="analysis-insight">Good - you've named it. Now you can prepare.</div></div>`;
+                    badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Self-Aware</span>';
+                }
+                
+                // Facts analysis
+                if (r.stateFacts) {
+                    html += `<div class="analysis-item"><div class="analysis-label">Your Fact-Based Opening</div><div class="analysis-content">"${r.stateFacts}"</div><div class="analysis-insight">Starting with observable facts reduces defensiveness. Practice saying this out loud.</div></div>`;
+                    badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>STATE Ready</span>';
+                }
+                
+                // Story analysis
+                if (r.stateStory) {
+                    html += `<div class="analysis-item"><div class="analysis-label">Your Story</div><div class="analysis-content">${r.stateStory}</div><div class="analysis-insight">Owning this as YOUR interpretation (not fact) opens the door to dialogue.</div></div>`;
+                }
+                
+                // Scenario choice
+                if (r.scenarioChoice === 'state') {
+                    badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>STATE Master</span>';
+                }
+                
+                // Growth areas
+                if (!r.stateFacts) {
+                    badgeHtml += '<span class="badge growth"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>Practice Facts</span>';
+                }
+            } else if (CONFIG.belt === 'blue' && CONFIG.stripe === 2) {
+                // Blue S2: Listening Levels
+                if (r.s2TriggerWho && r.s2TriggerWhat) {
+                    const who = s2WhoLabels[r.s2TriggerWho] || 'someone';
+                    const what = s2WhatLabels[r.s2TriggerWhat] || 'certain situations';
+                    html += `<div class="analysis-item"><div class="analysis-label">Your Level 1 Pattern</div><div class="analysis-content">You tend to stop truly listening with <strong>${who}</strong> when <strong>${what}</strong>.</div><div class="analysis-insight">Awareness of your triggers is the first step to overcoming them.</div></div>`;
+                    badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Pattern Identified</span>';
+                }
+                
+                if (r.s2ListenFor) {
+                    const focus = listenLabels[r.s2ListenFor] || r.s2ListenFor;
+                    html += `<div class="analysis-item"><div class="analysis-label">Your Commitment</div><div class="analysis-content">Focus on <strong>${focus}</strong> using the 3-second rule.</div><div class="analysis-insight">Pausing 3 seconds before responding forces you out of Level 1 listening.</div></div>`;
+                    badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Level 2 Ready</span>';
+                }
+            } else {
+                html += `<div class="analysis-item"><div class="analysis-label">What You Practiced</div><div class="analysis-content">You completed ${STRIPE_NAMES[CONFIG.belt]?.[CONFIG.stripe] || 'this stripe'} and demonstrated understanding of the core concepts.</div><div class="analysis-insight">Practice reinforces learning. Use the games to deepen your skills.</div></div>`;
+                badgeHtml += '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Completed</span>';
+            }
+            
+            container.innerHTML = html || '<div class="analysis-item"><div class="analysis-content">Great work completing this stripe!</div></div>';
+            badges.innerHTML = badgeHtml || '<span class="badge strength"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Completed</span>';
+        }
+        
+        function generateTakeaway(r) {
+            let takeaway = 'Keep practicing to reinforce what you learned.';
+            
+            if (CONFIG.belt === 'blue' && CONFIG.stripe === 1) {
+                if (r.avoidedConvo && r.scenarioChoice === 'state') {
+                    takeaway = `You're ready. Have that conversation using STATE within the next 48 hours.`;
+                } else if (r.avoidedConvo) {
+                    takeaway = 'Practice opening with facts, not interpretations. Try: "I noticed..." instead of "You always..."';
+                } else {
+                    takeaway = 'Identify one conversation you\'ve been avoiding. Name it, then plan your STATE approach.';
+                }
+            } else if (CONFIG.belt === 'blue' && CONFIG.stripe === 2) {
+                if (r.s2TriggerWho && r.s2ListenFor) {
+                    takeaway = `In your next conversation with them, use the 3-second rule before responding. Focus on what they're really feeling.`;
+                } else if (r.s2TriggerWho) {
+                    takeaway = 'Practice Level 2 listening: Focus entirely on them, not on what you\'ll say next.';
+                } else {
+                    takeaway = 'Notice when you drop into Level 1 listening this week. Awareness is the first step.';
+                }
+            } else if (CONFIG.belt === 'white') {
+                const takeaways = {
+                    1: 'Trust starts with small moments of vulnerability. Share something real with a colleague this week.',
+                    2: 'Vulnerability is strength. Identify one area where you can be more open.',
+                    3: 'Notice your triggers this week. When you feel defensive, pause and ask why.',
+                    4: 'Trust is rebuilt through consistent small actions. Choose reliability over grand gestures.'
+                };
+                takeaway = takeaways[CONFIG.stripe] || takeaway;
+            }
+            
+            document.getElementById('takeawayText').textContent = takeaway;
+        }
+        
+        function saveXP() {
+            let totalXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            totalXP += CONFIG.xpEarned;
+            localStorage.setItem('tap_in_total_xp', totalXP.toString());
+            localStorage.setItem(`tap_in_${CONFIG.belt}_s${CONFIG.stripe}_complete`, 'true');
+        }
+        
+        function setupButtons() {
+            document.getElementById('practiceBtn').addEventListener('click', () => {
+                const url = `xp-gate.html?belt=${CONFIG.belt}&stripe=${CONFIG.stripe}&next=${CONFIG.nextStripe}&xp=${CONFIG.requiredXP}&nextPage=${encodeURIComponent(CONFIG.nextPage)}`;
+                window.location.href = url;
+            });
+            document.getElementById('continueBtn').addEventListener('click', () => {
+                window.location.href = CONFIG.nextPage;
+            });
+            document.getElementById('gymBtn').addEventListener('click', () => {
+                window.location.href = 'gym-dashboard.html';
+            });
+        }
+        
+        function fireConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const particles = [];
+            const colors = ['#10b981', '#3b82f6', '#8b5cf6', '#d4a853', '#ef4444'];
+            for (let i = 0; i < 150; i++) {
+                particles.push({ x: canvas.width/2, y: canvas.height/2, vx: (Math.random()-0.5)*20, vy: (Math.random()-0.5)*20-10, color: colors[Math.floor(Math.random()*colors.length)], size: Math.random()*8+4, rotation: Math.random()*360, rotationSpeed: (Math.random()-0.5)*10 });
+            }
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let active = 0;
+                particles.forEach(p => {
+                    p.x += p.vx; p.y += p.vy; p.vy += 0.5; p.rotation += p.rotationSpeed; p.vx *= 0.99;
+                    if (p.y < canvas.height + 50) {
+                        active++;
+                        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rotation * Math.PI / 180);
+                        ctx.fillStyle = p.color; ctx.fillRect(-p.size/2, -p.size/2, p.size, p.size); ctx.restore();
+                    }
+                });
+                if (active > 0) requestAnimationFrame(animate);
+            }
+            animate();
+        }
+        
+        init();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

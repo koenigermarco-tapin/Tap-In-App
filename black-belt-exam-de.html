@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Black Belt Prüfung - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --belt-color: #1a1a1a;
+            --belt-accent: #404040;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            padding: 30px 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-link {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .progress-text {
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            height: 4px;
+            background: var(--mid-grey);
+            border-radius: 2px;
+            margin-bottom: 40px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--belt-accent), var(--gold));
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        .intro-screen {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .intro-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--belt-color), var(--belt-accent));
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--gold);
+        }
+        .intro-icon svg {
+            width: 40px;
+            height: 40px;
+            color: var(--gold);
+        }
+        .intro-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .intro-text {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .intro-rules {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .intro-rules h4 {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        .intro-rules ul {
+            list-style: none;
+        }
+        .intro-rules li {
+            padding: 8px 0;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .intro-rules li::before {
+            content: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            color: var(--gold);
+        }
+        
+        .question-screen { display: none; }
+        .question-screen.active { display: block; }
+        
+        .scenario-box {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .scenario-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        .scenario-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .option {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .option:hover { border-color: var(--belt-accent); }
+        .option.selected { border-color: var(--gold); background: rgba(212, 168, 83, 0.1); }
+        .option.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .option.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        
+        .feedback-box {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .feedback-box.show { display: block; }
+        .feedback-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .feedback-title.correct { color: var(--green); }
+        .feedback-title.incorrect { color: var(--red); }
+        .feedback-text {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+            line-height: 1.5;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--belt-accent), #505050);
+            color: var(--white);
+            border: 1px solid var(--gold);
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+        
+        .results-screen { display: none; text-align: center; padding: 40px 0; }
+        .results-screen.active { display: block; }
+        
+        .results-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--belt-color), var(--belt-accent));
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 30px rgba(212, 168, 83, 0.3);
+        }
+        .results-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--gold);
+        }
+        .results-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+        }
+        .score-display {
+            font-size: 3rem;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        .score-label {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+        }
+        
+        .cert-box {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.2), rgba(26, 26, 26, 0.3));
+            border: 2px solid var(--gold);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .cert-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        .cert-text {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .retry-msg {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .retry-msg p {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        .btn-secondary {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            color: var(--light-grey);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="gym-dashboard-de.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Beenden</a>
+            <span class="progress-text" id="progressText">Frage 0 / 10</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h1 class="intro-title">Black Belt Prüfung</h1>
+            <p class="intro-text">Die finale Prüfung. Beweise Meisterschaft in Ergebnisorientierung, Druckmanagement, Lehren und Vermächtnis-Leadership.</p>
+            
+            <div class="intro-rules">
+                <h4>Prüfungsregeln</h4>
+                <ul>
+                    <li>10 szenariobasierte Fragen</li>
+                    <li>Du brauchst 8/10 richtig zum Bestehen</li>
+                    <li>Jede Frage testet Black Belt Prinzipien</li>
+                    <li>Nimm dir Zeit—hier geht es um Meisterschaft</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startExam()">Prüfung beginnen</button>
+        </div>
+
+        <div class="question-screen" id="questionScreen">
+            <div class="scenario-box">
+                <div class="scenario-label">Szenario</div>
+                <p class="scenario-text" id="scenarioText"></p>
+            </div>
+            
+            <p class="question-text" id="questionText"></p>
+            
+            <div class="options" id="optionsContainer"></div>
+            
+            <div class="feedback-box" id="feedbackBox">
+                <div class="feedback-title" id="feedbackTitle"></div>
+                <p class="feedback-text" id="feedbackText"></p>
+            </div>
+            
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Nächste Frage</button>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <div class="results-icon">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="resultsIconSvg"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h2 class="results-title" id="resultsTitle">Ergebnisse</h2>
+            <p class="results-subtitle" id="resultsSubtitle"></p>
+            
+            <div class="score-display" id="scoreDisplay">0/10</div>
+            <p class="score-label">Richtige Antworten</p>
+            
+            <div id="passContent">
+                <div class="cert-box">
+                    <div class="cert-title">Black Belt zertifiziert</div>
+                    <p class="cert-text">Du hast die TAP-IN Reise abgeschlossen. Du hast Ergebnisorientierung, Druckmanagement, das Lehren anderer und Vermächtnis-Leadership gemeistert. Jetzt geh und schaffe Wellen.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='black-belt-ceremony-de.html'">Deinen Black Belt beanspruchen</button>
+            </div>
+            
+            <div id="failContent" style="display: none;">
+                <div class="retry-msg">
+                    <p>Du brauchst 8/10 zum Bestehen. Wiederhole die Black Belt Streifen und versuche es erneut, wenn du bereit bist.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='black-belt-stripe1-gamified-de.html'">Black Belt wiederholen</button>
+                <button class="btn btn-secondary" onclick="retryExam()">Prüfung wiederholen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                scenario: "Dein Team hat ein großes Projekt pünktlich geliefert. Bei der Feier nimmt ein Teammitglied, das nicht viel beigetragen hat, Anerkennung, während ein stiller Mitwirkender übersehen wird.",
+                question: "Wie ist der Black Belt Ansatz zur Ergebnisanerkennung?",
+                options: [
+                    "Den Anerkennungsnehmer öffentlich ansprechen, um die Dinge richtigzustellen",
+                    "Lass es sein—das Projekt war erfolgreich, das zählt",
+                    "Erkenne den stillen Mitwirkenden privat an und adressiere Zuschreibung im Retro",
+                    "Sende eine E-Mail mit den spezifischen Beiträgen aller"
+                ],
+                correct: 2,
+                feedback: "Black Belts fokussieren auf kollektiven Erfolg über Ego. Private Anerkennung validiert den stillen Mitwirkenden, während das Retro einen sicheren Raum schafft, um Zuschreibungsmuster zu diskutieren."
+            },
+            {
+                scenario: "Während einer hochriskanten Präsentation fordert ein Vorstandsmitglied deine Daten aggressiv heraus. Du spürst, wie dein Gesicht errötet und dein Herzschlag steigt.",
+                question: "Was solltest du laut der 90-Sekunden-Regel ZUERST tun?",
+                options: [
+                    "Sofort deine Methodik verteidigen, um Selbstvertrauen zu zeigen",
+                    "Atme durch, benenne die Emotion innerlich, dann stelle eine klärende Frage",
+                    "Weise an einen Kollegen weiter, der es vielleicht besser handhabt",
+                    "Erkenne die Herausforderung an und versprich Nachfassen"
+                ],
+                correct: 1,
+                feedback: "Die 90-Sekunden-Regel: Emotionen dauern etwa 90 Sekunden. Durchatmen und die Emotion benennen aktiviert deinen präfrontalen Kortex. Dann kauft eine klärende Frage Zeit und zeigt Gelassenheit."
+            },
+            {
+                scenario: "Ein Junior-Kollege braucht Hilfe mit dem SBIR Feedback-Framework. Sie haben in 30 Minuten ein Meeting, in dem sie schwieriges Feedback geben müssen.",
+                question: "Wie solltest du laut der 3-teiligen Mini-Lektion-Struktur beginnen?",
+                options: [
+                    "Erkläre jeden Buchstaben: Situation, Verhalten, Wirkung, Bitte",
+                    "Frage: 'Was macht es für dich gerade schwer, dieses Feedback zu geben?'",
+                    "Teile eine Zeit, als du schwieriges Feedback schlecht gegeben hast",
+                    "Gib ihnen eine Vorlage zum Ausfüllen vor dem Meeting"
+                ],
+                correct: 1,
+                feedback: "Die 3-teilige Lektion beginnt mit dem Hook—ihr Problem. Zu fragen, was es schwer macht, schafft Relevanz. Dann führe das Framework als Lösung für ihre spezifische Herausforderung ein."
+            },
+            {
+                scenario: "Du wirst befördert mit zwei Wochen Übergangszeit. Dein Nachfolger ist kompetent, hat aber die komplexen Stakeholder-Dynamiken, die du navigiert hast, noch nicht erlebt.",
+                question: "Was schafft laut den drei Wirkungsebenen dauerhaftes Vermächtnis?",
+                options: [
+                    "Jeden Prozess und jede Stakeholder-Beziehung dokumentieren",
+                    "Sie persönlich allen wichtigen Stakeholdern vorstellen",
+                    "In die Entwicklung ihres Urteilsvermögens durch Szenarien und Coaching investieren",
+                    "Alle offenen Projekte abschließen, damit sie frisch starten können"
+                ],
+                correct: 2,
+                feedback: "Ebene 3 Wirkung sind Wellen—was du lehrst, das sich über dich hinaus ausbreitet. Urteilsübertragung schafft Kapazität für Situationen, die du nicht vorhersehen kannst. Das ist Vermächtnis."
+            },
+            {
+                scenario: "Bei der finalen Überprüfung stellst du fest, dass dein Ansatz das tatsächliche Ziel des Kunden nicht erreichen wird—aber er ist technisch korrekt gemäß der ursprünglichen Ausschreibung.",
+                question: "Was bedeutet Black Belt 'Ergebnisorientierung' hier?",
+                options: [
+                    "Liefern, was spezifiziert wurde—Scope Creep zerstört Projekte",
+                    "Erkenne die Lücke an und schlage vor, zu dem zu pivotieren, was dem Kunden dient",
+                    "Dokumentiere, dass du nach Spezifikation geliefert hast zum Schutz",
+                    "Frage den Kunden, ob er wie geplant fortfahren möchte"
+                ],
+                correct: 1,
+                feedback: "Ergebnisorientierung bedeutet Ergebnisse über Outputs. Black Belts kümmern sich darum, ob Arbeit ihren Zweck erreicht, nicht nur ob sie der Spezifikation entspricht."
+            },
+            {
+                scenario: "Ein Kollege weist deine Idee ab: 'Das haben wir schon mal versucht und es hat nicht funktioniert.' Du fühlst dich defensiv.",
+                question: "Wie ist die Meisterschaft-unter-Druck Antwort?",
+                options: [
+                    "Kontere mit Beweisen, warum deine Idee anders ist",
+                    "Pausiere, dann frage: 'Was genau hat vorher nicht funktioniert?'",
+                    "Lass es sein, um die Beziehung zu bewahren",
+                    "Frage jemand anderen um ihre Meinung, um die Spannung zu brechen"
+                ],
+                correct: 1,
+                feedback: "Die Pause erkennt den Auslöser an. Die Frage zeigt Neugier, während sie Gültigkeit testet. Oft ist 'wir haben das versucht' vage—Details zeigen Lücken oder validieren ihren Punkt."
+            },
+            {
+                scenario: "Jemand, den du vor Jahren gementort hast, dankt dir für Ratschläge, die ihre Karriere verändert haben. Du erinnerst dich nicht daran, sie gegeben zu haben.",
+                question: "Was lehrt dies über Vermächtnis-Leadership?",
+                options: [
+                    "Sei vorsichtiger mit dem, was du rätst",
+                    "Kleine Momente schaffen überproportionale Wirkung—jede Interaktion ist eine potenzielle Welle",
+                    "Leute sind großzügig damit, ihren Erfolg zuzuschreiben",
+                    "Du warst einflussreicher, als du dachtest"
+                ],
+                correct: 1,
+                feedback: "Der Welleneffekt: deine Ideen überleben deine Anwesenheit. Jedes Gespräch ist ein potenzieller Wendepunkt. Es geht um Präsenz, nicht um Vorsicht."
+            },
+            {
+                scenario: "Du führst Wandel. Ein einflussreiches Teammitglied ist skeptisch und laut. Andere beobachten.",
+                question: "Wie ist der Black Belt Ansatz zu diesem Widerstand?",
+                options: [
+                    "Adressiere ihre Bedenken in einem Teammeeting für Transparenz",
+                    "Gehe mit denen voran, die dabei sind—Schwung gewinnt über Skeptiker",
+                    "Triff dich privat, um Bedenken tief zu verstehen, sie potenziell zu einem Mitgestalter zu machen",
+                    "Bitte ihren Manager, die Initiative zu unterstützen"
+                ],
+                correct: 2,
+                feedback: "Widerstand ist Information. Einen lauten Skeptiker in einen Mitgestalter zu verwandeln schafft den stärksten Befürworter. Private Gespräche ermöglichen echte Erkundung."
+            },
+            {
+                scenario: "Ein talentiertes Teammitglied könnte zu Leadership wachsen, scheint aber zögerlich, sichtbare Projekte zu übernehmen.",
+                question: "Wie ist der Black Belt Ansatz zur Entwicklung dieser Person?",
+                options: [
+                    "Weise ihnen ein sichtbares Projekt zu, um Wachstum zu fördern",
+                    "Führe ein Entwicklungsgespräch, das erkundet, was Leadership für sie bedeutet",
+                    "Modelliere Leadership und hoffe, sie sind inspiriert",
+                    "Warte, bis sie Interesse äußern"
+                ],
+                correct: 1,
+                feedback: "Entwicklung beginnt mit Verstehen. Das Entwicklungsgespräch erkundet ihre Ziele, Ängste und Definition von Leadership. Lehren beginnt mit Zuhören."
+            },
+            {
+                scenario: "Dein CEO fragt nach Quartalsergebnissen. Sie sind gut, aber nicht außergewöhnlich. Du weißt, andere Teams haben ihre Metriken aufgebläht.",
+                question: "Wie sieht Black Belt Integrität mit Ergebnissen aus?",
+                options: [
+                    "Präsentiere ehrliche Ergebnisse—Integrität zählt mehr als gut aussehen",
+                    "Mache das Gleiche wie andere, um wettbewerbsfähig zu bleiben",
+                    "Präsentiere Ergebnisse, aber flagge die Aufblähung privat",
+                    "Finde Metriken, die Ergebnisse besser aussehen lassen, während sie genau sind"
+                ],
+                correct: 0,
+                feedback: "Ergebnisorientierung bedeutet nicht Manipulation. Black Belts bauen Vertrauen durch Ehrlichkeit auf, auch wenn es unangenehm ist. Präsentiere ehrlich und lass Arbeit über Zeit sprechen."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function startExam() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('questionScreen').classList.add('active');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('scenarioText').textContent = q.scenario;
+            document.getElementById('questionText').textContent = q.question;
+            
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            
+            q.options.forEach((opt, i) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectAnswer(i);
+                container.appendChild(div);
+            });
+            
+            document.getElementById('feedbackBox').classList.remove('show');
+            document.getElementById('nextBtn').disabled = true;
+            document.getElementById('progressText').textContent = `Frage ${currentQuestion + 1} / 10`;
+            document.getElementById('progressFill').style.width = ((currentQuestion) / 10 * 100) + '%';
+            answered = false;
+        }
+
+        function selectAnswer(index) {
+            if (answered) return;
+            answered = true;
+            
+            const q = questions[currentQuestion];
+            const options = document.querySelectorAll('.option');
+            
+            options.forEach((opt, i) => {
+                if (i === q.correct) opt.classList.add('correct');
+                else if (i === index) opt.classList.add('incorrect');
+            });
+            
+            if (index === q.correct) score++;
+            
+            const feedbackBox = document.getElementById('feedbackBox');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            feedbackTitle.className = 'feedback-title ' + (index === q.correct ? 'correct' : 'incorrect');
+            feedbackTitle.innerHTML = index === q.correct ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Richtig' : '✗ Nicht ganz';
+            document.getElementById('feedbackText').textContent = q.feedback;
+            feedbackBox.classList.add('show');
+            
+            document.getElementById('nextBtn').disabled = false;
+            document.getElementById('nextBtn').textContent = currentQuestion === 9 ? 'Ergebnisse ansehen' : 'Nächste Frage';
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion >= 10) showResults();
+            else showQuestion();
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('scoreDisplay').textContent = score + '/10';
+            
+            if (score >= 8) {
+                document.getElementById('resultsTitle').textContent = 'Black Belt erreicht';
+                document.getElementById('resultsSubtitle').textContent = 'Du hast das TAP-IN Curriculum gemeistert';
+                document.getElementById('passContent').style.display = 'block';
+                document.getElementById('failContent').style.display = 'none';
+                localStorage.setItem('tap_in_black_belt_exam_passed', 'true');
+            } else {
+                document.getElementById('resultsTitle').textContent = 'Noch nicht';
+                document.getElementById('resultsSubtitle').textContent = 'Weiter üben—Meisterschaft braucht Zeit';
+                document.getElementById('passContent').style.display = 'none';
+                document.getElementById('failContent').style.display = 'block';
+            }
+        }
+
+        function retryExam() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').style.display = 'block';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+    </script>
+    <script src="js/language-switcher.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

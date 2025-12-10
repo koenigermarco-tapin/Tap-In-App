@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Energie-Audit Ubung | TAP-IN Open Mat</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --purple: #8b5cf6;
+        }
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            line-height: 1.7;
+        }
+        .lang-switcher {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 101;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-switcher a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .lang-switcher a.active { background: var(--green); color: var(--black); }
+        .lang-switcher a:not(.active) { background: rgba(255,255,255,0.1); color: var(--white); }
+        .header {
+            background: var(--dark-grey);
+            border-bottom: 1px solid var(--mid-grey);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-content {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .back-link {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        .back-link:hover { color: var(--white); }
+        .xp-badge {
+            background: var(--gold);
+            color: var(--black);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .exercise-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+        .exercise-header {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        .exercise-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .meta-badge {
+            background: var(--mid-grey);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        .meta-badge.insights { background: var(--purple); color: white; }
+        .exercise-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+        }
+        .exercise-subtitle {
+            font-size: 1.15rem;
+            color: var(--light-grey);
+        }
+        .content-section { margin-bottom: 3rem; }
+        .content-section h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.25rem;
+            color: var(--green);
+        }
+        .content-section p {
+            font-size: 1.05rem;
+            margin-bottom: 1.25rem;
+            color: var(--light-grey);
+            line-height: 1.8;
+        }
+        .content-section ul {
+            margin-left: 1.5rem;
+            color: var(--light-grey);
+        }
+        .content-section li { margin-bottom: 0.5rem; }
+        .audit-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .time-slot {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .time-slot:hover { border-color: var(--purple); }
+        .time-slot.selected { border-color: var(--gold); background: rgba(251, 191, 36, 0.1); }
+        .time-label {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--white);
+        }
+        .energy-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .energy-btn {
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .energy-btn.high { background: var(--green); color: white; }
+        .energy-btn.medium { background: var(--gold); color: var(--black); }
+        .energy-btn.low { background: var(--red); color: white; }
+        .energy-btn:hover { transform: scale(1.05); }
+        .energy-btn.selected { box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3); }
+        .chart-container {
+            background: linear-gradient(135deg, var(--dark-grey) 0%, #1a1a2e 100%);
+            border: 1px solid var(--mid-grey);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 3rem 0;
+        }
+        .chart-title {
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        .chart {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 300px;
+            border-bottom: 2px solid var(--mid-grey);
+            border-left: 2px solid var(--mid-grey);
+            padding: 1rem;
+            gap: 0.5rem;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(180deg, var(--gold) 0%, var(--purple) 100%);
+            border-radius: 8px 8px 0 0;
+            position: relative;
+            transition: all 0.5s;
+            min-height: 20px;
+        }
+        .chart-bar.high { background: linear-gradient(180deg, var(--green) 0%, #059669 100%); }
+        .chart-bar.medium { background: linear-gradient(180deg, var(--gold) 0%, #f59e0b 100%); }
+        .chart-bar.low { background: linear-gradient(180deg, var(--red) 0%, #dc2626 100%); }
+        .chart-label {
+            text-align: center;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        .insights-box {
+            background: var(--dark-grey);
+            border: 2px solid var(--purple);
+            padding: 2rem;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .insights-box h3 {
+            color: var(--gold);
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        .insight-item {
+            background: rgba(139, 92, 246, 0.15);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--gold);
+        }
+        .insight-title { font-weight: 700; margin-bottom: 0.5rem; }
+        .insight-text { color: var(--light-grey); line-height: 1.6; }
+        .completion-section {
+            text-align: center;
+            padding: 3rem 0;
+            border-top: 1px solid var(--mid-grey);
+        }
+        .complete-button {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        .complete-button:hover { transform: translateY(-2px); }
+        .complete-button:disabled { opacity: 0.5; cursor: not-allowed; }
+        @media (max-width: 768px) {
+            .audit-grid { grid-template-columns: 1fr 1fr; }
+            .chart { height: 200px; }
+            .exercise-title { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="open-mat-energy-audit.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="open-mat-energy-audit-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="lang-switcher">
+        <a href="open-mat-energy-audit.html">EN</a>
+        <a href="open-mat-energy-audit-de.html" class="active">DE</a>
+    </div>
+
+    <header class="header">
+        <div class="header-content">
+            <a href="open-mat-de.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zuruck zu Open Mat</a>
+            <div class="xp-badge">+25 XP</div>
+        </div>
+    </header>
+
+    <div class="exercise-container">
+        <header class="exercise-header">
+            <div class="exercise-meta">
+                <span class="meta-badge insights">Erkenntnisse</span>
+                <span class="meta-badge">Ubung</span>
+                <span class="meta-badge">10 Min</span>
+                <span class="meta-badge">Alle Gurtel</span>
+            </div>
+            <h1 class="exercise-title">Energie-Audit Ubung</h1>
+            <p class="exercise-subtitle">Verfolge deine Energiemuster um zu optimieren, wann du was tust</p>
+        </header>
+
+        <section class="content-section">
+            <h2>Warum das Funktioniert</h2>
+            <p>Die meisten Menschen managen ihre Zeit. Hochleister managen ihre <strong>Energie</strong>.</p>
+            <p>Du hast etwa 3-4 Stunden kognitive Spitzenenergie pro Tag. Die Frage ist: Nutzt du sie fur das, was wichtig ist, oder verschwendest du sie fur E-Mails und Meetings?</p>
+            <p><strong>Dieses Audit zeigt dir:</strong></p>
+            <ul>
+                <li>Wann du am scharfsten bist (plane Deep Work hier)</li>
+                <li>Wann du erschopft bist (packe Admin-Aufgaben hierher)</li>
+                <li>Muster, die du ohne Tracking nicht sehen kannst</li>
+            </ul>
+            <p style="margin-top: 1.5rem;">Sobald du deinen Rhythmus kennst, kannst du deinen Tag darum herum gestalten, statt dagegen anzukampfen.</p>
+        </section>
+
+        <section class="content-section">
+            <h2>Bewerte Deine Energie</h2>
+            <p>Fur jeden 2-Stunden-Block, bewerte dein typisches Energielevel. Sei ehrlich — es geht um Muster, nicht um Wunschdenken.</p>
+        </section>
+
+        <div class="audit-grid" id="auditGrid"></div>
+
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <div class="chart-title">Deine Energie-Karte</div>
+            <div class="chart" id="chart"></div>
+        </div>
+
+        <div class="insights-box" id="insightsBox" style="display: none;">
+            <h3>Deine Erkenntnisse</h3>
+            <div id="insights"></div>
+        </div>
+
+        <section class="content-section">
+            <h2>Wie Du Das Nutzt</h2>
+            <p><strong>Plane strategisch:</strong></p>
+            <ul>
+                <li><strong>Hochenergie-Blocke:</strong> Deep Work, kreatives Denken, wichtige Entscheidungen, schwierige Gesprache</li>
+                <li><strong>Mittlere Energie-Blocke:</strong> Meetings, Zusammenarbeit, Planung, Routinearbeit</li>
+                <li><strong>Niedrige Energie-Blocke:</strong> E-Mails, Admin, einfache Aufgaben, Lernen (du behaltst mehr in Low-Energy-Zustanden)</li>
+            </ul>
+            <p style="margin-top: 1.5rem;"><strong>Die meisten Menschen machen es falsch herum:</strong> Sie checken E-Mails als erstes (verschwenden Hochenergie) und versuchen Deep Work um 15 Uhr (wenn sie platt sind).</p>
+        </section>
+
+        <div class="completion-section">
+            <p style="margin-bottom: 1.5rem; color: var(--light-grey);">Schliesse das Audit ab um 25 XP zu verdienen</p>
+            <button class="complete-button" id="completeButton" onclick="markComplete()" disabled>Abschliessen & XP Verdienen</button>
+        </div>
+    </div>
+
+    <script>
+        const timeSlots = [
+            { label: '6-8 Uhr', key: '6am' },
+            { label: '8-10 Uhr', key: '8am' },
+            { label: '10-12 Uhr', key: '10am' },
+            { label: '12-14 Uhr', key: '12pm' },
+            { label: '14-16 Uhr', key: '2pm' },
+            { label: '16-18 Uhr', key: '4pm' },
+            { label: '18-20 Uhr', key: '6pm' },
+            { label: '20-22 Uhr', key: '8pm' }
+        ];
+
+        const energyLevels = {};
+
+        function initAudit() {
+            const grid = document.getElementById('auditGrid');
+            
+            timeSlots.forEach(slot => {
+                const slotDiv = document.createElement('div');
+                slotDiv.className = 'time-slot';
+                slotDiv.innerHTML = `
+                    <div class="time-label">${slot.label}</div>
+                    <div class="energy-buttons">
+                        <button class="energy-btn high" onclick="setEnergy('${slot.key}', 'high')">Hoch</button>
+                        <button class="energy-btn medium" onclick="setEnergy('${slot.key}', 'medium')">Mittel</button>
+                        <button class="energy-btn low" onclick="setEnergy('${slot.key}', 'low')">Niedrig</button>
+                    </div>
+                `;
+                grid.appendChild(slotDiv);
+            });
+        }
+
+        function setEnergy(timeKey, level) {
+            energyLevels[timeKey] = level;
+            
+            const buttons = event.target.parentElement.querySelectorAll('.energy-btn');
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            
+            if (Object.keys(energyLevels).length === timeSlots.length) {
+                generateChart();
+                generateInsights();
+                document.getElementById('completeButton').disabled = false;
+            }
+        }
+
+        function generateChart() {
+            const chart = document.getElementById('chart');
+            const container = document.getElementById('chartContainer');
+            chart.innerHTML = '';
+            
+            timeSlots.forEach(slot => {
+                const level = energyLevels[slot.key];
+                const height = level === 'high' ? 100 : level === 'medium' ? 60 : 30;
+                
+                const barContainer = document.createElement('div');
+                barContainer.style.flex = '1';
+                barContainer.style.display = 'flex';
+                barContainer.style.flexDirection = 'column';
+                barContainer.style.alignItems = 'center';
+                
+                const bar = document.createElement('div');
+                bar.className = `chart-bar ${level || ''}`;
+                bar.style.height = `${height}%`;
+                
+                const label = document.createElement('div');
+                label.className = 'chart-label';
+                label.textContent = slot.label;
+                
+                barContainer.appendChild(bar);
+                barContainer.appendChild(label);
+                chart.appendChild(barContainer);
+            });
+            
+            container.style.display = 'block';
+        }
+
+        function generateInsights() {
+            const insightsDiv = document.getElementById('insights');
+            const insightsBox = document.getElementById('insightsBox');
+            const insights = [];
+            
+            const highEnergySlots = timeSlots.filter(s => energyLevels[s.key] === 'high');
+            if (highEnergySlots.length > 0) {
+                insights.push({
+                    title: 'Deine Spitzenstunden',
+                    text: `Du hast hohe Energie wahrend ${highEnergySlots.map(s => s.label).join(', ')}. Das ist deine goldene Zeit — schutze sie unnachgiebig. Plane Deep Work, kreatives Denken oder wichtige Entscheidungen hier. Verschwende Spitzenstunden nie mit E-Mails.`
+                });
+            }
+            
+            const afternoonSlots = ['12pm', '2pm', '4pm'];
+            const afternoonLow = afternoonSlots.filter(key => energyLevels[key] === 'low');
+            if (afternoonLow.length >= 2) {
+                insights.push({
+                    title: 'Nachmittags-Energietief',
+                    text: 'Du hast ein signifikantes Nachmittagstief. Das ist normal (zirkadianer Rhythmus). Statt dagegen mit Kaffee anzukampfen, nutze es: plane Admin-Arbeit, E-Mails oder einfache Aufgaben. Erwage einen 20-Minuten-Spaziergang oder Power-Nap zum Reset.'
+                });
+            }
+            
+            const morningHigh = ['6am', '8am', '10am'].filter(key => energyLevels[key] === 'high');
+            if (morningHigh.length >= 2) {
+                insights.push({
+                    title: 'Morgenmensch',
+                    text: 'Du bist ein Morgenmensch. Deine kognitive Pferdestarke erreicht vor dem Mittag ihren Hohepunkt. Schutze deine Morgen unnachgiebig — wenn moglich keine Morgen-Meetings. Mach dein hartes Denken vor dem Mittagessen. Dein Gehirn ist am scharfsten, wenn alle anderen noch aufwachen.'
+                });
+            }
+            
+            const eveningHigh = ['6pm', '8pm'].filter(key => energyLevels[key] === 'high');
+            if (eveningHigh.length >= 1) {
+                insights.push({
+                    title: 'Nachteulen-Tendenz',
+                    text: 'Du hast abends Energie. Bedenke: Wenn du Morgen-Meetings hast, arbeitest du unter Kapazitat. Kannst du deinen Tag spater verschieben? 10-18 Uhr statt 8-16 Uhr arbeiten? Oder nutze Abende fur Nebenprojekte und kreative Arbeit.'
+                });
+            }
+            
+            const mediumCount = Object.values(energyLevels).filter(v => v === 'medium').length;
+            if (mediumCount >= 5) {
+                insights.push({
+                    title: 'Stabiles Energieprofil',
+                    text: 'Deine Energie ist relativ konstant uber den Tag. Das ist selten und wertvoll — du bist nicht durch dramatische Hoch/Tiefs eingeschrankt. Konzentriere dich stattdessen auf Entscheidungsmudigkeit: tackle deine hartesten Entscheidungen fruh, bevor Willenskraft aufgebraucht ist.'
+                });
+            }
+            
+            insightsDiv.innerHTML = insights.map(i => `
+                <div class="insight-item">
+                    <div class="insight-title">${i.title}</div>
+                    <div class="insight-text">${i.text}</div>
+                </div>
+            `).join('');
+            
+            insightsBox.style.display = 'block';
+            
+            const auditData = {
+                date: new Date().toISOString(),
+                energyLevels: {...energyLevels},
+                insights: insights
+            };
+            localStorage.setItem('tapinEnergyAudit', JSON.stringify(auditData));
+        }
+
+        function markComplete() {
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            if (!completedContent.includes('energy-audit')) {
+                completedContent.push('energy-audit');
+                localStorage.setItem('tapinOpenMatCompleted', JSON.stringify(completedContent));
+                
+                const currentXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+                localStorage.setItem('tap_in_total_xp', currentXP + 25);
+                
+                const button = document.getElementById('completeButton');
+                button.textContent = 'Abgeschlossen! (+25 XP)';
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    alert('Du hast 25 XP verdient! Nutze jetzt diese Daten um deinen idealen Tag zu gestalten.');
+                }, 300);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            initAudit();
+            
+            const completedContent = JSON.parse(localStorage.getItem('tapinOpenMatCompleted') || '[]');
+            if (completedContent.includes('energy-audit')) {
+                const button = document.getElementById('completeButton');
+                button.textContent = 'Bereits Abgeschlossen';
+                button.disabled = true;
+            }
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

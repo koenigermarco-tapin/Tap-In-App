@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Team-Einstellungen | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Settings Sections */
+        .settings-section {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Form Elements */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .setting-row:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        
+        .setting-row:first-child {
+            padding-top: 0;
+        }
+        
+        .setting-info {
+            flex: 1;
+        }
+        
+        .setting-label {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .setting-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .setting-control {
+            margin-left: 20px;
+        }
+        
+        /* Toggle Switch */
+        .toggle {
+            position: relative;
+            width: 50px;
+            height: 28px;
+        }
+        
+        .toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background: var(--mid-grey);
+            border-radius: 28px;
+            transition: all 0.3s;
+        }
+        
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            height: 22px;
+            width: 22px;
+            left: 3px;
+            bottom: 3px;
+            background: var(--white);
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+        
+        .toggle input:checked + .toggle-slider {
+            background: var(--green);
+        }
+        
+        .toggle input:checked + .toggle-slider::before {
+            transform: translateX(22px);
+        }
+        
+        /* Select Input */
+        .select-input {
+            padding: 10px 16px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.9rem;
+            cursor: pointer;
+            min-width: 150px;
+        }
+        
+        .select-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        
+        /* Text Input */
+        .text-input {
+            padding: 10px 16px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        
+        /* Team Code Section */
+        .team-code-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .team-code {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            padding: 10px 16px;
+            background: var(--black);
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            letter-spacing: 2px;
+        }
+        
+        .copy-btn {
+            padding: 10px 16px;
+            background: var(--mid-grey);
+            border: none;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .copy-btn svg {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .regenerate-btn {
+            padding: 10px 16px;
+            background: transparent;
+            border: 1px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--light-grey);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        
+        .regenerate-btn:hover {
+            border-color: var(--green);
+            color: var(--white);
+        }
+        
+        /* Gefahrenzone */
+        .danger-zone {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+        
+        .danger-zone .section-title svg {
+            color: var(--red);
+        }
+        
+        .btn-danger {
+            padding: 10px 20px;
+            background: transparent;
+            border: 1px solid var(--red);
+            border-radius: 8px;
+            color: var(--red);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-danger:hover {
+            background: var(--red);
+            color: var(--white);
+        }
+        
+        /* Save Button */
+        .save-section {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-secondary {
+            background: var(--dark-grey);
+            color: var(--white);
+            border: 1px solid var(--mid-grey);
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--green);
+            color: var(--black);
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        @media (max-width: 768px) {
+            .setting-row { flex-direction: column; align-items: flex-start; gap: 12px; }
+            .setting-control { margin-left: 0; }
+            .team-code-display { flex-wrap: wrap; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="business-portal-de.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Zurück zum Portal
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+                Team Settings
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">Team-Einstellungen</h1>
+            <p class="page-desc">Konfiguriere die Präferenzen und Zugriffseinstellungen deines Teams.</p>
+        </div>
+        
+        <!-- General Settings -->
+        <div class="settings-section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                General
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Teamname</div>
+                    <div class="setting-desc">Der Anzeigename für dein Team</div>
+                </div>
+                <div class="setting-control">
+                    <input type="text" class="text-input" id="teamName" value="Marketing Squad">
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Standardsprache</div>
+                    <div class="setting-desc">Primäre Sprache für Team-Inhalte</div>
+                </div>
+                <div class="setting-control">
+                    <select class="select-input" id="defaultLanguage">
+                        <option value="en">English</option>
+                        <option value="de">Deutsch</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Zeitzone</div>
+                    <div class="setting-desc">Für Aktivitätszeitstempel und Erinnerungen</div>
+                </div>
+                <div class="setting-control">
+                    <select class="select-input" id="timezone">
+                        <option value="UTC">UTC</option>
+                        <option value="America/New_York">Eastern Time (ET)</option>
+                        <option value="America/Chicago">Central Time (CT)</option>
+                        <option value="America/Denver">Mountain Time (MT)</option>
+                        <option value="America/Los_Angeles">Pacific Time (PT)</option>
+                        <option value="Europe/London">London (GMT)</option>
+                        <option value="Europe/Berlin" selected>Berlin (CET)</option>
+                        <option value="Asia/Tokyo">Tokyo (JST)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Code -->
+        <div class="settings-section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                Team-Beitrittscode
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Einladungscode</div>
+                    <div class="setting-desc">Teile diesen Code mit Teammitgliedern zum Beitreten</div>
+                </div>
+                <div class="setting-control">
+                    <div class="team-code-display">
+                        <span class="team-code" id="teamCode">MKT-2024</span>
+                        <button class="copy-btn" onclick="copyCode()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy
+                        </button>
+                        <button class="regenerate-btn" onclick="regenerateCode()">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                            Regenerate
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Neue Mitglieder erlauben</div>
+                    <div class="setting-desc">Neue Mitglieder können mit dem Team-Code beitreten</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="allowJoin" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notifications -->
+        <div class="settings-section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                Notifications
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Wöchentliche Zusammenfassung</div>
+                    <div class="setting-desc">Wöchentliche Team-Fortschrittsberichte erhalten</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="weeklySummary" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Mitglieder-Meilenstein-Benachrichtigungen</div>
+                    <div class="setting-desc">Benachrichtigung bei Gürtel- oder Abzeichen-Erwerb</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="milestoneAlerts" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Inaktivitätswarnungen</div>
+                    <div class="setting-desc">Warnung bei 7+ Tagen Inaktivität</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="inactivityWarnings" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Datenschutz Privacy & Visibility Sichtbarkeit -->
+        <div class="settings-section">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Datenschutz Privacy & Visibility Sichtbarkeit
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">XP-Ranglisten anzeigen</div>
+                    <div class="setting-desc">Bestenliste mit XP-Punkten für alle Mitglieder anzeigen</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="showRankings" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Anonyme Assessment-Ergebnisse</div>
+                    <div class="setting-desc">Einzelne Namen in Team-Aggregationsberichten ausblenden</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="anonymousResults">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Aktivitäten-Feed teilen</div>
+                    <div class="setting-desc">Mitglieder können Team-Aktivitäten und Erfolge sehen</div>
+                </div>
+                <div class="setting-control">
+                    <label class="toggle">
+                        <input type="checkbox" id="shareActivity" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Gefahrenzone -->
+        <div class="settings-section danger-zone">
+            <div class="section-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                Gefahrenzone
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Alle Team-Daten zurücksetzen</div>
+                    <div class="setting-desc">Löscht allen Fortschritt, XP und Assessments aller Mitglieder. Kann nicht rückgängig gemacht werden.</div>
+                </div>
+                <div class="setting-control">
+                    <button class="btn-danger" onclick="confirmReset()">Daten zurücksetzen</button>
+                </div>
+            </div>
+            
+            <div class="setting-row">
+                <div class="setting-info">
+                    <div class="setting-label">Team löschen</div>
+                    <div class="setting-desc">Dieses Team und alle zugehörigen Daten dauerhaft löschen.</div>
+                </div>
+                <div class="setting-control">
+                    <button class="btn-danger" onclick="confirmDelete()">Team löschen</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Save Button -->
+        <div class="save-section">
+            <button class="btn btn-secondary" onclick="window.location.href='business-portal-de.html'">Abbrechen</button>
+            <button class="btn btn-primary" onclick="saveSettings()">Änderungen speichern</button>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        <span id="toastMessage">Einstellungen gespeichert</span>
+    </div>
+    
+    <script>
+        function loadSettings() {
+            const settings = JSON.parse(localStorage.getItem('teamSettings') || '{}');
+            
+            if (settings.teamName) document.getElementById('teamName').value = settings.teamName;
+            if (settings.defaultLanguage) document.getElementById('defaultLanguage').value = settings.defaultLanguage;
+            if (settings.timezone) document.getElementById('timezone').value = settings.timezone;
+            if (settings.teamCode) document.getElementById('teamCode').textContent = settings.teamCode;
+            
+            if (typeof settings.allowJoin !== 'undefined') document.getElementById('allowJoin').checked = settings.allowJoin;
+            if (typeof settings.weeklySummary !== 'undefined') document.getElementById('weeklySummary').checked = settings.weeklySummary;
+            if (typeof settings.milestoneAlerts !== 'undefined') document.getElementById('milestoneAlerts').checked = settings.milestoneAlerts;
+            if (typeof settings.inactivityWarnings !== 'undefined') document.getElementById('inactivityWarnings').checked = settings.inactivityWarnings;
+            if (typeof settings.showRankings !== 'undefined') document.getElementById('showRankings').checked = settings.showRankings;
+            if (typeof settings.anonymousResults !== 'undefined') document.getElementById('anonymousResults').checked = settings.anonymousResults;
+            if (typeof settings.shareActivity !== 'undefined') document.getElementById('shareActivity').checked = settings.shareActivity;
+        }
+        
+        function saveSettings() {
+            const settings = {
+                teamName: document.getElementById('teamName').value,
+                defaultLanguage: document.getElementById('defaultLanguage').value,
+                timezone: document.getElementById('timezone').value,
+                teamCode: document.getElementById('teamCode').textContent,
+                allowJoin: document.getElementById('allowJoin').checked,
+                weeklySummary: document.getElementById('weeklySummary').checked,
+                milestoneAlerts: document.getElementById('milestoneAlerts').checked,
+                inactivityWarnings: document.getElementById('inactivityWarnings').checked,
+                showRankings: document.getElementById('showRankings').checked,
+                anonymousResults: document.getElementById('anonymousResults').checked,
+                shareActivity: document.getElementById('shareActivity').checked
+            };
+            
+            localStorage.setItem('teamSettings', JSON.stringify(settings));
+            localStorage.setItem('teamName', settings.teamName);
+            
+            showToast('Einstellungen gespeichert successfully!');
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('teamCode').textContent;
+            navigator.clipboard.writeText(code);
+            showToast('Team code copied to clipboard!');
+        }
+        
+        function regenerateCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 3; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            code += '-' + new Date().getFullYear();
+            
+            document.getElementById('teamCode').textContent = code;
+            showToast('New team code generated!');
+        }
+        
+        function confirmReset() {
+            if (confirm('Are you sure you want to reset all team data? This cannot be undone.')) {
+                localStorage.removeItem('teamMembers');
+                localStorage.removeItem('teamDysfunctions');
+                showToast('Team data has been reset');
+            }
+        }
+        
+        function confirmDelete() {
+            if (confirm('Are you sure you want to delete this team? This cannot be undone.')) {
+                if (confirm('This will permanently delete ALL team data. Type "DELETE" to confirm.')) {
+                    localStorage.clear();
+                    window.location.href = 'index.html';
+                }
+            }
+        }
+        
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadSettings);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Team-Impact-Profil - TAP-IN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            color: #1a365d;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .header .subtitle {
+            color: #64748b;
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+        
+        .header .note {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #1a365d;
+            color: #475569;
+        }
+        
+        .intro-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .intro-section h2 {
+            color: #1a365d;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            font-weight: 600;
+        }
+        
+        .intro-section p {
+            color: #64748b;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .archetypes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .archetype-badge {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .archetype-badge .icon {
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+        
+        .archetype-badge .name {
+            color: #1e293b;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+        
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .progress-text {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1a365d, #334155);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .question-card {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: none;
+        }
+        
+        .question-card.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .question-number {
+            color: #94a3b8;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+        }
+        
+        .question-text {
+            color: #1e293b;
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            letter-spacing: -0.3px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .option {
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+        }
+        
+        .option-label {
+            display: block;
+            padding: 18px 20px 18px 50px;
+            background: white;
+            border-left: 3px solid #e2e8f0;
+            border-top: 1px solid #e2e8f0;
+            border-right: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: #1e293b;
+            font-weight: 500;
+            position: relative;
+        }
+        
+        .option-label:before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            border: 2px solid #e2e8f0;
+            border-radius: 50%;
+            background: white;
+            transition: all 0.2s ease;
+        }
+        
+        .option input[type="radio"]:checked + .option-label {
+            border-left-width: 4px;
+            border-left-color: #1a365d;
+            background: #f8fafc;
+            box-shadow: 0 2px 8px rgba(26, 54, 93, 0.15);
+        }
+        
+        .option input[type="radio"]:checked + .option-label:before {
+            border-color: #1a365d;
+            background: #1a365d;
+            box-shadow: inset 0 0 0 4px white;
+        }
+        
+        .option-label:hover {
+            border-left-color: #1a365d;
+            box-shadow: 0 2px 8px rgba(26, 54, 93, 0.1);
+        }
+        
+        .insight-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-left: 4px solid #1a365d;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 30px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        .insight-card.active {
+            display: block;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .insight-title {
+            color: #1a365d;
+            font-weight: 600;
+            margin-bottom: 12px;
+            font-size: 1.1em;
+        }
+        
+        .insight-content {
+            color: #475569;
+            line-height: 1.7;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        
+        .btn-secondary:hover:not(:disabled) {
+            background: #cbd5e1;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(26, 54, 93, 0.4);
+        }
+        
+        .btn-primary:focus {
+            outline: 2px solid #1a365d;
+            outline-offset: 2px;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .results-container {
+            display: none;
+        }
+        
+        .results-container.active {
+            display: block;
+        }
+        
+        .results-header {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+        
+        .results-header h2 {
+            color: #1a365d;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .primary-type {
+            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .type-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+        
+        .type-name {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .type-percentage {
+            font-size: 1.5em;
+            opacity: 0.95;
+        }
+        
+        .type-description {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .type-description h3 {
+            color: #a93226;
+            margin-bottom: 15px;
+        }
+        
+        .type-description p {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+        
+        .score-bars {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .score-bars h3 {
+            color: #333;
+            margin-bottom: 25px;
+        }
+        
+        .score-item {
+            margin-bottom: 20px;
+        }
+        
+        .score-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .score-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .score-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+        }
+        
+        .lang-switch {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .lang-switch a {
+            text-decoration: none;
+            font-weight: 600;
+            padding: 5px 10px;
+            margin: 0 5px;
+        }
+        
+        .lang-switch a.active {
+            color: #a93226;
+        }
+        
+        .lang-switch a:not(.active) {
+            color: #999;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .question-card { padding: 25px; }
+            .question-text { font-size: 1.15em; }
+            .archetypes-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> GAMIFICATION STYLES */
+        
+        /* Achievement Toast */
+        .achievement-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+            z-index: 2000;
+            display: none;
+            animation: slideInRight 0.5s ease-out;
+            max-width: 300px;
+        }
+
+        .achievement-toast.show {
+            display: block;
+        }
+
+        .achievement-toast .icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .achievement-toast .title {
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+
+        .achievement-toast .description {
+            font-size: 0.9em;
+            opacity: 0.95;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Confetti Animation */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            position: absolute;
+            animation: confetti-fall 3s linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* XP Bar */
+        .xp-bar {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            z-index: 1100;
+            display: none;
+            min-width: 250px;
+        }
+
+        .xp-bar.show {
+            display: block;
+        }
+
+        .xp-bar .level {
+            font-weight: bold;
+            color: #f59e0b;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+        }
+
+        .xp-bar .progress-container {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .xp-bar .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b, #fbbf24);
+            border-radius: 10px;
+            transition: width 0.5s ease-out;
+        }
+
+        .xp-bar .xp-text {
+            font-size: 0.8em;
+            color: #64748b;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        /* Achievement Badge Grid */
+        .achievements-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .achievements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .badge {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .badge.unlocked {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #f59e0b;
+            box-shadow: 0 5px 15px rgba(245, 158, 11, 0.2);
+        }
+
+        .badge.locked {
+            opacity: 0.5;
+            filter: grayscale(1);
+        }
+
+        .badge .icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+
+        .badge .name {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+
+        .badge .description {
+            font-size: 0.75em;
+            color: #64748b;
+        }
+
+        /* Mini Lesson Card */
+        .mini-lesson {
+            background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 4px solid #6366f1;
+        }
+
+        .mini-lesson .title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #1e1b4b;
+            margin-bottom: 10px;
+        }
+
+        .mini-lesson .content {
+            color: #3730a3;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .mini-lesson .learn-more {
+            background: #6366f1;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .mini-lesson .learn-more:hover {
+            background: #4f46e5;
+            transform: translateY(-2px);
+        }
+
+        /* Streak Counter */
+        .streak-badge {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+            z-index: 1100;
+            display: none;
+        }
+
+        .streak-badge.show {
+            display: block;
+        }
+
+        .streak-badge .fire {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .streak-badge .count {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #f59e0b;
+        }
+
+        .streak-badge .label {
+            font-size: 0.8em;
+            color: #64748b;
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <div class="lang-switch">
+        <a href="leadership-style-carousel.html">EN</a>
+        <a href="leadership-style-carousel.de.html" class="active">DE</a>
+    </div>
+
+    <div class="container">
+        <!-- <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> GAMIFICATION ELEMENTS -->
+        
+        <!-- XP Bar -->
+        <div class="xp-bar" id="xpBar">
+            <div class="level" id="levelText">Level 1: Impact Explorer</div>
+            <div class="progress-container">
+                <div class="progress-fill" id="xpProgress" style="width: 0%"></div>
+            </div>
+            <div class="xp-text" id="xpText">0 / 100 XP</div>
+        </div>
+
+        <!-- Streak Counter -->
+        <div class="streak-badge" id="streakBadge">
+            <div class="fire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="count" id="streakCount">0</div>
+            <div class="label">Tage Serie</div>
+        </div>
+
+        <!-- Achievement Toast -->
+        <div class="achievement-toast" id="achievementToast">
+            <div class="icon" id="achievementIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="title" id="achievementTitle">Achievement freigeschaltet!</div>
+            <div class="description" id="achievementDesc">Du hast ein neues Abzeichen verdient</div>
+        </div>
+
+        <div class="header">
+            <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Team-Impact-Profil</h1>
+            <p class="subtitle">Entdecke, wie du natürlich Einfluss nimmst und Wirkung schaffst</p>
+            <div class="note">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> <strong>5 Minuten</strong> • 14 Fragen • Für jeden, der mit anderen arbeitet
+            </div>
+        </div>
+
+        <div class="intro-section" id="introSection">
+            <h2>Die 6 Impact-Archetypen</h2>
+            <p>Wir alle schaffen Wirkung auf unterschiedliche Weise – ob mit oder ohne formale Führungsrolle. Einer dieser Archetypen dominiert bei dir. Deine Stärken, Wachstumsfelder und optimalen Wirkungsfelder werden durch deinen primären Impact-Stil geformt.</p>
+            
+            <div class="archetypes-grid">
+                <div class="archetype-badge">
+                    <div class="icon"></div>
+                    <div class="name">Visionär</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon">️</div>
+                    <div class="name">Architekt</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="name">Connector</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="name">Driver</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon"></div>
+                    <div class="name">Director</div>
+                </div>
+                <div class="archetype-badge">
+                    <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+                    <div class="name">Developer</div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px;">
+                <button class="btn btn-primary" onclick="startAssessment()" style="font-size: 1.2em; padding: 18px 40px;">
+                    Assessment starten <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="progress-container" style="display: none;">
+            <div class="progress-text">Frage <span id="currentQ">1</span> von 14</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <form id="assessmentForm">
+            <!-- Questions will be dynamically rendered here -->
+        </form>
+
+        <div class="results-container" id="resultsContainer">
+            <div class="results-header">
+                <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Dein Führungsprofil</h2>
+            </div>
+            <div id="resultsContent"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                number: 1,
+                text: 'Wenn du ein neues Projekt beginnst, beginnst du typischerweise mit:',
+                insights: {
+                    title: 'Erste Schritte offenbaren deinen Impact-Stil',
+                    content: 'Wie du startest, zeigt, wie du Einfluss nimmst. Visionäre malen das Gesamtbild. Architekten bauen Frameworks. Connectors bringen Menschen zusammen. Drivers starten die Ausführung. Directors treffen Entscheidungen. Developers stellen Fragen. Jeder Ansatz schafft Wirkung in verschiedenen Kontexten.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Ein überzeugendes Zukunftsbild malen' },
+                    { value: 'architect', text: 'Ein detailliertes strategisches Framework entwerfen' },
+                    { value: 'facilitator', text: 'Stakeholder zusammenbringen für Input' },
+                    { value: 'executor', text: 'Sofort mit konkreten Schritten beginnen' },
+                    { value: 'commander', text: 'Klare Entscheidung treffen und vorangehen' },
+                    { value: 'coach', text: 'Dem Team Fragen stellen, um deren Lösungen zu erschließen' }
+                ]
+            },
+            {
+                number: 2,
+                text: 'In einem Konflikt tendierst du dazu:',
+                insights: {
+                    title: 'Konfliktstil = Deine Wirkungssignatur',
+                    content: 'Konfliktreaktionen zeigen dein Kern-Betriebssystem. Visionäre reframen zu größeren Zielen. Architekten analysieren Systeme. Connectors streben Konsens an. Drivers fordern Fortschritt. Directors entscheiden schnell. Developers fördern Selbstfindung. Wirkungsvolle Menschen kennen ihren Standard UND wann man wechseln muss.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Zu gemeinsamen Werten und Vision zurückkehren' },
+                    { value: 'architect', text: 'Systemische Ursachen und Lösungen analysieren' },
+                    { value: 'facilitator', text: 'Konsens durch alle Perspektiven finden' },
+                    { value: 'executor', text: 'Zu Ergebnissen umleiten, Debatte begrenzen' },
+                    { value: 'commander', text: 'Schnell entscheiden und weitermachen' },
+                    { value: 'coach', text: 'Reflexion fördern, bis Parteien die eigene Lösung finden' }
+                ]
+            },
+            {
+                number: 3,
+                text: 'Du fühlst dich am energiegeladen, wenn du:',
+                insights: {
+                    title: 'Energie = Deine Wirkungskraft',
+                    content: 'Nachhaltige Führung kommt von ausgerichteter Arbeit. Visionäre leben von Möglichkeiten. Architekten von Systemdesign. Facilitatoren von menschlicher Verbindung. Executors von messbarem Fortschritt. Commanders von entscheidender Aktion. Coaches von Durchbrüchen anderer. Gegen Ihren Energietyp zu kämpfen führt zu Burnout.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Neue Möglichkeiten erkunden' },
+                    { value: 'architect', text: 'Komplexe Systeme entwerfen' },
+                    { value: 'facilitator', text: 'Menschen verbinden und entwickeln' },
+                    { value: 'executor', text: 'Messbare Fortschritte erzielen' },
+                    { value: 'commander', text: 'Schnelle, folgenschwere Entscheidungen treffen' },
+                    { value: 'coach', text: 'Andere dabei beobachtest, wie sie die eigenen Antworten entdecken' }
+                ]
+            },
+            {
+                number: 4,
+                text: 'Dein natürlicher Kommunikationsstil ist:',
+                insights: {
+                    title: 'Kommunikation = Deine Einflusssprache',
+                    content: 'Wirkungsvolle Menschen kennen die Standard-Sprache. Visionäre erzählen inspirierende Geschichten. Architekten präsentieren Logik. Connectors schaffen Dialoge. Drivers sprechen in Aktionen. Directors geben klare Direktiven. Developers stellen kraftvolle Fragen. Der Schlüssel? Wissen, wann man die Standardeinstellung ändern muss.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Geschichten und inspirierende Narrative' },
+                    { value: 'architect', text: 'Datengetriebene, logische Argumente' },
+                    { value: 'facilitator', text: 'Offener Dialog und Konsensfindung' },
+                    { value: 'executor', text: 'Klare, handlungsorientierte Direktiven' },
+                    { value: 'commander', text: 'Direkte, entscheidende Kommunikation' },
+                    { value: 'coach', text: 'Fragenstellende, forschende Konversation' }
+                ]
+            },
+            {
+                number: 5,
+                text: 'Wenn ein Hindernis auftritt, reagierst du:',
+                insight: {
+                    title: 'Hindernisse offenbaren Charakter',
+                    content: 'Druck offenbart, erschafft nicht Charakter. Visionäre reframen Hindernisse als Chancen. Architekten diagnostizieren und umgestalten. Connectors mobilisieren kollektive Intelligenz. Drivers finden sofortige Workarounds. Directors treffen mutige Entscheidungen. Developers helfen Teams, die eigenen Lösungen zu finden. Die Krisenstandardeinstellung zeigt die wahre Wirkungsidentität.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Es als Gelegenheit zur Innovation reframen' },
+                    { value: 'architect', text: 'Ursachen analysieren, Systeme neu gestalten' },
+                    { value: 'facilitator', text: 'Team zusammenbringen für kollektive Problemlösung' },
+                    { value: 'executor', text: 'Schnell einen Workaround finden und vorankommen' },
+                    { value: 'commander', text: 'Mutige Entscheidung treffen, um durchzubrechen' },
+                    { value: 'coach', text: 'Team fragen, was sie sehen und wie sie es lösen würden' }
+                ]
+            },
+            {
+                number: 6,
+                text: 'In Meetings bist du meistens:',
+                insights: {
+                    title: 'Meeting-Verhalten = Wirkungskultur',
+                    content: 'Lencioni: Meetings schaffen oder zerstören Kultur. Visionäre heben Energie durch Inspiration. Architekten strukturieren für Effizienz. Connectors stellen sicher, dass alle Stimmen gehört werden. Drivers treiben zu Entscheidungen und Aktionen. Directors leiten entscheidend. Developers ziehen durch Fragen Weisheit heraus. Das Meeting-Standardverhalten zeigt den Wirkungsstil.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Menschen zu größeren Möglichkeiten inspirieren' },
+                    { value: 'architect', text: 'Diskussionen für Klarheit strukturieren' },
+                    { value: 'facilitator', text: 'Sicherstellen, dass alle Stimmen einbezogen werden' },
+                    { value: 'executor', text: 'Zu klaren Entscheidungen und nächsten Schritten vorantreiben' },
+                    { value: 'commander', text: 'Entscheidungen treffen und Richtung setzen' },
+                    { value: 'coach', text: 'Fragen stellen, die tieferes Denken auslösen' }
+                ]
+            },
+            {
+                number: 7,
+                text: 'Andere würden dich wahrscheinlich beschreiben als:',
+                insights: {
+                    title: 'Externe Wahrnehmung = Deine Wirkungsmarke',
+                    content: 'Selbstbewusste Menschen formen die Marke absichtlich. Visionäre werden als inspirierend gesehen. Architekten als brillant strategisch. Connectors als inklusiv. Drivers als ergebnisorientiert. Directors als entschieden. Developers als entwicklungsorientiert. Der Schlüssel: Stimmen Absicht und Reputation überein?'
+                },
+                options: [
+                    { value: 'visionary', text: 'Inspirierend und zukunftsorientiert' },
+                    { value: 'architect', text: 'Strategisch und systemisch' },
+                    { value: 'facilitator', text: 'Kollaborativ und inklusiv' },
+                    { value: 'executor', text: 'Ergebnisorientiert und effizient' },
+                    { value: 'commander', text: 'Entschieden und mutig' },
+                    { value: 'coach', text: 'Entwicklungsorientiert und fragend' }
+                ]
+            },
+            {
+                number: 8,
+                text: 'Was dich am meisten frustriert, ist:',
+                insight: {
+                    title: 'Frustrationen offenbaren Werte',
+                    content: 'Was dich frustriert = was du am meisten schätzt. Visionäre hassen Kleinkariertheit. Architekten verachten Ineffizienz. Connectors verabscheuen Exklusion. Drivers können Lähmung nicht ertragen. Directors lehnen Unentschlossenheit ab. Developers sind frustriert von Abhängigkeit. Deine Frustrationen zeigen deine Kernwerte.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Kleinkariertheit und fehlende Vision' },
+                    { value: 'architect', text: 'Ineffiziente Prozesse und fehlende Struktur' },
+                    { value: 'facilitator', text: 'Exklusion und mangelndes Zuhören' },
+                    { value: 'executor', text: 'Lähmung durch Analyse und fehlende Aktion' },
+                    { value: 'commander', text: 'Unentschlossenheit und Zögern' },
+                    { value: 'coach', text: 'Abhängigkeit und fehlende Eigenverantwortung' }
+                ]
+            },
+            {
+                number: 9,
+                text: 'Beim Delegieren konzentrierst du dich auf:',
+                insight: {
+                    title: 'Delegation = Wirkungs-Leverage',
+                    content: 'Wirkungsvolle Menschen delegieren Arbeit, nicht Verantwortung. Visionäre delegieren Ziele. Architekten delegieren Systeme. Connectors delegieren durch Empowerment. Drivers delegieren Aufgaben. Directors delegieren mit klaren Erwartungen. Developers delegieren durch entwickelnde Fragen. Wie man delegiert zeigt, was man wirklich schätzt.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Gewünschte Auswirkung, breite Freiheit bei der Methode' },
+                    { value: 'architect', text: 'Klare Frameworks und Leistungskennzahlen' },
+                    { value: 'facilitator', text: 'Sicherstellen, dass sich Menschen unterstützt und einbezogen fühlen' },
+                    { value: 'executor', text: 'Klare Aufgaben mit spezifischen Fristen' },
+                    { value: 'commander', text: 'Klare Erwartungen, dann Ausführung erwarten' },
+                    { value: 'coach', text: 'Fragen stellen, die anderen helfen, die eigenen Lösungen zu finden' }
+                ]
+            },
+            {
+                number: 10,
+                text: 'Unter Druck bist du am wahrscheinlichsten:',
+                insight: {
+                    title: 'Druck offenbart deinen Standard-Modus',
+                    content: 'Krise entlarvt Menschen, Bewusstsein ermöglicht Wahl. Visionäre greifen auf Inspiration zurück. Architekten analysieren tiefer. Connectors suchen Input. Drivers beschleunigen Aktion. Directors treffen schnelle Entscheidungen. Developers halten inne, um nachzudenken. Die Standard-Druckreaktion ist das wahre Wirkungs-Zuhause.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Das Team zu größeren Zielen inspirieren' },
+                    { value: 'architect', text: 'Tiefer analysieren, um Systemlösungen zu finden' },
+                    { value: 'facilitator', text: 'Stakeholder für kollektive Weisheit zusammenbringen' },
+                    { value: 'executor', text: 'Entscheidungen beschleunigen und Aktion vorantreiben' },
+                    { value: 'commander', text: 'Schnelle, mutige Entscheidung treffen' },
+                    { value: 'coach', text: 'Innehalten, nachdenken, Fragen stellen' }
+                ]
+            },
+            {
+                number: 11,
+                text: 'Deine ideale Arbeitsumgebung ist:',
+                insight: {
+                    title: 'Kultur isst Strategie',
+                    content: 'Drucker: "Kultur isst Strategie zum Frühstück." Die ideale Umgebung zeigt die Kultur, die man schafft. Visionäre gedeihen in Innovation. Architekten in Struktur. Facilitatoren in Zusammenarbeit. Executors in Aktion. Commanders in Geschwindigkeit. Coaches in Entwicklung. Man formt Umgebungen zum eigenen Archetyp.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Innovativ, experimentierfreudig, zukunftsorientiert' },
+                    { value: 'architect', text: 'Strukturiert, effizient, datengetrieben' },
+                    { value: 'facilitator', text: 'Kollaborativ, inklusiv, menschenzentriert' },
+                    { value: 'executor', text: 'Schnelllebig, ergebnisorientiert, actionreich' },
+                    { value: 'commander', text: 'Entscheidungsschnell, klar in Richtung, hohe Autonomie' },
+                    { value: 'coach', text: 'Lernorientiert, fragenbasiert, entwicklungsfokussiert' }
+                ]
+            },
+            {
+                number: 12,
+                text: 'Wenn du Feedback gibst:',
+                insight: {
+                    title: 'Feedback ist Einfluss in Echtzeit',
+                    content: 'Kim Scott: persönlich fürsorgen während direkt herausfordern. Visionäre geben Feedback durch Inspiration. Architekten durch Systeme. Connectors durch Dialog. Drivers durch Standards. Directors direkt. Developers durch Fragen. Wie man Feedback gibt zeigt die Wirkungsphilosophie.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Mit größeren Möglichkeiten und Potenzial verknüpfen' },
+                    { value: 'architect', text: 'Gegen klare Standards und Systeme benchmarken' },
+                    { value: 'facilitator', text: 'Dialog schaffen, mehrere Perspektiven einbeziehen' },
+                    { value: 'executor', text: 'Direkt auf konkrete Leistung fokussieren' },
+                    { value: 'commander', text: 'Klar, direkt, erwarte schnelle Anpassung' },
+                    { value: 'coach', text: 'Fragen stellen, die Selbstentdeckung fördern' }
+                ]
+            },
+            {
+                number: 13,
+                text: 'Erfolg misst du primär durch:',
+                insight: {
+                    title: 'Erfolgsmetriken definieren dich',
+                    content: 'Die Scorecard formt Verhalten. Visionäre messen Auswirkung. Architekten messen Systemeffizienz. Connectors messen Engagement. Drivers messen Outputs. Directors messen entscheidende Siege. Developers messen Wachstum. Wähle Metriken, die mit dem Archetyp übereinstimmen, oder kämpfe gegen dich selbst.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Transformative Auswirkung und Vision verwirklicht' },
+                    { value: 'architect', text: 'Systemeffizienz und nachhaltige Skalierung' },
+                    { value: 'facilitator', text: 'Team-Engagement und kollektive Ergebnisse' },
+                    { value: 'executor', text: 'Konkrete Ergebnisse und erreichte Ziele' },
+                    { value: 'commander', text: 'Entscheidende Siege und territoriale Gewinne' },
+                    { value: 'coach', text: 'Wachstum und Entwicklung von Menschen' }
+                ]
+            },
+            {
+                number: 14,
+                text: 'Deine größte Stärke in der Zusammenarbeit ist:',
+                insight: {
+                    title: 'Superkraft = Konsistente Exzellenz',
+                    content: 'Was man unter Druck liefert (nicht gelegentlich) ist die Superkraft. Visionäre inspirieren. Architekten bauen Systeme. Connectors vereinen Menschen. Drivers liefern. Directors entscheiden. Developers entwickeln. Spitzenleistung kommt vom Verdoppeln der Stärke, nicht vom Reparieren aller Schwächen.'
+                },
+                options: [
+                    { value: 'visionary', text: 'Menschen zu größeren Möglichkeiten inspirieren' },
+                    { value: 'architect', text: 'Nachhaltige Systeme und Strategien aufbauen' },
+                    { value: 'facilitator', text: 'Menschen zusammenbringen und Zusammenarbeit schaffen' },
+                    { value: 'executor', text: 'Ergebnisse konsequent liefern' },
+                    { value: 'commander', text: 'Mutige, entscheidende Entscheidungen treffen' },
+                    { value: 'coach', text: 'Andere entwickeln, um ihr Bestes zu entdecken' }
+                ]
+            }
+        ];
+
+        const typeData = {
+            visionary: {
+                name: 'Visionär',
+                icon: '',
+                color: '#8b5cf6',
+                description: 'Du schaffst Wirkung durch Inspiration und große Ideen. Du malst überzeugende Zukunftsbilder, die Handeln auslösen.',
+                strengths: 'Innovation, Inspiration, strategisches Denken, Change Management',
+                challenges: 'Details folgen, Ungeduld mit Ausführung, manchmal zu abstrakt',
+                examples: 'Martin Luther King Jr., Steve Jobs, Simon Sinek',
+                bestFor: 'Transformation, Turnarounds, neue Ventures, Kulturschiebung'
+            },
+            architect: {
+                name: 'Architekt',
+                icon: '️',
+                color: '#3b82f6',
+                description: 'Du baust nachhaltige Systeme und Strukturen. Strategie und Prozesse sind deine Werkzeuge für Skalierung.',
+                strengths: 'Systemisches Denken, Prozessdesign, Skalierung, Datenanalyse',
+                challenges: 'Over-engineering, Veränderungsgeschwindigkeit, menschliche Faktoren',
+                examples: 'Jeff Bezos, Ray Dalio, Andy Grove',
+                bestFor: 'Skalierung, Komplexitätsmanagement, Systemoptimierung'
+            },
+            facilitator: {
+                name: 'Connector',
+                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+                color: '#10b981',
+                description: 'Du schaffst Wirkung durch Verbindung und Zusammenarbeit. Dein Fokus ist es, das Beste in Menschen und Teams hervorzubringen.',
+                strengths: 'Aufbau von Beziehungen, emotionale Intelligenz, Teamentwicklung',
+                challenges: 'Schwierige Entscheidungen, Konsens kann langsam sein, Konfliktvermeidung',
+                examples: 'Satya Nadella, Brené Brown, Mary Barra',
+                bestFor: 'Kulturwandel, Teambildung, stakeholder-intensive Situationen'
+            },
+            executor: {
+                name: 'Driver',
+                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+                color: '#f59e0b',
+                description: 'Du lieferst Ergebnisse durch Aktion und Rechenschaftspflicht. Geschwindigkeit und Ausführung sind deine Superkräfte.',
+                strengths: 'Bias für Aktion, Rechenschaftspflicht, ergebnisorientiert, Geschwindigkeit',
+                challenges: 'Ungeduld, kann strategischen Kontext übersehen, Burnout-Risiko',
+                examples: 'Jacinda Ardern, Tim Cook, Jocko Willink',
+                bestFor: 'Krise, Turnarounds, operative Exzellenz, schnelle Skalierung'
+            },
+            commander: {
+                name: 'Director',
+                icon: '',
+                color: '#dc2626',
+                description: 'Du nimmst Einfluss durch entschiedene Klarheit. Schnelle, mutige Entscheidungen sind deine Signatur.',
+                strengths: 'Entscheidende Aktion, Mut, Klarheit, Geschwindigkeit unter Druck',
+                challenges: 'Kann autokratisch wirken, Input-Sammlung, Teamdynamik',
+                examples: 'George Patton, Winston Churchill, Jack Welch',
+                bestFor: 'Krise, schnelle Entscheidungen erforderlich, klare Richtungsweisung'
+            },
+            coach: {
+                name: 'Developer',
+                icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+                color: '#059669',
+                description: 'Du entwickelst andere durch kraftvolle Fragen. Dein Vermächtnis sind Menschen, die eigenständig Wirkung schaffen können.',
+                strengths: 'Entwicklung anderer, fragendes Denken, nachhaltiger Einfluss',
+                challenges: 'Zeitintensiv, Ungeduld bei langsamen Lernern, Entscheidungsgeschwindigkeit',
+                examples: 'Bill Campbell, Phil Jackson, John Wooden',
+                bestFor: 'Talententwicklung, Nachfolgeplanung, langfristiger Organisationsaufbau'
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = {};
+        let questionElements = [];
+
+        function startAssessment() {
+            document.getElementById('introSection').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'block';
+            document.getElementById('assessmentForm').style.display = 'block';
+            initAssessment();
+        }
+
+        function initAssessment() {
+            const form = document.getElementById('assessmentForm');
+            
+            questions.forEach((q, index) => {
+                const questionCard = document.createElement('div');
+                questionCard.className = 'question-card';
+                if (index === 0) questionCard.classList.add('active');
+                
+                questionCard.innerHTML = `
+                    <div class="question-number">Frage ${q.number} von 14</div>
+                    <div class="question-text">${q.text}</div>
+                    <div class="options">
+                        ${q.options.map((option, i) => `
+                            <div class="option">
+                                <input type="radio" name="q${index}" value="${option.value}" id="q${index}_${i}" onchange="handleAnswer(${index}, '${option.value}')">
+                                <label class="option-label" for="q${index}_${i}">${option.text}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="insight-card" id="insight${index}">
+                        <div class="insight-title">${q.insight.title}</div>
+                        <div class="insight-content">${q.insight.content}</div>
+                    </div>
+                    <div class="nav-buttons">
+                        <button type="button" class="btn btn-secondary" onclick="prevQuestion()" ${index === 0 ? 'disabled' : ''}><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück</button>
+                        <button type="button" class="btn btn-primary" onclick="nextQuestion()" ${index === questions.length - 1 ? '' : ''} id="nextBtn${index}" disabled>${index === questions.length - 1 ? 'Ergebnisse anzeigen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' : 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>'}</button>
+                    </div>
+                `;
+                
+                form.appendChild(questionCard);
+                questionElements.push(questionCard);
+            });
+        }
+
+        function handleAnswer(questionIndex, value) {
+            answers[questionIndex] = value;
+            
+            // Show insight
+            const insight = document.getElementById(`insight${questionIndex}`);
+            if (insight) {
+                insight.classList.add('active');
+            }
+            
+            // Enable next button
+            const nextBtn = document.getElementById(`nextBtn${questionIndex}`);
+            if (nextBtn) {
+                nextBtn.disabled = false;
+            }
+            
+            updateProgress();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                questionElements[currentQuestion].classList.remove('active');
+                currentQuestion++;
+                questionElements[currentQuestion].classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                questionElements[currentQuestion].classList.remove('active');
+                currentQuestion--;
+                questionElements[currentQuestion].classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateProgress() {
+            const answeredCount = Object.keys(answers).length;
+            const progress = (answeredCount / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('currentQ').textContent = currentQuestion + 1;
+            
+            // Hide intro after first question
+            if (currentQuestion > 0) {
+                document.getElementById('introSection').style.display = 'none';
+            }
+        }
+
+        function showResults() {
+            // Calculate scores
+            const scores = {
+                visionary: 0,
+                architect: 0,
+                facilitator: 0,
+                executor: 0,
+                commander: 0,
+                coach: 0
+            };
+            
+            Object.values(answers).forEach(answer => {
+                scores[answer]++;
+            });
+            
+            // Find primary type
+            let primaryType = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const primaryPercentage = Math.round((scores[primaryType] / questions.length) * 100);
+            
+            // Sort scores for display
+            const sortedScores = Object.entries(scores)
+                .sort((a, b) => b[1] - a[1])
+                .map(([type, score]) => ({
+                    type,
+                    score,
+                    percentage: Math.round((score / questions.length) * 100),
+                    ...typeData[type]
+                }));
+            
+            // Hide form, show results
+            document.getElementById('assessmentForm').style.display = 'none';
+            document.getElementById('introSection').style.display = 'none';
+            document.querySelector('.progress-container').style.display = 'none';
+            
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.classList.add('active');
+            
+            const primaryData = typeData[primaryType];
+            
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="primary-type">
+                    <div class="type-icon">${primaryData.icon}</div>
+                    <div class="type-name">${primaryData.name}</div>
+                    <div class="type-percentage">${primaryPercentage}% Match</div>
+                </div>
+                
+                <div class="type-description">
+                    <h3>Dein Primärer Impact-Archetyp</h3>
+                    <p><strong>${primaryData.description}</strong></p>
+                    <p><strong>Stärken:</strong> ${primaryData.strengths}</p>
+                    <p><strong>Herausforderungen:</strong> ${primaryData.challenges}</p>
+                    <p><strong>Beispiele:</strong> ${primaryData.examples}</p>
+                    <p><strong>Am besten geeignet für:</strong> ${primaryData.bestFor}</p>
+                </div>
+                
+                <div class="score-bars">
+                    <h3>Dein komplettes Profil</h3>
+                    ${sortedScores.map(item => `
+                        <div class="score-item">
+                            <div class="score-label">
+                                <span>${item.icon} ${item.name}</span>
+                                <span>${item.percentage}%</span>
+                            </div>
+                            <div class="score-bar">
+                                <div class="score-fill" style="width: ${item.percentage}%; background: ${item.color};"></div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- Download Sektion -->
+                <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #e0e0e0;">
+                    <h3 style="color: #333; margin-bottom: 15px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Ergebnisse Exportieren</h3>
+                    <p style="color: #666; margin-bottom: 20px;">Lade dein Team-Impact-Profil für deine Unterlagen, Berichte oder Coaching-Sessions herunter.</p>
+                    <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                        <button onclick="exportToCSV()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                             CSV Download
+                        </button>
+                        <button onclick="exportToExcel()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Excel Download
+                        </button>
+                        <button onclick="exportToJSON()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
+                             JSON Download
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="type-description">
+                    <h3>Nächste Schritte</h3>
+                    <p>Möchtest du deinen Impact-Stil vertiefen und verkörperte Wirkungspraktiken lernen?</p>
+                    <p><strong>Kontaktiere TAP-IN für:</strong></p>
+                    <ul style="margin-left: 20px; line-height: 1.8;">
+                        <li>Personalisiertes Coaching basierend auf deinem Archetyp</li>
+                        <li>Team-Workshops zur Wirkungs- und Kommunikationsausrichtung</li>
+                        <li>Verkörperte Wirkungspraktiken (Kampfkunst-Integration)</li>
+                    </ul>
+                    <p style="margin-top: 20px;">
+                        <a href="mailto:contact@tap-in-academy.com" style="display: inline-block; background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: 600;">Kontaktiere uns</a>
+                    </p>
+                </div>
+            `;
+            
+            window.scrollTo(0, 0);
+        }
+
+        // Export Funktionen
+        function exportToCSV() {
+            const scores = calculateScores();
+            const sortedScores = Object.entries(scores)
+                .map(([type, score]) => ({
+                    type,
+                    percentage: Math.round((score / totalAnswered) * 100)
+                }))
+                .sort((a, b) => b.percentage - a.percentage);
+            
+            let csv = 'Team-Impact-Profil Assessment Ergebnisse\n\n';
+            csv += 'Assessment-Typ,Team-Impact-Profil\n';
+            csv += 'Datum,' + new Date().toLocaleDateString('de-DE') + '\n';
+            csv += 'Uhrzeit,' + new Date().toLocaleTimeString('de-DE') + '\n\n';
+            csv += 'Impact-Typ,Prozentsatz\n';
+            
+            sortedScores.forEach(item => {
+                csv += `${item.type},${item.percentage}%\n`;
+            });
+            
+            csv += '\nPrimärer Typ,' + sortedScores[0].type + '\n';
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'team-impact-profil-' + new Date().toISOString().slice(0,10) + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportToExcel() {
+            const scores = calculateScores();
+            const sortedScores = Object.entries(scores)
+                .map(([type, score]) => ({
+                    type,
+                    percentage: Math.round((score / totalAnswered) * 100)
+                }))
+                .sort((a, b) => b.percentage - a.percentage);
+            
+            let html = '<html><head><meta charset="utf-8"><title>Team-Impact-Profil Ergebnisse</title></head><body>';
+            html += '<h1>Team-Impact-Profil Assessment Ergebnisse</h1>';
+            html += '<p><strong>Datum:</strong> ' + new Date().toLocaleDateString('de-DE') + '</p>';
+            html += '<p><strong>Uhrzeit:</strong> ' + new Date().toLocaleTimeString('de-DE') + '</p>';
+            html += '<h2>Dein Impact-Mix</h2>';
+            html += '<table border="1" cellpadding="10" cellspacing="0">';
+            html += '<tr><th>Impact-Typ</th><th>Prozentsatz</th></tr>';
+            
+            sortedScores.forEach(item => {
+                html += `<tr><td>${item.type}</td><td>${item.percentage}%</td></tr>`;
+            });
+            
+            html += '</table>';
+            html += '<p><strong>Primärer Typ:</strong> ' + sortedScores[0].type + '</p>';
+            html += '
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+<<<<<<< HEAD
+
+    <!-- TAP-IN Utilities -->
+    <script src="js/shared-utilities.js"></script>
+    <script src="js/global-error-handler.js"></script>
+    <script src="js/storage-health.js"></script>
+=======
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+>>>>>>> 8645563e081d1b791600e2807e3bdff7d528f55e
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body></html>';
+            
+            const blob = new Blob([html], { type: 'application/vnd.ms-excel' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'team-impact-profil-' + new Date().toISOString().slice(0,10) + '.xls';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function exportToJSON() {
+            const scores = calculateScores();
+            const data = {
+                assessmentType: 'Team-Impact-Profil',
+                datum: new Date().toISOString(),
+                ergebnisse: {
+                    scores: scores,
+                    antworten: answers
+                }
+            };
+            
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'team-impact-profil-' + new Date().toISOString().slice(0,10) + '.json';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Assessment will be initialized when user clicks "Start Assessment" button
+
+        // <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> GAMIFICATION SYSTEM
+        
+        const GAMIFICATION = {
+            // XP und Levels
+            xp: 0,
+            level: 1,
+            xpPerQuestion: 10,
+            xpForCompletion: 100,
+            
+            // Achievements
+            achievements: {
+                'first_start': { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>', name: 'Impact Explorer', desc: 'Erstes Assessment gestartet', unlocked: false },
+                'halfway': { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>', name: 'Halbzeit-Held', desc: '7 Fragen beantwortet', unlocked: false },
+                'complete': { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>', name: 'Selbstbewusster Champion', desc: 'Team-Impact-Profil abgeschlossen', unlocked: false },
+                'speed_demon': { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>', name: 'Geschwindigkeitsdämon', desc: 'In unter 5 Minuten abgeschlossen', unlocked: false }
+            },
+            
+            // Mini-Lektionen
+            miniLessons: {
+                visionary: {
+                    title: "Warum Visionäre die Welt verändern",
+                    content: "Forschung zeigt, dass Visionäre andere Gehirnbereiche aktivieren, wenn sie Probleme lösen. Sie sind darauf programmiert, Muster und Möglichkeiten zu sehen, die andere übersehen. MLK sah einen Traum. Jobs sah die Zukunft. Du siehst, was sein könnte – nicht nur, was ist.",
+                    learnMore: "https://hbr.org/2013/12/how-visionary-leaders-succeed"
+                },
+                architect: {
+                    title: "Die Wissenschaft des Systemdenkens",
+                    content: "Architekten lösen nicht nur Probleme – sie eliminieren sie. Sie entwerfen Systeme, die Probleme verhindern, bevor sie auftreten. Bezos baute Amazons Schwungrad. Dalio schuf Bridgewaters Prinzipien. Du baust Frameworks, die skalieren.",
+                    learnMore: "https://www.mckinsey.com/capabilities/strategy-and-corporate-finance/our-insights/enduring-ideas-the-7-s-framework"
+                },
+                connector: {
+                    title: "Psychologische Sicherheit gewinnt",
+                    content: "Googles Project Aristotle untersuchte 180 Teams und fand den #1 Prädiktor für Hochleistung: psychologische Sicherheit. Connectoren schaffen Umgebungen, in denen sich Menschen sicher fühlen, authentisch zu sein, Risiken einzugehen und zusammenzuarbeiten. Das ist deine Superkraft.",
+                    learnMore: "https://rework.withgoogle.com/guides/understanding-team-effectiveness/steps/identify-dynamics-of-effective-teams/"
+                },
+                driver: {
+                    title: "Handlungsbias schlägt Analyselähmung",
+                    content: "Stanford-Forschung: Handlungsorientierte Menschen sind 40% produktiver als Perfektionisten. Driver liefern. Sie iterieren. Sie lernen durch Handeln. Während andere planen, handelst du. Diese Geschwindigkeit potenziert sich.",
+                    learnMore: "https://www.gsb.stanford.edu/insights/jeffrey-pfeffer-why-taking-action-creates-success"
+                },
+                director: {
+                    title: "Klarheit ist Freundlichkeit",
+                    content: "Brené Browns Forschung: Klarheit ist wichtiger als Nettigkeit. Menschen sehnen sich nach klarer Führung, besonders im Chaos. Directors bieten diese Gewissheit. Deine Entschlossenheit reduziert Angst und schafft Momentum. Kommandopräsenz zählt.",
+                    learnMore: "https://brenebrown.com/podcast/brene-on-clear-is-kind-unclear-is-unkind/"
+                },
+                developer: {
+                    title: "Der Coaching-Multiplikator-Effekt",
+                    content: "Bill Campbell (Silicon Valleys Coach) formte Führungskräfte bei Google, Apple und Dutzenden von Unicorns. Forschung zeigt: 1 großartiger Coach entwickelt 10 großartige Führungskräfte, die 100 weitere entwickeln. Deine Wirkung multipliziert sich exponentiell durch andere.",
+                    learnMore: "https://www.trillion-dollar-coach.com/"
+                }
+            },
+            
+            // Daten laden
+            load() {
+                const saved = localStorage.getItem('tapinGamificationDE');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.xp = data.xp || 0;
+                    this.level = data.level || 1;
+                    this.achievements = { ...this.achievements, ...data.achievements };
+                    this.updateStreak();
+                }
+                this.updateXPBar();
+                this.showStreak();
+            },
+            
+            // Daten speichern
+            save() {
+                localStorage.setItem('tapinGamificationDE', JSON.stringify({
+                    xp: this.xp,
+                    level: this.level,
+                    achievements: this.achievements,
+                    lastVisit: new Date().toISOString()
+                }));
+            },
+            
+            // XP hinzufügen
+            addXP(amount) {
+                this.xp += amount;
+                this.updateXPBar();
+                this.checkLevelUp();
+                this.save();
+            },
+            
+            // XP-Balken aktualisieren
+            updateXPBar() {
+                const xpForNextLevel = this.level * 100;
+                const progress = (this.xp / xpForNextLevel) * 100;
+                
+                document.getElementById('xpProgress').style.width = Math.min(progress, 100) + '%';
+                document.getElementById('xpText').textContent = `${this.xp} / ${xpForNextLevel} XP`;
+                document.getElementById('levelText').textContent = `Level ${this.level}: ${this.getLevelName()}`;
+                document.getElementById('xpBar').classList.add('show');
+            },
+            
+            // Level-Name erhalten
+            getLevelName() {
+                if (this.level === 1) return 'Impact Explorer';
+                if (this.level === 2) return 'Selbstbewusstseins-Sucher';
+                if (this.level === 3) return 'Einsichts-Meister';
+                if (this.level === 4) return 'Impact-Guru';
+                return 'Impact-Legende';
+            },
+            
+            // Level-Up prüfen
+            checkLevelUp() {
+                const xpForNextLevel = this.level * 100;
+                if (this.xp >= xpForNextLevel) {
+                    this.level++;
+                    this.xp = this.xp - xpForNextLevel;
+                    this.showAchievement('', 'Level Up!', `Du bist jetzt ${this.getLevelName()}!`);
+                }
+            },
+            
+            // Achievement anzeigen
+            showAchievement(icon, title, desc) {
+                const toast = document.getElementById('achievementToast');
+                document.getElementById('achievementIcon').textContent = icon;
+                document.getElementById('achievementTitle').textContent = title;
+                document.getElementById('achievementDesc').textContent = desc;
+                
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 4000);
+            },
+            
+            // Achievement freischalten
+            unlockAchievement(key) {
+                if (!this.achievements[key].unlocked) {
+                    this.achievements[key].unlocked = true;
+                    const ach = this.achievements[key];
+                    this.showAchievement(ach.icon, ach.name, ach.desc);
+                    this.addXP(50);
+                    this.save();
+                }
+            },
+            
+            // Streak aktualisieren
+            updateStreak() {
+                const today = new Date().toDateString();
+                const lastVisit = localStorage.getItem('tapinLastVisitDE');
+                const currentStreak = parseInt(localStorage.getItem('tapinStreakDE') || '0');
+                
+                if (lastVisit !== today) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    
+                    if (lastVisit === yesterday.toDateString()) {
+                        localStorage.setItem('tapinStreakDE', (currentStreak + 1).toString());
+                    } else if (lastVisit !== null) {
+                        localStorage.setItem('tapinStreakDE', '1');
+                    } else {
+                        localStorage.setItem('tapinStreakDE', '1');
+                    }
+                    
+                    localStorage.setItem('tapinLastVisitDE', today);
+                }
+            },
+            
+            // Streak anzeigen
+            showStreak() {
+                const streak = parseInt(localStorage.getItem('tapinStreakDE') || '0');
+                if (streak > 0) {
+                    document.getElementById('streakCount').textContent = streak;
+                    document.getElementById('streakBadge').classList.add('show');
+                }
+            }
+        };
+
+        // Gamification beim Seitenaufruf initialisieren
+        GAMIFICATION.load();
+        GAMIFICATION.unlockAchievement('first_start');
+
+        // Fragen-Antworten tracken
+        let questionsAnsweredCount = 0;
+        const originalHandleAnswer = window.handleAnswer;
+        window.handleAnswer = function(index, value) {
+            originalHandleAnswer(index, value);
+            questionsAnsweredCount++;
+            
+            // XP für Antwort hinzufügen
+            GAMIFICATION.addXP(GAMIFICATION.xpPerQuestion);
+            
+            // Halbzeit-Achievement freischalten
+            if (questionsAnsweredCount === 7) {
+                GAMIFICATION.unlockAchievement('halfway');
+            }
+        };
+
+        // Konfetti-Feier
+        function celebrateCompletion() {
+            GAMIFICATION.addXP(GAMIFICATION.xpForCompletion);
+            GAMIFICATION.unlockAchievement('complete');
+            
+            // Konfetti erstellen
+            const colors = ['#f59e0b', '#10b981', '#8b5cf6', '#ef4444', '#3b82f6', '#ec4899'];
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-10px';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+
+        // Achievement-Badges zum Ergebnis hinzufügen
+        function addAchievementBadges() {
+            const achievementsHtml = `
+                <div class="achievements-section">
+                    <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Deine Achievements</h3>
+                    <div class="achievements-grid">
+                        ${Object.entries(GAMIFICATION.achievements).map(([key, ach]) => `
+                            <div class="badge ${ach.unlocked ? 'unlocked' : 'locked'}">
+                                <div class="icon">${ach.icon}</div>
+                                <div class="name">${ach.name}</div>
+                                <div class="description">${ach.desc}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('results').innerHTML += achievementsHtml;
+            
+            // Mini-Lektion basierend auf primärem Archetyp hinzufügen
+            const resultsText = document.getElementById('results').textContent.toLowerCase();
+            let lessonKey = 'visionary';
+            if (resultsText.includes('architect')) lessonKey = 'architect';
+            else if (resultsText.includes('connector')) lessonKey = 'connector';
+            else if (resultsText.includes('driver')) lessonKey = 'driver';
+            else if (resultsText.includes('director')) lessonKey = 'director';
+            else if (resultsText.includes('developer') || resultsText.includes('coach')) lessonKey = 'developer';
+            
+            const lesson = GAMIFICATION.miniLessons[lessonKey];
+            const miniLessonHtml = `
+                <div class="mini-lesson">
+                    <div class="title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${lesson.title}</div>
+                    <div class="content">${lesson.content}</div>
+                    <a href="${lesson.learnMore}" target="_blank" class="learn-more">Mehr erfahren <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                </div>
+            `;
+            
+            document.getElementById('results').innerHTML += miniLessonHtml;
+        }
+
+        // Original showResults Funktion erweitern
+        const originalShowResults = window.showResults;
+        window.showResults = function() {
+            originalShowResults();
+            celebrateCompletion();
+            addAchievementBadges();
+        };
+    </script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

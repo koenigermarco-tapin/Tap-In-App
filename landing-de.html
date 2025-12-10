@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#0d0d14">
+    <meta name="description" content="TAP-IN: Leadership development that actually works. Stop stressin, start tapin.">
+    <meta property="og:title" content="TAP-IN - Stop Stressin Start Tapin">
+    <meta property="og:description" content="Discover your leadership DNA in 5 minutes Free assessment instant insights">
+    <meta property="og:type" content="website">
+    <title>TAP-IN - Stop Stressin Start Tapin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --brick-red-light: #c0392b;
+            --blue: #4a6fa5;
+            --purple: #6b5b95;
+            --blue-glow: rgba(74, 111, 165, 0.3);
+            --purple-glow: rgba(107, 91, 149, 0.3);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(13, 13, 20, 0.98) 0%, rgba(13, 13, 20, 0.85) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+        }
+        .nav-logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(169, 50, 38, 0.3);
+        }
+        .nav-logo span { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--white); }
+        .nav-cta {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 8px;
+            color: var(--white);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(169, 50, 38, 0.25);
+        }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(169, 50, 38, 0.4); }
+        .lang-switch {
+            padding: 8px 14px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .lang-switch:hover { background: rgba(255, 255, 255, 0.15); }
+        
+        /* Hamburger Menu */
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+            margin: -10px;
+            z-index: 102;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .nav-hamburger.active span:nth-child(2) { opacity: 0; }
+        .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 13, 20, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 99;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu a { color: var(--white); text-decoration: none; font-size: 1.5rem; font-weight: 600; padding: 15px 30px; }
+        .mobile-menu a:hover { color: var(--brick-red-light); }
+        .mobile-menu .nav-cta { margin-top: 20px; font-size: 1.1rem; padding: 14px 28px; }
+        .mobile-menu .lang-switch { position: absolute; top: 25px; right: 70px; font-size: 1rem; padding: 10px 18px; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 30% 20%, var(--purple-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, var(--blue-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(169, 50, 38, 0.1) 0%, transparent 40%);
+        }
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, rgba(107, 91, 149, 0.2) 0%, rgba(74, 111, 165, 0.2) 100%);
+            border: 1px solid rgba(107, 91, 149, 0.3);
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+        }
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--purple);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(0.9); } }
+        
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
+        }
+        .hero h1 .line1 { color: var(--white); }
+        .hero h1 .line2 { 
+            background: linear-gradient(135deg, var(--brick-red-light) 0%, var(--purple) 50%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-size: 1.25rem;
+            color: var(--light-grey);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(169, 50, 38, 0.35);
+        }
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(169, 50, 38, 0.5);
+        }
+        .hero-meta {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        .hero-meta span { color: var(--white); }
+        .restore-link {
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .restore-link a {
+            color: var(--light-grey);
+            text-decoration: none;
+        }
+        .restore-link a:hover { color: var(--purple); }
+        .restore-link span { color: var(--purple); }
+
+        /* Value Section */
+        .value-section {
+            padding: 100px 40px;
+            background: linear-gradient(180deg, var(--black) 0%, var(--dark-grey) 100%);
+        }
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+        .section-header h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        .section-header p {
+            color: var(--light-grey);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+        .value-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .value-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 35px;
+            transition: all 0.3s ease;
+        }
+        .value-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--purple);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .value-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+        .value-icon.red { background: linear-gradient(135deg, rgba(169, 50, 38, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%); }
+        .value-icon.blue { background: linear-gradient(135deg, rgba(74, 111, 165, 0.2) 0%, rgba(74, 111, 165, 0.3) 100%); }
+        .value-icon.purple { background: linear-gradient(135deg, rgba(107, 91, 149, 0.2) 0%, rgba(107, 91, 149, 0.3) 100%); }
+        .value-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .value-card p {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* How It Works */
+        .how-section {
+            padding: 100px 40px;
+            background: var(--dark-grey);
+        }
+        .steps-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .step {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+        .step-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .step-content p {
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .step-time {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--mid-grey);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            font-weight: 500;
+        }
+
+        /* Social Proof */
+        .proof-section {
+            padding: 80px 40px;
+            background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%);
+        }
+        .proof-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .proof-stat h3 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-grey) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .proof-stat p {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 40px;
+            background: var(--black);
+        }
+        .cta-card {
+            max-width: 700px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, var(--dark-grey) 0%, var(--mid-grey) 100%);
+            border-radius: 24px;
+            border: 1px solid var(--mid-grey);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brick-red), var(--purple), var(--blue));
+        }
+        .cta-card h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        .cta-card p {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .cta-primary {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(169, 50, 38, 0.3);
+        }
+        .cta-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 35px rgba(169, 50, 38, 0.45); }
+        .cta-secondary {
+            padding: 14px 28px;
+            background: transparent;
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .cta-secondary:hover { border-color: var(--purple); background: rgba(107, 91, 149, 0.1); }
+
+        /* Footer */
+        .footer {
+            padding: 40px;
+            text-align: center;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--mid-grey);
+        }
+        .footer a { color: var(--purple); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .nav-hamburger { display: flex; }
+            .mobile-menu { display: flex; }
+            .hero { padding: 100px 20px 60px; }
+            .hero-sub { font-size: 1.1rem; }
+            .value-section, .how-section, .proof-section, .cta-section { padding: 60px 20px; }
+            .proof-stats { grid-template-columns: 1fr; gap: 30px; }
+            .step { flex-direction: column; gap: 15px; }
+            .cta-buttons { flex-direction: column; }
+        }
+        
+        @media (max-width: 480px) {
+            .nav { padding: 12px 16px; }
+            .nav-logo-icon { width: 36px; height: 36px; font-size: 1rem; }
+            .nav-logo span { font-size: 1.1rem; }
+            .hero h1 { font-size: 2rem; letter-spacing: -1px; }
+            .hero-sub { font-size: 1rem; }
+            .mobile-menu a { font-size: 1.3rem; }
+            .cta-card { padding: 40px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">T</div>
+            <span>TAP-IN</span>
+        </a>
+        <div class="nav-links">
+            <a href="#how">So funktioniert es</a>
+            <a href="learning-hub-de.html">Team-Tools</a>
+            <a href="index.html" class="lang-switch">EN</a>
+            <a href="deep-dive-assessment-de.html" class="nav-cta">Tap-in</a>
+        </div>
+        <div class="nav-hamburger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="lang-switch">EN</a>
+        <a href="#how" onclick="toggleMobileMenu()">So funktioniert es</a>
+        <a href="learning-hub-de.html">Team-Tools</a>
+        <a href="https://www.skool.com/tap-in" target="_blank">Community</a>
+        <a href="deep-dive-assessment-de.html" class="nav-cta">Tap-in</a>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <div class="hero-badge-dot"></div>
+                Leadership Development Reimagined
+            </div>
+            <h1>
+                <span class="line1">Stop Stressin</span><br>
+                <span class="line2">Start Tapin</span>
+            </h1>
+            <p class="hero-sub">Entdecke deine Leadership-DNA in 5 Minuten Erhalte ein teilbares Profil umsetzbare Erkenntnisse und Tools die mit vollen Terminkalendern funktionieren</p>
+            <a href="deep-dive-assessment-de.html" class="hero-cta">Tap-in</a>
+            <p class="hero-meta">Free forever · <span>Keine Anmeldung nötig</span> · Results in 5 min</p>
+            <p class="restore-link">
+                <a href="restore-progress-de.html">Have a backup code? <span>Fortschritt wiederherstellen</span></a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Value Props -->
+    <section class="value-section">
+        <div class="section-header">
+            <h2>Für Führungskräfte die zu beschäftigt für Kurse sind</h2>
+            <p>Hör auf über Leadership zu lesen Beginne es zu praktizieren in 2-Minuten-Dosen die in deinen Kalender passen</p>
+        </div>
+        <div class="value-grid">
+            <div class="value-card">
+                <div class="value-icon red">&#127919;</div>
+                <h3>Teilbare Leadership-Karte</h3>
+                <p>Erhalte ein detailliertes Profil mit deinem Stil deinen Stärken und einer Wie man mit mir arbeitet Anleitung Teile es mit deinem Team oder poste es auf LinkedIn</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon blue">&#9889;</div>
+                <h3>Tägliche Leadership-Moves</h3>
+                <p>Eine personalisierte Aktion jeden Tag Dauert 2 Minuten Erzeugt echte Veränderung Keine Willenskraft nötig einfach erscheinen</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon purple">&#128269;</div>
+                <h3>Verstehe jeden Kollegen</h3>
+                <p>Schwierigkeiten mit jemandem Unser Team Insight Tool gibt dir deren Archetyp und spezifische Taktiken in 2 Minuten</p>
+            </div>
+            <div class="value-card">
+                <div class="value-icon blue">&#128200;</div>
+                <h3>Verfolge dein Wachstum</h3>
+                <p>Wöchentliche 30-Sekunden Pulse-Checks Sieh deine Energie Klarheit und Impact-Trends im Zeitverlauf Erkenne Burnout bevor er zuschlägt</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-section" id="how">
+        <div class="section-header">
+            <h2>5 Minuten bis zu deinem ersten Aha</h2>
+            <p>Keine langen Kurse Keine komplexen Frameworks Nur sofortiger Mehrwert</p>
+        </div>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Mach das Leadership Assessment</h3>
+                    <p>Beantworte 15 Fragen darüber wie du arbeitest führst und Herausforderungen meisterst Keine richtigen oder falschen Antworten</p>
+                    <span class="step-time">~5 minutes</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Hol dir deine Leadership-DNA-Karte</h3>
+                    <p>Erhalte sofort ein detailliertes teilbares Profil mit deinem Leadership-Typ Arbeitsstil Stärken blinden Flecken und Kommunikationspräferenzen</p>
+                    <span class="step-time">Sofort</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Hol dir deinen ersten Move</h3>
+                    <p>Eine personalisierte Aktion die du HEUTE umsetzen kannst basierend auf deinem Profil Kleine Aktion sofortige Wirkung</p>
+                    <span class="step-time">2 minutes</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Wähle deinen Weg</h3>
+                    <p>Fokus auf persönliches Wachstum The Gym oder Team-Tools The Hub Oder beides Keine Überforderung du wählst was jetzt wichtig ist</p>
+                    <span class="step-time">Dein Tempo</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Social Proof -->
+    <section class="proof-section">
+        <div class="proof-stats">
+            <div class="proof-stat">
+                <h3>5min</h3>
+                <p>Zeit bis zur ersten Erkenntnis</p>
+            </div>
+            <div class="proof-stat">
+                <h3>20+</h3>
+                <p>Gürtel-Progressionsstufen</p>
+            </div>
+            <div class="proof-stat">
+                <h3>100%</h3>
+                <p>Kostenlos nutzbar</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <div class="cta-card">
+            <h2>Bereit besser zu führen</h2>
+            <p>Schließe dich Führungskräften an die entdeckt haben dass Selbsterkenntnis die Grundlage von allem ist</p>
+            <div class="cta-buttons">
+                <a href="deep-dive-assessment-de.html" class="cta-primary">Tap-in</a>
+                <a href="team-insight-de.html" class="cta-secondary">Team Insight Tool testen</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 TAP-IN Leadership development that works <a href="https://www.skool.com/tap-in" target="_blank">Community beitreten</a></p>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const hamburger = document.querySelector('.nav-hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const mobileMenu = document.getElementById('mobileMenu');
+                if (mobileMenu.classList.contains('active')) toggleMobileMenu();
+            }
+        });
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

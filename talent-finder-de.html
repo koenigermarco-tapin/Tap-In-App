@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Talent Finder (DE) | Tap-In Leadership Academy</title>
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#4a7c9c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Tap-In">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1d2e 0%, #2c2f3e 100%);
+      min-height: 100vh;
+      color: white;
+    }
+    
+    .top-nav {
+      background: rgba(0,0,0,0.3);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(10px);
+    }
+    
+    .top-nav a {
+      color: white;
+      text-decoration: none;
+      margin: 0 1rem;
+      transition: color 0.3s;
+    }
+    
+    .top-nav a:hover {
+      color: #4a7c9c;
+    }
+    
+    .talent-hero {
+      text-align: center;
+      padding: 4rem 2rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .talent-hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #4a7c9c 0%, #6fa8d8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .talent-types {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    .type-card {
+      background: rgba(255,255,255,0.05);
+      padding: 2rem;
+      border-radius: 16px;
+      border: 2px solid transparent;
+      transition: all 0.3s;
+    }
+    
+    .type-card:hover {
+      border-color: #4a7c9c;
+      transform: translateY(-4px);
+      box-shadow: 0 8px 24px rgba(74,124,156,0.3);
+    }
+    
+    .type-card.sprinter { border-left: 4px solid #ff6b6b; }
+    .type-card.jogger { border-left: 4px solid #51cf66; }
+    .type-card.ultrarunner { border-left: 4px solid #4a7c9c; }
+    
+    .type-card h2 { margin-top: 0; font-size: 1.5rem; margin-bottom: 1rem; }
+    .type-card p { color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 0.5rem; }
+    
+    .start-btn {
+      display: inline-block;
+      padding: 1rem 2rem;
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, #4a7c9c 0%, #6fa8d8 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(74,124,156,0.4);
+    }
+    
+    .question-card {
+      background: rgba(255,255,255,0.05);
+      padding: 2rem;
+      border-radius: 16px;
+      margin: 2rem auto;
+      max-width: 800px;
+    }
+    
+    .option-button {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(74,124,156,0.3);
+      border-radius: 12px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-align: left;
+      font-size: 1rem;
+    }
+    
+    .option-button:hover {
+      background: rgba(74,124,156,0.2);
+      border-color: #4a7c9c;
+      transform: translateX(4px);
+    }
+    
+    .option-button.selected {
+      background: linear-gradient(135deg, #4a7c9c 0%, #6fa8d8 100%);
+      border-color: #4a7c9c;
+      font-weight: bold;
+    }
+    
+    .bar-container {
+      margin: 1.5rem 0;
+    }
+    
+    .bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+    }
+    
+    .bar {
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .bar-fill {
+      height: 100%;
+      border-radius: 20px;
+      transition: width 1s ease-out;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 1rem;
+      font-weight: bold;
+      font-size: 1.125rem;
+    }
+    
+    .bar-fill.sprinter { background: linear-gradient(90deg, #ff6b6b 0%, #ff8787 100%); }
+    .bar-fill.jogger { background: linear-gradient(90deg, #51cf66 0%, #69db7c 100%); }
+    .bar-fill.ultrarunner { background: linear-gradient(90deg, #4a7c9c 0%, #6fa8d8 100%); }
+    
+    .result-chart {
+      background: rgba(255,255,255,0.05);
+      padding: 2rem;
+      border-radius: 16px;
+      margin: 2rem 0;
+    }
+    
+    .progress-container {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+    
+    .progress-bar-outer {
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    
+    .progress-bar-inner {
+      height: 100%;
+      background: linear-gradient(90deg, #4a7c9c 0%, #6fa8d8 100%);
+      transition: width 0.3s;
+      width: 0%;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+    
+    .btn-secondary {
+      padding: 1rem 2rem;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(74,124,156,0.3);
+      border-radius: 12px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.2);
+      border-color: #4a7c9c;
+    }
+    
+    @media (max-width: 768px) {
+      .talent-hero h1 { font-size: 2rem; }
+      .talent-types { grid-template-columns: 1fr; }
+      .top-nav { flex-direction: column; gap: 0.5rem; }
+    }
+  
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+  <nav class="top-nav">
+    <div>
+      <a href="index-de.html"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(reg => console.log('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Service Worker registered'))
+          .catch(err => console.log('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> SW registration failed:', err));
+      });
+    }
+  </script>
+  
+  <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.js"></script>
+
+    <script src="js/gamification.js" defer></script>
+  <script src="js/talent-finder.js" defer></script>
+  
+  <!-- Wisdom Tracker & Hub Unlock Systems -->
+  <script src="js/wisdom-tracker.js" defer></script>
+  <script src="js/hub-unlock-system.js" defer></script>
+  <script src="js/progress-sync-init.js" defer></script>
+  
+  <!-- Initialize Systems -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Wisdom Tracker
+      if (typeof WisdomTracker !== 'undefined') {
+        WisdomTracker.init();
+        console.log('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Wisdom Tracker initialized');
+      }
+      
+      // Initialize Hub Unlock System  
+      if (typeof HubUnlockSystem !== 'undefined') {
+        HubUnlockSystem.init();
+        console.log('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Hub Unlock System initialized');
+      }
+    });
+  </script>
+<<<<<<< HEAD
+
+    <!-- TAP-IN Utilities -->
+    <script src="js/shared-utilities.js"></script>
+    <script src="js/global-error-handler.js"></script>
+    <script src="js/storage-health.js"></script>
+=======
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.js"></script>
+<script src="js/storage-health.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+>>>>>>> 8645563e081d1b791600e2807e3bdff7d528f55e
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

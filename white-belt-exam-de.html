@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>White Belt Exam - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #d4a853;
+            --blue: #3b82f6;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+            padding: 30px 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .back-link {
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .progress-text {
+            color: var(--gold);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            height: 4px;
+            background: var(--mid-grey);
+            border-radius: 2px;
+            margin-bottom: 40px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--blue), var(--green));
+            border-radius: 2px;
+            transition: width 0.3s;
+        }
+        
+        /* Intro Screen */
+        .intro-screen {
+            text-align: center;
+            padding: 40px 0;
+        }
+        .intro-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 25px;
+            color: var(--gold);
+        }
+        .intro-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+        .intro-text {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .intro-rules {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .intro-rules h4 {
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+        }
+        .intro-rules ul {
+            list-style: none;
+        }
+        .intro-rules li {
+            padding: 8px 0;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .intro-rules li svg {
+            width: 16px;
+            height: 16px;
+            color: var(--green);
+            flex-shrink: 0;
+        }
+        
+        /* Question Screen */
+        .question-screen { display: none; }
+        
+        .question-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--blue);
+            margin-bottom: 15px;
+        }
+        
+        .scenario-box {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .scenario-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        .scenario-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .option {
+            background: var(--dark-grey);
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            padding: 16px 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .option:hover { border-color: var(--blue); }
+        .option.selected { 
+            border-color: var(--blue); 
+            background: rgba(59, 130, 246, 0.1); 
+        }
+        
+        /* Navigation */
+        .nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .btn {
+            background: var(--blue);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn.secondary {
+            background: none;
+            border: 1px solid var(--mid-grey);
+            color: var(--light-grey);
+        }
+        .btn.secondary:hover {
+            border-color: var(--light-grey);
+            color: var(--white);
+        }
+        .btn.green { background: var(--green); }
+        
+        /* Results Screen */
+        .results-screen {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+        .result-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 25px;
+        }
+        .result-icon.pass { color: var(--green); }
+        .result-icon.fail { color: var(--red); }
+        
+        .result-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .result-score {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        .result-message {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .breakdown {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        .breakdown-title {
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--mid-grey);
+            font-size: 0.85rem;
+        }
+        .breakdown-item:last-child { border-bottom: none; }
+        
+        .hi { width: 20px; height: 20px; }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+
+    <div class="container">
+        <header class="header">
+            <a href="learning-hub.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück zum Hub</a>
+            <span class="progress-text" id="progressText">0/5</span>
+        </header>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        
+        <!-- Intro Screen -->
+        <div class="intro-screen" id="introScreen">
+            <svg class="intro-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+            <h1 class="intro-title">White Belt Exam</h1>
+            <p class="intro-text">You've completed all 4 stripes. Now prove your mastery through 5 scenario-based questions.</p>
+            
+            <div class="intro-rules">
+                <h4>Exam Rules</h4>
+                <ul>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        5 scenario-based questions
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        70% (4/5) required to pass
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        No time limit - take your time
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Pass to unlock Blue Belt ceremony
+                    </li>
+                </ul>
+            </div>
+            
+            <button class="btn green" onclick="startExam()">Begin Exam</button>
+        </div>
+        
+        <!-- Question Screen -->
+        <div class="question-screen" id="questionScreen">
+            <div class="question-label" id="questionLabel">Question 1 of 5</div>
+            
+            <div class="scenario-box">
+                <div class="scenario-label">Scenario</div>
+                <div class="scenario-text" id="scenarioText"></div>
+            </div>
+            
+            <div class="question-text" id="questionText"></div>
+            
+            <div class="options" id="optionsContainer"></div>
+            
+            <div class="nav-row">
+                <button class="btn secondary" id="prevBtn" onclick="prevQuestion()" style="visibility: hidden"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Previous</button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            </div>
+        </div>
+        
+        <!-- Results Screen -->
+        <div class="results-screen" id="resultsScreen">
+            <svg class="result-icon" id="resultIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"></svg>
+            <h2 class="result-title" id="resultTitle"></h2>
+            <div class="result-score" id="resultScore"></div>
+            <p class="result-message" id="resultMessage"></p>
+            
+            <div class="breakdown" id="scoreBreakdown"></div>
+            
+            <button class="btn green" id="resultBtn" onclick="handleResult()">Weiter</button>
+        </div>
+    </div>
+    
+    <script>
+        const questions = [
+            {
+                scenario: "Sarah has been late to 3 meetings this week. The team is frustrated, and you've been asked to address it. You feel irritated yourself.",
+                question: "Based on your White Belt training, what's the FIRST thing you should do?",
+                options: [
+                    "Send a group email reminding everyone of meeting etiquette",
+                    "Wait until she's late again, then confront her publicly",
+                    "Talk to her privately, starting with curiosity about what's going on",
+                    "Tell your manager to handle it"
+                ],
+                correct: 2
+            },
+            {
+                scenario: "You're about to share an idea in a brainstorm meeting. Your chest tightens. You notice your inner voice saying 'They'll think this is stupid.'",
+                question: "What's happening according to Stripe 2's vulnerability training?",
+                options: [
+                    "A clear sign you shouldn't share - trust your gut",
+                    "Your vulnerability signal - name it and share anyway",
+                    "Performance anxiety that means you need more prep",
+                    "Normal nervousness - just ignore it and speak"
+                ],
+                correct: 1
+            },
+            {
+                scenario: "You receive critical feedback from a peer. Your first instinct is to defend yourself and explain why they're wrong.",
+                question: "What does your Stripe 3 self-awareness training tell you?",
+                options: [
+                    "Trust your instincts - if you feel defensive, the feedback is unfair",
+                    "This is your stress response (Fight mode) - pause before reacting",
+                    "Feedback from peers isn't as important as feedback from managers",
+                    "Give them feedback right back so it's balanced"
+                ],
+                correct: 1
+            },
+            {
+                scenario: "A team member broke your trust six months ago. They've apologized but you still feel guarded. They're asking to collaborate on an important project.",
+                question: "Based on Stripe 4's trust repair principles, what's the healthiest approach?",
+                options: [
+                    "Refuse - once trust is broken, it can't be rebuilt",
+                    "Accept fully and pretend nothing happened",
+                    "Start with small trust tests before committing to big collaboration",
+                    "Only work with them if your manager forces you to"
+                ],
+                correct: 2
+            },
+            {
+                scenario: "You've been avoiding a difficult conversation with someone for weeks. Every time you think about it, you feel anxious and find reasons to postpone.",
+                question: "What's the White Belt principle that applies here?",
+                options: [
+                    "Avoiding conflict is emotionally intelligent - wait until you feel ready",
+                    "The conversation you're avoiding is usually the one you need most",
+                    "If it's been weeks, it's probably not that important anymore",
+                    "Ask someone else to have the conversation for you"
+                ],
+                correct: 1
+            }
+        ];
+        
+        let currentQuestion = 0;
+        let answers = [];
+        let examPassed = false;
+        
+        function startExam() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('questionScreen').style.display = 'block';
+            renderQuestion();
+        }
+        
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            
+            // Update progress
+            document.getElementById('progressText').textContent = `${currentQuestion + 1}/5`;
+            document.getElementById('progressFill').style.width = `${((currentQuestion + 1) / 5) * 100}%`;
+            document.getElementById('questionLabel').textContent = `Question ${currentQuestion + 1} of 5`;
+            
+            // Update content
+            document.getElementById('scenarioText').textContent = q.scenario;
+            document.getElementById('questionText').textContent = q.question;
+            
+            // Render options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = q.options.map((opt, i) => `
+                <div class="option ${answers[currentQuestion] === i ? 'selected' : ''}" onclick="selectOption(${i})">
+                    ${opt}
+                </div>
+            `).join('');
+            
+            // Update buttons
+            document.getElementById('prevBtn').style.visibility = currentQuestion > 0 ? 'visible' : 'hidden';
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? 'Submit Exam' : 'Next <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            document.getElementById('nextBtn').disabled = answers[currentQuestion] === undefined;
+        }
+        
+        function selectOption(index) {
+            answers[currentQuestion] = index;
+            
+            document.querySelectorAll('.option').forEach((opt, i) => {
+                opt.classList.toggle('selected', i === index);
+            });
+            
+            document.getElementById('nextBtn').disabled = false;
+        }
+        
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                submitExam();
+            }
+        }
+        
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+        
+        function submitExam() {
+            // Calculate score
+            let correct = 0;
+            questions.forEach((q, i) => {
+                if (answers[i] === q.correct) correct++;
+            });
+            
+            const percentage = Math.round((correct / questions.length) * 100);
+            examPassed = correct >= 4; // 70% = 4 out of 5
+            
+            // Show results
+            document.getElementById('questionScreen').style.display = 'none';
+            document.getElementById('resultsScreen').style.display = 'block';
+            
+            const resultIcon = document.getElementById('resultIcon');
+            if (examPassed) {
+                resultIcon.classList.add('pass');
+                resultIcon.innerHTML = '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
+                document.getElementById('resultTitle').textContent = 'Exam Passed!';
+                document.getElementById('resultMessage').textContent = 
+                    'You have demonstrated mastery of White Belt principles. You are ready for your Blue Belt ceremony.';
+                document.getElementById('resultBtn').textContent = 'Proceed to Ceremony <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+                
+                // Mark exam as passed
+                localStorage.setItem('tap_in_white_belt_exam', 'passed');
+            } else {
+                resultIcon.classList.add('fail');
+                resultIcon.innerHTML = '<circle cx="12" cy="12" r="10"/><path d="M15 9l-6 6M9 9l6 6"/>';
+                document.getElementById('resultTitle').textContent = 'Not Yet';
+                document.getElementById('resultMessage').textContent = 
+                    'You need 4/5 (70%) to pass. Review the stripes and try again. This is part of the journey.';
+                document.getElementById('resultBtn').textContent = 'Return to Training';
+            }
+            
+            document.getElementById('resultScore').textContent = `${correct}/5`;
+            
+            // Show breakdown
+            let breakdownHTML = '<div class="breakdown-title">Question Breakdown</div>';
+            questions.forEach((q, i) => {
+                const isCorrect = answers[i] === q.correct;
+                breakdownHTML += `
+                    <div class="breakdown-item">
+                        <span>Question ${i + 1}</span>
+                        <span style="color: ${isCorrect ? 'var(--green)' : 'var(--red)'}">
+                            ${isCorrect ? 'Correct' : 'Incorrect'}
+                        </span>
+                    </div>
+                `;
+            });
+            document.getElementById('scoreBreakdown').innerHTML = breakdownHTML;
+        }
+        
+        function handleResult() {
+            if (examPassed) {
+                window.location.href = 'blue-belt-ceremony.html';
+            } else {
+                window.location.href = 'gym-dashboard.html';
+            }
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

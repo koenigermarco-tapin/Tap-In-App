@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Führungsstil-Assessment | TAP-IN">
+    <meta name="theme-color" content="#0d0d14">
+    <title>Führungsstil-Assessment - TAP-IN</title>
+    <style>
+        :root { --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff; --green: #10b981; --green-glow: rgba(16,185,129,0.3); --gold: #fbbf24; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%); border-bottom: 1px solid var(--mid-grey); margin-bottom: 30px; }
+        .header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 15px; background: linear-gradient(135deg, var(--gold) 0%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: var(--light-grey); font-size: 1.1rem; max-width: 500px; margin: 0 auto 25px; }
+        .style-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .style-preview { background: var(--mid-grey); padding: 15px; border-radius: 12px; text-align: center; }
+        .style-preview .icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .style-preview .name { font-weight: 600; font-size: 0.9rem; }
+        .start-btn { background: linear-gradient(135deg, var(--green) 0%, #059669 100%); color: white; border: none; padding: 18px 50px; font-size: 1.2rem; font-weight: 600; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 20px var(--green-glow); }
+        .start-btn:hover { transform: translateY(-2px); }
+        .progress-container { position: sticky; top: 0; background: var(--dark-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--mid-grey); z-index: 100; display: none; }
+        .progress-container.show { display: block; }
+        .progress-top { display: flex; justify-content: space-between; margin-bottom: 10px; }
+        .progress-label { font-size: 0.9rem; color: var(--light-grey); }
+        .progress-xp { color: var(--gold); font-weight: 600; }
+        .progress-bar { height: 8px; background: var(--mid-grey); border-radius: 10px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--gold), var(--purple)); border-radius: 10px; transition: width 0.5s; width: 0%; }
+        .question-card { background: var(--dark-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; border: 1px solid var(--mid-grey); display: none; animation: fadeIn 0.5s; }
+        .question-card.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .question-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--mid-grey); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; color: var(--light-grey); margin-bottom: 20px; }
+        .question-text { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600; margin-bottom: 30px; line-height: 1.4; }
+        .scenario-box { background: var(--mid-grey); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--gold); }
+        .scenario-box .label { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 15px; }
+        .option:hover { border-color: var(--green); }
+        .option.selected { border-color: var(--green); background: rgba(16,185,129,0.15); }
+        .option .letter { width: 36px; height: 36px; background: var(--black); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--green); flex-shrink: 0; }
+        .option.selected .letter { background: var(--green); color: var(--black); }
+        .insight-card { background: linear-gradient(135deg, rgba(16,185,129,0.1), rgba(139,92,246,0.1)); border: 1px solid var(--mid-grey); border-left: 4px solid var(--green); border-radius: 12px; padding: 25px; margin-top: 25px; display: none; }
+        .insight-card.show { display: block; }
+        .insight-card .title { font-weight: 600; color: var(--green); margin-bottom: 10px; }
+        .insight-card .content { color: var(--light-grey); line-height: 1.7; margin-bottom: 15px; }
+        .insight-card .quote { font-style: italic; padding: 15px; background: var(--mid-grey); border-radius: 8px; border-left: 3px solid var(--gold); }
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--green), #059669); color: white; box-shadow: 0 4px 15px var(--green-glow); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .toast { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, var(--green), #059669); color: white; padding: 15px 25px; border-radius: 12px; z-index: 1002; display: none; }
+        .toast.show { display: block; }
+        .results-section { display: none; }
+        .results-section.active { display: block; }
+        .result-hero { text-align: center; padding: 50px 30px; border-radius: 20px; margin-bottom: 30px; }
+        .result-hero.directive { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .result-hero.coaching { background: linear-gradient(135deg, #10b981, #059669); }
+        .result-hero.supportive { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .result-hero.delegating { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .result-hero .icon { font-size: 4rem; margin-bottom: 20px; }
+        .result-hero h2 { font-size: 2.5rem; margin-bottom: 15px; }
+        .result-hero .description { font-size: 1.1rem; opacity: 0.95; max-width: 500px; margin: 0 auto; }
+        .style-scores { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin: 30px 0; }
+        .style-score { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; text-align: center; }
+        .style-score .value { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        .style-score .name { font-size: 0.85rem; color: var(--light-grey); }
+        .result-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .result-card h3 { margin-bottom: 15px; }
+        .result-card ul { list-style: none; }
+        .result-card li { padding: 10px 0; border-bottom: 1px solid var(--mid-grey); color: var(--light-grey); }
+        .result-card li:last-child { border-bottom: none; }
+        .cta-section { background: linear-gradient(135deg, var(--green), #059669); border-radius: 20px; padding: 40px; text-align: center; }
+        .cta-section .btn { background: white; color: var(--green); margin-top: 15px; }
+        .lang-switch { position: fixed; top: 20px; right: 20px; display: flex; gap: 5px; background: var(--dark-grey); padding: 5px; border-radius: 8px; border: 1px solid var(--mid-grey); z-index: 100; }
+        .lang-btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--light-grey); }
+        .lang-btn.active { background: var(--green); color: white; }
+        .celebration { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(13,13,20,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .celebration.show { display: flex; }
+        .celebration-content { text-align: center; }
+        .celebration-icon { font-size: 5rem; margin-bottom: 20px; }
+        .celebration-text { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
+        .celebration-sub { color: var(--light-grey); margin-bottom: 30px; }
+        @media (max-width: 600px) { .nav-buttons { flex-direction: column; } .btn { width: 100%; } .style-grid, .style-scores { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="lang-switch"><button class="lang-btn active">EN</button><button class="lang-btn" onclick="switchLang('de')">DE</button></div>
+    <div class="toast" id="toast"><div class="title">+25 XP</div><div class="message">Leadership insight!</div></div>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <h1>Führungsstil-Assessment</h1>
+                <p class="subtitle">Discover your natural leadership approach based on Situational Leadership theory. Great leaders adapt their style to the situation.</p>
+                <div class="style-grid">
+                    <div class="style-preview"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div><div class="name">Directive</div></div>
+                    <div class="style-preview"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div><div class="name">Coaching</div></div>
+                    <div class="style-preview"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg></div><div class="name">Supportive</div></div>
+                    <div class="style-preview"><div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg></div><div class="name">Delegating</div></div>
+                </div>
+                <button class="start-btn" onclick="startAssessment()">Meinen Stil entdecken</button>
+                <p style="margin-top: 20px; color: var(--light-grey); font-size: 0.9rem;">~5 Minuten • 12 Szenarien • Persönliche Ergebnisse</p>
+            </div>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-top"><span class="progress-label" id="progressLabel">Szenario 1 von 12</span><span class="progress-xp" id="progressXP">+0 XP</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="results-section" id="resultsSection"><div id="resultsContent"></div></div>
+    </div>
+    <div class="celebration" id="celebration"><div class="celebration-content"><div class="celebration-icon" id="celebrationIcon"></div><div class="celebration-text" id="celebrationText"></div><div class="celebration-sub" id="celebrationSub"></div><button class="btn btn-primary" onclick="closeCelebration()">Weiter</button></div></div>
+    <script>
+        const questions = [
+            { scenario: 'A new team member joins with limited experience in their role.', question: 'How do you approach their first project?', options: [{ value: 'directive', letter: 'A', text: 'Give clear step-by-step instructions and check progress frequently' }, { value: 'coaching', letter: 'B', text: 'Explain the why, demonstrate, then guide them through it' }, { value: 'supportive', letter: 'C', text: 'Ask what support they need and be available for questions' }, { value: 'delegating', letter: 'D', text: 'Assign the project and let them figure out their approach' }], insight: { title: 'Matching Style to Readiness', content: 'Situational Leadership (Hersey & Blanchard) shows that new/inexperienced team members need more direction. As competence grows, shift to coaching, then supporting, then delegating.', quote: '"The best leaders are those most interested in surrounding themselves with assistants smarter than they are." - John C. Maxwell' }},
+            { scenario: 'Your top performer asks to lead a high-stakes project they\'ve never done before.', question: 'Your response?', options: [{ value: 'directive', letter: 'A', text: 'Give them a detailed playbook and supervise closely' }, { value: 'coaching', letter: 'B', text: 'Discuss strategy together, then check in regularly' }, { value: 'supportive', letter: 'C', text: 'Express confidence, offer resources, let them lead' }, { value: 'delegating', letter: 'D', text: 'Hand it over completely - they\'ve earned trust' }], insight: { title: 'High Will, Developing Skill', content: 'When someone is motivated but learning, Coaching style works best. Provide direction AND support. Too much delegation risks failure; too much direction demotivates.', quote: '"Before you are a leader, success is all about growing yourself. When you become a leader, success is all about growing others." - Jack Welch' }},
+            { scenario: 'The team is behind on a critical deadline with unclear path forward.', question: 'What\'s your move?', options: [{ value: 'directive', letter: 'A', text: 'Take charge, assign specific tasks, set clear milestones' }, { value: 'coaching', letter: 'B', text: 'Facilitate a problem-solving session, then guide execution' }, { value: 'supportive', letter: 'C', text: 'Ask the team what obstacles they face and how you can help' }, { value: 'delegating', letter: 'D', text: 'Trust the team to figure it out - they know the work best' }], insight: { title: 'Crisis Leadership', content: 'In crisis, Directive style often needed short-term. But sustainable performance requires shifting back. Leaders who stay directive create dependency.', quote: '"In a crisis, be aware von the danger but recognize the opportunity." - John F. Kennedy' }},
+            { scenario: 'A skilled team member seems disengaged and their work quality is slipping.', question: 'How do you address it?', options: [{ value: 'directive', letter: 'A', text: 'Set clear expectations and monitor their output closely' }, { value: 'coaching', letter: 'B', text: 'Have a development conversation about their goals and challenges' }, { value: 'supportive', letter: 'C', text: 'Check in on their wellbeing and ask how you can support them' }, { value: 'delegating', letter: 'D', text: 'Give them space - they\'ll work through it' }], insight: { title: 'Regression Requires Response', content: 'When competent people disengage, the cause is usually motivation, not ability. Supportive or Coaching style helps uncover root causes. Directive can worsen it.', quote: '"People don\'t care how much you know until they know how much you care." - John Maxwell' }},
+            { scenario: 'You need to implement a major process change the team didn\'t ask for.', question: 'Your approach?', options: [{ value: 'directive', letter: 'A', text: 'Announce the change, explain expectations, enforce compliance' }, { value: 'coaching', letter: 'B', text: 'Explain the reasoning, involve team in implementation planning' }, { value: 'supportive', letter: 'C', text: 'Share the mandate, ask for their input on how to make it work' }, { value: 'delegating', letter: 'D', text: 'Share the goal, let the team design their own approach' }], insight: { title: 'Change Leadership', content: 'Kotter\'s research: 70% von change initiatives fail. Success requires both urgency (directive) AND buy-in (coaching/supportive). Pure mandate creates resistance.', quote: '"Change is hard because people overestimate the value von what they have and underestimate the value von what they may gain." - James Belasco' }},
+            { scenario: 'Two team members have a conflict affecting the whole team.', question: 'How do you handle it?', options: [{ value: 'directive', letter: 'A', text: 'Meet with both, set clear behavioral expectations, monitor' }, { value: 'coaching', letter: 'B', text: 'Facilitate a structured conversation to find resolution' }, { value: 'supportive', letter: 'C', text: 'Meet individually to understand perspectives, encourage dialogue' }, { value: 'delegating', letter: 'D', text: 'Let them work it out - adults should handle their own conflicts' }], insight: { title: 'Conflict Resolution Styles', content: 'Thomas-Kilmann model: Collaborating (coaching/supportive) creates lasting solutions. Avoiding (delegating) lets conflicts fester. Forcing (directive) creates winners and losers.', quote: '"The quality von our lives depends not on whether or not we have conflicts, but on how we respond to them." - Thomas Crum' }},
+            { scenario: 'You\'re onboarding a senior hire with more expertise than you in their domain.', question: 'Your leadership approach?', options: [{ value: 'directive', letter: 'A', text: 'Establish clear goals and reporting structure from day one' }, { value: 'coaching', letter: 'B', text: 'Discuss mutual expectations and how you\'ll work together' }, { value: 'supportive', letter: 'C', text: 'Ask what they need to be successful and remove obstacles' }, { value: 'delegating', letter: 'D', text: 'Give them autonomy - that\'s why you hired an expert' }], insight: { title: 'Leading Experts', content: 'High-competence people need autonomy (Delegating) but also connection to purpose (Supportive). Micromanaging experts drives them away.', quote: '"Hire people smarter than you. Then get out von their way." - Howard Schultz' }},
+            { scenario: 'The team needs to learn a completely new technology/process.', question: 'How do you lead the learning?', options: [{ value: 'directive', letter: 'A', text: 'Assign training, set deadlines, test for competency' }, { value: 'coaching', letter: 'B', text: 'Learn together, discuss applications, practice as a team' }, { value: 'supportive', letter: 'C', text: 'Provide resources and time, let people learn their own way' }, { value: 'delegating', letter: 'D', text: 'Identify champions, let them teach others' }], insight: { title: 'Learning Leadership', content: 'Adults learn best through experience (70%), relationships (20%), and formal training (10%). Coaching style enables the experiential majority.', quote: '"Tell me and I forget, teach me and I may remember, involve me and I learn." - Benjamin Franklin' }},
+            { scenario: 'A usually reliable team member misses an important deadline.', question: 'Your first response?', options: [{ value: 'directive', letter: 'A', text: 'Address it immediately, understand what happened, set new deadline' }, { value: 'coaching', letter: 'B', text: 'Discuss what got in the way and how to prevent it next time' }, { value: 'supportive', letter: 'C', text: 'Check if they\'re okay and ask what support they need' }, { value: 'delegating', letter: 'D', text: 'Trust they had good reason, they\'ll make it up' }], insight: { title: 'Performance Conversations', content: 'Start with curiosity, not judgment. Supportive inquiry often reveals systemic issues. Immediate directive response can damage trust and hide root causes.', quote: '"Feedback is the breakfast von champions." - Ken Blanchard' }},
+            { scenario: 'Your team consistently exceeds expectations with minimal oversight.', question: 'Your ongoing leadership approach?', options: [{ value: 'directive', letter: 'A', text: 'Maintain structure that got them here - don\'t fix what isn\'t broken' }, { value: 'coaching', letter: 'B', text: 'Challenge them with stretch goals and development opportunities' }, { value: 'supportive', letter: 'C', text: 'Celebrate success, ask what would make their work even better' }, { value: 'delegating', letter: 'D', text: 'Step back further, focus your time on other priorities' }], insight: { title: 'Leading High Performers', content: 'High performers need challenge (Coaching) and autonomy (Delegating). Don\'t neglect them for struggling performers. Boredom is their biggest flight risk.', quote: '"The greatest leader is not necessarily one who does the greatest things, but one who gets people to do the greatest things." - Ronald Reagan' }},
+            { scenario: 'You\'re presenting your team\'s work to senior leadership.', question: 'How do you handle attribution?', options: [{ value: 'directive', letter: 'A', text: 'Present as team lead - you\'re accountable for the results' }, { value: 'coaching', letter: 'B', text: 'Present together, highlighting who contributed what' }, { value: 'supportive', letter: 'C', text: 'Have team members present their own work with your support' }, { value: 'delegating', letter: 'D', text: 'Send the team without you - it\'s their work' }], insight: { title: 'Credit & Visibility', content: 'Leaders who share credit build loyalty and develop future leaders. "Give credit, take blame" is a timeless leadership principle.', quote: '"A leader is best when people barely know he exists. When his work is done, they say: we did it ourselves." - Lao Tzu' }},
+            { scenario: 'You need to make a decision that affects the whole team.', question: 'Your decision-making approach?', options: [{ value: 'directive', letter: 'A', text: 'Decide quickly, announce clearly, move forward' }, { value: 'coaching', letter: 'B', text: 'Gather input, explain your reasoning, then decide' }, { value: 'supportive', letter: 'C', text: 'Build consensus, ensure everyone\'s voice is heard' }, { value: 'delegating', letter: 'D', text: 'Let the team decide - they\'re closest to the work' }], insight: { title: 'Decision Rights', content: 'Tannenbaum-Schmidt continuum: Style should match decision stakes and team readiness. High stakes + low readiness = more directive. Low stakes + high readiness = delegate.', quote: '"In any moment von decision, the best thing you can do is the right thing, the next best thing is the wrong thing, and the worst thing you can do is nothing." - Theodore Roosevelt' }}
+        ];
+        let currentQuestion = 0, answers = {}, totalXP = 0;
+        const styles = { directive: 0, coaching: 0, supportive: 0, delegating: 0 };
+
+        function startAssessment() { document.getElementById('introScreen').style.display = 'none'; document.getElementById('progressContainer').classList.add('show'); renderQuestion(); }
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            let html = `<div class="question-card active"><div class="question-badge">Szenario ${currentQuestion + 1} von 12</div><div class="scenario-box"><div class="label">Situation</div><div>${q.scenario}</div></div><div class="question-text">${q.question}</div><div class="options">${q.options.map(o => `<div class="option" onclick="selectOption(this, '${o.value}')"><div class="letter">${o.letter}</div><div>${o.text}</div></div>`).join('')}</div><div class="insight-card" id="insightCard"><div class="title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 0 6 6c0 3.314-2.686 6-6 6a6 6 0 0 1-6-6 6 6 0 0 1 6-6z"/></svg> ${q.insight.title}</div><div class="content">${q.insight.content}</div><div class="quote">${q.insight.quote}</div></div><div class="nav-buttons">${currentQuestion > 0 ? '<button class="btn btn-secondary" onclick="prevQuestion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück</button>' : '<div></div>'}<button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>${currentQuestion === questions.length - 1 ? 'Ergebnisse sehen' : 'Weiter'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`;
+            document.getElementById('questionsContainer').innerHTML = html;
+            updateProgress();
+        }
+        function selectOption(el, value) {
+            document.querySelectorAll('.option').forEach(e => e.classList.remove('selected'));
+            el.classList.add('selected');
+            answers[currentQuestion] = value;
+            styles[value]++;
+            document.getElementById('insightCard').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+            totalXP += 25;
+            document.getElementById('progressXP').textContent = `+${totalXP} XP`;
+            showToast();
+        }
+        function showToast() { const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+        function updateProgress() { document.getElementById('progressFill').style.width = `${(currentQuestion / questions.length) * 100}%`; document.getElementById('progressLabel').textContent = `Szenario ${currentQuestion + 1} von 12`; }
+        function nextQuestion() { if (currentQuestion < questions.length - 1) { currentQuestion++; renderQuestion(); if (currentQuestion === 6) showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', 'Halfway!', 'Your leadership picture is forming!'); } else showResults(); }
+        function prevQuestion() { if (currentQuestion > 0) { styles[answers[currentQuestion]]--; currentQuestion--; renderQuestion(); } }
+        function showCelebration(icon, text, sub) { document.getElementById('celebrationIcon').textContent = icon; document.getElementById('celebrationText').textContent = text; document.getElementById('celebrationSub').textContent = sub; document.getElementById('celebration').classList.add('show'); }
+        function closeCelebration() { document.getElementById('celebration').classList.remove('show'); }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.display = 'none';
+            const total = Object.values(styles).reduce((a, b) => a + b, 0);
+            const pcts = { directive: Math.round((styles.directive / total) * 100), coaching: Math.round((styles.coaching / total) * 100), supportive: Math.round((styles.supportive / total) * 100), delegating: Math.round((styles.delegating / total) * 100) };
+            const sorted = Object.entries(pcts).sort((a, b) => b[1] - a[1]);
+            const primary = sorted[0][0], secondary = sorted[1][0];
+            const styleData = {
+                directive: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', name: 'Directive Leader', class: 'directive', desc: 'You provide clear direction and close supervision. You excel when teams need structure, clarity, and decisive action.', strengths: ['Clear communication von expectations', 'Efficient decision-making', 'Strong in crisis situations', 'Good for developing new team members'], growth: ['Risk von micromanaging experienced people', 'May limit team creativity and ownership', 'Can create dependency on your decisions'] },
+                coaching: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>', name: 'Coaching Leader', class: 'coaching', desc: 'You combine direction with development. You explain the "why," involve others in problem-solving, and grow capabilities.', strengths: ['Develops people while achieving results', 'Builds team capability over time', 'Balances task and relationship focus', 'Creates sustainable high performance'], growth: ['Takes more time than directive style', 'May frustrate highly experienced team members', 'Requires strong communication skills'] },
+                supportive: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M11 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M13 12h2a2 2 0 1 0 0-4h-3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/></svg>', name: 'Supportive Leader', class: 'supportive', desc: 'You focus on relationships and collaboration. You listen, facilitate, and create psychological safety for your team.', strengths: ['High team trust and engagement', 'Excellent at building consensus', 'Creates inclusive environment', 'Strong in ambiguous situations'], growth: ['May avoid necessary difficult conversations', 'Can be perceived as indecisive', 'Risk von prioritizing harmony over results'] },
+                delegating: { icon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></svg>', name: 'Delegating Leader', class: 'delegating', desc: 'You empower through autonomy. You trust your team, remove obstacles, and stay out von the way.', strengths: ['Scales your impact through others', 'Develops future leaders', 'High team ownership and motivation', 'Efficient use von leader time'], growth: ['Risky with inexperienced team members', 'May miss early warning signs', 'Can seem disengaged or absent'] }
+            };
+            const p = styleData[primary];
+            showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>', 'Assessment Complete!', `You earned ${totalXP} XP!`);
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="result-hero ${p.class}"><div class="icon">${p.icon}</div><h2>${p.name}</h2><p class="description">${p.desc}</p></div>
+                <div class="style-scores">
+                    <div class="style-score" style="border-left: 4px solid #ef4444;"><div class="value" style="color: #ef4444;">${pcts.directive}%</div><div class="name">Directive</div></div>
+                    <div class="style-score" style="border-left: 4px solid #10b981;"><div class="value" style="color: #10b981;">${pcts.coaching}%</div><div class="name">Coaching</div></div>
+                    <div class="style-score" style="border-left: 4px solid #3b82f6;"><div class="value" style="color: #3b82f6;">${pcts.supportive}%</div><div class="name">Supportive</div></div>
+                    <div class="style-score" style="border-left: 4px solid #8b5cf6;"><div class="value" style="color: #8b5cf6;">${pcts.delegating}%</div><div class="name">Delegating</div></div>
+                </div>
+                <div class="result-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 10c0-5-3-7-3-7s-3 2-3 7"/><path d="M14 10h6"/><path d="M20 10v4a2 2 0 0 1-2 2h-2"/><path d="M4 10h6"/><path d="M4 10v4a2 2 0 0 0 2 2h2"/></svg> Your Strengths</h3><ul>${p.strengths.map(s => `<li>${s}</li>`).join('')}</ul></div>
+                <div class="result-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Growth Edges</h3><ul>${p.growth.map(g => `<li>${g}</li>`).join('')}</ul></div>
+                <div class="result-card"><h3>🔄 Situational Flexibility</h3><ul><li>Your secondary style is <strong>${styleData[secondary].name}</strong> (${pcts[secondary]}%)</li><li>Great leaders flex between all four styles based on the situation</li><li>Consider when your non-preferred styles might be more effective</li></ul></div>
+                <div class="cta-section"><h3>Develop Your Leadership Range</h3><p>The TAP-IN Belt System includes comprehensive leadership development across all styles.</p><a href="gym-dashboard.html" class="btn">Explore Belt System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`;
+            localStorage.setItem('tapin-leadership-style', JSON.stringify({ primary, secondary, scores: pcts, completedAt: new Date().toISOString(), xp: totalXP }));
+        }
+        function switchLang(lang) { if (lang === 'de') window.location.href = 'leadership-style-assessment-de.html'; }
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Team Activity Feed | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+            --cyan: #06b6d4;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+        }
+        
+        /* Filter Tabs */
+        .filter-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-tab {
+            padding: 8px 16px;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab:hover {
+            border-color: var(--green);
+            color: var(--white);
+        }
+        
+        .filter-tab.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: var(--black);
+            font-weight: 600;
+        }
+        
+        /* Activity Timeline */
+        .activity-timeline {
+            position: relative;
+        }
+        
+        .activity-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--mid-grey);
+        }
+        
+        .day-group {
+            margin-bottom: 32px;
+        }
+        
+        .day-header {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 16px;
+            margin-left: 50px;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            position: relative;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        
+        .activity-icon svg {
+            width: 18px;
+            height: 18px;
+        }
+        
+        .activity-icon.xp { background: var(--green-dim); }
+        .activity-icon.xp svg { color: var(--green); }
+        .activity-icon.belt { background: rgba(251, 191, 36, 0.2); }
+        .activity-icon.belt svg { color: var(--gold); }
+        .activity-icon.assessment { background: rgba(59, 130, 246, 0.2); }
+        .activity-icon.assessment svg { color: var(--blue); }
+        .activity-icon.badge { background: rgba(139, 92, 246, 0.2); }
+        .activity-icon.badge svg { color: var(--purple); }
+        .activity-icon.streak { background: rgba(249, 115, 22, 0.2); }
+        .activity-icon.streak svg { color: var(--orange); }
+        .activity-icon.join { background: rgba(6, 182, 212, 0.2); }
+        .activity-icon.join svg { color: var(--cyan); }
+        
+        .activity-content {
+            flex: 1;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        
+        .activity-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--mid-grey);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
+        
+        .user-name {
+            font-weight: 600;
+        }
+        
+        .activity-time {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+        }
+        
+        .activity-text {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+        }
+        
+        .activity-text strong {
+            color: var(--white);
+        }
+        
+        .activity-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            font-size: 0.85rem;
+        }
+        
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: var(--light-grey);
+        }
+        
+        .meta-item svg {
+            width: 14px;
+            height: 14px;
+        }
+        
+        .meta-item.xp { color: var(--green); }
+        .meta-item.belt { color: var(--gold); }
+        
+        /* Load More */
+        .load-more {
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+        
+        .btn-secondary {
+            background: var(--dark-grey);
+            color: var(--white);
+            border: 1px solid var(--mid-grey);
+        }
+        
+        .btn-secondary:hover {
+            border-color: var(--green);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-grey);
+        }
+        
+        .empty-state svg {
+            width: 60px;
+            height: 60px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            color: var(--white);
+            margin-bottom: 8px;
+        }
+        
+        /* Stats Summary */
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-top: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .stats-summary { grid-template-columns: repeat(2, 1fr); }
+            .page-header { flex-direction: column; gap: 16px; }
+            .activity-timeline::before { left: 19px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="team-aggregation-dashboard.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Activity Feed
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Team Activity</h1>
+                <p class="page-desc">Track your team's progress and achievements in real-time.</p>
+            </div>
+        </div>
+        
+        <!-- Stats Summary -->
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-value" id="activityCount">24</div>
+                <div class="stat-label">Activities Today</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="xpEarned">+1,240</div>
+                <div class="stat-label">XP Earned (Week)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="assessmentsCompleted">8</div>
+                <div class="stat-label">Assessments Done</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeMembers">6</div>
+                <div class="stat-label">Active Members</div>
+            </div>
+        </div>
+        
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterActivity('all')">All Activity</button>
+            <button class="filter-tab" onclick="filterActivity('xp')">XP Gains</button>
+            <button class="filter-tab" onclick="filterActivity('assessment')">Assessments</button>
+            <button class="filter-tab" onclick="filterActivity('belt')">Belt Progress</button>
+            <button class="filter-tab" onclick="filterActivity('badge')">Badges</button>
+            <button class="filter-tab" onclick="filterActivity('streak')">Streaks</button>
+        </div>
+        
+        <!-- Activity Timeline -->
+        <div class="activity-timeline" id="activityTimeline">
+            <!-- Generated by JS -->
+        </div>
+        
+        <div class="load-more">
+            <button class="btn btn-secondary" onclick="loadMore()">Load More Activity</button>
+        </div>
+    </div>
+    
+    <script>
+        // Icon SVGs
+        const icons = {
+            xp: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+            belt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>',
+            assessment: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>',
+            badge: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>',
+            streak: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/><path d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"/></svg>',
+            join: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>'
+        };
+        
+        // Demo activity data
+        const demoActivities = [
+            { id: 1, type: 'xp', user: 'Sarah Johnson', action: 'earned', detail: '50 XP from completing Daily Reflection', xp: 50, time: '10 minutes ago', day: 'today' },
+            { id: 2, type: 'assessment', user: 'Mike Chen', action: 'completed', detail: 'Worker Type Assessment with score 85%', xp: 100, time: '25 minutes ago', day: 'today' },
+            { id: 3, type: 'streak', user: 'Lisa Park', action: 'achieved', detail: '7-day streak! Consistent practice pays off', xp: 75, time: '1 hour ago', day: 'today' },
+            { id: 4, type: 'belt', user: 'Tom Wilson', action: 'advanced', detail: 'White Belt Stripe 2 - Building momentum!', xp: 150, time: '2 hours ago', day: 'today' },
+            { id: 5, type: 'badge', user: 'Emma Davis', action: 'earned', detail: 'First Assessment badge unlocked', xp: 25, time: '3 hours ago', day: 'today' },
+            { id: 6, type: 'xp', user: 'Sarah Johnson', action: 'earned', detail: '30 XP from Conflict Navigator game', xp: 30, time: '4 hours ago', day: 'today' },
+            { id: 7, type: 'join', user: 'Alex Rivera', action: 'joined', detail: 'Joined the team. Welcome aboard!', xp: 0, time: '5 hours ago', day: 'today' },
+            { id: 8, type: 'assessment', user: 'Lisa Park', action: 'completed', detail: 'Leadership Style Assessment', xp: 100, time: 'Yesterday at 4:30 PM', day: 'yesterday' },
+            { id: 9, type: 'xp', user: 'Tom Wilson', action: 'earned', detail: '40 XP from Trust Builder exercise', xp: 40, time: 'Yesterday at 2:15 PM', day: 'yesterday' },
+            { id: 10, type: 'belt', user: 'Mike Chen', action: 'advanced', detail: 'Blue Belt Stripe 1 - Great progress!', xp: 200, time: 'Yesterday at 11:00 AM', day: 'yesterday' },
+            { id: 11, type: 'streak', user: 'Sarah Johnson', action: 'achieved', detail: '14-day streak! Two weeks strong!', xp: 150, time: '2 days ago', day: 'earlier' },
+            { id: 12, type: 'badge', user: 'Emma Davis', action: 'earned', detail: 'Team Player badge - collaborated on 5 exercises', xp: 50, time: '2 days ago', day: 'earlier' },
+            { id: 13, type: 'assessment', user: 'Tom Wilson', action: 'completed', detail: 'Communication Style Assessment', xp: 100, time: '3 days ago', day: 'earlier' }
+        ];
+        
+        let currentFilter = 'all';
+        let loadedCount = 10;
+        
+        function getInitials(name) {
+            return name.split(' ').map(n => n[0]).join('').toUpperCase();
+        }
+        
+        function filterActivity(type) {
+            currentFilter = type;
+            
+            // Update tabs
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+                if (tab.textContent.toLowerCase().includes(type) || (type === 'all' && tab.textContent.includes('All'))) {
+                    tab.classList.add('active');
+                }
+            });
+            
+            renderActivities();
+        }
+        
+        function renderActivities() {
+            const container = document.getElementById('activityTimeline');
+            
+            let filtered = demoActivities;
+            if (currentFilter !== 'all') {
+                filtered = demoActivities.filter(a => a.type === currentFilter);
+            }
+            
+            filtered = filtered.slice(0, loadedCount);
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <h3>No Activity Found</h3>
+                        <p>No ${currentFilter} activity to display yet.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Group by day
+            const groups = { today: [], yesterday: [], earlier: [] };
+            filtered.forEach(a => {
+                if (groups[a.day]) {
+                    groups[a.day].push(a);
+                }
+            });
+            
+            let html = '';
+            
+            if (groups.today.length > 0) {
+                html += `<div class="day-group">
+                    <div class="day-header">Today</div>
+                    ${groups.today.map(renderActivityItem).join('')}
+                </div>`;
+            }
+            
+            if (groups.yesterday.length > 0) {
+                html += `<div class="day-group">
+                    <div class="day-header">Yesterday</div>
+                    ${groups.yesterday.map(renderActivityItem).join('')}
+                </div>`;
+            }
+            
+            if (groups.earlier.length > 0) {
+                html += `<div class="day-group">
+                    <div class="day-header">Earlier This Week</div>
+                    ${groups.earlier.map(renderActivityItem).join('')}
+                </div>`;
+            }
+            
+            container.innerHTML = html;
+        }
+        
+        function renderActivityItem(activity) {
+            return `
+                <div class="activity-item" data-type="${activity.type}">
+                    <div class="activity-icon ${activity.type}">
+                        ${icons[activity.type]}
+                    </div>
+                    <div class="activity-content">
+                        <div class="activity-header">
+                            <div class="activity-user">
+                                <div class="user-avatar">${getInitials(activity.user)}</div>
+                                <span class="user-name">${activity.user}</span>
+                            </div>
+                            <span class="activity-time">${activity.time}</span>
+                        </div>
+                        <div class="activity-text">
+                            <strong>${activity.action.charAt(0).toUpperCase() + activity.action.slice(1)}</strong> ${activity.detail}
+                        </div>
+                        ${activity.xp > 0 ? `
+                            <div class="activity-meta">
+                                <span class="meta-item xp">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                    +${activity.xp} XP
+                                </span>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadMore() {
+            loadedCount += 5;
+            renderActivities();
+        }
+        
+        function updateStats() {
+            const todayCount = demoActivities.filter(a => a.day === 'today').length;
+            const weekXP = demoActivities.reduce((sum, a) => sum + a.xp, 0);
+            const assessments = demoActivities.filter(a => a.type === 'assessment').length;
+            const activeUsers = [...new Set(demoActivities.map(a => a.user))].length;
+            
+            document.getElementById('activityCount').textContent = todayCount;
+            document.getElementById('xpEarned').textContent = '+' + weekXP.toLocaleString();
+            document.getElementById('assessmentsCompleted').textContent = assessments;
+            document.getElementById('activeMembers').textContent = activeUsers;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            updateStats();
+            renderActivities();
+        });
+    </script>
+</body>
+</html>

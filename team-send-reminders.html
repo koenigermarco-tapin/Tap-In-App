@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#10b981">
+    <title>Send Reminders | TAP-IN Business</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --green-dim: rgba(16, 185, 129, 0.2);
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.15) 0%, transparent 100%);
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--mid-grey);
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 24px;
+        }
+        
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        
+        .page-desc {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+        }
+        
+        /* Recipient Selection */
+        .recipient-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid var(--mid-grey);
+            background: transparent;
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--green);
+        }
+        
+        .filter-btn.active {
+            background: var(--green);
+            border-color: var(--green);
+            color: var(--black);
+        }
+        
+        /* Member List */
+        .member-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .member-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .member-checkbox:hover {
+            background: var(--mid-grey);
+        }
+        
+        .member-checkbox input {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--green);
+        }
+        
+        .member-info {
+            flex: 1;
+        }
+        
+        .member-name {
+            font-weight: 600;
+        }
+        
+        .member-email {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .member-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .member-status.not-started { background: var(--red); color: white; }
+        .member-status.inactive { background: var(--orange); color: white; }
+        .member-status.active { background: var(--green); color: var(--black); }
+        
+        /* Email Template */
+        .template-selector {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .template-option {
+            flex: 1;
+            padding: 16px;
+            border-radius: 12px;
+            border: 2px solid var(--mid-grey);
+            background: transparent;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        
+        .template-option:hover {
+            border-color: var(--blue);
+        }
+        
+        .template-option.selected {
+            border-color: var(--green);
+            background: var(--green-dim);
+        }
+        
+        .template-option h4 {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .template-option p {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        /* Email Preview */
+        .email-preview {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            color: #1a1a2e;
+        }
+        
+        .email-header {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 16px;
+        }
+        
+        .email-field {
+            display: flex;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .email-label {
+            color: #6b7280;
+            width: 60px;
+        }
+        
+        .email-value {
+            color: #1a1a2e;
+            font-weight: 500;
+        }
+        
+        .email-body {
+            line-height: 1.8;
+        }
+        
+        .email-body p {
+            margin-bottom: 16px;
+        }
+        
+        .email-cta {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 16px 0;
+        }
+        
+        .email-footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        
+        /* Send Button */
+        .send-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid var(--mid-grey);
+        }
+        
+        .send-count {
+            color: var(--light-grey);
+        }
+        
+        .send-count strong {
+            color: var(--green);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Success Message */
+        .success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 13, 20, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .success-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--green);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+            animation: pulse 0.5s ease;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .success-desc {
+            color: var(--light-grey);
+            margin-bottom: 24px;
+        }
+        
+        .success-btn {
+            padding: 12px 24px;
+            background: var(--mid-grey);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        /* Scheduling */
+        .schedule-options {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+        
+        .schedule-btn {
+            padding: 10px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--mid-grey);
+            background: transparent;
+            color: var(--light-grey);
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .schedule-btn:hover {
+            border-color: var(--green);
+            color: var(--white);
+        }
+        
+        .schedule-btn.active {
+            background: var(--green-dim);
+            border-color: var(--green);
+            color: var(--green);
+        }
+        
+        /* Stats */
+        .reminder-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .stat-value.warning { color: var(--orange); }
+        .stat-value.danger { color: var(--red); }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-top: 4px;
+        }
+        
+        @media (max-width: 768px) {
+            .reminder-stats { grid-template-columns: 1fr; }
+            .template-selector { flex-direction: column; }
+            .send-section { flex-direction: column; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <a href="team-aggregation-dashboard.html" class="back-link">
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
+            <div class="header-title">
+                <svg style="width:20px;height:20px;color:var(--green)" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                Send Reminders
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <h1 class="page-title">Send Team Reminders</h1>
+        <p class="page-desc">Nudge team members who haven't started or have stalled on their development journey.</p>
+        
+        <!-- Stats -->
+        <div class="reminder-stats">
+            <div class="stat-card">
+                <div class="stat-value danger" id="notStartedCount">0</div>
+                <div class="stat-label">Not Started</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value warning" id="stalledCount">0</div>
+                <div class="stat-label">Stalled (2+ weeks)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="activeCount">0</div>
+                <div class="stat-label">Active This Week</div>
+            </div>
+        </div>
+        
+        <!-- Recipients -->
+        <div class="card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                Select Recipients
+            </div>
+            
+            <div class="recipient-filter">
+                <button class="filter-btn active" onclick="filterRecipients('all')">All</button>
+                <button class="filter-btn" onclick="filterRecipients('not-started')">Not Started</button>
+                <button class="filter-btn" onclick="filterRecipients('stalled')">Stalled</button>
+                <button class="filter-btn" onclick="filterRecipients('active')">Active</button>
+            </div>
+            
+            <div class="member-list" id="memberList">
+                <!-- Members will be inserted here -->
+            </div>
+        </div>
+        
+        <!-- Email Template -->
+        <div class="card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Choose Template
+            </div>
+            
+            <div class="template-selector">
+                <button class="template-option selected" onclick="selectTemplate('welcome')">
+                    <h4>Welcome Reminder</h4>
+                    <p>For members who haven't started yet</p>
+                </button>
+                <button class="template-option" onclick="selectTemplate('nudge')">
+                    <h4>Progress Nudge</h4>
+                    <p>For members who've gone quiet</p>
+                </button>
+                <button class="template-option" onclick="selectTemplate('celebrate')">
+                    <h4>Celebration</h4>
+                    <p>Recognize active members</p>
+                </button>
+            </div>
+            
+            <div class="schedule-options">
+                <button class="schedule-btn active" onclick="setSchedule('now')">Send Now</button>
+                <button class="schedule-btn" onclick="setSchedule('tomorrow')">Tomorrow 9am</button>
+                <button class="schedule-btn" onclick="setSchedule('monday')">Next Monday</button>
+            </div>
+        </div>
+        
+        <!-- Email Preview -->
+        <div class="card">
+            <div class="card-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                Email Preview
+            </div>
+            
+            <div class="email-preview" id="emailPreview">
+                <div class="email-header">
+                    <div class="email-field">
+                        <span class="email-label">From:</span>
+                        <span class="email-value">TAP-IN Team &lt;noreply@tap-in-academy.com&gt;</span>
+                    </div>
+                    <div class="email-field">
+                        <span class="email-label">To:</span>
+                        <span class="email-value" id="previewTo">3 selected recipients</span>
+                    </div>
+                    <div class="email-field">
+                        <span class="email-label">Subject:</span>
+                        <span class="email-value" id="previewSubject">Your team is waiting for you!</span>
+                    </div>
+                </div>
+                
+                <div class="email-body" id="emailBody">
+                    <p>Hi <strong>[Name]</strong>,</p>
+                    
+                    <p>Your team <strong id="teamNameEmail">Marketing Squad</strong> is on a leadership development journey with TAP-IN, and we noticed you haven't started yet!</p>
+                    
+                    <p>It only takes 10 minutes to complete your first assessment and discover your leadership style, worker type, and how you can best contribute to your team.</p>
+                    
+                    <a href="#" class="email-cta">Start Your Journey</a>
+                    
+                    <p>Your teammates are already making progress. Join them today!</p>
+                    
+                    <div class="email-footer">
+                        <p>Questions? Reply to this email or contact support@tap-in-academy.com</p>
+                        <p style="margin-top:8px">— The TAP-IN Team</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Send -->
+        <div class="send-section">
+            <div class="send-count">
+                Sending to <strong id="selectedCount">0</strong> team members
+            </div>
+            <button class="btn btn-primary" id="sendBtn" onclick="sendReminders()" disabled>
+                <svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                Send Reminders
+            </button>
+        </div>
+    </div>
+    
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <h2 class="success-title">Reminders Sent!</h2>
+        <p class="success-desc" id="successDesc">3 team members will receive your message.</p>
+        <button class="success-btn" onclick="closeSuccess()">Back to Dashboard</button>
+    </div>
+    
+    <script>
+        let selectedMembers = new Set();
+        let currentTemplate = 'welcome';
+        let currentSchedule = 'now';
+        let members = [];
+        
+        // Template content
+        const templates = {
+            welcome: {
+                subject: "Your team is waiting for you!",
+                body: `
+                    <p>Hi <strong>[Name]</strong>,</p>
+                    <p>Your team <strong id="teamNameEmail">${localStorage.getItem('teamName') || 'Your Team'}</strong> is on a leadership development journey with TAP-IN, and we noticed you haven't started yet!</p>
+                    <p>It only takes 10 minutes to complete your first assessment and discover your leadership style, worker type, and how you can best contribute to your team.</p>
+                    <a href="#" class="email-cta">Start Your Journey</a>
+                    <p>Your teammates are already making progress. Join them today!</p>
+                `
+            },
+            nudge: {
+                subject: "We miss you! Time to get back on track",
+                body: `
+                    <p>Hi <strong>[Name]</strong>,</p>
+                    <p>We noticed it's been a while since you logged into TAP-IN. Your team <strong>${localStorage.getItem('teamName') || 'Your Team'}</strong> is making great progress, and we'd love to see you back!</p>
+                    <p>You've already started your journey — why not take 5 minutes today to complete your next lesson?</p>
+                    <a href="#" class="email-cta">Continue Learning</a>
+                    <p>Remember: consistency beats intensity. Even small steps count!</p>
+                `
+            },
+            celebrate: {
+                subject: "Amazing progress! Keep it up <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>",
+                body: `
+                    <p>Hi <strong>[Name]</strong>,</p>
+                    <p>Wow! You've been crushing it on TAP-IN lately. Your dedication to developing your leadership skills is inspiring.</p>
+                    <p>Here's what you've achieved recently:</p>
+                    <ul style="margin: 16px 0; padding-left: 20px;">
+                        <li>Logged in consistently</li>
+                        <li>Completed assessments</li>
+                        <li>Earned XP for your team</li>
+                    </ul>
+                    <a href="#" class="email-cta">See Your Progress</a>
+                    <p>Keep up the great work — your team is lucky to have you!</p>
+                `
+            }
+        };
+        
+        function loadMembers() {
+            const stored = localStorage.getItem('teamMembers');
+            
+            // Demo data if nothing stored
+            if (!stored) {
+                members = [
+                    { id: 1, name: 'Sarah Johnson', email: 'sarah@company.com', xp: 450, status: 'active', lastActive: new Date().toISOString() },
+                    { id: 2, name: 'Mike Chen', email: 'mike@company.com', xp: 280, status: 'active', lastActive: new Date().toISOString() },
+                    { id: 3, name: 'Lisa Park', email: 'lisa@company.com', xp: 620, status: 'active', lastActive: new Date().toISOString() },
+                    { id: 4, name: 'Tom Wilson', email: 'tom@company.com', xp: 120, status: 'stalled', lastActive: '2024-11-01' },
+                    { id: 5, name: 'Emma Davis', email: 'emma@company.com', xp: 0, status: 'not-started', lastActive: null }
+                ];
+            } else {
+                members = JSON.parse(stored).map(m => {
+                    const lastActive = new Date(m.lastActive);
+                    const twoWeeksAgo = new Date();
+                    twoWeeksAgo.setDate(twoWeeksAgo.getDate() - 14);
+                    const oneWeekAgo = new Date();
+                    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+                    
+                    let status = 'active';
+                    if ((m.xp || 0) === 0) {
+                        status = 'not-started';
+                    } else if (lastActive < twoWeeksAgo) {
+                        status = 'stalled';
+                    } else if (lastActive < oneWeekAgo) {
+                        status = 'stalled';
+                    }
+                    
+                    return { ...m, status };
+                });
+            }
+            
+            updateStats();
+            renderMembers();
+        }
+        
+        function updateStats() {
+            const notStarted = members.filter(m => m.status === 'not-started').length;
+            const stalled = members.filter(m => m.status === 'stalled').length;
+            const active = members.filter(m => m.status === 'active').length;
+            
+            document.getElementById('notStartedCount').textContent = notStarted;
+            document.getElementById('stalledCount').textContent = stalled;
+            document.getElementById('activeCount').textContent = active;
+        }
+        
+        function renderMembers(filter = 'all') {
+            const container = document.getElementById('memberList');
+            const filtered = filter === 'all' ? members : members.filter(m => m.status === filter);
+            
+            container.innerHTML = filtered.map(m => {
+                const statusLabels = {
+                    'not-started': 'Not Started',
+                    'stalled': 'Stalled',
+                    'active': 'Active'
+                };
+                
+                return `
+                    <label class="member-checkbox">
+                        <input type="checkbox" 
+                               onchange="toggleMember(${m.id})" 
+                               ${selectedMembers.has(m.id) ? 'checked' : ''}>
+                        <div class="member-info">
+                            <div class="member-name">${m.name}</div>
+                            <div class="member-email">${m.email}</div>
+                        </div>
+                        <span class="member-status ${m.status}">${statusLabels[m.status]}</span>
+                    </label>
+                `;
+            }).join('');
+            
+            updateSendButton();
+        }
+        
+        function filterRecipients(filter) {
+            document.querySelectorAll('.recipient-filter .filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            renderMembers(filter);
+        }
+        
+        function toggleMember(id) {
+            if (selectedMembers.has(id)) {
+                selectedMembers.delete(id);
+            } else {
+                selectedMembers.add(id);
+            }
+            updateSendButton();
+        }
+        
+        function updateSendButton() {
+            const count = selectedMembers.size;
+            document.getElementById('selectedCount').textContent = count;
+            document.getElementById('previewTo').textContent = count === 0 ? 'No recipients selected' : `${count} selected recipient${count !== 1 ? 's' : ''}`;
+            document.getElementById('sendBtn').disabled = count === 0;
+        }
+        
+        function selectTemplate(template) {
+            currentTemplate = template;
+            document.querySelectorAll('.template-option').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            event.target.closest('.template-option').classList.add('selected');
+            
+            // Update preview
+            const t = templates[template];
+            document.getElementById('previewSubject').textContent = t.subject;
+            document.getElementById('emailBody').innerHTML = t.body + `
+                <div class="email-footer">
+                    <p>Questions? Reply to this email or contact support@tap-in-academy.com</p>
+                    <p style="margin-top:8px">— The TAP-IN Team</p>
+                </div>
+            `;
+        }
+        
+        function setSchedule(schedule) {
+            currentSchedule = schedule;
+            document.querySelectorAll('.schedule-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        function sendReminders() {
+            const count = selectedMembers.size;
+            
+            // In production, this would call an API
+            // For now, simulate success
+            
+            document.getElementById('successDesc').textContent = `${count} team member${count !== 1 ? 's' : ''} will receive your message.`;
+            document.getElementById('successOverlay').classList.add('active');
+            
+            // Log for demo purposes
+            console.log('Sending reminders to:', Array.from(selectedMembers).map(id => members.find(m => m.id === id)));
+            console.log('Template:', currentTemplate);
+            console.log('Schedule:', currentSchedule);
+        }
+        
+        function closeSuccess() {
+            window.location.href = 'team-aggregation-dashboard.html';
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadMembers();
+            
+            // Auto-select not-started and stalled by default
+            members.forEach(m => {
+                if (m.status === 'not-started' || m.status === 'stalled') {
+                    selectedMembers.add(m.id);
+                }
+            });
+            renderMembers();
+        });
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Konflikt-Navigator - TAP-IN Spiele</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --orange: #f97316;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --pink: #ec4899;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .lang-switcher {
+            position: fixed;
+            top: 15px;
+            right: 120px;
+            z-index: 101;
+            display: flex;
+            gap: 8px;
+        }
+        .lang-switcher a {
+            padding: 6px 12px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .lang-switcher a.active { background: var(--green); color: var(--black); }
+        .lang-switcher a:not(.active) { background: rgba(255,255,255,0.1); color: var(--white); }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .game-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stats-row { display: flex; gap: 10px; }
+        .stat-badge { background: var(--dark-grey); padding: 6px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+        .stat-badge.streak { color: var(--gold); }
+        .stat-badge.score { color: var(--green); }
+        
+        .container { max-width: 650px; margin: 0 auto; padding: 100px 20px 40px; }
+        
+        .game-screen { display: none; animation: fadeIn 0.4s ease; }
+        .game-screen.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .intro-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(139, 92, 246, 0.1));
+            border: 2px solid var(--purple);
+            border-radius: 20px;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        
+        .intro-icon {
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, var(--purple), var(--pink));
+            border-radius: 24px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 25px;
+        }
+        
+        .intro-title {
+            font-size: 1.8rem; font-weight: 800; margin-bottom: 15px;
+            background: linear-gradient(90deg, var(--purple), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        
+        .intro-desc { color: var(--light-grey); font-size: 1rem; line-height: 1.7; margin-bottom: 25px; }
+        
+        .conflict-types { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 25px; }
+        .conflict-type { background: var(--black); border-radius: 12px; padding: 15px; text-align: left; }
+        .conflict-type-icon { font-size: 1.5rem; margin-bottom: 8px; }
+        .conflict-type-name { font-weight: 600; font-size: 0.9rem; margin-bottom: 4px; }
+        .conflict-type-desc { font-size: 0.75rem; color: var(--light-grey); }
+        
+        .intro-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .intro-stat { background: var(--black); border-radius: 12px; padding: 15px; }
+        .intro-stat-value { font-size: 1.5rem; font-weight: 800; color: var(--purple); }
+        .intro-stat-label { font-size: 0.7rem; color: var(--light-grey); text-transform: uppercase; }
+        
+        .btn { padding: 16px 32px; border: none; border-radius: 12px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-primary { background: linear-gradient(135deg, var(--purple), #7c3aed); color: white; width: 100%; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(139, 92, 246, 0.3); }
+        
+        .heat-meter { background: var(--dark-grey); border-radius: 12px; padding: 15px 20px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+        .heat-label { font-size: 0.8rem; color: var(--light-grey); white-space: nowrap; }
+        .heat-bar { flex: 1; height: 12px; background: var(--mid-grey); border-radius: 6px; overflow: hidden; }
+        .heat-fill { height: 100%; border-radius: 6px; transition: all 0.5s ease; background: linear-gradient(90deg, var(--green), var(--gold), var(--orange), var(--red)); }
+        .heat-value { font-weight: 700; font-size: 0.9rem; min-width: 60px; text-align: right; }
+        .heat-value.cool { color: var(--green); }
+        .heat-value.warm { color: var(--gold); }
+        .heat-value.hot { color: var(--orange); }
+        .heat-value.explosive { color: var(--red); }
+        
+        .progress-bar { height: 4px; background: var(--mid-grey); border-radius: 2px; margin-bottom: 25px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--purple), var(--pink)); transition: width 0.3s ease; }
+        
+        .scenario-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .scenario-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .scenario-icon { width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 1.5rem; }
+        .scenario-icon.task { background: linear-gradient(135deg, var(--blue), #2563eb); }
+        .scenario-icon.process { background: linear-gradient(135deg, var(--gold), var(--orange)); }
+        .scenario-icon.relationship { background: linear-gradient(135deg, var(--pink), var(--red)); }
+        .scenario-icon.status { background: linear-gradient(135deg, var(--purple), #7c3aed); }
+        
+        .scenario-meta { flex: 1; }
+        .scenario-num { font-size: 0.7rem; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; }
+        .scenario-type { font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        
+        .type-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .type-badge.task { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+        .type-badge.process { background: rgba(251, 191, 36, 0.2); color: var(--gold); }
+        .type-badge.relationship { background: rgba(236, 72, 153, 0.2); color: var(--pink); }
+        .type-badge.status { background: rgba(139, 92, 246, 0.2); color: var(--purple); }
+        .context-badge { font-size: 0.65rem; padding: 3px 8px; border-radius: 10px; background: rgba(255, 255, 255, 0.1); color: var(--light-grey); }
+        
+        .scenario-situation { background: var(--black); border-radius: 12px; padding: 20px; margin-bottom: 20px; border-left: 3px solid var(--purple); }
+        .scenario-label { font-size: 0.7rem; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+        .scenario-text { color: var(--light-grey); line-height: 1.7; font-size: 0.95rem; }
+        .scenario-question { font-size: 1.1rem; font-weight: 600; margin-bottom: 20px; }
+        
+        .response-options { display: flex; flex-direction: column; gap: 12px; }
+        .response-option { background: var(--black); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 18px; cursor: pointer; transition: all 0.2s; position: relative; }
+        .response-option:hover { border-color: var(--purple); background: rgba(139, 92, 246, 0.1); }
+        .response-option.selected { border-color: var(--purple); background: rgba(139, 92, 246, 0.15); }
+        .response-option.best { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .response-option.good { border-color: var(--gold); background: rgba(251, 191, 36, 0.15); }
+        .response-option.poor { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.7; }
+        .response-option.disabled { pointer-events: none; }
+        
+        .response-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .response-label { font-size: 0.7rem; font-weight: 600; color: var(--light-grey); }
+        .style-tag { font-size: 0.65rem; padding: 2px 8px; border-radius: 8px; background: var(--mid-grey); color: var(--light-grey); display: none; }
+        .response-option.disabled .style-tag { display: inline-block; }
+        .response-text { font-size: 0.95rem; line-height: 1.5; }
+        
+        .heat-change { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-size: 0.8rem; font-weight: 700; display: none; }
+        .response-option.disabled .heat-change { display: block; }
+        .heat-change.up { color: var(--red); }
+        .heat-change.down { color: var(--green); }
+        .heat-change.neutral { color: var(--gold); }
+        
+        .feedback-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-top: 20px; display: none; animation: fadeIn 0.3s ease; }
+        .feedback-card.show { display: block; }
+        .feedback-header { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .feedback-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+        .feedback-icon.best { background: rgba(16, 185, 129, 0.2); }
+        .feedback-icon.good { background: rgba(251, 191, 36, 0.2); }
+        .feedback-icon.poor { background: rgba(239, 68, 68, 0.2); }
+        .feedback-title { font-weight: 700; }
+        .feedback-title.best { color: var(--green); }
+        .feedback-title.good { color: var(--gold); }
+        .feedback-title.poor { color: var(--red); }
+        .feedback-text { color: var(--light-grey); font-size: 0.9rem; line-height: 1.7; margin-bottom: 15px; }
+        
+        .style-insight { background: var(--black); border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .style-insight-label { font-size: 0.7rem; color: var(--purple); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+        .style-insight-text { font-size: 0.85rem; color: var(--light-grey); }
+        
+        .next-btn { width: 100%; margin-top: 10px; }
+        
+        .results-card { background: linear-gradient(135deg, var(--dark-grey), rgba(139, 92, 246, 0.15)); border: 2px solid var(--purple); border-radius: 20px; padding: 40px 30px; text-align: center; }
+        .results-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--purple), var(--pink)); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .results-title { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; }
+        .results-subtitle { color: var(--light-grey); margin-bottom: 25px; }
+        .results-score { font-size: 4rem; font-weight: 900; color: var(--purple); margin-bottom: 10px; }
+        .final-heat { font-size: 1rem; margin-bottom: 25px; }
+        
+        .results-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 25px; }
+        .result-stat { background: var(--black); border-radius: 12px; padding: 15px; }
+        .result-stat-value { font-size: 1.5rem; font-weight: 800; }
+        .result-stat-value.green { color: var(--green); }
+        .result-stat-value.gold { color: var(--gold); }
+        .result-stat-value.red { color: var(--red); }
+        .result-stat-label { font-size: 0.7rem; color: var(--light-grey); text-transform: uppercase; }
+        
+        .style-profile { background: var(--black); border-radius: 16px; padding: 25px; text-align: left; margin-bottom: 25px; }
+        .style-profile-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .style-profile-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--purple), var(--pink)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .style-profile-title { font-weight: 700; font-size: 1.1rem; }
+        .style-profile-subtitle { font-size: 0.85rem; color: var(--purple); }
+        
+        .style-bars { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+        .style-bar-row { display: flex; align-items: center; gap: 12px; }
+        .style-bar-label { width: 110px; font-size: 0.8rem; color: var(--light-grey); }
+        .style-bar { flex: 1; height: 8px; background: var(--mid-grey); border-radius: 4px; overflow: hidden; }
+        .style-bar-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .style-bar-fill.competing { background: var(--red); }
+        .style-bar-fill.collaborating { background: var(--green); }
+        .style-bar-fill.compromising { background: var(--gold); }
+        .style-bar-fill.avoiding { background: var(--blue); }
+        .style-bar-fill.accommodating { background: var(--pink); }
+        .style-bar-value { width: 40px; font-size: 0.8rem; font-weight: 600; text-align: right; }
+        
+        .style-insight-box { background: var(--dark-grey); border-radius: 12px; padding: 15px; }
+        .style-insight-title { font-weight: 600; margin-bottom: 8px; color: var(--purple); }
+        .style-insight-content { font-size: 0.9rem; color: var(--light-grey); line-height: 1.6; }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 500px) {
+            .intro-stats, .results-stats { grid-template-columns: 1fr; }
+            .conflict-types { grid-template-columns: 1fr; }
+            .stats-row { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="game-conflict-navigator-v2.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="game-conflict-navigator-v2-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="lang-switcher">
+        <a href="game-conflict-navigator-v2.html">EN</a>
+        <a href="game-conflict-navigator-v2-de.html" class="active">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="game-library-de.html" class="back-btn">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Beenden
+        </a>
+        <div class="game-title">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Konflikt-Navigator
+        </div>
+        <div class="stats-row">
+            <div class="stat-badge streak" id="streakBadge">0x</div>
+            <div class="stat-badge score" id="scoreBadge">0</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="game-screen active" id="introScreen">
+            <div class="intro-card">
+                <div class="intro-icon">
+                    <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <h1 class="intro-title">Konflikt-Navigator</h1>
+                <p class="intro-desc">
+                    Meistere die Kunst, Konflikte zu navigieren, ohne Beziehungen zu beschadigen. 
+                    Jede Wahl beeinflusst das Hitze-Level — kannst du deeskalieren und trotzdem 
+                    das Problem ansprechen?
+                </p>
+                
+                <div class="conflict-types">
+                    <div class="conflict-type">
+                        <div class="conflict-type-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                        </div>
+                        <div class="conflict-type-name">Aufgaben-Konflikt</div>
+                        <div class="conflict-type-desc">Meinungsverschiedenheiten uber WAS zu tun ist</div>
+                    </div>
+                    <div class="conflict-type">
+                        <div class="conflict-type-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        </div>
+                        <div class="conflict-type-name">Prozess-Konflikt</div>
+                        <div class="conflict-type-desc">Meinungsverschiedenheiten uber WIE es zu tun ist</div>
+                    </div>
+                    <div class="conflict-type">
+                        <div class="conflict-type-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--pink)" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        </div>
+                        <div class="conflict-type-name">Beziehungs-Konflikt</div>
+                        <div class="conflict-type-desc">Personliche Reibungen und Spannungen</div>
+                    </div>
+                    <div class="conflict-type">
+                        <div class="conflict-type-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                        </div>
+                        <div class="conflict-type-name">Status-Konflikt</div>
+                        <div class="conflict-type-desc">Macht- und Respekt-Dynamiken</div>
+                    </div>
+                </div>
+                
+                <div class="intro-stats">
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">20</div>
+                        <div class="intro-stat-label">Szenarien</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">~12</div>
+                        <div class="intro-stat-label">Minuten</div>
+                    </div>
+                    <div class="intro-stat">
+                        <div class="intro-stat-value">+100</div>
+                        <div class="intro-stat-label">XP</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="startGame()">
+                    Arena Betreten
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="game-screen" id="scenarioScreen">
+            <div class="heat-meter">
+                <div class="heat-label">Konflikt-Hitze</div>
+                <div class="heat-bar">
+                    <div class="heat-fill" id="heatFill" style="width: 30%"></div>
+                </div>
+                <div class="heat-value cool" id="heatValue">Kuhl</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            
+            <div id="scenarioContent"></div>
+            
+            <div class="feedback-card" id="feedbackCard">
+                <div class="feedback-header">
+                    <div class="feedback-icon" id="feedbackIcon"></div>
+                    <div class="feedback-title" id="feedbackTitle"></div>
+                </div>
+                <div class="feedback-text" id="feedbackText"></div>
+                <div class="style-insight" id="styleInsight">
+                    <div class="style-insight-label">Dein Konflikt-Stil</div>
+                    <div class="style-insight-text" id="styleInsightText"></div>
+                </div>
+                <button class="btn btn-primary next-btn" onclick="nextScenario()">
+                    Nachstes Szenario
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="game-screen" id="resultsScreen">
+            <div class="results-card">
+                <div class="results-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <h2 class="results-title">Konflikt-Meisterschafts-Bericht</h2>
+                <p class="results-subtitle">So hast du Konflikte navigiert</p>
+                <div class="results-score" id="finalScore">0%</div>
+                <div class="final-heat" id="finalHeat">Finale Hitze: <span>Kuhl</span></div>
+                
+                <div class="results-stats">
+                    <div class="result-stat">
+                        <div class="result-stat-value green" id="bestCount">0</div>
+                        <div class="result-stat-label">Beste Wahlen</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value gold" id="goodCount">0</div>
+                        <div class="result-stat-label">Gute Wahlen</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="result-stat-value red" id="poorCount">0</div>
+                        <div class="result-stat-label">Schlechte Wahlen</div>
+                    </div>
+                </div>
+                
+                <div class="style-profile">
+                    <div class="style-profile-header">
+                        <div class="style-profile-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        <div>
+                            <div class="style-profile-title">Dein Konflikt-Stil-Profil</div>
+                            <div class="style-profile-subtitle">Basierend auf dem Thomas-Kilmann-Modell</div>
+                        </div>
+                    </div>
+                    
+                    <div class="style-bars">
+                        <div class="style-bar-row">
+                            <div class="style-bar-label">Konkurrierend</div>
+                            <div class="style-bar"><div class="style-bar-fill competing" id="competingBar" style="width: 0%"></div></div>
+                            <div class="style-bar-value" id="competingValue">0%</div>
+                        </div>
+                        <div class="style-bar-row">
+                            <div class="style-bar-label">Kollaborierend</div>
+                            <div class="style-bar"><div class="style-bar-fill collaborating" id="collaboratingBar" style="width: 0%"></div></div>
+                            <div class="style-bar-value" id="collaboratingValue">0%</div>
+                        </div>
+                        <div class="style-bar-row">
+                            <div class="style-bar-label">Kompromiss</div>
+                            <div class="style-bar"><div class="style-bar-fill compromising" id="compromisingBar" style="width: 0%"></div></div>
+                            <div class="style-bar-value" id="compromisingValue">0%</div>
+                        </div>
+                        <div class="style-bar-row">
+                            <div class="style-bar-label">Vermeidend</div>
+                            <div class="style-bar"><div class="style-bar-fill avoiding" id="avoidingBar" style="width: 0%"></div></div>
+                            <div class="style-bar-value" id="avoidingValue">0%</div>
+                        </div>
+                        <div class="style-bar-row">
+                            <div class="style-bar-label">Anpassend</div>
+                            <div class="style-bar"><div class="style-bar-fill accommodating" id="accommodatingBar" style="width: 0%"></div></div>
+                            <div class="style-bar-value" id="accommodatingValue">0%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="style-insight-box">
+                        <div class="style-insight-title" id="dominantStyleTitle">Dein Dominanter Stil</div>
+                        <div class="style-insight-content" id="dominantStyleContent">Lade...</div>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary" onclick="playAgain()">
+                    Nochmal Spielen
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const scenarios = [
+            // AUFGABEN-KONFLIKTE - Arbeit
+            {
+                type: "task",
+                context: "work",
+                situation: "Dein Teamkollege mochte React fur das neue Projekt verwenden, aber du denkst, Vue ware besser fur die Fahigkeiten des Teams. Die Entscheidung muss heute fallen.",
+                question: "Wie gehst du mit dieser Meinungsverschiedenheit um?",
+                options: [
+                    { label: "A", text: "\"Ich verstehe deine Argumente fur React. Lass uns die Vor- und Nachteile basierend auf unserer Team-Erfahrung und den Projektanforderungen auflisten und dann gemeinsam entscheiden.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Perfekt. Du hast ihre Sicht validiert, einen fairen Prozess vorgeschlagen und den Fokus auf gemeinsame Ziele gelegt." },
+                    { label: "B", text: "\"Okay, dann nehmen wir halt React. Es lohnt sich nicht, daruber zu streiten.\"", quality: "poor", style: "accommodating", heatChange: 0, feedback: "Du hast Konflikte vermieden, aber nicht fur deine Perspektive eingestanden. Das Team konnte am Ende eine suboptimale Wahl treffen." },
+                    { label: "C", text: "\"Vue ist objektiv besser dafur. Ich mache das schon langer als du.\"", quality: "poor", style: "competing", heatChange: +20, feedback: "Rang ausspielen und ihren Input abweisen eskaliert den Konflikt und beschadigt Vertrauen." },
+                    { label: "D", text: "\"Was wenn wir ein kleines Feature in beiden prototypen und vergleichen? So entscheiden wir mit Daten.\"", quality: "best", style: "collaborating", heatChange: -5, feedback: "Exzellent. Du hast einen fairen, evidenzbasierten Ansatz vorgeschlagen, der beide Perspektiven respektiert." }
+                ]
+            },
+            // AUFGABEN-KONFLIKTE - Familie
+            {
+                type: "task",
+                context: "family",
+                situation: "Dein Partner mochte euer Kind auf eine Privatschule schicken, aber du denkst, die lokale offentliche Schule ist super und das Geld konnte fur die Uni-Ersparnisse verwendet werden.",
+                question: "Wie navigierst du diese Meinungsverschiedenheit?",
+                options: [
+                    { label: "A", text: "\"Ich verstehe, dass du die beste Bildung willst. Konnen wir beide Schulen gemeinsam besuchen und vergleichen, was sie tatsachlich bieten?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast ihre Motivation anerkannt und gemeinsame Faktensuche vorgeschlagen. Das baut Einigkeit auf." },
+                    { label: "B", text: "\"Wir konnen uns keine Privatschule leisten. Ende der Diskussion.\"", quality: "poor", style: "competing", heatChange: +25, feedback: "Das Gesprach mit einer einseitigen Entscheidung zu beenden schadet der Partnerschaft." },
+                    { label: "C", text: "\"Okay, was auch immer du willst. Es ist nicht wert, daruber zu streiten.\"", quality: "poor", style: "accommodating", heatChange: +5, feedback: "Passive Zustimmung erzeugt Groll. Du wirst das wahrscheinlich spater frustriert wieder ansprechen." },
+                    { label: "D", text: "\"Was wenn wir jetzt die offentliche Schule nehmen und in einem Jahr nochmal schauen? Das gibt uns Zeit zu recherchieren und zu sparen.\"", quality: "good", style: "compromising", heatChange: -5, feedback: "Ein vernunftiger Mittelweg, obwohl er das echte Gesprach verzogert." }
+                ]
+            },
+            // PROZESS-KONFLIKTE - Arbeit
+            {
+                type: "process",
+                context: "work",
+                situation: "Dein Manager besteht auf taglichen Standup-Meetings um 9 Uhr. Du bist eine Nachteule und machst deine beste Arbeit spat. Die fruhen Meetings killen deine Produktivitat.",
+                question: "Wie sprichst du das an?",
+                options: [
+                    { label: "A", text: "\"Mir ist aufgefallen, dass ich mit 9-Uhr-Standups weniger produktiv bin. Konnten wir async Updates oder eine spatere Zeit versuchen? Ich teile gerne meine Produktivitatsdaten.\"", quality: "best", style: "collaborating", heatChange: -5, feedback: "Du hast die Auswirkung beschrieben, Alternativen vorgeschlagen und Evidenz angeboten. Professionell und losungsorientiert." },
+                    { label: "B", text: "Einfach anfangen zu spat zu kommen und hoffen, dass es niemandem auffallt.", quality: "poor", style: "avoiding", heatChange: +15, feedback: "Vermeidung schafft ein grosseres Problem. Jetzt bist du unzuverlassig UND hast das Problem nicht gelost." },
+                    { label: "C", text: "\"Dieser Zeitplan funktioniert nicht fur mich. Ich brauche, dass er geandert wird.\"", quality: "poor", style: "competing", heatChange: +20, feedback: "Fordern ohne Alternativen anzubieten oder ihre Bedurfnisse zu verstehen ist konfrontativ." },
+                    { label: "D", text: "\"Was ist das Ziel des 9-Uhr-Standups? Vielleicht gibt es einen Weg, dieses Ziel zu erreichen, der fur alle funktioniert.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Exzellent. Du suchst das zugrunde liegende Bedurfnis zu verstehen, nicht nur die Oberflachenanforderung zu bekampfen." }
+                ]
+            },
+            // PROZESS-KONFLIKTE - Freunde
+            {
+                type: "process",
+                context: "friends",
+                situation: "Deine Freundesgruppe macht am Wochenende immer das Gleiche — Bars und Clubs. Du bist davon ausgebrannt, willst aber nicht der Spielverderber sein, der nie kommt.",
+                question: "Wie gehst du damit um?",
+                options: [
+                    { label: "A", text: "\"Ich liebe es, mit euch abzuhangen, aber ich bin ziemlich uber die Club-Szene hinweg. Kann ich nachstes Wochenende planen? Ich denke an Wandern oder Spieleabend.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast deine Bedurfnisse ausgedruckt und gleichzeitig Engagement fur die Freundschaft gezeigt und eine Alternative angeboten." },
+                    { label: "B", text: "Weiter hingehen, obwohl du es hasst. Das ist, was Freunde tun.", quality: "poor", style: "accommodating", heatChange: +10, feedback: "Deine Bedurfnisse zu unterdrucken fuhrt zu Groll. Echte Freunde wollen, dass du ehrlich bist." },
+                    { label: "C", text: "\"Ihr seid so langweilig. Wollt ihr nie was anderes machen?\"", quality: "poor", style: "competing", heatChange: +25, feedback: "Ihre Vorlieben zu beleidigen ist ein grossartiger Weg, Freunde zu verlieren. Ehrlich ≠ hart." },
+                    { label: "D", text: "Anfangen Einladungen ohne Erklarung abzulehnen, bis sie aufhoren zu fragen.", quality: "poor", style: "avoiding", heatChange: +15, feedback: "Ghosting schafft Verwirrung und verletzt Beziehungen. Direkte Kommunikation ist besser." }
+                ]
+            },
+            // BEZIEHUNGS-KONFLIKTE - Arbeit
+            {
+                type: "relationship",
+                context: "work",
+                situation: "Ein Kollege nimmt standig die Anerkennung fur deine Ideen in Meetings. Es ist heute wieder passiert, als sie deinen Vorschlag als ihren eigenen prasentiert haben.",
+                question: "Was tust du?",
+                options: [
+                    { label: "A", text: "Sie zur Seite nehmen: \"Hey, mir ist aufgefallen, dass du den Vorschlag prasentiert hast, den ich dir letzte Woche gezeigt habe. War das Absicht? Ich mochte sichergehen, dass wir beim Thema Zuschreibung auf einer Linie sind.\"", quality: "best", style: "collaborating", heatChange: -5, feedback: "Direkt, privat und nimmt mogliches Missverstandnis an. Das ist der professionelle Ansatz." },
+                    { label: "B", text: "Sie im nachsten Meeting bloss stellen: \"Eigentlich war das meine Idee.\"", quality: "poor", style: "competing", heatChange: +30, feedback: "Offentliche Konfrontation blamiert sie und lasst dich kleinlich wirken, selbst wenn du Recht hast." },
+                    { label: "C", text: "Nichts sagen. Es ist das Drama nicht wert.", quality: "poor", style: "avoiding", heatChange: +10, feedback: "Sie werden es weiter tun. Schweigen ist Erlaubnis. Das schadet auch deiner Karriere." },
+                    { label: "D", text: "Anfangen deinen Manager bei allen Ideen-Sharing-E-Mails in CC zu setzen, um eine Dokumentation zu haben.", quality: "good", style: "competing", heatChange: 0, feedback: "Kluger Selbstschutz, aber es adressiert das Beziehungsproblem nicht direkt." }
+                ]
+            },
+            // BEZIEHUNGS-KONFLIKTE - Familie
+            {
+                type: "relationship",
+                context: "family",
+                situation: "Deine Schwiegermutter macht standig passiv-aggressive Kommentare uber dein Kochen, wenn sie zu Besuch ist. Dein Partner sagt \"so ist sie halt.\"",
+                question: "Wie gehst du damit um?",
+                options: [
+                    { label: "A", text: "Mit deinem Partner reden: \"Ich brauche, dass wir dabei ein Team sind. Ihre Kommentare verletzen mich. Konnen wir vereinbaren, wie wir gemeinsam reagieren?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du adressierst das echte Problem — du brauchst die Unterstutzung deines Partners — nicht die Schwiegermutter angreifen." },
+                    { label: "B", text: "Beim nachsten Kommentar mit etwas gleich Schneidendem zuruckschlagen.", quality: "poor", style: "competing", heatChange: +35, feedback: "Eskalation mag sich befriedigend anfuhlen, aber beschadigt die Familiendynamik und setzt deinen Partner in die Mitte." },
+                    { label: "C", text: "Einfach aufhoren zu kochen, wenn sie zu Besuch ist. Soll sie es selbst machen.", quality: "poor", style: "avoiding", heatChange: +15, feedback: "Passiv-aggressive Antwort auf passiv-aggressives Verhalten. Das lost nichts." },
+                    { label: "D", text: "\"Mir sind einige Kommentare uber mein Kochen aufgefallen. Gibt es etwas Bestimmtes, das ich anders machen sollte?\"", quality: "good", style: "collaborating", heatChange: -5, feedback: "Direkt aber grazios. Gibt ihr die Chance, entweder zu klaren oder zu realisieren, dass sie unhoflich ist." }
+                ]
+            },
+            // STATUS-KONFLIKTE - Arbeit
+            {
+                type: "status",
+                context: "work",
+                situation: "Ein Neuer mit weniger Erfahrung wurde gerade zu deinem Peer befordert. Du bist seit 3 Jahren hier. Du fuhlst dich ubersehen und nicht respektiert.",
+                question: "Wie reagierst du?",
+                options: [
+                    { label: "A", text: "Ein Meeting mit deinem Manager anfragen: \"Ich wurde gerne verstehen, was ich tun kann, um in eine Fuhrungsrolle zu wachsen. Konnen wir meinen Entwicklungsweg besprechen?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du fokussierst auf dein Wachstum, nicht darauf, die andere Person runterzumachen. Das ist reif und produktiv." },
+                    { label: "B", text: "Sofort anfangen, einen neuen Job zu suchen. Sie schatzen dich offensichtlich nicht.", quality: "poor", style: "avoiding", heatChange: +5, feedback: "Vielleicht, aber willst du nicht erst verstehen warum? Zu gehen ohne Information ist reaktiv." },
+                    { label: "C", text: "Subtile Kommentare machen, um den Neuen vor dem Team zu untergraben.", quality: "poor", style: "competing", heatChange: +30, feedback: "Das lasst dich kleinlich und unsicher wirken. Es schafft auch ein toxisches Umfeld." },
+                    { label: "D", text: "Deinen Manager direkt fragen: \"Ich war uberrascht von der Beförderungsentscheidung. Kannst du mir helfen zu verstehen, was sie unterschieden hat?\"", quality: "best", style: "collaborating", heatChange: -5, feedback: "Ehrliche Neugier zeigt Reife. Die Antwort konnte blinde Flecken oder unfaire Prozesse aufdecken." }
+                ]
+            },
+            // STATUS-KONFLIKTE - Freunde
+            {
+                type: "status",
+                context: "friends",
+                situation: "Du hast die Gruppenreise organisiert, aber dein Freund uberstimmt standig deine Plane und sagt allen, was sie stattdessen tun sollten. Sie tun so, als waren sie verantwortlich.",
+                question: "Wie gehst du damit um?",
+                options: [
+                    { label: "A", text: "Sie zur Seite nehmen: \"Hey, ich freue mich, dass du begeistert bist, aber ich habe viel Arbeit in diesen Plan gesteckt. Konnen wir koordinieren statt dass du Sachen spontan anderst?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Direkt, privat und auf Koordination fokussiert statt Kontrolle. Das bewahrt die Freundschaft." },
+                    { label: "B", text: "Der Gruppe ankundigen: \"Ich habe diese Reise geplant. Wenn Leute Vorschlage haben, fragt zuerst mich.\"", quality: "poor", style: "competing", heatChange: +20, feedback: "Offentliche Machtspiele lassen dich kontrollierend wirken und schaffen Unbehagen fur alle anderen." },
+                    { label: "C", text: "Einfach mit ihren Anderungen mitgehen. Es ist nicht wert, die Reise zu ruinieren.", quality: "poor", style: "accommodating", heatChange: +10, feedback: "Du wirst die ganze Reise uber Groll haben. Besser, es jetzt anzusprechen." },
+                    { label: "D", text: "\"Ich liebe, dass du Ideen hast! Was wenn wir Verantwortlichkeiten aufteilen? Du ubernimmst Aktivitaten, ich Logistik?\"", quality: "good", style: "compromising", heatChange: -5, feedback: "Guter Kompromiss, der ihnen ein Ventil gibt und deine Rolle bewahrt." }
+                ]
+            },
+            // AUFGABEN-KONFLIKTE - Mitbewohner
+            {
+                type: "task",
+                context: "roommates",
+                situation: "Dein Mitbewohner mochte eine Katze adoptieren. Du bist allergisch und besorgt wegen Kautionen. Sie sagen, sie werden sie in ihrem Zimmer halten.",
+                question: "Wie reagierst du?",
+                options: [
+                    { label: "A", text: "\"Ich finde es toll, dass du ein Haustier willst, aber meine Allergien sind ernst. Konnen wir andere Optionen erkunden wie Wochenend-Pflege oder ein hypoallergenes Tier?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast ihren Wunsch validiert, deine Einschrankung erklart und kreative Alternativen angeboten." },
+                    { label: "B", text: "\"Auf keinen Fall. Ich wohne auch hier und ich sage nein.\"", quality: "poor", style: "competing", heatChange: +25, feedback: "Eine flache Absage ohne Diskussion beschadigt die Beziehung und ladt Groll ein." },
+                    { label: "C", text: "\"Okay, aber wenn meine Allergien aufflackern, ist es dein Problem.\"", quality: "poor", style: "accommodating", heatChange: +15, feedback: "Gegen deine eigenen Interessen zuzustimmen garantiert zukunftigen Konflikt." },
+                    { label: "D", text: "\"Lass uns zusammen den Mietvertrag anschauen und sehen, was erlaubt ist, dann finden wir raus, was fur uns beide funktioniert.\"", quality: "good", style: "collaborating", heatChange: -5, feedback: "Die Diskussion in Fakten (dem Mietvertrag) zu erden entfernt Emotion und schafft einen fairen Prozess." }
+                ]
+            },
+            // PROZESS-KONFLIKTE - Familie
+            {
+                type: "process",
+                context: "family",
+                situation: "Jedes Jahr erwartet deine Familie, dass du die Feiertage ausrichtest. Du bist erschopft und willst rotieren, aber Tradition ist ihnen heilig.",
+                question: "Wie sprichst du das an?",
+                options: [
+                    { label: "A", text: "\"Ich liebe das Ausrichten, aber ich bin ausgebrannt. Konnen wir dieses Jahr Rotation versuchen? Ich helfe demjenigen, der ausrichtet, um die Traditionen am Leben zu halten.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast die Wichtigkeit der Tradition anerkannt und gleichzeitig fur deine Bedurfnisse eingestanden und Unterstutzung angeboten." },
+                    { label: "B", text: "\"Ich richte nicht mehr aus. Jemand anders kann es machen.\"", quality: "poor", style: "competing", heatChange: +25, feedback: "Abrupte Verweigerung ohne Diskussion wird Familiendrama und Schuldgefuhle erzeugen." },
+                    { label: "C", text: "Wieder ausrichten, obwohl du erschopft bist. Familie geht vor.", quality: "poor", style: "accommodating", heatChange: +15, feedback: "Martyrertum fuhrt zu Groll. Deine Familie weiss wahrscheinlich nicht mal, dass du kampfst." },
+                    { label: "D", text: "\"Was wenn ich Weihnachten ausrichte und jemand anders Silvester? So teilen wir die Last.\"", quality: "good", style: "compromising", heatChange: -5, feedback: "Eine faire Aufteilung, die die Tradition nicht komplett aufgibt." }
+                ]
+            },
+            // BEZIEHUNGS-KONFLIKTE - Freunde
+            {
+                type: "relationship",
+                context: "friends",
+                situation: "Dein enger Freund ist in letzter Zeit distanziert und hat zweimal Plane abgesagt. Wenn du fragst, ob was los ist, sagen sie \"mir gehts gut\", aber offensichtlich nicht.",
+                question: "Wie gehst du damit um?",
+                options: [
+                    { label: "A", text: "\"Ich merke, dass was los ist, und ich mache mir Sorgen um dich. Ich bin da, wenn du bereit bist zu reden, kein Druck.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast benannt was du beobachtest, Fursorge ausgedruckt und ihnen Raum gegeben. Das ist unterstutzend ohne aufdringlich zu sein." },
+                    { label: "B", text: "Aufhoren, sich zu melden. Wenn sie reden wollen, kommen sie zu dir.", quality: "poor", style: "avoiding", heatChange: +15, feedback: "Ruckzug wenn jemand kampft kann sich wie Verlassenwerden anfuhlen. Bleib prasent." },
+                    { label: "C", text: "\"Du sagst standig, dir geht's gut, aber offensichtlich nicht. Sag mir einfach, was los ist.\"", quality: "poor", style: "competing", heatChange: +10, feedback: "Verletzlichkeit zu fordern funktioniert nicht. Du kannst niemanden zwingen, sich zu offnen." },
+                    { label: "D", text: "Sie einladen, zusammen etwas Entspanntes zu machen, kein Reden erforderlich.", quality: "good", style: "accommodating", heatChange: -5, feedback: "Kluger Ansatz. Manchmal zahlt Prasenz mehr als Worte." }
+                ]
+            },
+            // STATUS-KONFLIKTE - Arbeit
+            {
+                type: "status",
+                context: "work",
+                situation: "In einem Meeting sagt ein Senior-Kollege abfallig \"Horen wir von jemandem mit mehr Erfahrung\", als du versuchst, eine Idee beizutragen.",
+                question: "Wie reagierst du im Moment?",
+                options: [
+                    { label: "A", text: "\"Ich schatze Erfahrung, und ich bringe auch eine frische Perspektive mit. Kann ich meinen Gedanken teilen und dann dein Feedback dazu bekommen?\"", quality: "best", style: "collaborating", heatChange: -5, feedback: "Du hast ihren Wert anerkannt und gleichzeitig deinen behauptet. Selbstbewusst ohne konfrontativ zu sein." },
+                    { label: "B", text: "Fur den Rest des Meetings still bleiben. Sie wollen deinen Input offensichtlich nicht.", quality: "poor", style: "accommodating", heatChange: +10, feedback: "Schweigen lehrt sie, dass dich abzuweisen funktioniert. Steh fur dich ein." },
+                    { label: "C", text: "\"Das ist ziemlich abfallig. Ich habe auch wertvollen Input.\"", quality: "good", style: "competing", heatChange: +5, feedback: "Du hast das Verhalten benannt, aber der konfrontative Ton konnte Dinge eskalieren." },
+                    { label: "D", text: "Nach dem Meeting deine Idee an die Gruppe mailen, damit sie dokumentiert ist.", quality: "good", style: "avoiding", heatChange: 0, feedback: "Kluge Dokumentation, aber du solltest das Abweisen auch irgendwann direkt ansprechen." }
+                ]
+            },
+            // AUFGABEN-KONFLIKTE - Ehrenamt/Gemeinschaft
+            {
+                type: "task",
+                context: "community",
+                situation: "Du bist in einem Freiwilligen-Komitee, das eine Spendenaktion plant. Die Halfte der Gruppe will eine Gala, die andere einen Spendenlauf. Die Deadline zur Entscheidung ist morgen.",
+                question: "Wie kommst du voran?",
+                options: [
+                    { label: "A", text: "\"Beide Ideen haben Vorteile. Lass uns unsere Ziele auflisten — Spendenziel, Community-Engagement, Freiwilligen-Kapazitat — und sehen, welches Event sie am besten erfullt.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast das Gesprach von Praferenzen zu Kriterien erhoben. Jetzt kann die Entscheidung objektiv sein." },
+                    { label: "B", text: "\"Lass uns einfach abstimmen und fertig. Wir verschwenden Zeit.\"", quality: "poor", style: "competing", heatChange: +10, feedback: "Abstimmen erzeugt Gewinner und Verlierer. Die verlierende Seite wird weniger in die Umsetzung investiert sein." },
+                    { label: "C", text: "\"Was wenn wir dieses Jahr einen Spendenlauf machen und nachstes Jahr eine Gala? So kommt jeder mal dran.\"", quality: "good", style: "compromising", heatChange: -5, feedback: "Anstandiger Kompromiss, obwohl er nicht adressiert, was tatsachlich besser fur die diesjahrigen Ziele ist." },
+                    { label: "D", text: "\"Mir ist beides egal. Entscheidet ihr.\"", quality: "poor", style: "avoiding", heatChange: +5, feedback: "Auszusteigen wenn dein Input gebraucht wird ist eine Form des Druckens." }
+                ]
+            },
+            // PROZESS-KONFLIKTE - Mitbewohner
+            {
+                type: "process",
+                context: "roommates",
+                situation: "Dein Mitbewohner macht nie Abwasch und sagt, sie werden es \"spater\" erledigen. Spater kommt nie. Die Spule ist immer voll.",
+                question: "Wie sprichst du das an?",
+                options: [
+                    { label: "A", text: "\"Hey, die Abwasch-Situation funktioniert nicht fur mich. Konnen wir eine Regel aufstellen — wie Abwasch innerhalb von 24 Stunden? Ich halte mich gerne auch daran.\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast das Problem benannt, eine faire Regel vorgeschlagen und dich selbst darauf verpflichtet. Kollaborativ und klar." },
+                    { label: "B", text: "Einfach ihren Abwasch machen. Es ist einfacher als daruber zu streiten.", quality: "poor", style: "accommodating", heatChange: +15, feedback: "Das baut Groll auf und lehrt sie, dass sie nichts beitragen mussen." },
+                    { label: "C", text: "Ihr dreckiges Geschirr auf ihr Bett legen.", quality: "poor", style: "competing", heatChange: +30, feedback: "Passiv-aggressive Eskalation. Das startet einen Krieg, kein Gesprach." },
+                    { label: "D", text: "\"Was wenn wir Wochen fur Kuchendienst abwechseln? Eine Woche an, eine Woche aus?\"", quality: "good", style: "compromising", heatChange: -5, feedback: "Ein faires System, obwohl du wahrend deiner Woche vielleicht trotzdem mehr machst." }
+                ]
+            },
+            // BEZIEHUNGS-KONFLIKTE - Arbeit
+            {
+                type: "relationship",
+                context: "work",
+                situation: "Ein Teamkollege, auf den du dich verlasst, reagiert nicht mehr auf Nachrichten und hat zwei Ubergaben verpasst, was dich ins Scrambling gebracht hat. Du bist frustriert, weisst aber nicht, was bei ihnen los ist.",
+                question: "Wie gehst du das an?",
+                options: [
+                    { label: "A", text: "\"Hey, mir sind einige verpasste Ubergaben aufgefallen und wollte mal nachfragen. Ist alles okay? Und wie konnen wir sicherstellen, dass Dinge nicht durchs Raster fallen?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast mit Sorge gefuhrt, nicht mit Anklage. Das offnet die Tur fur Verstandnis und Problemlosung." },
+                    { label: "B", text: "Bei der nachsten verpassten Ubergabe deinen Manager in CC setzen, um Dokumentation zu haben.", quality: "poor", style: "competing", heatChange: +15, feedback: "Uber ihren Kopf zu gehen ohne mit ihnen zu reden beschadigt erst Vertrauen und wirkt politisch." },
+                    { label: "C", text: "Anfangen ihre Arbeit selbst zu machen, damit du nicht von ihnen abhangig bist.", quality: "poor", style: "avoiding", heatChange: +10, feedback: "Das ermoglicht das Problem und uberlastet dich. Sprich es direkt an." },
+                    { label: "D", text: "\"Ich muss mich auf diese Ubergaben verlassen konnen. Was ist los?\"", quality: "good", style: "competing", heatChange: +5, feedback: "Direkt und klar uber deine Bedurfnisse, obwohl etwas mehr Empathie helfen wurde." }
+                ]
+            },
+            // STATUS-KONFLIKTE - Familie
+            {
+                type: "status",
+                context: "family",
+                situation: "Dein alteres Geschwister behandelt dich immer noch wie ein Kind, gibt ungebetene Ratschlage und redet uber dich bei Familienessen. Du bist 35.",
+                question: "Wie anderst du diese Dynamik?",
+                options: [
+                    { label: "A", text: "Privat: \"Ich weiss, du meinst es gut, aber wenn du mir Ratschlage gibst, um die ich nicht gebeten habe, fuhlt es sich an, als wurdest du mich nicht als Erwachsenen sehen. Konnen wir eine gleichberechtigtere Dynamik versuchen?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast das Muster benannt, die Auswirkung erklart und Anderung erbeten — alles ohne sie anzugreifen." },
+                    { label: "B", text: "Wenn sie dich das nachste Mal unterbrechen, laut sagen \"Ich war noch nicht fertig.\"", quality: "poor", style: "competing", heatChange: +20, feedback: "Offentliche Konfrontation beim Familienessen schafft Drama fur alle, nicht nur fur sie." },
+                    { label: "C", text: "Es einfach akzeptieren. Geburtsreihenfolge-Dynamiken andern sich nie wirklich.", quality: "poor", style: "accommodating", heatChange: +10, feedback: "Erlernte Hilflosigkeit. Dynamiken konnen sich andern, wenn du fur dich einstehst." },
+                    { label: "D", text: "Anfangen, SIE um Rat zu fragen bei Dingen, in denen du Experte bist, um subtil deine Kompetenz zu zeigen.", quality: "good", style: "competing", heatChange: 0, feedback: "Clever, aber indirekt. Ein direktes Gesprach ware langfristig effektiver." }
+                ]
+            },
+            // PROZESS-KONFLIKTE - Arbeit
+            {
+                type: "process",
+                context: "work",
+                situation: "Dein Team benutzt Slack, aber eine Person schickt stattdessen immer lange E-Mails. Wichtige Updates gehen unter. Andere sind generved, aber niemand sagt was.",
+                question: "Sprichst du es an?",
+                options: [
+                    { label: "A", text: "\"Hey, ich weiss, du bevorzugst E-Mail, aber das Team verlasst sich auf Slack fur schnelle Updates. Konntest du Kernpunkte dort posten, auch wenn du per E-Mail nachlegst?\"", quality: "best", style: "collaborating", heatChange: -5, feedback: "Du hast ihre Praferenz anerkannt, das Team-Bedurfnis erklart und eine Bruckenlosung angeboten." },
+                    { label: "B", text: "Es ist nicht dein Job, Kommunikationstools zu uberwachen. Lass es.", quality: "poor", style: "avoiding", heatChange: +10, feedback: "Alle sind generved, aber niemand handelt. Sei derjenige, der das Team verbessert." },
+                    { label: "C", text: "\"Du musst Slack benutzen wie alle anderen. E-Mail funktioniert hier nicht.\"", quality: "poor", style: "competing", heatChange: +15, feedback: "Einhaltung fordern ohne zu verstehen, warum sie E-Mail bevorzugen, ist konfrontativ." },
+                    { label: "D", text: "In einem Teammeeting vorschlagen, dass die Gruppe sich auf Kommunikationsnormen einigt, ohne die Person zu nennen.", quality: "good", style: "avoiding", heatChange: 0, feedback: "Das konnte funktionieren, aber konnte sich auch passiv-aggressiv anfuhlen, wenn offensichtlich ist, um wen es geht." }
+                ]
+            },
+            // BEZIEHUNGS-KONFLIKTE - Romantisch
+            {
+                type: "relationship",
+                context: "romantic",
+                situation: "Dein Partner hat euren Jahrestag vergessen. Als du es erwahnt hast, sagten sie \"Es ist nur ein Datum, mach kein grosses Ding draus.\" Du bist verletzt von ihrer Abweisung, nicht nur dem Vergessen.",
+                question: "Wie reagierst du?",
+                options: [
+                    { label: "A", text: "\"Es geht nicht um das Datum — ich fuhle mich abgewiesen, wenn du etwas kleinredest, das mir wichtig ist. Konnen wir daruber reden?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast das echte Problem (Abweisung) identifiziert und zum Dialog eingeladen. Das ist emotional intelligent." },
+                    { label: "B", text: "\"Vergiss es. Dir ist offensichtlich egal, was mit uns ist.\"", quality: "poor", style: "competing", heatChange: +25, feedback: "Zu Charakteranklagen zu eskalieren startet einen Streit, kein Gesprach." },
+                    { label: "C", text: "\"Okay\" sagen und ihnen die kalte Schulter zeigen.", quality: "poor", style: "avoiding", heatChange: +20, feedback: "Mauern bestraft ohne zu kommunizieren. Sie konnen nicht reparieren, was sie nicht verstehen." },
+                    { label: "D", text: "\"Okay, ist keine grosse Sache\" und es fallen lassen, obwohl du immer noch verletzt bist.", quality: "poor", style: "accommodating", heatChange: +15, feedback: "Deine Bedurfnisse zu unterdrucken schafft Distanz. Die Verletzung wird spater wieder auftauchen." }
+                ]
+            },
+            // AUFGABEN-KONFLIKTE - Arbeit
+            {
+                type: "task",
+                context: "work",
+                situation: "Du glaubst stark, dass das Team die Produktstrategie basierend auf aktueller Marktforschung andern sollte. Dein Manager hangt an der aktuellen Richtung.",
+                question: "Wie prasentierst du deinen Fall?",
+                options: [
+                    { label: "A", text: "\"Ich habe mir die Marktdaten angeschaut und habe einige Bedenken bezuglich unserer aktuellen Richtung. Kann ich teilen, was ich sehe, und deine Perspektive bekommen?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du bringst Daten, suchst Dialog und respektierst ihre Rolle. So beeinflusst man nach oben." },
+                    { label: "B", text: "\"Die Daten zeigen klar, dass wir pivotieren mussen. Wir machen einen Fehler.\"", quality: "poor", style: "competing", heatChange: +15, feedback: "Recht haben ist nicht genug. Deinem Manager zu sagen, dass sie falsch liegen, funktioniert selten." },
+                    { label: "C", text: "Nichts sagen. Sie sind der Manager, es ist ihre Entscheidung.", quality: "poor", style: "accommodating", heatChange: +5, feedback: "Wenn du wichtige Informationen hast, ist sie zu teilen Teil deines Jobs. Schweigen ist keine Loyalitat." },
+                    { label: "D", text: "Ihnen die Marktforschung mit einer Notiz schicken: \"Fand das interessant. Wert zu diskutieren?\"", quality: "good", style: "avoiding", heatChange: 0, feedback: "Unaufalliger Ansatz, der funktionieren konnte, aber ein direktes Gesprach ware effektiver." }
+                ]
+            },
+            // STATUS-KONFLIKTE - Gemeinschaft
+            {
+                type: "status",
+                context: "community",
+                situation: "Du bist neu in einer Hobbygruppe. Ein etabliertes Mitglied korrigiert dich standig vor allen, selbst wenn du Recht hast. Sie scheinen von deinem Wissen bedroht.",
+                question: "Wie gehst du damit um?",
+                options: [
+                    { label: "A", text: "Nach dem Treffen, privat: \"Ich schatze deine Erfahrung. Ich versuche nicht, dir auf die Fusse zu treten — bin einfach begeistert beizutragen. Konnen wir zusammenarbeiten statt konkurrieren?\"", quality: "best", style: "collaborating", heatChange: -10, feedback: "Du hast ihren Status anerkannt, die Dynamik benannt und einen besseren Weg vorgeschlagen." },
+                    { label: "B", text: "Wenn sie dich das nachste Mal falsch korrigieren, sagen \"Eigentlich stimmt das nicht ganz\" und es vor allen erklaren.", quality: "poor", style: "competing", heatChange: +20, feedback: "Offentliches Ubertrumpfen wird die Rivalitat eskalieren und die Gruppe unwohl machen." },
+                    { label: "C", text: "Aufhoren beizutragen. Es ist das Drama nicht wert.", quality: "poor", style: "avoiding", heatChange: +10, feedback: "Lass dich nicht von der Unsicherheit einer Person zum Schweigen bringen. Du hast Wert zu bieten." },
+                    { label: "D", text: "Sie als Mentorfigur suchen, ihnen offentlich deferieren.", quality: "good", style: "accommodating", heatChange: -5, feedback: "Das konnte sie beruhigen, aber du unterordnest dich unnotig. Du kannst grazios UND gleichberechtigt sein." }
+                ]
+            }
+        ];
+        
+        let currentScenario = 0;
+        let score = 0;
+        let streak = 0;
+        let heat = 30;
+        let bestCount = 0;
+        let goodCount = 0;
+        let poorCount = 0;
+        let styleScores = { competing: 0, collaborating: 0, compromising: 0, avoiding: 0, accommodating: 0 };
+        let shuffledScenarios = [];
+        const TOTAL_ROUNDS = 15;
+        
+        const styleInsights = {
+            competing: "Du hast Konkurrierend gewahlt — deine Bedurfnisse kraftvoll durchsetzen. Das funktioniert, wenn schnelle Entscheidungen notig sind, kann aber Beziehungen beschadigen, wenn uberbenutzt.",
+            collaborating: "Du hast Kollaborierend gewahlt — Losungen suchen, die fur alle funktionieren. Das ist der Goldstandard, braucht aber mehr Zeit und emotionale Energie.",
+            compromising: "Du hast Kompromiss gewahlt — Mittelweg finden. Gut fur schnelle Losung, aber manchmal bekommt keine Partei, was sie wirklich braucht.",
+            avoiding: "Du hast Vermeidend gewahlt — dem Konflikt ausweichen. Das kann fur triviale Themen klug sein, aber bei wichtigen Sachen macht es oft alles schlimmer.",
+            accommodating: "Du hast Anpassend gewahlt — den Bedurfnissen der anderen nachgeben. Das bewahrt Beziehungen, kann aber zu Groll fuhren, wenn du immer nachgibst."
+        };
+        
+        const styleLabelsDE = {
+            competing: "Konkurrierend",
+            collaborating: "Kollaborierend",
+            compromising: "Kompromiss",
+            avoiding: "Vermeidend",
+            accommodating: "Anpassend"
+        };
+        
+        const dominantStyleDescriptions = {
+            competing: "Du neigst zu einem Konkurrierenden Stil — durchsetzungsfahig und direkt dabei, deine Bedurfnisse zu erfullen. Das ist machtvoll, wenn viel auf dem Spiel steht oder schnelles Handeln notig ist, aber achte darauf, keine Beziehungen zu uberwalzen. Ube, mehr Fragen zu stellen, bevor du deine Position darlegst.",
+            collaborating: "Du bist ein naturlicher Kollaborateur — Win-Win-Losungen suchend, die die Bedurfnisse aller adressieren. Das ist der langfristig effektivste Ansatz. Achte nur darauf, nicht zu viel Energie fur Konflikte aufzuwenden, die keine tiefe Problemlosung rechtfertigen.",
+            compromising: "Du bist ein Kompromissler — geschickt darin, schnell einen Mittelweg zu finden. Das ist praktisch und effizient. Das Risiko ist, dass beide Parteien mit dem 'halben Brot' enden, wenn eine bessere Losung moglich gewesen ware. Versuche bei hohem Einsatz zu kollaborieren.",
+            avoiding: "Du neigst zur Vermeidung — bevorzugst es, Konflikten auszuweichen. Das kann fur triviale Themen weise sein, aber wichtige Gesprache zu vermeiden lasst Probleme schwelen. Ube, kleine schwierige Gesprache zu fuhren, um dein Komfortlevel aufzubauen.",
+            accommodating: "Du neigst zum Anpassen — priorisierst Beziehungen uber deine eigenen Bedurfnisse. Das baut Goodwill und Harmonie auf. Das Risiko ist Burnout und Groll, wenn du nie fur dich selbst einstehst. Ube, deine Bedurfnisse zu aussern, auch wenn es sich unangenehm anfuhlt."
+        };
+        
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+        
+        function startGame() {
+            shuffledScenarios = shuffle(scenarios).slice(0, TOTAL_ROUNDS);
+            currentScenario = 0; score = 0; streak = 0; heat = 30;
+            bestCount = 0; goodCount = 0; poorCount = 0;
+            styleScores = { competing: 0, collaborating: 0, compromising: 0, avoiding: 0, accommodating: 0 };
+            
+            updateHeatMeter();
+            document.getElementById('introScreen').classList.remove('active');
+            document.getElementById('scenarioScreen').classList.add('active');
+            showScenario();
+        }
+        
+        function updateHeatMeter() {
+            heat = Math.max(0, Math.min(100, heat));
+            document.getElementById('heatFill').style.width = heat + '%';
+            
+            const heatValue = document.getElementById('heatValue');
+            if (heat <= 25) { heatValue.textContent = 'Kuhl'; heatValue.className = 'heat-value cool'; }
+            else if (heat <= 50) { heatValue.textContent = 'Warm'; heatValue.className = 'heat-value warm'; }
+            else if (heat <= 75) { heatValue.textContent = 'Heiss'; heatValue.className = 'heat-value hot'; }
+            else { heatValue.textContent = 'Explosiv'; heatValue.className = 'heat-value explosive'; }
+        }
+        
+        function showScenario() {
+            const s = shuffledScenarios[currentScenario];
+            document.getElementById('progressFill').style.width = ((currentScenario) / TOTAL_ROUNDS * 100) + '%';
+            
+            const typeIcons = {
+                task: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>',
+                process: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>',
+                relationship: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
+                status: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>'
+            };
+            
+            const contextLabels = { work: 'Arbeitsplatz', family: 'Familie', friends: 'Freundschaft', roommates: 'Mitbewohner', community: 'Gemeinschaft', romantic: 'Beziehung' };
+            const typeLabels = { task: 'Aufgaben-Konflikt', process: 'Prozess-Konflikt', relationship: 'Beziehungs-Konflikt', status: 'Status-Konflikt' };
+            
+            document.getElementById('scenarioContent').innerHTML = `
+                <div class="scenario-card">
+                    <div class="scenario-header">
+                        <div class="scenario-icon ${s.type}">${typeIcons[s.type]}</div>
+                        <div class="scenario-meta">
+                            <div class="scenario-num">Szenario ${currentScenario + 1} von ${TOTAL_ROUNDS}</div>
+                            <div class="scenario-type">
+                                <span class="type-badge ${s.type}">${typeLabels[s.type]}</span>
+                                <span class="context-badge">${contextLabels[s.context]}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="scenario-situation">
+                        <div class="scenario-label">Situation</div>
+                        <div class="scenario-text">${s.situation}</div>
+                    </div>
+                    <div class="scenario-question">${s.question}</div>
+                    <div class="response-options">
+                        ${s.options.map((opt, i) => `
+                            <div class="response-option" onclick="selectOption(${i})">
+                                <div class="response-header">
+                                    <div class="response-label">Option ${opt.label}</div>
+                                    <span class="style-tag">${styleLabelsDE[opt.style]}</span>
+                                    <span class="heat-change ${opt.heatChange > 0 ? 'up' : opt.heatChange < 0 ? 'down' : 'neutral'}">${opt.heatChange > 0 ? '+' : ''}${opt.heatChange}</span>
+                                </div>
+                                <div class="response-text">${opt.text}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('feedbackCard').classList.remove('show');
+        }
+        
+        function selectOption(index) {
+            const s = shuffledScenarios[currentScenario];
+            const opt = s.options[index];
+            
+            const options = document.querySelectorAll('.response-option');
+            options.forEach((o, i) => { o.classList.add('disabled'); o.classList.add(s.options[i].quality); });
+            options[index].classList.add('selected');
+            
+            if (opt.quality === 'best') { score += 10; bestCount++; streak++; }
+            else if (opt.quality === 'good') { score += 5; goodCount++; streak++; }
+            else { poorCount++; streak = 0; }
+            
+            styleScores[opt.style]++;
+            heat += opt.heatChange;
+            updateHeatMeter();
+            
+            document.getElementById('scoreBadge').textContent = score;
+            document.getElementById('streakBadge').textContent = streak + 'x';
+            
+            const feedbackCard = document.getElementById('feedbackCard');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            
+            feedbackIcon.className = 'feedback-icon ' + opt.quality;
+            feedbackTitle.className = 'feedback-title ' + opt.quality;
+            
+            if (opt.quality === 'best') {
+                feedbackIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                feedbackTitle.textContent = 'Exzellente Navigation!';
+            } else if (opt.quality === 'good') {
+                feedbackIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>';
+                feedbackTitle.textContent = 'Gut, Aber...';
+            } else {
+                feedbackIcon.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>';
+                feedbackTitle.textContent = 'Eskalations-Alarm';
+            }
+            
+            document.getElementById('feedbackText').textContent = opt.feedback;
+            document.getElementById('styleInsightText').textContent = styleInsights[opt.style];
+            
+            const nextBtn = feedbackCard.querySelector('.next-btn');
+            if (currentScenario === TOTAL_ROUNDS - 1) {
+                nextBtn.innerHTML = 'Ergebnisse Ansehen <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+            }
+            
+            feedbackCard.classList.add('show');
+        }
+        
+        function nextScenario() {
+            currentScenario++;
+            if (currentScenario < TOTAL_ROUNDS) { showScenario(); }
+            else { showResults(); }
+        }
+        
+        function showResults() {
+            document.getElementById('scenarioScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            
+            const maxScore = TOTAL_ROUNDS * 10;
+            const percentage = Math.round((score / maxScore) * 100);
+            
+            document.getElementById('finalScore').textContent = percentage + '%';
+            document.getElementById('bestCount').textContent = bestCount;
+            document.getElementById('goodCount').textContent = goodCount;
+            document.getElementById('poorCount').textContent = poorCount;
+            
+            const finalHeatSpan = document.getElementById('finalHeat').querySelector('span');
+            if (heat <= 25) { finalHeatSpan.textContent = 'Kuhl — Du hast meisterhaft deeskaliert!'; finalHeatSpan.style.color = 'var(--green)'; }
+            else if (heat <= 50) { finalHeatSpan.textContent = 'Warm — Handhabbare Spannung'; finalHeatSpan.style.color = 'var(--gold)'; }
+            else if (heat <= 75) { finalHeatSpan.textContent = 'Heiss — Beziehungen sind belastet'; finalHeatSpan.style.color = 'var(--orange)'; }
+            else { finalHeatSpan.textContent = 'Explosiv — Brucken konnten verbrannt sein'; finalHeatSpan.style.color = 'var(--red)'; }
+            
+            const totalStyleChoices = Object.values(styleScores).reduce((a, b) => a + b, 0);
+            const stylePercentages = {};
+            for (const style in styleScores) {
+                stylePercentages[style] = totalStyleChoices > 0 ? Math.round((styleScores[style] / totalStyleChoices) * 100) : 0;
+            }
+            
+            for (const style in stylePercentages) {
+                document.getElementById(style + 'Bar').style.width = stylePercentages[style] + '%';
+                document.getElementById(style + 'Value').textContent = stylePercentages[style] + '%';
+            }
+            
+            let dominantStyle = 'collaborating';
+            let maxStyleScore = 0;
+            for (const style in styleScores) {
+                if (styleScores[style] > maxStyleScore) { maxStyleScore = styleScores[style]; dominantStyle = style; }
+            }
+            
+            document.getElementById('dominantStyleTitle').textContent = `Dein Dominanter Stil: ${styleLabelsDE[dominantStyle]}`;
+            document.getElementById('dominantStyleContent').textContent = dominantStyleDescriptions[dominantStyle];
+            
+            localStorage.setItem('tap_in_conflict_navigator_complete_de', 'true');
+            localStorage.setItem('tap_in_conflict_navigator_score_de', percentage);
+            localStorage.setItem('tap_in_conflict_navigator_style_de', dominantStyle);
+            
+            let totalXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', totalXP + 100);
+        }
+        
+        function playAgain() {
+            currentScenario = 0; score = 0; streak = 0; heat = 30;
+            bestCount = 0; goodCount = 0; poorCount = 0;
+            styleScores = { competing: 0, collaborating: 0, compromising: 0, avoiding: 0, accommodating: 0 };
+            
+            document.getElementById('scoreBadge').textContent = '0';
+            document.getElementById('streakBadge').textContent = '0x';
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('introScreen').classList.add('active');
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

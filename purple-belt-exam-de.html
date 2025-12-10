@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Lila-Gurt Prüfung - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --black:#0d0d14; --dark-grey:#1a1a24; --mid-grey:#2a2a3a; --light-grey:#8a8a9a; --white:#ffffff; --green:#10b981; --gold:#d4a853; --belt-color:#7c3aed; --belt-accent:#8b5cf6; --red:#ef4444; }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--black);min-height:100vh;color:var(--white);padding:30px 20px;}
+        .container{max-width:500px;margin:0 auto;}
+        .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:30px;}
+        .back-link{color:var(--light-grey);text-decoration:none;font-size:0.9rem;}
+        .progress-text{color:var(--belt-accent);font-size:0.85rem;font-weight:600;}
+        .progress-bar{height:4px;background:var(--mid-grey);border-radius:2px;margin-bottom:40px;}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--belt-color),var(--belt-accent));border-radius:2px;transition:width 0.3s;}
+        .intro-screen{text-align:center;padding:40px 0;}
+        .intro-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--belt-color),var(--belt-accent));border-radius:50%;margin:0 auto 25px;display:flex;align-items:center;justify-content:center;}
+        .intro-icon svg{width:40px;height:40px;color:var(--white);}
+        .intro-title{font-size:1.5rem;font-weight:700;margin-bottom:15px;}
+        .intro-text{color:var(--light-grey);font-size:0.95rem;line-height:1.6;margin-bottom:30px;}
+        .intro-rules{background:var(--dark-grey);border-radius:12px;padding:20px;text-align:left;margin-bottom:30px;}
+        .intro-rules h4{margin-bottom:12px;font-size:0.9rem;}
+        .intro-rules ul{list-style:none;}
+        .intro-rules li{padding:8px 0;font-size:0.85rem;color:var(--light-grey);display:flex;align-items:center;gap:10px;}
+        .intro-rules li::before{content:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';color:var(--belt-accent);}
+        .question-screen{display:none;}
+        .question-screen.active{display:block;}
+        .scenario-box{background:var(--dark-grey);border:1px solid var(--mid-grey);border-radius:12px;padding:20px;margin-bottom:25px;}
+        .scenario-label{font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--belt-accent);margin-bottom:10px;}
+        .scenario-text{font-size:0.95rem;line-height:1.6;color:rgba(255,255,255,0.9);}
+        .question-text{font-size:1.1rem;font-weight:600;margin-bottom:20px;line-height:1.4;}
+        .options{display:flex;flex-direction:column;gap:12px;margin-bottom:25px;}
+        .option{background:var(--dark-grey);border:2px solid var(--mid-grey);border-radius:12px;padding:16px 20px;cursor:pointer;transition:all 0.2s;font-size:0.9rem;line-height:1.5;}
+        .option:hover{border-color:var(--belt-accent);}
+        .option.selected{border-color:var(--belt-accent);background:rgba(139,92,246,0.1);}
+        .option.correct{border-color:var(--green);background:rgba(16,185,129,0.1);}
+        .option.incorrect{border-color:var(--red);background:rgba(239,68,68,0.1);opacity:0.6;}
+        .feedback-box{background:var(--dark-grey);border-radius:12px;padding:20px;margin-bottom:20px;display:none;}
+        .feedback-box.show{display:block;}
+        .feedback-title{font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+        .feedback-title.correct{color:var(--green);}
+        .feedback-title.incorrect{color:var(--red);}
+        .feedback-text{font-size:0.9rem;color:var(--light-grey);line-height:1.5;}
+        .btn{width:100%;padding:16px;border-radius:12px;font-size:1rem;font-weight:600;cursor:pointer;transition:all 0.2s;border:none;}
+        .btn-primary{background:linear-gradient(135deg,var(--belt-color),var(--belt-accent));color:var(--white);}
+        .btn-primary:hover{transform:translateY(-2px);}
+        .btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+        .results-screen{display:none;text-align:center;padding:40px 0;}
+        .results-screen.active{display:block;}
+        .results-icon{width:100px;height:100px;background:linear-gradient(135deg,var(--belt-color),var(--belt-accent));border-radius:50%;margin:0 auto 25px;display:flex;align-items:center;justify-content:center;}
+        .results-title{font-size:1.8rem;font-weight:700;margin-bottom:10px;color:var(--belt-accent);}
+        .results-subtitle{color:var(--light-grey);margin-bottom:30px;}
+        .score-display{font-size:3rem;font-weight:800;color:var(--belt-accent);margin-bottom:10px;}
+        .score-label{color:var(--light-grey);margin-bottom:30px;}
+        .cert-box{background:linear-gradient(135deg,rgba(139,92,246,0.2),rgba(26,26,26,0.3));border:2px solid var(--belt-accent);border-radius:16px;padding:30px;margin-bottom:30px;}
+        .cert-title{font-size:1.2rem;font-weight:700;color:var(--belt-accent);margin-bottom:15px;}
+        .cert-text{color:var(--light-grey);font-size:0.95rem;line-height:1.6;}
+        .retry-msg{background:var(--dark-grey);border-radius:12px;padding:20px;margin-bottom:20px;}
+        .retry-msg p{color:var(--light-grey);font-size:0.9rem;}
+        .btn-secondary{background:var(--dark-grey);border:1px solid var(--mid-grey);color:var(--light-grey);margin-top:10px;}
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <a href="gym-focused-de.html" class="back-link"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Verlassen</a>
+            <span class="progress-text" id="progressText">Frage 0 / 10</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+
+        <div class="intro-screen" id="introScreen">
+            <div class="intro-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+            </div>
+            <h1 class="intro-title">Lila-Gurt Prüfung</h1>
+            <p class="intro-text">Beweise deine Meisterschaft in Commitment, Entscheidungsfindung, Alignment und Buy-in.</p>
+            
+            <div class="intro-rules">
+                <h4>Prüfungsregeln</h4>
+                <ul>
+                    <li>10 szenariobasierte Fragen</li>
+                    <li>Du brauchst 8/10 richtig zum Bestehen</li>
+                    <li>Jede Frage testet Purple-Belt-Prinzipien</li>
+                    <li>Nimm dir Zeit und denke sorgfältig nach</li>
+                </ul>
+            </div>
+            
+            <button class="btn btn-primary" onclick="startExam()">Prüfung starten</button>
+        </div>
+
+        <div class="question-screen" id="questionScreen">
+            <div class="scenario-box">
+                <div class="scenario-label">Szenario</div>
+                <p class="scenario-text" id="scenarioText"></p>
+            </div>
+            <p class="question-text" id="questionText"></p>
+            <div class="options" id="optionsContainer"></div>
+            <div class="feedback-box" id="feedbackBox">
+                <div class="feedback-title" id="feedbackTitle"></div>
+                <p class="feedback-text" id="feedbackText"></p>
+            </div>
+            <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Nächste Frage</button>
+        </div>
+
+        <div class="results-screen" id="resultsScreen">
+            <div class="results-icon">
+                <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <h2 class="results-title" id="resultsTitle">Ergebnis</h2>
+            <p class="results-subtitle" id="resultsSubtitle"></p>
+            <div class="score-display" id="scoreDisplay">0/10</div>
+            <p class="score-label">Richtige Antworten</p>
+            
+            <div id="passContent">
+                <div class="cert-box">
+                    <div class="cert-title">Lila-Gurt verdient</div>
+                    <p class="cert-text">Du beherrschst Commitment und Alignment. Du weißt, wie man Buy-in aufbaut, Entscheidungen verankert und echte Team-Ausrichtung schafft.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='purple-belt-ceremony-de.html'">Lila-Gurt abholen</button>
+            </div>
+            
+            <div id="failContent" style="display: none;">
+                <div class="retry-msg">
+                    <p>Du brauchst 8/10 zum Bestehen. Wiederhole die Lila-Gurt Stripes und versuche es erneut.</p>
+                </div>
+                <button class="btn btn-primary" onclick="location.href='purple-belt-stripe1-gamified-de.html'">Lila-Gurt wiederholen</button>
+                <button class="btn btn-secondary" onclick="retryExam()">Erneut versuchen</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                scenario: "Dein Team hat intensiv über Strategie diskutiert. Zwei Optionen sind sinnvoll, aber es gibt keinen Konsens. Einige sind frustriert.",
+                question: "Welches Commitment-Prinzip passt hier?",
+                options: [
+                    "Abstimmen – Mehrheit entscheidet",
+                    "Als Führungskraft die Entscheidung treffen und weitergehen",
+                    "Mehr Zeit geben, damit alle nachdenken können",
+                    "Menschen müssen gehört werden – dann schließen sie sich der Entscheidung an, auch ohne Konsens"
+                ],
+                correct: 3,
+                feedback: "Commitment braucht keinen Konsens. Wichtig ist, dass Beiträge ernsthaft gehört werden. Dann können sich alle hinter eine Entscheidung stellen, auch wenn es nicht ihre Präferenz war."
+            },
+            {
+                scenario: "Nach einer Entscheidung setzt ein Teammitglied stillschweigend nicht um. Andere bemerken es bereits.",
+                question: "Was zeigt das im Commitment-Framework?",
+                options: [
+                    "Passive Ablehnung der Entscheidung",
+                    "Fehlende Fähigkeiten – Training nötig",
+                    "Falsches Verständnis des Ziels",
+                    "Prioritätenkonflikt mit anderen Projekten"
+                ],
+                correct: 0,
+                feedback: "Fehlendes Commitment zeigt sich in leiser, passiver Nicht-Umsetzung. Rückkehr zu Alignment und Klarheit über die Entscheidung hilft."
+            },
+            {
+                scenario: "Ein Bereichsleiter war im Meeting lautstark dafür, ist jetzt aber still und bremst Umsetzung.",
+                question: "Was ist der beste nächste Schritt?",
+                options: [
+                    "Öffentlich Druck machen, damit er liefert",
+                    "1:1 sprechen, Einwände sammeln und Commitment erneuern",
+                    "Ein anderes Projekt priorisieren",
+                    "Ihn aus der Entscheidung entfernen"
+                ],
+                correct: 1,
+                feedback: "Ein 1:1 zum Hinterfragen von Einwänden und erneutes Commitment sichern verhindert versteckte Blockaden."
+            },
+            {
+                scenario: "Zwei Teams haben unterschiedliche Ziele, die sich gegenseitig blockieren. Beide argumentieren gut.",
+                question: "Welche Purple-Belt-Praxis nutzt du?",
+                options: [
+                    "Parallel laufen lassen und hoffen, dass es sich klärt",
+                    "Ressourcen halbieren, damit beide etwas liefern",
+                    "Gemeinsame Entscheidungs- und Erfolgskriterien festlegen",
+                    "Die lautere Führungskraft entscheiden lassen"
+                ],
+                correct: 2,
+                feedback: "Gemeinsame Kriterien schaffen Klarheit und verhindert, dass laute Stimmen gewinnen."
+            },
+            {
+                scenario: "Ein Projekt stockt, weil sich niemand zuständig fühlt.",
+                question: "Was tust du?",
+                options: [
+                    "Ein Meeting ansetzen, um noch mehr Ideen zu sammeln",
+                    "Eine verantwortliche Person benennen und Entscheidungsraum klären",
+                    "Deadline verschieben, bis mehr Infos da sind",
+                    "Problem eskalieren"
+                ],
+                correct: 1,
+                feedback: "Commitment braucht klare Verantwortlichkeit und Entscheidungsraum."
+            },
+            {
+                scenario: "Nach einer Entscheidung tauchen neue Daten auf, die die Wahl infrage stellen.",
+                question: "Wie bleibst du commitment-stark?",
+                options: [
+                    "Ignorieren, damit das Team nicht verwirrt wird",
+                    "Sofort alles stoppen",
+                    "Transparenz über neue Infos, Entscheidung bewusst bestätigen oder anpassen",
+                    "Stillschweigend Kurs wechseln"
+                ],
+                correct: 2,
+                feedback: "Commitment heißt nicht stur bleiben. Transparenz + bewusstes Bestätigen oder Kurskorrektur sichern Vertrauen."
+            },
+            {
+                scenario: "Du siehst, dass Meetings enden, ohne dass Entscheidungen dokumentiert sind.",
+                question: "Welche Praxis fehlt?",
+                options: [
+                    "Klarer Decision-Owner und Log mit Was/Warum",
+                    "Mehr Diskussionen",
+                    "Mehr Teilnehmer",
+                    "Längere Meetings"
+                ],
+                correct: 0,
+                feedback: "Entscheidungen brauchen Owner, Was/Warum und Nachverfolgung."
+            },
+            {
+                scenario: "Ein Stakeholder akzeptiert die Entscheidung, sagt aber: „Ich probiere es, aber verspreche nichts.“",
+                question: "Wie reagierst du?",
+                options: [
+                    "Akzeptieren – besser als gar nichts",
+                    "Verbindlichkeit klären: was genau, bis wann, messbar",
+                    "Neuen Termin ansetzen, um später zu reden",
+                    "Ihn aus der Umsetzung nehmen"
+                ],
+                correct: 1,
+                feedback: "Commitment wird konkret: Was, wann, wie messbar. Halbe Zusagen führen zu halben Ergebnissen."
+            },
+            {
+                scenario: "Ein Teammitglied stellt die Entscheidung in einem anderen Meeting erneut zur Diskussion.",
+                question: "Welche Linie ziehst du?",
+                options: [
+                    "Debatte erneut starten",
+                    "Klarstellen: Entscheidung steht, neue Infos willkommen – aber keine Endlosschleife",
+                    "Ignorieren",
+                    "Person öffentlich kritisieren"
+                ],
+                correct: 1,
+                feedback: "Schütze getroffene Entscheidungen und halte Raum für neue Informationen, ohne endlose Reopens."
+            },
+            {
+                scenario: "Das Team hat 7/10 Fragen richtig. Zwei waren kritische Kaufentscheidungen, eine zu Entscheidungslogik.",
+                question: "Bestehenskriterium?",
+                options: [
+                    "7/10 reicht immer",
+                    "Kritische Fragen zählen doppelt; 8/10 Gesamt + kritische korrekt",
+                    "Nur Anzahl richtig zählt",
+                    "Nur Zeit zählt"
+                ],
+                correct: 1,
+                feedback: "Kritische Entscheidungen wie Kauf/Stoppen wiegen mehr. 8/10 plus kritische richtig spiegelt Reife wider."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function startExam() {
+            document.getElementById('introScreen').style.display = 'none';
+            document.getElementById('questionScreen').classList.add('active');
+            updateProgress();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('scenarioText').textContent = q.scenario;
+            document.getElementById('questionText').textContent = q.question;
+            const optionsEl = document.getElementById('optionsContainer');
+            optionsEl.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const div = document.createElement('div');
+                div.className = 'option';
+                div.textContent = opt;
+                div.onclick = () => selectOption(div, idx === q.correct);
+                optionsEl.appendChild(div);
+            });
+            document.getElementById('feedbackBox').classList.remove('show');
+            document.getElementById('feedbackTitle').textContent = '';
+            document.getElementById('feedbackText').textContent = '';
+            document.getElementById('nextBtn').disabled = true;
+        }
+
+        function selectOption(el, isCorrect) {
+            document.querySelectorAll('.option').forEach(o => o.classList.remove('selected','correct','incorrect'));
+            el.classList.add('selected');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            if (isCorrect) {
+                el.classList.add('correct');
+                feedbackTitle.textContent = 'Richtig!';
+                feedbackTitle.className = 'feedback-title correct';
+                score++;
+            } else {
+                el.classList.add('incorrect');
+                feedbackTitle.textContent = 'Fast – überlege das Prinzip';
+                feedbackTitle.className = 'feedback-title incorrect';
+            }
+            feedbackText.textContent = questions[currentQuestion].feedback;
+            document.getElementById('feedbackBox').classList.add('show');
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                updateProgress();
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function updateProgress() {
+            const pct = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${pct}%`;
+            document.getElementById('progressText').textContent = `Frage ${currentQuestion} / ${questions.length}`;
+        }
+
+        function showResults() {
+            document.getElementById('questionScreen').classList.remove('active');
+            document.getElementById('resultsScreen').classList.add('active');
+            document.getElementById('scoreDisplay').textContent = `${score}/${questions.length}`;
+            const pass = score >= 8;
+            document.getElementById('resultsSubtitle').textContent = pass ? 'Bestanden! Starke Alignment- und Commitment-Skills.' : 'Nicht bestanden – bitte wiederhole die Stripes und versuche es erneut.';
+            document.getElementById('resultsTitle').textContent = pass ? 'Gratulation!' : 'Weiter üben';
+            document.getElementById('passContent').style.display = pass ? 'block' : 'none';
+            document.getElementById('failContent').style.display = pass ? 'none' : 'block';
+        }
+
+        function retryExam() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('resultsScreen').classList.remove('active');
+            document.getElementById('questionScreen').classList.add('active');
+            updateProgress();
+            renderQuestion();
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

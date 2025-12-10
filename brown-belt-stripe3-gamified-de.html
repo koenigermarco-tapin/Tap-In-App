@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Brown Belt Stripe 3: Change Management - TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brown: #8b6914;
+            --brown-light: #a67c00;
+            --green: #10b981;
+            --gold: #d4a853;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); overflow-x: hidden; }
+        .header { position: fixed; top: 0; left: 0; right: 0; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; z-index: 100; background: linear-gradient(to bottom, var(--black), transparent); }
+        .back-btn { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; opacity: 0.7; }
+        .xp-display { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+        .journey-line { position: fixed; top: 0; left: 0; right: 0; height: 3px; background: var(--mid-grey); z-index: 101; }
+        .journey-progress { height: 100%; background: linear-gradient(90deg, var(--brown), var(--green)); width: 0%; transition: width 0.6s ease; }
+        .container { max-width: 500px; margin: 0 auto; padding: 80px 24px 40px; min-height: 100vh; display: flex; flex-direction: column; justify-content: center; }
+        .beat { display: none; animation: fadeIn 0.5s ease; }
+        .beat.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .beat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px; color: var(--brown-light); margin-bottom: 20px; }
+        .beat-text { font-size: 1.4rem; font-weight: 500; line-height: 1.5; margin-bottom: 30px; }
+        .beat-text-small { font-size: 1.1rem; line-height: 1.6; margin-bottom: 25px; color: rgba(255,255,255,0.9); }
+        .beat-subtext { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; margin-bottom: 25px; }
+        .continue-btn { background: none; border: 1px solid var(--mid-grey); color: var(--light-grey); padding: 14px 28px; border-radius: 8px; font-size: 0.9rem; cursor: pointer; transition: all 0.2s; margin-top: 10px; width: 100%; }
+        .continue-btn:hover { border-color: var(--light-grey); color: var(--white); }
+        .continue-btn.primary { background: var(--brown); border-color: var(--brown); color: var(--white); }
+        .continue-btn:disabled { opacity: 0.3; pointer-events: none; }
+        .binary-options { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; }
+        .binary-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.25s ease; }
+        .binary-card:hover { border-color: var(--brown); transform: translateY(-2px); }
+        .binary-card.selected { border-color: var(--brown); background: rgba(139, 105, 20, 0.15); }
+        .binary-card-title { font-weight: 600; margin-bottom: 6px; }
+        .binary-card-sub { font-size: 0.85rem; color: var(--light-grey); }
+        .scenario-options { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+        .scenario-card { background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 10px; padding: 16px 20px; font-size: 0.95rem; cursor: pointer; transition: all 0.2s; }
+        .scenario-card:hover { border-color: var(--light-grey); }
+        .scenario-card.selected { border-color: var(--brown); background: rgba(139, 105, 20, 0.1); }
+        .scenario-card.correct { border-color: var(--green); background: rgba(16, 185, 129, 0.1); }
+        .scenario-card.incorrect { border-color: var(--red); background: rgba(239, 68, 68, 0.1); opacity: 0.6; }
+        .spectrum-container { margin: 30px 0; }
+        .spectrum-line { height: 8px; background: var(--mid-grey); border-radius: 4px; position: relative; cursor: pointer; }
+        .spectrum-marker { width: 24px; height: 24px; background: var(--brown); border-radius: 50%; position: absolute; top: 50%; transform: translate(-50%, -50%); left: 50%; box-shadow: 0 2px 10px rgba(139, 105, 20, 0.4); display: none; }
+        .spectrum-marker.visible { display: block; }
+        .spectrum-labels { display: flex; justify-content: space-between; margin-top: 12px; font-size: 0.8rem; color: var(--light-grey); }
+        .pill-options { display: flex; justify-content: space-between; gap: 8px; margin: 25px 0; }
+        .pill { flex: 1; padding: 14px 8px; background: var(--dark-grey); border: 2px solid var(--mid-grey); border-radius: 8px; text-align: center; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .pill:hover { border-color: var(--brown); }
+        .pill.selected { background: var(--brown); border-color: var(--brown); }
+        .pill-labels { display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--light-grey); margin-top: 8px; }
+        .quote-block { border-left: 3px solid var(--gold); padding-left: 20px; margin: 30px 0; }
+        .quote-text { font-size: 1.15rem; font-style: italic; color: var(--white); line-height: 1.6; margin-bottom: 12px; }
+        .quote-author { font-size: 0.85rem; color: var(--gold); }
+        .insight-reveal { background: linear-gradient(135deg, rgba(139, 105, 20, 0.15), rgba(139, 105, 20, 0.05)); border: 1px solid var(--brown); border-radius: 16px; padding: 25px; margin: 25px 0; }
+        .insight-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: var(--brown-light); margin-bottom: 10px; }
+        .insight-text { font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.85); }
+        .stat-reveal { text-align: center; padding: 30px 20px; background: var(--dark-grey); border-radius: 16px; margin: 25px 0; }
+        .stat-number { font-size: 3.5rem; font-weight: 800; color: var(--red); line-height: 1; margin-bottom: 8px; }
+        .stat-label { font-size: 1.1rem; color: var(--white); font-weight: 600; }
+        .quickfire-container { margin: 20px 0; }
+        .quickfire-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); }
+        .quickfire-item.answered { opacity: 0.5; }
+        .quickfire-text { font-size: 0.95rem; flex: 1; padding-right: 15px; }
+        .quickfire-btns { display: flex; gap: 8px; }
+        .quickfire-btn { padding: 8px 16px; background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 6px; color: var(--white); font-size: 0.85rem; cursor: pointer; }
+        .quickfire-btn.selected { background: var(--brown); border-color: var(--brown); }
+        .callback-box { background: linear-gradient(135deg, rgba(139, 105, 20, 0.15), rgba(16, 185, 129, 0.1)); border: 1px solid var(--brown); border-radius: 16px; padding: 25px; margin: 20px 0; }
+        .callback-text { font-size: 1rem; line-height: 1.6; }
+        .callback-highlight { color: var(--gold); font-weight: 600; }
+        .mirror-reveal { margin: 30px 0; }
+        .mirror-item { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--mid-grey); opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; }
+        .mirror-item.visible { opacity: 1; transform: translateX(0); }
+        .mirror-item:last-child { border-bottom: none; }
+        .mirror-label { color: var(--light-grey); font-size: 0.9rem; }
+        .mirror-value { font-weight: 600; font-size: 1rem; color: var(--brown-light); }
+        .reveal-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 20px 0; opacity: 0; transform: translateY(10px); transition: all 0.4s; }
+        .reveal-box.show { opacity: 1; transform: translateY(0); }
+        .reveal-title { font-weight: 600; color: var(--green); margin-bottom: 10px; }
+        .reveal-text { font-size: 0.95rem; color: var(--light-grey); line-height: 1.6; }
+        .framework-box { background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 20px 0; }
+        .framework-item { display: flex; align-items: flex-start; gap: 15px; margin-bottom: 15px; }
+        .framework-item:last-child { margin-bottom: 0; }
+        .framework-num { width: 32px; height: 32px; background: var(--brown); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+        .framework-content { flex: 1; }
+        .framework-word { font-weight: 600; color: var(--white); margin-bottom: 4px; }
+        .framework-desc { font-size: 0.85rem; color: var(--light-grey); }
+        .completion-container { text-align: center; }
+        .completion-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--brown), var(--brown-light)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 25px; }
+        .completion-title { font-size: 1.5rem; font-weight: 700; margin-bottom: 10px; }
+        .completion-subtitle { color: var(--light-grey); margin-bottom: 25px; }
+        .xp-earned-final { display: inline-block; background: rgba(212, 168, 83, 0.15); border: 1px solid rgba(212, 168, 83, 0.3); padding: 12px 24px; border-radius: 25px; margin: 20px 0; }
+        .xp-earned-final span { color: var(--gold); font-weight: 700; font-size: 1.2rem; }
+        .skills-learned { text-align: left; background: var(--dark-grey); border-radius: 12px; padding: 20px; margin: 25px 0; }
+        .skill-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--mid-grey); }
+        .skill-item:last-child { border-bottom: none; }
+        .skill-check { width: 24px; height: 24px; background: var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .unlock-reveal { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 105, 20, 0.1)); border: 1px solid var(--green); border-radius: 16px; padding: 20px; margin: 20px 0; text-align: center; }
+        .unlock-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--green); margin-bottom: 8px; }
+        .unlock-name { font-size: 1.1rem; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="brown-belt-stripe3-gamified.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="brown-belt-stripe3-gamified-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div class="journey-line"><div class="journey-progress" id="journeyProgress"></div></div>
+    <header class="header">
+        <a href="gym-focused-de.html" class="back-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Beenden</a>
+        <div class="xp-display">+<span id="xpDisplay">0</span> XP</div>
+    </header>
+
+    <main class="container">
+        <!-- Beat 1: Hook -->
+        <div class="beat active" id="beat1">
+            <div class="beat-label">Brown Belt · Stripe 3</div>
+            <p class="beat-text">Veränderung scheitert in 70% der Fälle. Nicht wegen schlechter Ideen—sondern wegen schlechter Umsetzung.</p>
+            <p class="beat-subtext">Die meisten Führungskräfte konzentrieren sich auf das Was der Veränderung. Brown Belts meistern das Wie.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 2: Binary -->
+        <div class="beat" id="beat2">
+            <p class="beat-text-small">Wenn du eine große Veränderung vorantreiben musst, ist dein Instinkt...</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(2, 'fast')">
+                    <div class="binary-card-title">Schnell handeln und iterieren</div>
+                    <div class="binary-card-sub">Ankündigen, Widerstand behandeln wie er kommt</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(2, 'prepare')">
+                    <div class="binary-card-title">Zuerst Unterstützung aufbauen</div>
+                    <div class="binary-card-sub">Buy-in holen bevor man an die Öffentlichkeit geht</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 3: Insight -->
+        <div class="beat" id="beat3">
+            <div class="insight-reveal">
+                <div class="insight-label">Was das zeigt</div>
+                <p class="insight-text" id="insight3"></p>
+            </div>
+            <p class="beat-subtext">Beide Ansätze haben Vor- und Nachteile. Der Schlüssel liegt darin zu wissen, wann welcher richtig ist.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 4: The Statistic -->
+        <div class="beat" id="beat4">
+            <div class="stat-reveal">
+                <div class="stat-number">70%</div>
+                <div class="stat-label">der organisatorischen Veränderungen scheitern</div>
+            </div>
+            <p class="beat-subtext">McKinsey, Kotter und Dutzende Studien bestätigen es. Die meisten Veränderungsinitiativen erreichen ihre Ziele nicht. Nicht weil die Strategie falsch war—sondern weil die Menschen nicht bereit waren.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 5: Why Change Fails -->
+        <div class="beat" id="beat5">
+            <p class="beat-text">Die fünf Gründe, warum Veränderung scheitert.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Veränderungs-Killer</div>
+                <p class="insight-text"><strong>1. Keine Dringlichkeit</strong> — Menschen sehen nicht, warum es wichtig ist<br><br><strong>2. Keine Koalition</strong> — Führungskräfte versuchen es allein<br><br><strong>3. Keine Vision</strong> — Kann den Zielzustand nicht erklären<br><br><strong>4. Keine Erfolge</strong> — Dauert zu lange, um Fortschritt zu sehen<br><br><strong>5. Zu früher Sieg</strong> — Veränderungen sind nicht in der Kultur verankert</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 6: Spectrum -->
+        <div class="beat" id="beat6">
+            <p class="beat-text-small">Wie reagieren Menschen typischerweise, wenn du eine Veränderung ankündigst?</p>
+            <p class="beat-subtext">Tippe irgendwo auf die Linie.</p>
+            <div class="spectrum-container">
+                <div class="spectrum-line" id="spectrum6" onclick="selectSpectrum(event, 6)">
+                    <div class="spectrum-marker" id="marker6"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>Widerständig / skeptisch</span>
+                    <span>Begeistert / bereit</span>
+                </div>
+            </div>
+            <button class="continue-btn" id="continue6" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 7: Kotter's Model -->
+        <div class="beat" id="beat7">
+            <p class="beat-text">Kotters 8-Stufen-Veränderungsmodell.</p>
+            <div class="framework-box">
+                <div class="framework-item"><div class="framework-num">1</div><div class="framework-content"><div class="framework-word">Dringlichkeit schaffen</div><div class="framework-desc">Anderen helfen, die Notwendigkeit zu sehen</div></div></div>
+                <div class="framework-item"><div class="framework-num">2</div><div class="framework-content"><div class="framework-word">Koalition aufbauen</div><div class="framework-desc">Die richtigen Leute an Bord holen</div></div></div>
+                <div class="framework-item"><div class="framework-num">3</div><div class="framework-content"><div class="framework-word">Vision entwickeln</div><div class="framework-desc">Klären wohin die Reise geht</div></div></div>
+                <div class="framework-item"><div class="framework-num">4</div><div class="framework-content"><div class="framework-word">Kommunizieren</div><div class="framework-desc">Die Botschaft 7x öfter wiederholen als du denkst</div></div></div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 8: Kotter continued -->
+        <div class="beat" id="beat8">
+            <div class="framework-box">
+                <div class="framework-item"><div class="framework-num">5</div><div class="framework-content"><div class="framework-word">Hindernisse beseitigen</div><div class="framework-desc">Den Weg für Veränderung freimachen</div></div></div>
+                <div class="framework-item"><div class="framework-num">6</div><div class="framework-content"><div class="framework-word">Schnelle Erfolge schaffen</div><div class="framework-desc">Früh sichtbaren Erfolg generieren</div></div></div>
+                <div class="framework-item"><div class="framework-num">7</div><div class="framework-content"><div class="framework-word">Auf Erfolg aufbauen</div><div class="framework-desc">Momentum aufrechterhalten</div></div></div>
+                <div class="framework-item"><div class="framework-num">8</div><div class="framework-content"><div class="framework-word">In Kultur verankern</div><div class="framework-desc">Langfristig verankern</div></div></div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 9: Szenario 1 -->
+        <div class="beat" id="beat9">
+            <div class="beat-label">Anwenden</div>
+            <p class="beat-text-small">Du musst einen neuen Prozess einführen. Die Führung stimmt zu, aber das Team sieht nicht, warum er nötig ist. Erster Schritt?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(9, 'announce')">Send an email announcing the change and timeline</div>
+                <div class="scenario-card" onclick="selectSzenario(9, 'urgency')" data-correct="true">Share data showing why the current approach isn't working</div>
+                <div class="scenario-card" onclick="selectSzenario(9, 'train')">Schedule training sessions on the new process</div>
+                <div class="scenario-card" onclick="selectSzenario(9, 'champion')">Find one team member who's excited and start there</div>
+            </div>
+            <div class="reveal-box" id="reveal9">
+                <div class="reveal-title">Create Urgency First</div>
+                <div class="reveal-text">Without urgency, people ask "why bother?" Show them the cost of staying the same before you explain the solution. Data, stories, and real consequences create the felt need to change.</div>
+            </div>
+            <button class="continue-btn" id="btn9" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 10: Quick Fire -->
+        <div class="beat" id="beat10">
+            <div class="beat-label">Schnelle Prüfung</div>
+            <p class="beat-text-small" style="margin-bottom: 25px;">Denke an deine letzte Veränderungsinitiative.</p>
+            <div class="quickfire-container" id="quickfire">
+                <div class="quickfire-item" id="qf1">
+                    <span class="quickfire-text">I spent enough time building urgency before announcing</span>
+                    <div class="quickfire-btns">
+                        <button class="quickfire-btn" onclick="quickfire(1, true)">Ja</button>
+                        <button class="quickfire-btn" onclick="quickfire(1, false)">Nein</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 11: Resistance -->
+        <div class="beat" id="beat11">
+            <p class="beat-text">Widerstand ist nicht der Feind. Er ist Information.</p>
+            <div class="quote-block">
+                <p class="quote-text">"What you resist persists."</p>
+                <p class="quote-author">— Carl Jung</p>
+            </div>
+            <p class="beat-subtext">When people resist change, they're telling you something. Maybe the urgency isn't clear. Maybe they see risks you don't. The best leaders listen to resistance rather than bulldoze it.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 12: Pill Rating -->
+        <div class="beat" id="beat12">
+            <p class="beat-text-small">Wenn du auf Widerstand gegen Veränderung triffst, ist dein Instinkt...</p>
+            <div class="pill-options">
+                <div class="pill" onclick="selectPill(12, 1)">1</div>
+                <div class="pill" onclick="selectPill(12, 2)">2</div>
+                <div class="pill" onclick="selectPill(12, 3)">3</div>
+                <div class="pill" onclick="selectPill(12, 4)">4</div>
+                <div class="pill" onclick="selectPill(12, 5)">5</div>
+            </div>
+            <div class="pill-labels">
+                <span>Push harder</span>
+                <span>Get curious</span>
+            </div>
+        </div>
+
+        <!-- Beat 13: Szenario 2 -->
+        <div class="beat" id="beat13">
+            <div class="beat-label">Szenario</div>
+            <p class="beat-text-small">Du führst eine Veränderung ein. Ein einflussreiches Teammitglied ist offen skeptisch. Andere beobachten, was du tust. Bester Zug?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(13, 'push')">Move forward—you can't wait for everyone</div>
+                <div class="scenario-card" onclick="selectSzenario(13, 'convert')" data-correct="true">Meet with them privately: "Help me understand your concerns"</div>
+                <div class="scenario-card" onclick="selectSzenario(13, 'around')">Work around them—focus on supporters</div>
+                <div class="scenario-card" onclick="selectSzenario(13, 'authority')">Remind them this decision has been made</div>
+            </div>
+            <div class="reveal-box" id="reveal13">
+                <div class="reveal-title">Convert Skeptics, Don't Ignore Them</div>
+                <div class="reveal-text">Influential skeptics can become your best allies—if you earn their buy-in. Meet privately, listen genuinely, and address real concerns. Often they see risks you've missed. If you convert them, others follow.</div>
+            </div>
+            <button class="continue-btn" id="btn13" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 14: Quick Wins -->
+        <div class="beat" id="beat14">
+            <p class="beat-text">Schnelle Erfolge schaffen Momentum.</p>
+            <p class="beat-subtext">Menschen müssen sehen, dass Veränderung möglich ist, bevor sie sich committen. Identifiziere kleine, sichtbare Siege in den ersten 30-60 Tagen.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Kriterien für schnelle Erfolge</div>
+                <p class="insight-text"><strong>Sichtbar</strong> — Menschen können die Verbesserung sehen<br><br><strong>Eindeutig</strong> — Klar mit der Veränderung verbunden<br><br><strong>Früh</strong> — Passiert in Wochen, nicht Monaten<br><br><strong>Gefeiert</strong> — Du machst es zu einem Moment</p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 15: Szenario - Quick Win Selection -->
+        <div class="beat" id="beat15">
+            <div class="beat-label">Szenario</div>
+            <p class="beat-text-small">Du führst ein neues Projektmanagement-System ein. Das Team ist skeptisch. Welchen schnellen Erfolg solltest du priorisieren?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(15, this, 'a')">Vollständiges Executive-Dashboard in 90 Tagen live schalten</div>
+                <div class="scenario-card" onclick="selectSzenario(15, this, 'b')">Einen frustrierenden manuellen Report in der ersten Woche eliminieren</div>
+                <div class="scenario-card" onclick="selectSzenario(15, this, 'c')">Alle 200 Mitarbeiter im ersten Monat schulen</div>
+                <div class="scenario-card" onclick="selectSzenario(15, this, 'd')">Alle Prozesse dokumentieren bevor Änderungen gemacht werden</div>
+            </div>
+            <div class="insight-reveal" id="insight15" style="display:none;">
+                <div class="insight-label">Warum das funktioniert</div>
+                <p class="insight-text">Das Eliminieren eines frustrierenden Reports in Woche eins zeigt sofortigen Wert. Menschen fühlen sich gehört. Die Veränderung löst ihr Problem, nicht nur das der Führung. Von dort aus aufbauen.</p>
+            </div>
+            <button class="continue-btn" id="btn15" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 16: The ADKAR Model -->
+        <div class="beat" id="beat16">
+            <p class="beat-text">Über Kotter hinaus: Das ADKAR-Modell.</p>
+            <p class="beat-subtext">Individuelle Veränderung erfordert eine persönliche Reise. ADKAR fokussiert auf das, was jede Person braucht:</p>
+            <div class="insight-reveal">
+                <div class="insight-label">ADKAR-Framework</div>
+                <p class="insight-text">
+                    <strong>A</strong>wareness — Warum ist Veränderung nötig?<br><br>
+                    <strong>D</strong>esire — Was habe ich davon?<br><br>
+                    <strong>K</strong>nowledge — Wie mache ich es?<br><br>
+                    <strong>A</strong>bility — Kann ich es wirklich tun?<br><br>
+                    <strong>R</strong>einforcement — Wird das bleiben?
+                </p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 17: Quiz - Where Change Gets Stuck -->
+        <div class="beat" id="beat17">
+            <div class="beat-label">Quick Check</div>
+            <p class="beat-text-small">Bei welcher ADKAR-Stufe scheitern die meisten Veränderungsinitiativen?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(17, this, 'a')">Awareness — Menschen wissen nichts von der Veränderung</div>
+                <div class="scenario-card" onclick="selectSzenario(17, this, 'b')">Desire — Menschen wissen, aber wollen nicht ändern</div>
+                <div class="scenario-card" onclick="selectSzenario(17, this, 'c')">Knowledge — Menschen wissen nicht wie man ändert</div>
+                <div class="scenario-card" onclick="selectSzenario(17, this, 'd')">Reinforcement — Veränderungen bleiben nicht</div>
+            </div>
+            <div class="insight-reveal" id="insight17" style="display:none;">
+                <div class="insight-label">Die Wunsch-Lücke</div>
+                <p class="insight-text">Die meisten Führungskräfte sind gut im Kommunizieren von Awareness, scheitern aber beim Aufbauen von Desire. Menschen verstehen die Veränderung intellektuell, fühlen sich aber nicht motiviert, sie persönlich anzunehmen. Hier zählt emotionale Intelligenz.</p>
+            </div>
+            <button class="continue-btn" id="btn17" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 18: Building Desire Spectrum -->
+        <div class="beat" id="beat18">
+            <p class="beat-text-small">Wenn du versuchst, Desire für Veränderung aufzubauen, wo fängst du typischerweise an?</p>
+            <div class="spectrum-container">
+                <div class="spectrum-line" onclick="setSpectrum(this, event, 18)">
+                    <div class="spectrum-marker"></div>
+                </div>
+                <div class="spectrum-labels">
+                    <span>Schmerz des Bleibens</span>
+                    <span>Nutzen der Veränderung</span>
+                </div>
+            </div>
+            <div class="insight-reveal" id="insight18" style="display:none;">
+                <div class="insight-label">Beides zählt</div>
+                <p class="insight-text">Effektive Change-Leader nutzen beides. Beginne mit Schmerz um Dringlichkeit zu schaffen, dann male eine überzeugende Vision der Vorteile. Menschen bewegen sich weg von Schmerz UND hin zu Freude.</p>
+            </div>
+            <button class="continue-btn" id="btn18" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 19: Change Saturation -->
+        <div class="beat" id="beat19">
+            <div class="stat-reveal">
+                <div class="stat-number">67%</div>
+                <div class="stat-label">der Mitarbeiter fühlen sich überwältigt<br>vom Tempo der Veränderung</div>
+            </div>
+            <p class="beat-subtext">Change-Müdigkeit ist real. Wenn alles Priorität ist, ist nichts Priorität. Großartige Change-Leader sequenzieren und takten ihre Initiativen.</p>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 20: Sequencing Question -->
+        <div class="beat" id="beat20">
+            <div class="beat-label">Apply It</div>
+            <p class="beat-text-small">Deine Organisation hat 5 Veränderungsinitiativen geplant. Die Führung will alle gleichzeitig starten um "Zeit zu sparen." Beste Antwort?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(20, this, 'a')">Zustimmen — Lasst uns schnell machen und fertig werden</div>
+                <div class="scenario-card" onclick="selectSzenario(20, this, 'b')">Priorisieren — Zwei jetzt starten, andere sequenzieren</div>
+                <div class="scenario-card" onclick="selectSzenario(20, this, 'c')">Verzögern — Warten bis das Team weniger beschäftigt ist</div>
+                <div class="scenario-card" onclick="selectSzenario(20, this, 'd')">Delegieren — Jede Initiative an ein anderes Team geben</div>
+            </div>
+            <div class="insight-reveal" id="insight20" style="display:none;">
+                <div class="insight-label">Strategische Sequenzierung</div>
+                <p class="insight-text">Priorisieren und Sequenzieren ist nicht langsamer — es ist klüger. Zwei gut durchgeführte Veränderungen schlagen fünf halbfertige. Schnelle Erfolge aus frühen Initiativen schaffen Appetit für spätere.</p>
+            </div>
+            <button class="continue-btn" id="btn20" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 21: Die Veränderungskurve -->
+        <div class="beat" id="beat21">
+            <p class="beat-text">Die emotionale Reise der Veränderung.</p>
+            <p class="beat-subtext">Jeder durchläuft vorhersehbare Phasen. Das zu verstehen hilft dir, Menschen in jeder Phase zu unterstützen.</p>
+            <div class="insight-reveal">
+                <div class="insight-label">Die Veränderungskurve</div>
+                <p class="insight-text">
+                    <strong>Schock</strong> — "Das kann nicht passieren"<br><br>
+                    <strong>Verleugnung</strong> — "Das wird mich nicht betreffen"<br><br>
+                    <strong>Frustration</strong> — "Warum passiert das?"<br><br>
+                    <strong>Depression</strong> — "Ich kann das nicht"<br><br>
+                    <strong>Experiment</strong> — "Vielleicht kann ich versuchen..."<br><br>
+                    <strong>Entscheidung</strong> — "Das könnte funktionieren"<br><br>
+                    <strong>Integration</strong> — "So machen wir das jetzt"
+                </p>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 22: Supporting Through the Curve -->
+        <div class="beat" id="beat22">
+            <div class="beat-label">Szenario</div>
+            <p class="beat-text-small">Ein Teammitglied sagt: "Ich mache das seit 10 Jahren so. Warum jetzt ändern?" In welcher Phase der Veränderungskurve sind sie?</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectSzenario(22, this, 'a')">Schock</div>
+                <div class="scenario-card" onclick="selectSzenario(22, this, 'b')">Verleugnung</div>
+                <div class="scenario-card" onclick="selectSzenario(22, this, 'c')">Frustration</div>
+                <div class="scenario-card" onclick="selectSzenario(22, this, 'd')">Depression</div>
+            </div>
+            <div class="insight-reveal" id="insight22" style="display:none;">
+                <div class="insight-label">Die Zeichen lesen</div>
+                <p class="insight-text">Das ist Verleugnung — sie minimieren den Einfluss der Veränderung auf sich. Argumentiere nicht mit Fakten. Hilf ihnen stattdessen, die persönliche Relevanz zu sehen: "Was wenn der alte Weg in 6 Monaten nicht mehr verfügbar ist?"</p>
+            </div>
+            <button class="continue-btn" id="btn22" onclick="nextBeat()" disabled>Weiter</button>
+        </div>
+
+        <!-- Beat 23: Binary - Your Challenge -->
+        <div class="beat" id="beat23">
+            <p class="beat-text-small">Was ist schwieriger für dich?</p>
+            <div class="binary-options">
+                <div class="binary-card" onclick="selectBinary(23, 'patience')">
+                    <div class="binary-card-title">Verlangsamen um Unterstützung aufzubauen</div>
+                    <div class="binary-card-sub">Ich will schneller als die Leute bereit sind</div>
+                </div>
+                <div class="binary-card" onclick="selectBinary(23, 'push')">
+                    <div class="binary-card-title">Durch Widerstand durchsetzen</div>
+                    <div class="binary-card-sub">Ich bleibe stecken beim Versuch, alle an Bord zu holen</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beat 24: The Mirror -->
+        <div class="beat" id="beat24">
+            <p class="beat-text">Dein Change-Leadership-Profil.</p>
+            <div class="mirror-reveal" id="mirrorReveal">
+                <div class="mirror-item" id="mirror1">
+                    <span class="mirror-label">Veränderungsansatz</span>
+                    <span class="mirror-value" id="changeApproach">—</span>
+                </div>
+                <div class="mirror-item" id="mirror2">
+                    <span class="mirror-label">Team-Bereitschaft</span>
+                    <span class="mirror-value" id="teamReadiness">—</span>
+                </div>
+                <div class="mirror-item" id="mirror3">
+                    <span class="mirror-label">Widerstandsreaktion</span>
+                    <span class="mirror-value" id="resistanceResponse">—</span>
+                </div>
+                <div class="mirror-item" id="mirror4">
+                    <span class="mirror-label">Deine Wachstumskante</span>
+                    <span class="mirror-value" id="growthEdge">—</span>
+                </div>
+            </div>
+            <button class="continue-btn" onclick="nextBeat()">Weiter</button>
+        </div>
+
+        <!-- Beat 25: Commitment -->
+        <div class="beat" id="beat25">
+            <p class="beat-text">Eine Sache, die du bei deiner nächsten Veränderungsinitiative anders machen wirst.</p>
+            <div class="scenario-options">
+                <div class="scenario-card" onclick="selectCommitment(this, 'urgency')">Mehr Zeit damit verbringen, Dringlichkeit zu schaffen bevor ich ankündige</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'coalition')">Koalition aufbauen of supporters first</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'wins')">Schnelle Erfolge in den ersten 30 Tagen planen</div>
+                <div class="scenario-card" onclick="selectCommitment(this, 'listen')">Mit Skeptikern treffen um Widerstand zu verstehen</div>
+            </div>
+            <button class="continue-btn primary" id="btn25" onclick="completeStripe()" disabled>Stripe Abschließen</button>
+        </div>
+
+        <!-- Beat 26: Completion -->
+        <div class="beat" id="beat26">
+            <div class="completion-container">
+                <div class="completion-icon">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                </div>
+                <h2 class="completion-title">Stripe 3 Abgeschlossen</h2>
+                <p class="completion-subtitle">Change Management</p>
+                <div class="xp-earned-final"><span id="finalXP">+75 XP</span></div>
+                
+                <div class="skills-learned">
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Kotters 8-Stufen-Modell</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>ADKAR-Framework</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Die Veränderungskurve</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Schnelle Erfolge schaffen</span>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+                        <span>Widerstand umwandeln</span>
+                    </div>
+                </div>
+
+                <div class="unlock-reveal">
+                    <div class="unlock-title">Unlocked</div>
+                    <div class="unlock-name">Stripe 4: Strategisches Denken</div>
+                </div>
+
+                <button class="continue-btn primary" onclick="goToNext()">Weiter zur Reise</button>
+                <button class="continue-btn" style="margin-top: 10px;" onclick="goToHub()">Zurück zum Hub</button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let currentBeat = 1;
+        const totalBeats = 26;
+        let xp = 0;
+        let responses = {};
+        let quickfireCount = 0;
+        const quickfireQuestions = [
+            "I spent enough time building urgency before announcing",
+            "I built a coalition of key supporters",
+            "I planned for quick wins early on"
+        ];
+
+        function updateProgress() { document.getElementById('journeyProgress').style.width = ((currentBeat - 1) / (totalBeats - 1) * 100) + '%'; }
+        function addXP(amount) { xp += amount; document.getElementById('xpDisplay').textContent = xp; }
+        function nextBeat() {
+            document.getElementById('beat' + currentBeat).classList.remove('active');
+            currentBeat++;
+            document.getElementById('beat' + currentBeat).classList.add('active');
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            if (currentBeat === 24) setTimeout(revealMirror, 500);
+        }
+
+        function selectBinary(beat, value) {
+            const cards = document.querySelectorAll('#beat' + beat + ' .binary-card');
+            cards.forEach(c => c.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['binary' + beat] = value;
+            addXP(5);
+            if (beat === 2) {
+                setTimeout(() => {
+                    document.getElementById('insight3').textContent = value === 'fast' 
+                        ? "You're a driver. Speed is your strength, but rushing past resistance often means coming back to fix it later. Learning to build coalition first can actually save time."
+                        : "You're a builder. Consensus is your strength, but sometimes waiting too long lets urgency fade. Learning when to push can help you maintain momentum.";
+                    nextBeat();
+                }, 600);
+            } else { setTimeout(nextBeat, 600); }
+        }
+
+        function selectSzenario(beat, el, value) {
+            const cards = document.querySelectorAll('#beat' + beat + ' .scenario-card');
+            cards.forEach(c => c.classList.remove('selected', 'correct', 'incorrect'));
+            el.classList.add('selected');
+            responses['scenario' + beat] = value;
+            
+            // Check correct answers for specific beats
+            const correctAnswers = {
+                9: 'b',   // Dringlichkeit schaffen
+                13: 'c',  // Engage the skeptic
+                15: 'b',  // Quick win - eliminate frustrating report
+                17: 'b',  // ADKAR fails at Desire
+                20: 'b',  // Prioritize and sequence
+                22: 'b'   // Verleugnung stage
+            };
+            
+            const isCorrect = correctAnswers[beat] === value;
+            if (correctAnswers[beat]) {
+                cards.forEach(c => {
+                    const cardValue = c.getAttribute('onclick').match(/'([a-z])'\)$/)?.[1];
+                    if (cardValue === correctAnswers[beat]) c.classList.add('correct');
+                    else if (c === el && !isCorrect) c.classList.add('incorrect');
+                });
+            }
+            
+            const insight = document.getElementById('insight' + beat);
+            if (insight) insight.style.display = 'block';
+            
+            const btn = document.getElementById('btn' + beat);
+            if (btn) btn.disabled = false;
+            addXP(isCorrect ? 10 : 5);
+        }
+
+        function setSpectrum(line, event, beat) {
+            const rect = line.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const pct = Math.max(0, Math.min(100, (x / rect.width) * 100));
+            const marker = line.querySelector('.spectrum-marker');
+            marker.style.left = pct + '%';
+            marker.classList.add('visible');
+            responses['spectrum' + beat] = pct;
+            const insight = document.getElementById('insight' + beat);
+            if (insight) insight.style.display = 'block';
+            const btn = document.getElementById('btn' + beat);
+            if (btn) btn.disabled = false;
+            addXP(5);
+        }
+
+        function quickfire(num, value) {
+            const item = document.getElementById('qf' + num);
+            item.querySelectorAll('.quickfire-btn').forEach(b => b.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            item.classList.add('answered');
+            responses['qf' + num] = value;
+            quickfireCount++;
+            addXP(3);
+            if (quickfireCount < 3) {
+                setTimeout(() => {
+                    const container = document.getElementById('quickfire');
+                    const newItem = document.createElement('div');
+                    newItem.className = 'quickfire-item';
+                    newItem.id = 'qf' + (quickfireCount + 1);
+                    newItem.innerHTML = `<span class="quickfire-text">${quickfireQuestions[quickfireCount]}</span><div class="quickfire-btns"><button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, true)">Ja</button><button class="quickfire-btn" onclick="quickfire(${quickfireCount + 1}, false)">Nein</button></div>`;
+                    container.appendChild(newItem);
+                }, 400);
+            } else { setTimeout(nextBeat, 600); }
+        }
+
+        function selectPill(beat, value) {
+            document.querySelectorAll('#beat' + beat + ' .pill').forEach(p => p.classList.remove('selected'));
+            event.currentTarget.classList.add('selected');
+            responses['pill' + beat] = value;
+            addXP(5);
+            setTimeout(nextBeat, 500);
+        }
+
+        function selectCommitment(card, value) {
+            document.querySelectorAll('#beat25 .scenario-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            responses.commitment = value;
+            document.getElementById('btn25').disabled = false;
+            addXP(5);
+        }
+
+        function revealMirror() {
+            document.getElementById('changeApproach').textContent = responses.binary2 === 'fast' ? 'Speed-first driver' : 'Consensus builder';
+            document.getElementById('mirror1').classList.add('visible');
+            setTimeout(() => {
+                let readiness = responses.spectrum6 || 50;
+                document.getElementById('teamReadiness').textContent = readiness > 66 ? 'Generally ready' : readiness > 33 ? 'Mixed readiness' : 'Needs groundwork';
+                document.getElementById('mirror2').classList.add('visible');
+            }, 400);
+            setTimeout(() => {
+                let pill = responses.pill12 || 3;
+                document.getElementById('resistanceResponse').textContent = pill >= 4 ? 'Naturally curious' : pill >= 3 ? 'Balanced' : 'Tends to push';
+                document.getElementById('mirror3').classList.add('visible');
+            }, 800);
+            setTimeout(() => {
+                document.getElementById('growthEdge').textContent = responses.binary23 === 'patience' ? 'Building patience' : 'Building courage';
+                document.getElementById('mirror4').classList.add('visible');
+            }, 1200);
+        }
+
+        function completeStripe() {
+            localStorage.setItem('tap_in_brown_stripe3_complete', 'true');
+            localStorage.setItem('tap_in_brown_stripe3_answers', JSON.stringify(responses));
+            const totalXP = parseInt(localStorage.getItem('tap_in_xp') || '0') + xp + 25;
+            localStorage.setItem('tap_in_xp', totalXP);
+            document.getElementById('finalXP').textContent = '+' + (xp + 25) + ' XP';
+            nextBeat();
+        }
+
+        function goToNext() { window.location.href = 'brown-belt-stripe4-gamified-de.html'; }
+        function goToHub() { window.location.href = 'gym-focused-de.html'; }
+        updateProgress();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

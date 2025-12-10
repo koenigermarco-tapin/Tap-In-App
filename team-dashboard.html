@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Team Dashboard | TAP-IN Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --red: #ef4444;
+            --orange: #f97316;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            min-height: 100vh;
+            color: var(--white);
+            line-height: 1.6;
+            padding-bottom: 100px;
+        }
+        
+        .header {
+            background: linear-gradient(180deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);
+            padding: 20px;
+            border-bottom: 1px solid var(--mid-grey);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+        
+        .header-content {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--light-grey);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .back-link:hover { color: var(--white); }
+        
+        .header-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .team-code-badge {
+            padding: 6px 12px;
+            background: rgba(16, 185, 129, 0.2);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 20px;
+            color: var(--green);
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .page-subtitle {
+            color: var(--light-grey);
+            font-size: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .stat-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 5px;
+        }
+        
+        .section-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--light-grey);
+            margin-bottom: 20px;
+            margin-top: 40px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--mid-grey);
+        }
+        
+        .dashboard-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .member-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: var(--black);
+            border-radius: 12px;
+        }
+        
+        .member-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        
+        .member-avatar.sprinter { background: linear-gradient(135deg, var(--red), #dc2626); }
+        .member-avatar.jogger { background: linear-gradient(135deg, var(--blue), #1d4ed8); }
+        .member-avatar.ultra { background: linear-gradient(135deg, var(--green), #059669); }
+        .member-avatar.unknown { background: var(--mid-grey); }
+        
+        .member-info { flex: 1; }
+        .member-name { font-weight: 600; margin-bottom: 2px; }
+        .member-type { font-size: 0.85rem; color: var(--light-grey); }
+        
+        .member-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .distribution-bar {
+            display: flex;
+            height: 40px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        
+        .dist-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: width 0.5s ease;
+        }
+        
+        .dist-segment.sprinter { background: linear-gradient(135deg, var(--red), #dc2626); }
+        .dist-segment.jogger { background: linear-gradient(135deg, var(--blue), #1d4ed8); }
+        .dist-segment.ultra { background: linear-gradient(135deg, var(--green), #059669); }
+        
+        .dist-legend {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            font-size: 0.85rem;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--light-grey);
+        }
+        
+        .empty-state h3 {
+            color: var(--white);
+            margin-bottom: 10px;
+        }
+        
+        .btn-primary {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--green), var(--blue));
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 600px) {
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            .page-title { font-size: 1.6rem; }
+            .member-stats { display: none; }
+        }
+    </style>
+    <script src="js/seo-helper.js"></script>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="team-dashboard.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="team-dashboard-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="back-link">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Home
+            </a>
+            <div class="header-title">
+                <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                Team Dashboard
+            </div>
+            <div class="team-code-badge" id="teamCodeBadge">No Team</div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="page-header">
+            <div class="page-icon">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+            <h1 class="page-title">Team Dashboard</h1>
+            <p class="page-subtitle">View your team's composition, progress, and collaboration insights</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="memberCount">0</div>
+                <div class="stat-label">Members</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgCompletion">0%</div>
+                <div class="stat-label">Avg Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="gamesPlayed">0</div>
+                <div class="stat-label">Games Played</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="teamScore">-</div>
+                <div class="stat-label">Team Health</div>
+            </div>
+        </div>
+        
+        <div id="dashboardContent">
+            <!-- Content loaded by JS -->
+        </div>
+    </div>
+    
+    <script>
+        function loadDashboard() {
+            // Check multiple possible team code locations
+            const teamCode = localStorage.getItem('tap_in_team_code') || 
+                           localStorage.getItem('teamCode') || 
+                           localStorage.getItem('team_code');
+            
+            // Check multiple possible team data locations
+            const teamData = JSON.parse(localStorage.getItem('tap_in_team_data') || '{}');
+            let members = teamData.members || [];
+            
+            // Also check teamMembers directly
+            const directMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+            if (directMembers.length > 0 && members.length === 0) {
+                members = directMembers;
+            }
+            
+            // If no team code but we have members, generate one
+            if (!teamCode && members.length > 0) {
+                const generatedCode = 'TEAM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                localStorage.setItem('teamCode', generatedCode);
+                localStorage.setItem('tap_in_team_code', generatedCode);
+            }
+            
+            const finalTeamCode = teamCode || localStorage.getItem('teamCode') || 'NO-TEAM';
+            
+            if (finalTeamCode !== 'NO-TEAM') {
+                document.getElementById('teamCodeBadge').textContent = finalTeamCode;
+                document.getElementById('teamCodeBadge').style.background = 'rgba(16, 185, 129, 0.2)';
+            }
+            document.getElementById('memberCount').textContent = members.length;
+            
+            if (members.length === 0) {
+                document.getElementById('dashboardContent').innerHTML = `
+                    <div class="empty-state">
+                        <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="var(--mid-grey)" stroke-width="2" style="margin-bottom: 20px;">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                        </svg>
+                        <h3>No Team Yet</h3>
+                        <p>Create a team or join one to see team dynamics and compatibility analysis.</p>
+                        <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 20px;">
+                            <a href="join-team.html" class="btn-primary" style="margin-top: 0;">Join a Team</a>
+                            <button onclick="quickCreateTeam()" class="btn-primary" style="margin-top: 0; background: rgba(255,255,255,0.1); border: 2px solid var(--mid-grey); cursor: pointer;">Quick Create Team</button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Calculate distribution
+            let sprinters = 0, joggers = 0, ultras = 0;
+            members.forEach(m => {
+                if (m.workerType === 'Sprinter') sprinters++;
+                else if (m.workerType === 'Jogger') joggers++;
+                else if (m.workerType === 'Ultrarunner') ultras++;
+            });
+            
+            const total = members.length;
+            const sprinterPct = Math.round((sprinters / total) * 100);
+            const joggerPct = Math.round((joggers / total) * 100);
+            const ultraPct = 100 - sprinterPct - joggerPct;
+            
+            // Calculate leadership style distribution
+            const leadershipStyles = {};
+            members.forEach(m => {
+                const style = m.leadershipStyle || m.leadershipType || 'Unknown';
+                leadershipStyles[style] = (leadershipStyles[style] || 0) + 1;
+            });
+            
+            // Calculate team fit/compatibility
+            const calculateTeamFit = () => {
+                if (members.length < 2) return { score: 0, insights: ['Need at least 2 members to calculate team fit'] };
+                
+                // Simple compatibility: diversity score
+                const uniqueStyles = Object.keys(leadershipStyles).length;
+                const diversityScore = Math.min(100, (uniqueStyles / 4) * 100);
+                
+                // Balance score: check if team has all 4 types represented
+                const hasAllTypes = uniqueStyles >= 4;
+                const balanceScore = hasAllTypes ? 100 : (uniqueStyles / 4) * 100;
+                
+                const overallScore = Math.round((diversityScore + balanceScore) / 2);
+                
+                const insights = [];
+                if (overallScore >= 75) {
+                    insights.push('Excellent team diversity - you have complementary leadership styles');
+                    insights.push('Team is well-balanced for different types of challenges');
+                } else if (overallScore >= 50) {
+                    insights.push('Good team composition - consider adding members with different styles');
+                    insights.push('Some gaps in leadership style coverage');
+                } else {
+                    insights.push('Team may benefit from more diverse leadership styles');
+                    insights.push('Consider inviting members with different approaches');
+                }
+                
+                return { score: overallScore, insights };
+            };
+            
+            const teamFit = calculateTeamFit();
+            
+            document.getElementById('dashboardContent').innerHTML = `
+                <div class="section-title">Team Fit Analysis</div>
+                
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2">
+                            <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Team Compatibility Score
+                    </div>
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 3rem; font-weight: 800; color: var(--green); margin-bottom: 10px;">${teamFit.score}%</div>
+                        <div style="color: var(--light-grey); font-size: 0.9rem;">Based on leadership style diversity</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border-radius: 12px; padding: 15px;">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: var(--white);">Insights:</div>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
+                            ${teamFit.insights.map(insight => `<li style="padding: 8px 0; color: var(--light-grey); font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.05);">• ${insight}</li>`).join('')}
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="section-title">Team Composition</div>
+                
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--purple)" stroke-width="2">
+                            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </svg>
+                        Work Rhythm Distribution
+                    </div>
+                    <div class="distribution-bar">
+                        <div class="dist-segment sprinter" style="width: ${sprinterPct}%">${sprinterPct}%</div>
+                        <div class="dist-segment jogger" style="width: ${joggerPct}%">${joggerPct}%</div>
+                        <div class="dist-segment ultra" style="width: ${ultraPct}%">${ultraPct}%</div>
+                    </div>
+                    <div class="dist-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: var(--red)"></div>
+                            Sprinters (${sprinters})
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: var(--blue)"></div>
+                            Joggers (${joggers})
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot" style="background: var(--green)"></div>
+                            Ultrarunners (${ultras})
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-card">
+                    <div class="card-title">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2">
+                            <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+                        </svg>
+                        Leadership Style Distribution
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 15px;">
+                        ${Object.entries(leadershipStyles).map(([style, count]) => `
+                            <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px; border: 1px solid var(--mid-grey);">
+                                <div style="font-size: 1.5rem; font-weight: 700; color: var(--white); margin-bottom: 5px;">${count}</div>
+                                <div style="font-size: 0.85rem; color: var(--light-grey);">${style}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                
+                <div class="section-title">Team Members</div>
+                
+                <div class="dashboard-card">
+                    <div class="member-list">
+                        ${members.map(m => {
+                            const leadershipType = m.leadershipStyle || m.leadershipType || 'Not assessed';
+                            const workRhythm = m.workerType || m.workRhythm || 'Not assessed';
+                            return `
+                            <div class="member-item">
+                                <div class="member-avatar ${(workRhythm || 'unknown').toLowerCase().replace('runner', '').replace('marathoner', 'ultra')}">${(m.name || 'U')[0]}</div>
+                                <div class="member-info">
+                                    <div class="member-name">${m.name || 'Unknown'}</div>
+                                    <div class="member-type">${leadershipType} • ${workRhythm}</div>
+                                </div>
+                                <div class="member-stats">
+                                    <span>Belt: ${m.belt || 'White'}</span>
+                                    <span>XP: ${m.xp || 0}</span>
+                                </div>
+                            </div>
+                        `;
+                        }).join('')}
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px; padding: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: 16px; text-align: center;">
+                    <div style="font-weight: 700; margin-bottom: 10px; color: var(--white);">Share Your Team Code</div>
+                    <div style="font-size: 1.5rem; font-weight: 800; font-family: monospace; color: var(--green); margin-bottom: 15px; letter-spacing: 2px;">${finalTeamCode}</div>
+                    <button onclick="copyTeamCode('${finalTeamCode}')" style="padding: 12px 24px; background: var(--green); color: var(--black); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; font-size: 0.95rem; margin-bottom: 10px;">
+                        Copy Invite Link
+                    </button>
+                    <div style="margin-top: 15px; font-size: 0.85rem; color: var(--light-grey);">Share this link with friends. They'll join your team and see team dynamics automatically.</div>
+                </div>
+            `;
+        }
+        
+        function copyTeamCode(code) {
+            if (!code || code === 'NO-TEAM') {
+                // Quick create team
+                const newCode = 'TEAM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                localStorage.setItem('teamCode', newCode);
+                localStorage.setItem('tap_in_team_code', newCode);
+                
+                // Add current user to team
+                const userName = localStorage.getItem('tapin-user-name') || localStorage.getItem('userName') || 'You';
+                const assessmentResults = JSON.parse(localStorage.getItem('tap_in_assessment_results') || '{}');
+                const members = [{
+                    name: userName,
+                    leadershipType: assessmentResults.leadershipType || 'Not assessed',
+                    workRhythm: assessmentResults.workRhythm || 'Not assessed',
+                    belt: localStorage.getItem('currentBelt') || 'white',
+                    xp: parseInt(localStorage.getItem('totalXP')) || 0,
+                    joinedDate: new Date().toISOString()
+                }];
+                localStorage.setItem('teamMembers', JSON.stringify(members));
+                localStorage.setItem('tap_in_team_data', JSON.stringify({ members }));
+                
+                code = newCode;
+                loadDashboard();
+            }
+            
+            const shareUrl = window.location.origin + window.location.pathname.replace('team-dashboard.html', 'join-team.html') + '?team=' + code;
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('✅ Team invite link copied!\n\nShare: ' + shareUrl + '\n\nOr just share the code: ' + code);
+            }).catch(() => {
+                navigator.clipboard.writeText(code).then(() => {
+                    alert('Team code copied: ' + code + '\n\nShare this code with friends to join your team!');
+                });
+            });
+        }
+        
+        function quickCreateTeam() {
+            const userName = prompt('Enter your name for the team:') || 'Team Leader';
+            const newCode = 'TEAM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+            
+            localStorage.setItem('teamCode', newCode);
+            localStorage.setItem('tap_in_team_code', newCode);
+            
+            const assessmentResults = JSON.parse(localStorage.getItem('tap_in_assessment_results') || '{}');
+            const members = [{
+                name: userName,
+                leadershipType: assessmentResults.leadershipType || 'Not assessed',
+                workRhythm: assessmentResults.workRhythm || 'Not assessed',
+                belt: localStorage.getItem('currentBelt') || 'white',
+                xp: parseInt(localStorage.getItem('totalXP')) || 0,
+                joinedDate: new Date().toISOString()
+            }];
+            
+            localStorage.setItem('teamMembers', JSON.stringify(members));
+            localStorage.setItem('tap_in_team_data', JSON.stringify({ members }));
+            localStorage.setItem('tapin-user-name', userName);
+            
+            loadDashboard();
+            copyTeamCode(newCode);
+        }
+        }
+        
+        loadDashboard();
+    </script>
+    
+    <script src="js/performance-optimizer.js"></script>
+    <script src="js/shared-utilities.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/accessibility-helper.js"></script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

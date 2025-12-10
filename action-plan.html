@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="theme-color" content="#1a365d">
+    <title>Dein Persönlicher Aktionsplan | TAP-IN Leadership</title>
+    <meta name="description" content="Dein personalisierter 90-Tage-Aktionsplan für Leadership-Entwicklung basierend auf Deinen TAP-IN Assessment-Ergebnissen.">
+    <meta name="robots" content="noindex, nofollow">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+        .header h1 {
+            color: #1a365d;
+            font-size: 2.2em;
+            margin-bottom: 15px;
+        }
+        .header .subtitle {
+            color: #64748b;
+            font-size: 1.1em;
+        }
+        .loading-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top-color: #1a365d;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .no-data-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .no-data-state h2 {
+            color: #1a365d;
+            margin-bottom: 15px;
+        }
+        .no-data-state p {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+        .btn {
+            display: inline-block;
+            padding: 15px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #1e293b;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e1;
+        }
+        #planContent {
+            display: none;
+        }
+        #planContent.active {
+            display: block;
+        }
+
+        /* Plan sections styling */
+        .plan-section {
+            margin-bottom: 35px;
+        }
+        .plan-section h2 {
+            color: #1a365d;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* Priority cards */
+        .priority-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-left: 4px solid #1a365d;
+        }
+        .priority-card.critical {
+            border-left-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+        .priority-card.needs-work {
+            border-left-color: #f59e0b;
+            background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+        }
+        .priority-card.moderate {
+            border-left-color: #3b82f6;
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+        }
+        .priority-card h3 {
+            color: #1e293b;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+        .priority-card .score-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .priority-card.critical .score-badge {
+            background: #dc2626;
+            color: white;
+        }
+        .priority-card.needs-work .score-badge {
+            background: #f59e0b;
+            color: white;
+        }
+        .priority-card.moderate .score-badge {
+            background: #3b82f6;
+            color: white;
+        }
+        .priority-card p {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .action-list {
+            list-style: none;
+            padding: 0;
+        }
+        .action-list li {
+            padding: 10px 0 10px 25px;
+            position: relative;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .action-list li:last-child {
+            border-bottom: none;
+        }
+        .action-list li::before {
+            content: "<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>";
+            position: absolute;
+            left: 0;
+            color: #1a365d;
+            font-weight: bold;
+        }
+
+        /* Milestones */
+        .milestone-timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        .milestone-timeline::before {
+            content: "";
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(180deg, #1a365d 0%, #3b82f6 50%, #10b981 100%);
+            border-radius: 3px;
+        }
+        .milestone {
+            position: relative;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+        }
+        .milestone::before {
+            content: "";
+            position: absolute;
+            left: -26px;
+            top: 25px;
+            width: 16px;
+            height: 16px;
+            background: white;
+            border: 3px solid #1a365d;
+            border-radius: 50%;
+        }
+        .milestone.day-30::before { border-color: #1a365d; }
+        .milestone.day-60::before { border-color: #3b82f6; }
+        .milestone.day-90::before { border-color: #10b981; }
+        .milestone h4 {
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        .milestone p {
+            color: #64748b;
+            font-size: 0.95em;
+        }
+        .milestone-tasks {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .milestone-tasks li {
+            color: #475569;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .milestone-tasks li::before {
+            content: "☐";
+            position: absolute;
+            left: 0;
+        }
+
+        /* Resources */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .resource-card {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+        .resource-card:hover {
+            border-color: #1a365d;
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.1);
+        }
+        .resource-card h4 {
+            color: #1a365d;
+            margin-bottom: 10px;
+        }
+        .resource-card p {
+            color: #64748b;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        .resource-card a {
+            color: #1a365d;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        .resource-card a:hover {
+            text-decoration: underline;
+        }
+
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        .cta-section h2 {
+            color: white;
+            margin-bottom: 15px;
+            border: none;
+        }
+        .cta-section p {
+            opacity: 0.95;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+        .cta-section .btn {
+            background: white;
+            color: #1a365d;
+            font-size: 1.2em;
+            padding: 18px 40px;
+        }
+        .cta-section .btn:hover {
+            background: #f8fafc;
+        }
+        .cta-benefits {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        .cta-benefits span {
+            opacity: 0.9;
+            font-size: 0.95em;
+        }
+
+        /* Export buttons */
+        .export-section {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .export-section h3 {
+            color: #1a365d;
+            margin-bottom: 15px;
+        }
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .export-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .export-btn.pdf {
+            background: #dc2626;
+            color: white;
+        }
+        .export-btn.email {
+            background: #3b82f6;
+            color: white;
+        }
+        .export-btn.calendar {
+            background: #10b981;
+            color: white;
+        }
+        .export-btn.share {
+            background: #8b5cf6;
+            color: white;
+        }
+        .export-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Language switcher */
+        #lang-switch {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1200;
+        }
+        #lang-switch > div {
+            background: white;
+            border-radius: 999px;
+            padding: 8px 12px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            font-size: 0.95em;
+        }
+        #lang-switch a {
+            text-decoration: none;
+            font-weight: 700;
+        }
+        #lang-switch a.active {
+            color: #1a365d;
+        }
+        #lang-switch a:not(.active) {
+            color: #999;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 25px 20px; }
+            .header h1 { font-size: 1.8em; }
+            .cta-benefits { flex-direction: column; gap: 10px; }
+            .export-buttons { flex-direction: column; }
+            .export-btn { width: 100%; }
+        }
+    
+/* Heroicon styles */
+.hi {
+    width: 1.25em;
+    height: 1.25em;
+    display: inline-block;
+    vertical-align: middle;
+    color: currentColor;
+}
+
+</style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="gym-dashboard.html" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="action-plan-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <!-- Language switcher -->
+    <div id="lang-switch">
+        <div>
+            <a href="gym-dashboard.html">EN</a>
+            <span style="color:#ddd;margin:0 8px;">|</span>
+            <a href="action-plan-de.html" class="active">DE</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Dein Persönlicher Aktionsplan</h1>
+            <p class="subtitle">Ein 90-Tage-Fahrplan zur Transformation der Team-Performance</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state">
+            <div class="loading-spinner"></div>
+            <p style="color: #64748b;">Analysiere Deine Assessment-Ergebnisse...</p>
+        </div>
+
+        <!-- No Data State -->
+        <div id="noDataState" class="no-data-state" style="display: none;">
+            <h2> Keine Assessment-Daten gefunden</h2>
+            <p>Schließe zuerst ein Team-Assessment ab, um Deinen persönlichen Aktionsplan zu erstellen.</p>
+            <a href="team-assessment-enhanced-v2-de.html" class="btn btn-primary">Zum Assessment <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+
+        <!-- Plan Content (populated by JavaScript) -->
+        <div id="planContent"></div>
+    </div>
+
+    <!-- Load Action Plan Generator -->
+    <script src="js/action-plan-generator.js"></script>
+    <script>
+        // German translations for the action plan generator
+        const GERMAN_LABELS = {
+            priorities: 'Deine Top-Prioritäten',
+            milestones: '90-Tage Meilensteine',
+            resources: 'Empfohlene Ressourcen',
+            ctaTitle: 'Bereit, Deinen Fortschritt zu beschleunigen?',
+            ctaDescription: 'Buche ein kostenloses 30-Minuten Gespräch mit einem TAP-IN Coach, um Deinen Aktionsplan zu besprechen und persönliche Anleitung zu erhalten.',
+            ctaButton: 'Kostenloses Coaching-Gespräch buchen',
+            ctaBenefit1: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Persönliche Beratung',
+            ctaBenefit2: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Maßgeschneiderte Strategien',
+            ctaBenefit3: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M20 6L9 17l-5-5"/></svg> Schnellere Ergebnisse',
+            exportTitle: 'Aktionsplan exportieren',
+            pdfButton: ' Als PDF speichern',
+            emailButton: ' Per E-Mail senden',
+            calendarButton: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Zum Kalender hinzufügen',
+            shareButton: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Mit Manager teilen',
+            day30: 'Tag 30: Grundlagen',
+            day60: 'Tag 60: Fortschritt',
+            day90: 'Tag 90: Exzellenz',
+            critical: 'Kritisch',
+            needsWork: 'Handlungsbedarf',
+            moderate: 'Verbesserungspotenzial',
+            actionItems: 'Maßnahmen:',
+            categoryNames: {
+                trust: 'Vertrauen',
+                conflict: 'Konstruktiver Konflikt',
+                commitment: 'Commitment',
+                accountability: 'Verantwortlichkeit',
+                results: 'Ergebnisorientierung'
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const assessmentData = localStorage.getItem('tap-in-assessments');
+
+            if (!assessmentData) {
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('noDataState').style.display = 'block';
+                return;
+            }
+
+            try {
+                const assessments = JSON.parse(assessmentData);
+                const latestAssessment = assessments[assessments.length - 1];
+
+                if (!latestAssessment || !latestAssessment.categories) {
+                    throw new Error('Invalid assessment data');
+                }
+
+                // Convert assessment data to scores format
+                const scores = {};
+                latestAssessment.categories.forEach(cat => {
+                    if (cat.name === 'Trust') scores.trust = cat.score;
+                    else if (cat.name === 'Healthy Conflict' || cat.name === 'Conflict Navigation') scores.conflict = cat.score;
+                    else if (cat.name === 'Commitment') scores.commitment = cat.score;
+                    else if (cat.name === 'Accountability') scores.accountability = cat.score;
+                    else if (cat.name === 'Results Focus') scores.results = cat.score;
+                });
+
+                // Generate the action plan
+                const plan = ActionPlanGenerator.generatePlan(scores);
+
+                // Render with German translations
+                const planHTML = renderGermanPlanHTML(plan);
+
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('planContent').innerHTML = planHTML;
+                document.getElementById('planContent').classList.add('active');
+
+                setupExportButtons(plan);
+
+            } catch (error) {
+                console.error('Error generating action plan:', error);
+                document.getElementById('loadingState').style.display = 'none';
+                document.getElementById('noDataState').style.display = 'block';
+            }
+        });
+
+        function renderGermanPlanHTML(plan) {
+            const L = GERMAN_LABELS;
+
+            // Priorities section
+            let prioritiesHTML = plan.priorities.map((p, i) => {
+                const categoryName = L.categoryNames[p.category.toLowerCase()] || p.category;
+                const levelLabel = p.level === 'critical' ? L.critical :
+                                   p.level === 'needs-work' ? L.needsWork : L.moderate;
+                return `
+                    <div class="priority-card ${p.level}">
+                        <h3>Priorität ${i + 1}: ${categoryName} <span class="score-badge">${p.score}%</span></h3>
+                        <p>${p.gap}</p>
+                        <h4>${L.actionItems}</h4>
+                        <ul class="action-list">
+                            ${p.actions.map(a => `<li>${a}</li>`).join('')}
+                        </ul>
+                    </div>
+                `;
+            }).join('');
+
+            // Milestones section
+            const milestoneLabels = [L.day30, L.day60, L.day90];
+            let milestonesHTML = plan.milestones.map((m, i) => `
+                <div class="milestone day-${(i + 1) * 30}">
+                    <h4>${milestoneLabels[i]}</h4>
+                    <p>${m.description}</p>
+                    <ul class="milestone-tasks">
+                        ${m.tasks.map(t => `<li>${t}</li>`).join('')}
+                    </ul>
+                </div>
+            `).join('');
+
+            // Resources section
+            let resourcesHTML = plan.resources.map(r => `
+                <div class="resource-card">
+                    <h4>${r.title}</h4>
+                    <p>${r.description}</p>
+                    <a href="${r.link}">Mehr erfahren <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+                </div>
+            `).join('');
+
+            return `
+                <div class="plan-section">
+                    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${L.priorities}</h2>
+                    ${prioritiesHTML}
+                </div>
+
+                <div class="plan-section">
+                    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${L.milestones}</h2>
+                    <div class="milestone-timeline">
+                        ${milestonesHTML}
+                    </div>
+                </div>
+
+                <div class="plan-section">
+                    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${L.resources}</h2>
+                    <div class="resource-grid">
+                        ${resourcesHTML}
+                    </div>
+                </div>
+
+                <div class="cta-section">
+                    <h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> ${L.ctaTitle}</h2>
+                    <p>${L.ctaDescription}</p>
+                    <a href="https://calendly.com/tap-in-coaching/free-consultation" target="_blank" class="btn" onclick="trackCTAClick()">
+                        ${L.ctaButton}
+                    </a>
+                    <div class="cta-benefits">
+                        <span>${L.ctaBenefit1}</span>
+                        <span>${L.ctaBenefit2}</span>
+                        <span>${L.ctaBenefit3}</span>
+                    </div>
+                </div>
+
+                <div class="export-section">
+                    <h3> ${L.exportTitle}</h3>
+                    <div class="export-buttons">
+                        <button class="export-btn pdf">${L.pdfButton}</button>
+                        <button class="export-btn email">${L.emailButton}</button>
+                        <button class="export-btn calendar">${L.calendarButton}</button>
+                        <button class="export-btn share">${L.shareButton}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setupExportButtons(plan) {
+            const pdfBtn = document.querySelector('.export-btn.pdf');
+            if (pdfBtn) {
+                pdfBtn.addEventListener('click', function() {
+                    ActionPlanGenerator.downloadPDF(plan);
+                });
+            }
+
+            const emailBtn = document.querySelector('.export-btn.email');
+            if (emailBtn) {
+                emailBtn.addEventListener('click', function() {
+                    ActionPlanGenerator.emailPlan(plan);
+                });
+            }
+
+            const calendarBtn = document.querySelector('.export-btn.calendar');
+            if (calendarBtn) {
+                calendarBtn.addEventListener('click', function() {
+                    ActionPlanGenerator.addToCalendar(plan);
+                });
+            }
+
+            const shareBtn = document.querySelector('.export-btn.share');
+            if (shareBtn) {
+                shareBtn.addEventListener('click', function() {
+                    ActionPlanGenerator.shareWithManager(plan);
+                });
+            }
+        }
+
+        function trackCTAClick() {
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'cta_click', {
+                    'event_category': 'Action Plan',
+                    'event_label': 'Book Consultation DE',
+                    'value': 1
+                });
+            }
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+    <script src="js/form-validation.js"></script>
+    <script src="js/loading-states.js"></script>
+    <script src="js/image-optimizer.js"></script>
+</body>
+</html>

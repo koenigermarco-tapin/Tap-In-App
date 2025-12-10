@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>White Belt Ceremony | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-bg: #0d0d14;
+            --card-bg: #1a1a24;
+            --border: #2a2a3a;
+            --white: #ffffff;
+            --light-grey: #a0a0b0;
+            --green: #10b981;
+            --blue: #3b82f6;
+            --purple: #8b5cf6;
+            --gold: #f59e0b;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--dark-bg);
+            color: var(--white);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Celebration Animation */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: fall 3s ease-out forwards;
+        }
+        
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        /* Hero Section */
+        .hero {
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+        
+        .belt-visual {
+            width: 200px;
+            height: 150px;
+            margin: 0 auto 30px;
+            position: relative;
+            animation: pulse 2s ease-in-out infinite;
+            background-image: url('icons/belt-blue.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            filter: drop-shadow(0 0 30px rgba(59, 130, 246, 0.5));
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .belt-ring {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 3px solid var(--blue);
+            border-radius: 50%;
+            animation: ring-expand 2s ease-out infinite;
+        }
+        
+        @keyframes ring-expand {
+            0% { width: 150px; height: 150px; opacity: 1; }
+            100% { width: 250px; height: 250px; opacity: 0; }
+        }
+        
+        .belt-icon {
+            width: 100%;
+            height: 100%;
+            color: var(--blue);
+        }
+        
+        .ceremony-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--blue), #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .ceremony-subtitle {
+            font-size: 1.2rem;
+            color: var(--light-grey);
+            margin-bottom: 10px;
+        }
+        
+        .ceremony-date {
+            font-size: 0.9rem;
+            color: var(--blue);
+        }
+        
+        /* Quote */
+        .quote-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border: 1px solid var(--blue);
+            border-radius: 16px;
+            padding: 30px;
+            margin: 40px 0;
+            text-align: center;
+        }
+        
+        .quote-text {
+            font-size: 1.3rem;
+            font-style: italic;
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+        
+        .quote-author {
+            color: var(--light-grey);
+        }
+        
+        /* Journey Recap */
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .journey-recap {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .stripe-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stripe-item:last-child { border-bottom: none; }
+        
+        .stripe-number {
+            width: 32px;
+            height: 32px;
+            background: var(--blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .stripe-content h4 {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .stripe-content p {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        /* Badge */
+        .badge-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .badge-visual {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--blue), #1d4ed8);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .badge-icon {
+            width: 60px;
+            height: 60px;
+            color: white;
+        }
+        
+        .badge-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .badge-desc {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+        
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--blue);
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-top: 5px;
+        }
+        
+        /* What's Next */
+        .next-section {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--purple);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .next-belt {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .next-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--purple);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .next-icon svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+        }
+        
+        .next-content h3 {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--purple);
+        }
+        
+        .next-content p {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+        }
+        
+        /* Philosophy Note */
+        .philosophy-note {
+            background: linear-gradient(135deg, rgba(212, 168, 83, 0.1), rgba(212, 168, 83, 0.05));
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        .philosophy-icon {
+            font-size: 2rem;
+            flex-shrink: 0;
+        }
+        .philosophy-text p {
+            margin-bottom: 10px;
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .philosophy-text p:first-child {
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+        .philosophy-text p:last-child {
+            margin-bottom: 0;
+            font-style: italic;
+        }
+        
+        /* Share Section */
+        .share-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .share-btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+        
+        .share-btn.linkedin {
+            background: #0077b5;
+            color: white;
+        }
+        
+        .share-btn.copy {
+            background: var(--dark-bg);
+            color: var(--white);
+            border: 1px solid var(--border);
+        }
+        
+        .share-btn:hover { transform: translateY(-2px); }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 40px;
+        }
+        
+        .btn {
+            padding: 18px 32px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--blue), #1d4ed8);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--white);
+            border: 1px solid var(--border);
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 600px) {
+            .ceremony-title { font-size: 1.8rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+            .belt-visual { width: 120px; height: 120px; }
+            .next-belt { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Language Switcher -->
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="blue-belt-stripe1-gamified.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="white-belt-ceremony-de.html" class="lang-btn " style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+    
+    <div class="container">
+        <!-- Hero -->
+        <div class="hero">
+            <div class="belt-visual">
+                <div class="belt-ring"></div>
+                <svg class="belt-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                </svg>
+            </div>
+            
+            <h1 class="ceremony-title">White Belt Achieved</h1>
+            <p class="ceremony-subtitle">You have earned your White Belt in Trust Foundations</p>
+            <p class="ceremony-date" id="ceremonyDate"></p>
+        </div>
+        
+        <!-- Quote -->
+        <div class="quote-section">
+            <p class="quote-text">"A black belt is just a white belt who never quit."</p>
+            <p class="quote-author">— Brazilian Jiu-Jitsu Proverb</p>
+        </div>
+        
+        <!-- Journey Recap -->
+        <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            What You Mastered
+        </div>
+        
+        <div class="journey-recap">
+            <div class="stripe-item">
+                <div class="stripe-number">1</div>
+                <div class="stripe-content">
+                    <h4>Trust Foundations</h4>
+                    <p>Learned how trust is built, maintained, and recovered. Discovered your trust patterns.</p>
+                </div>
+            </div>
+            <div class="stripe-item">
+                <div class="stripe-number">2</div>
+                <div class="stripe-content">
+                    <h4>Practicing Vulnerability</h4>
+                    <p>Identified your vulnerability edges and learned to share strategically without oversharing.</p>
+                </div>
+            </div>
+            <div class="stripe-item">
+                <div class="stripe-number">3</div>
+                <div class="stripe-content">
+                    <h4>Self-Awareness</h4>
+                    <p>Mapped your triggers, stress responses, and blind spots. Built capacity for honest self-reflection.</p>
+                </div>
+            </div>
+            <div class="stripe-item">
+                <div class="stripe-number">4</div>
+                <div class="stripe-content">
+                    <h4>Trust Mastery</h4>
+                    <p>Learned to repair broken trust and create environments where trust thrives.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Badge -->
+        <div class="badge-section">
+            <div class="badge-visual">
+                <svg class="badge-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </svg>
+            </div>
+            <h3 class="badge-title">White Belt Certified</h3>
+            <p class="badge-desc">Trust Foundations • TAP-IN Leadership Program</p>
+        </div>
+        
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="totalXP">0</div>
+                <div class="stat-label">Total XP Earned</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="stripesCompleted">4</div>
+                <div class="stat-label">Stripes Completed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="unlocksCompleted">0</div>
+                <div class="stat-label">Unlocks Earned</div>
+            </div>
+        </div>
+        
+        <!-- BJJ Philosophy Note -->
+        <div class="philosophy-note">
+            <div class="philosophy-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+            <div class="philosophy-text">
+                <p><strong>A Note on Belt Transitions</strong></p>
+                <p>In some gyms, you earn stripes through exams. In others, your professor ties on the belt "when you deserve it" — recognizing growth that can't be tested.</p>
+                <p>Either way, the belt isn't the goal. The person you become while earning it is.</p>
+            </div>
+        </div>
+        
+        <!-- What's Next -->
+        <div class="section-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            What's Next
+        </div>
+        
+        <div class="next-section">
+            <div class="next-belt">
+                <div class="next-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    </svg>
+                </div>
+                <div class="next-content">
+                    <h3>Blue Belt: Healthy Conflict</h3>
+                    <p>You've built the foundation of trust. Now learn to navigate disagreement, give hard feedback, and hold difficult conversations without breaking relationships.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Share -->
+        <div class="share-section">
+            <div class="section-title" style="margin-bottom: 10px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Share Your Achievement
+            </div>
+            <p style="color: var(--light-grey); margin-bottom: 15px;">Let the world know you've earned your White Belt</p>
+            <div class="share-buttons">
+                <button class="share-btn linkedin" onclick="shareLinkedIn()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                    </svg>
+                    Add to LinkedIn
+                </button>
+                <button class="share-btn copy" onclick="copyBadgeText()">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                        <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+                    </svg>
+                    Copy Badge Text
+                </button>
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="action-buttons">
+            <button class="btn btn-primary" onclick="beginNextBelt()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                Begin Blue Belt Training
+            </button>
+            <a href="learning-hub.html" class="btn btn-secondary">
+                Return to Training Hub
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        function beginNextBelt() {
+            // Trigger Oracle rest (2 hours) before starting new belt
+            const restDuration = 2 * 60 * 60 * 1000; // 2 hours in ms
+            localStorage.setItem('tap_in_oracle_until', Date.now() + restDuration);
+            window.location.href = 'blue-belt-stripe1-gamified.html';
+        }
+        // Set ceremony date
+        const today = new Date();
+        document.getElementById('ceremonyDate').textContent = 
+            today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        
+        // Load stats
+        const xp = parseInt(localStorage.getItem('tap_in_xp') || '0');
+        const unlocks = JSON.parse(localStorage.getItem('tap_in_unlocks') || '[]');
+        
+        document.getElementById('totalXP').textContent = xp;
+        document.getElementById('unlocksCompleted').textContent = unlocks.length;
+        
+        // Mark White Belt as earned
+        localStorage.setItem('tap_in_blue_belt', 'earned');
+        localStorage.setItem('tap_in_blue_belt_date', today.toISOString());
+        
+        // Confetti animation
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#3b82f6', '#60a5fa', '#8b5cf6', '#10b981', '#f59e0b'];
+            
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 2 + 's';
+                    confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                    celebration.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 3000);
+                }, i * 30);
+            }
+        }
+        
+        createConfetti();
+        
+        // Share functions
+        function shareLinkedIn() {
+            const text = encodeURIComponent(
+                "<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> I just earned my White Belt in TAP-IN Leadership!\n\n" +
+                "Completed 4 stripes in Trust Foundations, passed the certification exam, " +
+                "and am ready to tackle Healthy Conflict.\n\n" +
+                "#Leadership #ProfessionalDevelopment #TAPINLeadership"
+            );
+            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(window.location.href)}&summary=${text}`, '_blank');
+        }
+        
+        function copyBadgeText() {
+            const text = "White Belt Certified - Trust Foundations | TAP-IN Leadership Program | " + 
+                today.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Badge text copied! Add to your LinkedIn profile under Licenses & Certifications.');
+            });
+        }
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

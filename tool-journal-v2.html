@@ -1,0 +1,1329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Leadership Journal - TAP-IN Tools</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --green: #10b981;
+            --gold: #fbbf24;
+            --red: #ef4444;
+            --orange: #f97316;
+            --purple: #8b5cf6;
+            --blue: #3b82f6;
+            --pink: #ec4899;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            padding: 15px 20px;
+            background: rgba(13, 13, 20, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--mid-grey);
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .back-btn {
+            color: var(--light-grey);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .tool-title {
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .streak-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, var(--orange), var(--red));
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+        
+        .streak-badge.inactive {
+            background: var(--mid-grey);
+            color: var(--light-grey);
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 90px 20px 40px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 25px;
+            background: var(--dark-grey);
+            padding: 6px;
+            border-radius: 12px;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: var(--light-grey);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        
+        .tab.active {
+            background: var(--green);
+            color: var(--black);
+        }
+        
+        .tab-content { display: none; animation: fadeIn 0.3s ease; }
+        .tab-content.active { display: block; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .stat-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--green);
+        }
+        
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--light-grey);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Write Tab */
+        .prompt-card {
+            background: linear-gradient(135deg, var(--dark-grey), rgba(16, 185, 129, 0.1));
+            border: 1px solid var(--green);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .prompt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .prompt-category {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: var(--green);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .shuffle-btn {
+            background: var(--mid-grey);
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+        
+        .shuffle-btn:hover { background: var(--green); color: var(--black); }
+        
+        .prompt-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        
+        .journal-area {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .journal-textarea {
+            width: 100%;
+            min-height: 250px;
+            background: var(--black);
+            border: 2px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 20px;
+            color: var(--white);
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            line-height: 1.7;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        .journal-textarea:focus {
+            outline: none;
+            border-color: var(--green);
+        }
+        
+        .journal-textarea::placeholder { color: var(--light-grey); }
+        
+        .journal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .word-count {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .word-counter {
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        
+        .word-counter span { font-weight: 700; }
+        .word-counter span.bronze { color: #cd7f32; }
+        .word-counter span.silver { color: #c0c0c0; }
+        .word-counter span.gold { color: var(--gold); }
+        
+        .word-goal {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+        }
+        
+        .word-goal.bronze { background: rgba(205, 127, 50, 0.2); color: #cd7f32; }
+        .word-goal.silver { background: rgba(192, 192, 192, 0.2); color: #c0c0c0; }
+        .word-goal.gold { background: rgba(251, 191, 36, 0.2); color: var(--gold); }
+        
+        /* Tags */
+        .tags-section {
+            margin-bottom: 15px;
+        }
+        
+        .tags-label {
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            margin-bottom: 10px;
+        }
+        
+        .tags-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .tag {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid var(--mid-grey);
+            background: transparent;
+            color: var(--light-grey);
+        }
+        
+        .tag:hover { border-color: var(--green); color: var(--white); }
+        .tag.selected { background: var(--green); border-color: var(--green); color: var(--black); }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--green), #059669);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* History Tab */
+        .history-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: 2px solid var(--mid-grey);
+            background: transparent;
+            color: var(--light-grey);
+            transition: all 0.2s;
+        }
+        
+        .filter-btn:hover { border-color: var(--green); }
+        .filter-btn.active { background: var(--green); border-color: var(--green); color: var(--black); }
+        
+        .entries-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .entry-card {
+            background: var(--dark-grey);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+        
+        .entry-card:hover { border-color: var(--mid-grey); }
+        
+        .entry-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .entry-date {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .entry-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .entry-words {
+            font-size: 0.75rem;
+            color: var(--light-grey);
+        }
+        
+        .entry-tag {
+            font-size: 0.7rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--green);
+        }
+        
+        .entry-preview {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .entry-prompt {
+            font-size: 0.8rem;
+            color: var(--purple);
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--light-grey);
+        }
+        
+        .empty-state-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            opacity: 0.3;
+        }
+        
+        /* Insights Tab */
+        .insight-card {
+            background: var(--dark-grey);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .insight-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .insight-icon.patterns { background: linear-gradient(135deg, var(--purple), var(--pink)); }
+        .insight-icon.topics { background: linear-gradient(135deg, var(--blue), var(--purple)); }
+        .insight-icon.growth { background: linear-gradient(135deg, var(--green), var(--blue)); }
+        
+        .insight-title { font-weight: 700; }
+        
+        .insight-content {
+            color: var(--light-grey);
+            line-height: 1.7;
+        }
+        
+        .topic-bars {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .topic-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .topic-label {
+            width: 100px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        
+        .topic-bar {
+            flex: 1;
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .topic-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        .topic-bar-fill.leadership { background: var(--purple); }
+        .topic-bar-fill.relationships { background: var(--pink); }
+        .topic-bar-fill.energy { background: var(--gold); }
+        .topic-bar-fill.growth { background: var(--green); }
+        .topic-bar-fill.gratitude { background: var(--blue); }
+        
+        .topic-value {
+            width: 35px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .streak-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            margin-top: 15px;
+        }
+        
+        .streak-day {
+            aspect-ratio: 1;
+            border-radius: 6px;
+            background: var(--mid-grey);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            color: var(--light-grey);
+        }
+        
+        .streak-day.active {
+            background: var(--green);
+            color: var(--black);
+            font-weight: 600;
+        }
+        
+        .streak-day.today {
+            border: 2px solid var(--gold);
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        
+        .modal-overlay.show { display: flex; }
+        
+        .modal {
+            background: var(--dark-grey);
+            border-radius: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+        
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        
+        .modal-header {
+            padding: 25px;
+            border-bottom: 1px solid var(--mid-grey);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title { font-weight: 700; font-size: 1.1rem; }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--light-grey);
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        .modal-body { padding: 25px; }
+        
+        .modal-prompt {
+            color: var(--purple);
+            font-style: italic;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+        
+        .modal-content {
+            color: var(--light-grey);
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        
+        .modal-footer {
+            padding: 20px 25px;
+            border-top: 1px solid var(--mid-grey);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .btn-danger {
+            background: transparent;
+            border: 2px solid var(--red);
+            color: var(--red);
+            padding: 10px 20px;
+        }
+        
+        .btn-danger:hover {
+            background: var(--red);
+            color: white;
+        }
+        
+        /* Success Animation */
+        .success-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(13, 13, 20, 0.95);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 300;
+            flex-direction: column;
+        }
+        
+        .success-overlay.show { display: flex; animation: fadeIn 0.3s ease; }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--green), #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 25px;
+            animation: successPop 0.5s ease;
+        }
+        
+        @keyframes successPop {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .success-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+        
+        .success-subtitle {
+            color: var(--light-grey);
+            margin-bottom: 25px;
+        }
+        
+        .success-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .success-stat { text-align: center; }
+        .success-stat-value { font-size: 2rem; font-weight: 800; color: var(--green); }
+        .success-stat-label { font-size: 0.8rem; color: var(--light-grey); }
+        
+        .hi { width: 24px; height: 24px; }
+        
+        @media (max-width: 500px) {
+            .stats-row { grid-template-columns: 1fr; }
+            .streak-calendar { grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="tool-journal-v2.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="tool-journal-v2-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+
+    <div class="header">
+        <a href="quick-tools.html" class="back-btn">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Back
+        </a>
+        <div class="tool-title">
+            <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+            Leadership Journal
+        </div>
+        <div class="streak-badge" id="streakBadge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+            <span id="streakCount">0</span> day streak
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('write')">Write</button>
+            <button class="tab" onclick="switchTab('history')">History</button>
+            <button class="tab" onclick="switchTab('insights')">Insights</button>
+        </div>
+        
+        <!-- Write Tab -->
+        <div class="tab-content active" id="writeTab">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalEntries">0</div>
+                    <div class="stat-label">Total Entries</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalWords">0</div>
+                    <div class="stat-label">Words Written</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="longestStreak">0</div>
+                    <div class="stat-label">Longest Streak</div>
+                </div>
+            </div>
+            
+            <div class="prompt-card">
+                <div class="prompt-header">
+                    <div class="prompt-category" id="promptCategory">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        <span id="categoryLabel">Leadership</span>
+                    </div>
+                    <button class="shuffle-btn" onclick="shufflePrompt()">
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                        New Prompt
+                    </button>
+                </div>
+                <div class="prompt-text" id="promptText">Loading prompt...</div>
+            </div>
+            
+            <div class="journal-area">
+                <textarea class="journal-textarea" id="journalEntry" placeholder="Start writing your thoughts..." oninput="updateWordCount()"></textarea>
+                
+                <div class="tags-section">
+                    <div class="tags-label">Tag this entry (optional)</div>
+                    <div class="tags-grid" id="tagsGrid">
+                        <button class="tag" data-tag="leadership" onclick="toggleTag(this)">Leadership</button>
+                        <button class="tag" data-tag="relationships" onclick="toggleTag(this)">Relationships</button>
+                        <button class="tag" data-tag="energy" onclick="toggleTag(this)">Energy</button>
+                        <button class="tag" data-tag="growth" onclick="toggleTag(this)">Growth</button>
+                        <button class="tag" data-tag="gratitude" onclick="toggleTag(this)">Gratitude</button>
+                        <button class="tag" data-tag="challenge" onclick="toggleTag(this)">Challenge</button>
+                        <button class="tag" data-tag="win" onclick="toggleTag(this)">Win</button>
+                    </div>
+                </div>
+                
+                <div class="journal-footer">
+                    <div class="word-count">
+                        <div class="word-counter"><span id="wordCount">0</span> words</div>
+                        <div class="word-goal" id="wordGoal" style="display: none;">Bronze: 100</div>
+                    </div>
+                    <button class="btn btn-primary" id="saveBtn" onclick="saveEntry()" disabled>
+                        <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Save Entry
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- History Tab -->
+        <div class="tab-content" id="historyTab">
+            <div class="history-filters">
+                <button class="filter-btn active" data-filter="all" onclick="filterEntries('all', this)">All</button>
+                <button class="filter-btn" data-filter="leadership" onclick="filterEntries('leadership', this)">Leadership</button>
+                <button class="filter-btn" data-filter="relationships" onclick="filterEntries('relationships', this)">Relationships</button>
+                <button class="filter-btn" data-filter="energy" onclick="filterEntries('energy', this)">Energy</button>
+                <button class="filter-btn" data-filter="growth" onclick="filterEntries('growth', this)">Growth</button>
+                <button class="filter-btn" data-filter="gratitude" onclick="filterEntries('gratitude', this)">Gratitude</button>
+            </div>
+            
+            <div class="entries-list" id="entriesList">
+                <!-- Entries will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Insights Tab -->
+        <div class="tab-content" id="insightsTab">
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon patterns">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div class="insight-title">Your Journaling Streak</div>
+                </div>
+                <div class="insight-content">
+                    <div id="streakInsight">Start journaling daily to build your streak!</div>
+                </div>
+                <div class="streak-calendar" id="streakCalendar">
+                    <!-- Calendar will be populated -->
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon topics">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"/></svg>
+                    </div>
+                    <div class="insight-title">Topic Distribution</div>
+                </div>
+                <div class="insight-content">
+                    <div id="topicInsight">Your journaling covers these areas:</div>
+                </div>
+                <div class="topic-bars" id="topicBars">
+                    <!-- Bars will be populated -->
+                </div>
+            </div>
+            
+            <div class="insight-card">
+                <div class="insight-header">
+                    <div class="insight-icon growth">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/></svg>
+                    </div>
+                    <div class="insight-title">Writing Growth</div>
+                </div>
+                <div class="insight-content" id="growthInsight">
+                    Track your progress over time. The more you write, the more insights we can share.
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Entry Modal -->
+    <div class="modal-overlay" id="entryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalDate">Entry</div>
+                <button class="modal-close" onclick="closeModal()">
+                    <svg class="hi" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="modal-prompt" id="modalPrompt"></div>
+                <div class="modal-content" id="modalContent"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" onclick="deleteEntry()">Delete</button>
+                <button class="btn btn-primary" onclick="closeModal()">Close</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Success Overlay -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-icon">
+            <svg width="50" height="50" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <div class="success-title">Entry Saved!</div>
+        <div class="success-subtitle" id="successMessage">Great reflection today.</div>
+        <div class="success-stats">
+            <div class="success-stat">
+                <div class="success-stat-value" id="successWords">0</div>
+                <div class="success-stat-label">Words</div>
+            </div>
+            <div class="success-stat">
+                <div class="success-stat-value" id="successStreak">0</div>
+                <div class="success-stat-label">Day Streak</div>
+            </div>
+        </div>
+        <button class="btn btn-primary" onclick="closeSuccess()">Continue</button>
+    </div>
+    
+    <script>
+        const prompts = {
+            leadership: [
+                "What leadership challenge did you face today, and how did you handle it?",
+                "Describe a moment when you had to make a difficult decision. What guided you?",
+                "Who inspired you as a leader this week, and what did you learn from them?",
+                "What feedback did you give or receive today that helped someone grow?",
+                "How did you show up for your team when things got tough?",
+                "What leadership skill do you want to develop, and what's one step you can take?",
+                "Describe a conflict you navigated. What would you do differently?",
+                "When did you have to put the team's needs above your own today?",
+                "What's one thing you could delegate better, and what's holding you back?",
+                "How did you communicate your vision today? Was it understood?"
+            ],
+            relationships: [
+                "Who did you connect with deeply today, and what made it meaningful?",
+                "Describe a relationship you want to strengthen. What's the first step?",
+                "When did you listen without trying to fix or advise today?",
+                "What boundary did you set or need to set in a relationship?",
+                "How did you show appreciation to someone important today?",
+                "What conversation have you been avoiding, and why?",
+                "Describe a moment of genuine empathy you experienced or offered.",
+                "Who do you need to forgive, and what's making it difficult?",
+                "How did someone surprise you positively today?",
+                "What relationship pattern do you want to break?"
+            ],
+            energy: [
+                "What drained your energy today, and how can you protect against it tomorrow?",
+                "When did you feel most alive and engaged today? What were you doing?",
+                "How did your morning routine affect your energy throughout the day?",
+                "What energy-giving activity did you skip, and what got in the way?",
+                "Describe your energy arc today. When were you at peak and low?",
+                "What's one energy vampire you need to address in your life?",
+                "How did sleep, nutrition, or exercise affect your performance today?",
+                "When did you push through fatigue when you should have rested?",
+                "What recharges you that you haven't made time for lately?",
+                "How can you protect your peak energy hours for important work?"
+            ],
+            growth: [
+                "What did you learn today that shifted your perspective?",
+                "Describe a failure or setback and what it taught you.",
+                "What limiting belief did you notice in yourself today?",
+                "When did you step outside your comfort zone? How did it feel?",
+                "What skill are you actively developing? What progress did you make?",
+                "Who challenged your thinking today, and how did you respond?",
+                "What book, podcast, or idea is shaping your growth right now?",
+                "Describe a habit you're trying to build. What's working and what's not?",
+                "When did you choose growth over comfort today?",
+                "What's one thing you know you should start doing but keep avoiding?"
+            ],
+            gratitude: [
+                "What are three things you're genuinely grateful for today?",
+                "Who made your life easier today, and how can you thank them?",
+                "What challenge are you grateful for because of what it taught you?",
+                "Describe a small moment of joy you almost overlooked today.",
+                "What aspect of your work are you grateful for that you often take for granted?",
+                "Who believed in you when you needed it most?",
+                "What failure led to something you're now grateful for?",
+                "What simple pleasure did you enjoy today?",
+                "How has a difficult relationship made you a better person?",
+                "What opportunity do you have today that past-you would envy?"
+            ]
+        };
+        
+        const categoryIcons = {
+            leadership: '<path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>',
+            relationships: '<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>',
+            energy: '<path d="M13 10V3L4 14h7v7l9-11h-7z"/>',
+            growth: '<path d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"/>',
+            gratitude: '<path d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>'
+        };
+        
+        let currentPrompt = { category: '', text: '' };
+        let selectedTags = [];
+        let currentEntryId = null;
+        let entries = [];
+        
+        function loadEntries() {
+            entries = JSON.parse(localStorage.getItem('tap_in_journal_entries') || '[]');
+        }
+        
+        function saveEntries() {
+            localStorage.setItem('tap_in_journal_entries', JSON.stringify(entries));
+        }
+        
+        function shufflePrompt() {
+            const categories = Object.keys(prompts);
+            const category = categories[Math.floor(Math.random() * categories.length)];
+            const categoryPrompts = prompts[category];
+            const prompt = categoryPrompts[Math.floor(Math.random() * categoryPrompts.length)];
+            
+            currentPrompt = { category, text: prompt };
+            
+            document.getElementById('categoryLabel').textContent = category.charAt(0).toUpperCase() + category.slice(1);
+            document.getElementById('promptText').textContent = prompt;
+            
+            const iconSvg = document.querySelector('#promptCategory svg');
+            iconSvg.innerHTML = categoryIcons[category];
+        }
+        
+        function updateWordCount() {
+            const text = document.getElementById('journalEntry').value.trim();
+            const words = text ? text.split(/\s+/).length : 0;
+            const wordCountEl = document.getElementById('wordCount');
+            const wordGoalEl = document.getElementById('wordGoal');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            wordCountEl.textContent = words;
+            saveBtn.disabled = words < 10;
+            
+            if (words >= 500) {
+                wordCountEl.className = 'gold';
+                wordGoalEl.textContent = 'Gold achieved!';
+                wordGoalEl.className = 'word-goal gold';
+                wordGoalEl.style.display = 'inline-block';
+            } else if (words >= 250) {
+                wordCountEl.className = 'silver';
+                wordGoalEl.textContent = 'Silver! 500 for Gold';
+                wordGoalEl.className = 'word-goal silver';
+                wordGoalEl.style.display = 'inline-block';
+            } else if (words >= 100) {
+                wordCountEl.className = 'bronze';
+                wordGoalEl.textContent = 'Bronze! 250 for Silver';
+                wordGoalEl.className = 'word-goal bronze';
+                wordGoalEl.style.display = 'inline-block';
+            } else if (words >= 50) {
+                wordCountEl.className = '';
+                wordGoalEl.textContent = '100 for Bronze';
+                wordGoalEl.className = 'word-goal';
+                wordGoalEl.style.display = 'inline-block';
+            } else {
+                wordCountEl.className = '';
+                wordGoalEl.style.display = 'none';
+            }
+        }
+        
+        function toggleTag(btn) {
+            const tag = btn.dataset.tag;
+            btn.classList.toggle('selected');
+            
+            if (btn.classList.contains('selected')) {
+                if (!selectedTags.includes(tag)) selectedTags.push(tag);
+            } else {
+                selectedTags = selectedTags.filter(t => t !== tag);
+            }
+        }
+        
+        function saveEntry() {
+            const text = document.getElementById('journalEntry').value.trim();
+            if (!text) return;
+            
+            const words = text.split(/\s+/).length;
+            const entry = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                prompt: currentPrompt.text,
+                promptCategory: currentPrompt.category,
+                text: text,
+                words: words,
+                tags: [...selectedTags]
+            };
+            
+            entries.unshift(entry);
+            saveEntries();
+            
+            // Update streak
+            updateStreak();
+            
+            // Show success
+            document.getElementById('successWords').textContent = words;
+            document.getElementById('successStreak').textContent = calculateCurrentStreak();
+            
+            const messages = [
+                "Great reflection today!",
+                "You're building a powerful habit.",
+                "Self-awareness is a superpower.",
+                "Keep the streak alive!",
+                "Your future self will thank you."
+            ];
+            document.getElementById('successMessage').textContent = messages[Math.floor(Math.random() * messages.length)];
+            
+            document.getElementById('successOverlay').classList.add('show');
+            
+            // Reset form
+            document.getElementById('journalEntry').value = '';
+            selectedTags = [];
+            document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+            updateWordCount();
+            shufflePrompt();
+            updateStats();
+            
+            // Award XP
+            let totalXP = parseInt(localStorage.getItem('tap_in_total_xp') || '0');
+            localStorage.setItem('tap_in_total_xp', totalXP + 25);
+        }
+        
+        function closeSuccess() {
+            document.getElementById('successOverlay').classList.remove('show');
+        }
+        
+        function calculateCurrentStreak() {
+            if (entries.length === 0) return 0;
+            
+            let streak = 0;
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            // Check if there's an entry today
+            const hasToday = entries.some(e => {
+                const entryDate = new Date(e.date);
+                entryDate.setHours(0, 0, 0, 0);
+                return entryDate.getTime() === today.getTime();
+            });
+            
+            if (!hasToday) return 0;
+            
+            let checkDate = new Date(today);
+            
+            while (true) {
+                const hasEntry = entries.some(e => {
+                    const entryDate = new Date(e.date);
+                    entryDate.setHours(0, 0, 0, 0);
+                    return entryDate.getTime() === checkDate.getTime();
+                });
+                
+                if (hasEntry) {
+                    streak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            
+            return streak;
+        }
+        
+        function calculateLongestStreak() {
+            if (entries.length === 0) return 0;
+            
+            const dates = [...new Set(entries.map(e => {
+                const d = new Date(e.date);
+                d.setHours(0, 0, 0, 0);
+                return d.getTime();
+            }))].sort((a, b) => a - b);
+            
+            let longest = 1;
+            let current = 1;
+            
+            for (let i = 1; i < dates.length; i++) {
+                const diff = (dates[i] - dates[i-1]) / (1000 * 60 * 60 * 24);
+                if (diff === 1) {
+                    current++;
+                    longest = Math.max(longest, current);
+                } else {
+                    current = 1;
+                }
+            }
+            
+            return longest;
+        }
+        
+        function updateStreak() {
+            const streak = calculateCurrentStreak();
+            document.getElementById('streakCount').textContent = streak;
+            
+            const badge = document.getElementById('streakBadge');
+            if (streak > 0) {
+                badge.classList.remove('inactive');
+            } else {
+                badge.classList.add('inactive');
+            }
+            
+            // Save longest streak
+            const longest = calculateLongestStreak();
+            localStorage.setItem('tap_in_journal_longest_streak', longest);
+        }
+        
+        function updateStats() {
+            document.getElementById('totalEntries').textContent = entries.length;
+            
+            const totalWords = entries.reduce((sum, e) => sum + e.words, 0);
+            document.getElementById('totalWords').textContent = totalWords.toLocaleString();
+            
+            document.getElementById('longestStreak').textContent = calculateLongestStreak();
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            document.querySelector(`.tab:nth-child(${tabName === 'write' ? 1 : tabName === 'history' ? 2 : 3})`).classList.add('active');
+            document.getElementById(tabName + 'Tab').classList.add('active');
+            
+            if (tabName === 'history') renderHistory();
+            if (tabName === 'insights') renderInsights();
+        }
+        
+        function renderHistory(filter = 'all') {
+            const list = document.getElementById('entriesList');
+            let filtered = filter === 'all' ? entries : entries.filter(e => e.tags.includes(filter) || e.promptCategory === filter);
+            
+            if (filtered.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        <p>No entries yet. Start writing!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = filtered.map(e => {
+                const date = new Date(e.date);
+                const dateStr = date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+                const tag = e.tags[0] || e.promptCategory;
+                
+                return `
+                    <div class="entry-card" onclick="openEntry(${e.id})">
+                        <div class="entry-header">
+                            <div class="entry-date">${dateStr}</div>
+                            <div class="entry-meta">
+                                <span class="entry-words">${e.words} words</span>
+                                ${tag ? `<span class="entry-tag">${tag}</span>` : ''}
+                            </div>
+                        </div>
+                        ${e.prompt ? `<div class="entry-prompt">"${e.prompt}"</div>` : ''}
+                        <div class="entry-preview">${e.text}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function filterEntries(filter, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            renderHistory(filter);
+        }
+        
+        function openEntry(id) {
+            const entry = entries.find(e => e.id === id);
+            if (!entry) return;
+            
+            currentEntryId = id;
+            
+            const date = new Date(entry.date);
+            document.getElementById('modalDate').textContent = date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+            document.getElementById('modalPrompt').textContent = entry.prompt ? `"${entry.prompt}"` : '';
+            document.getElementById('modalContent').textContent = entry.text;
+            
+            document.getElementById('entryModal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('entryModal').classList.remove('show');
+            currentEntryId = null;
+        }
+        
+        function deleteEntry() {
+            if (!currentEntryId) return;
+            if (!confirm('Delete this entry? This cannot be undone.')) return;
+            
+            entries = entries.filter(e => e.id !== currentEntryId);
+            saveEntries();
+            updateStats();
+            updateStreak();
+            closeModal();
+            renderHistory();
+        }
+        
+        function renderInsights() {
+            // Streak calendar
+            const calendar = document.getElementById('streakCalendar');
+            const today = new Date();
+            const days = [];
+            
+            for (let i = 27; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                date.setHours(0, 0, 0, 0);
+                
+                const hasEntry = entries.some(e => {
+                    const entryDate = new Date(e.date);
+                    entryDate.setHours(0, 0, 0, 0);
+                    return entryDate.getTime() === date.getTime();
+                });
+                
+                const isToday = i === 0;
+                const dayLabel = date.getDate();
+                
+                days.push(`<div class="streak-day ${hasEntry ? 'active' : ''} ${isToday ? 'today' : ''}">${dayLabel}</div>`);
+            }
+            
+            calendar.innerHTML = days.join('');
+            
+            // Streak insight
+            const streak = calculateCurrentStreak();
+            const longest = calculateLongestStreak();
+            document.getElementById('streakInsight').textContent = streak > 0 
+                ? `You're on a ${streak}-day streak! Your longest is ${longest} days.`
+                : `Start journaling today to begin your streak. Your record is ${longest} days.`;
+            
+            // Topic distribution
+            const topicCounts = { leadership: 0, relationships: 0, energy: 0, growth: 0, gratitude: 0 };
+            
+            entries.forEach(e => {
+                e.tags.forEach(tag => {
+                    if (topicCounts.hasOwnProperty(tag)) topicCounts[tag]++;
+                });
+                if (topicCounts.hasOwnProperty(e.promptCategory)) topicCounts[e.promptCategory]++;
+            });
+            
+            const maxCount = Math.max(...Object.values(topicCounts), 1);
+            
+            const topicBars = document.getElementById('topicBars');
+            topicBars.innerHTML = Object.entries(topicCounts).map(([topic, count]) => {
+                const pct = Math.round((count / maxCount) * 100);
+                return `
+                    <div class="topic-bar-row">
+                        <div class="topic-label">${topic.charAt(0).toUpperCase() + topic.slice(1)}</div>
+                        <div class="topic-bar"><div class="topic-bar-fill ${topic}" style="width: ${pct}%"></div></div>
+                        <div class="topic-value">${count}</div>
+                    </div>
+                `;
+            }).join('');
+            
+            // Growth insight
+            const thisWeek = entries.filter(e => {
+                const diff = (new Date() - new Date(e.date)) / (1000 * 60 * 60 * 24);
+                return diff <= 7;
+            });
+            
+            const lastWeek = entries.filter(e => {
+                const diff = (new Date() - new Date(e.date)) / (1000 * 60 * 60 * 24);
+                return diff > 7 && diff <= 14;
+            });
+            
+            const thisWeekWords = thisWeek.reduce((sum, e) => sum + e.words, 0);
+            const lastWeekWords = lastWeek.reduce((sum, e) => sum + e.words, 0);
+            
+            let growthText = '';
+            if (entries.length < 3) {
+                growthText = 'Keep journaling! After a few entries, we\'ll show you patterns and growth insights.';
+            } else if (thisWeekWords > lastWeekWords) {
+                growthText = `You wrote ${thisWeekWords.toLocaleString()} words this week — ${Math.round(((thisWeekWords - lastWeekWords) / Math.max(lastWeekWords, 1)) * 100)}% more than last week! Great momentum.`;
+            } else if (thisWeekWords === lastWeekWords) {
+                growthText = `You wrote ${thisWeekWords.toLocaleString()} words this week, matching last week. Consistent!`;
+            } else {
+                growthText = `You wrote ${thisWeekWords.toLocaleString()} words this week. A bit less than last week — that's okay, quality matters too.`;
+            }
+            
+            document.getElementById('growthInsight').textContent = growthText;
+        }
+        
+        // Initialize
+        loadEntries();
+        shufflePrompt();
+        updateStats();
+        updateStreak();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

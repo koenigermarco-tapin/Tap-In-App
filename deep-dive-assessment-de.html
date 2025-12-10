@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Leadership Assessment - TAP-IN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --brick-red-light: #c0392b;
+            --blue: #4a6fa5;
+            --purple: #6b5b95;
+            --blue-glow: rgba(74, 111, 165, 0.3);
+            --purple-glow: rgba(107, 91, 149, 0.3);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+        }
+        
+        .container { 
+            max-width: 700px; 
+            margin: 0 auto; 
+            padding: 40px 20px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem; 
+            font-weight: 800; 
+            margin-bottom: 25px;
+            text-decoration: none;
+            color: var(--white);
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1rem;
+        }
+        h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 10px; letter-spacing: -0.5px; }
+        .subtitle { color: var(--light-grey); font-size: 1rem; }
+        
+        .progress-container { margin-bottom: 40px; }
+        .progress-text { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.85rem; color: var(--light-grey); }
+        .progress-text span:last-child { color: var(--white); font-weight: 600; }
+        .progress-bar { background: var(--mid-grey); border-radius: 10px; height: 8px; overflow: hidden; }
+        .progress-fill { background: linear-gradient(90deg, var(--purple), var(--blue)); height: 100%; border-radius: 10px; transition: width 0.4s ease; box-shadow: 0 0 20px var(--purple-glow); }
+        
+        .question-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; flex: 1; }
+        .question-category { display: inline-block; padding: 6px 14px; background: linear-gradient(135deg, rgba(107, 91, 149, 0.2) 0%, rgba(74, 111, 165, 0.2) 100%); border: 1px solid rgba(107, 91, 149, 0.3); border-radius: 20px; font-size: 0.75rem; font-weight: 600; color: var(--light-grey); margin-bottom: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .question-text { font-size: 1.35rem; font-weight: 700; margin-bottom: 30px; line-height: 1.4; letter-spacing: -0.3px; }
+        
+        .options { display: flex; flex-direction: column; gap: 12px; }
+        .option { background: rgba(255,255,255,0.03); border: 2px solid var(--mid-grey); border-radius: 14px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px; }
+        .option:hover { border-color: var(--purple); background: rgba(107, 91, 149, 0.1); }
+        .option.selected { border-color: var(--purple); background: linear-gradient(135deg, rgba(107, 91, 149, 0.15) 0%, rgba(74, 111, 165, 0.15) 100%); box-shadow: 0 0 30px rgba(107, 91, 149, 0.2); }
+        .option-letter { width: 36px; height: 36px; border-radius: 10px; background: var(--mid-grey); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; transition: all 0.2s ease; }
+        .option.selected .option-letter { background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%); }
+        .option-text { flex: 1; font-size: 1rem; line-height: 1.5; }
+        
+        .nav-buttons { display: flex; gap: 15px; justify-content: space-between; }
+        .btn { padding: 16px 28px; border-radius: 12px; font-weight: 600; font-size: 1rem; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-secondary:hover { background: rgba(255,255,255,0.15); }
+        .btn-primary { background: linear-gradient(135deg, var(--brick-red), var(--brick-red-light)); color: var(--white); flex: 1; box-shadow: 0 4px 20px rgba(169, 50, 38, 0.3); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(169, 50, 38, 0.4); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+        
+        .results-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%); border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 25px; box-shadow: 0 10px 40px var(--purple-glow); }
+        .results h2 { font-size: 1.1rem; color: var(--light-grey); font-weight: 500; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+        .result-type { font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, var(--brick-red-light) 0%, var(--purple) 50%, var(--blue) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; letter-spacing: -1px; }
+        .result-desc { color: var(--light-grey); font-size: 1.1rem; margin-bottom: 35px; line-height: 1.7; max-width: 500px; margin-left: auto; margin-right: auto; }
+        .continue-btn { display: inline-flex; align-items: center; gap: 12px; padding: 18px 36px; background: linear-gradient(135deg, var(--brick-red), var(--brick-red-light)); border-radius: 12px; color: var(--white); text-decoration: none; font-weight: 700; font-size: 1.1rem; transition: all 0.3s ease; box-shadow: 0 8px 30px rgba(169, 50, 38, 0.35); }
+        .continue-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(169, 50, 38, 0.5); }
+        
+        #questionContainer { display: block; }
+        #questionContainer.hide { display: none; }
+        #resultsContainer { display: none; text-align: center; }
+        #resultsContainer.show { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+        
+        @media (max-width: 480px) { .question-text { font-size: 1.15rem; } .option { padding: 15px; } .result-type { font-size: 2rem; } h1 { font-size: 1.5rem; } }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="deep-dive-assessment.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">EN</a>
+        <a href="deep-dive-assessment-de.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">DE</a>
+    </div>
+
+    <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; gap: 8px;">
+        <a href="deep-dive-assessment.html" style="padding: 8px 14px; background: rgba(255,255,255,0.1); color: #fff; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">EN</a>
+        <a href="deep-dive-assessment-de.html" style="padding: 8px 14px; background: #10b981; color: #000; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85rem;">DE</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <a href="landing-de.html" class="logo">
+                <div class="logo-icon">T</div>
+                <span>TAP-IN</span>
+            </a>
+            <h1>Entdecke deine Leadership-DNA</h1>
+            <p class="subtitle">15 Fragen · ~5 Minuten · Sofortige Ergebnisse</p>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-text">
+                <span>Frage <span id="qNum">1</span> von 15</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div id="questionContainer">
+            <div class="question-card">
+                <div class="question-category" id="questionCategory">Führungsstil</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>Zurück</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Weiter</button>
+            </div>
+        </div>
+        
+        <div id="resultsContainer">
+            <div class="results-icon">&#127942;</div>
+            <h2>Dein Leadership-Typ</h2>
+            <div class="result-type" id="resultType"></div>
+            <p class="result-desc" id="resultDesc"></p>
+            <a href="leadership-dna-de.html" class="continue-btn">
+                Deine vollständige DNA-Karte sehen
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { category: "Führungsstil", text: "Bei einer wichtigen Entscheidung mit deinem Team tendierst du dazu...", options: [
+                { text: "Eine überzeugende Vision zu malen und alle für die Möglichkeiten zu begeistern", type: "visionary" },
+                { text: "Alle verfügbaren Daten und Optionen zu analysieren, bevor du dich festlegst", type: "architect" },
+                { text: "Erst die Perspektiven der Teammitglieder einzuholen", type: "facilitator" },
+                { text: "Schnell eine entschiedene Entscheidung zu treffen und bei Bedarf anzupassen", type: "executor" }
+            ]},
+            { category: "Führungsstil", text: "Dein Team würde sagen, deine größte Stärke ist...", options: [
+                { text: "Sie zu inspirieren, größer zu denken und neue Möglichkeiten zu sehen", type: "visionary" },
+                { text: "Klare Systeme, Prozesse und strukturierte Ansätze zu schaffen", type: "architect" },
+                { text: "Vertrauen, psychologische Sicherheit und starke Beziehungen aufzubauen", type: "facilitator" },
+                { text: "Dinge effizient zu erledigen, ohne Ausreden oder Verzögerungen", type: "executor" }
+            ]},
+            { category: "Führungsstil", text: "In Team-Meetings neigst du am ehesten dazu...", options: [
+                { text: "Die Gruppe herauszufordern, über zukünftige Chancen und Innovationen nachzudenken", type: "visionary" },
+                { text: "Klärende Fragen zu stellen und strukturierte Notizen und nächste Schritte sicherzustellen", type: "architect" },
+                { text: "Sicherzustellen, dass jede Stimme gehört wird und sich alle einbezogen fühlen", type: "facilitator" },
+                { text: "Auf klare Aktionspunkte, Deadlines und verantwortliche Personen zu drängen", type: "executor" }
+            ]},
+            { category: "Führungsstil", text: "Wenn ein Projekt in Verzug gerät, ist dein erster Instinkt...", options: [
+                { text: "Alle an das große Ganze zu erinnern und warum diese Arbeit wichtig ist", type: "visionary" },
+                { text: "Die Daten zu analysieren, um die Ursache der Verzögerungen zu finden", type: "architect" },
+                { text: "1:1-Gespräche zu führen, um zu verstehen, was die Leute blockiert", type: "facilitator" },
+                { text: "Die Ärmel hochzukrempeln und Hindernisse direkt aus dem Weg zu räumen", type: "executor" }
+            ]},
+            { category: "Arbeitsrhythmus", text: "Wie gehst du herausfordernde Arbeit am liebsten an?", options: [
+                { text: "Intensive, fokussierte Phasen mit Pausen zum Aufladen dazwischen", type: "sprinter" },
+                { text: "Gleichmäßiger, konsistenter Einsatz über den Tag verteilt", type: "jogger" },
+                { text: "Lange, ausdauernde Sessions, in denen ich stundenlang tief eintauchen kann", type: "marathoner" }
+            ]},
+            { category: "Arbeitsrhythmus", text: "Wann bist du mental typischerweise am besten?", options: [
+                { text: "Früh morgens - ich bin am schärfsten, bevor andere wach sind", type: "sprinter" },
+                { text: "Mittags - ich komme in Fahrt nach dem Aufwärmen", type: "jogger" },
+                { text: "Spätnachmittags/abends - ich baue Momentum über den Tag auf", type: "marathoner" }
+            ]},
+            { category: "Arbeitsrhythmus", text: "Nach Abschluss eines großen Projekts brauchst du typischerweise...", options: [
+                { text: "Deutliche Auszeit, bevor ich mich ins nächste große Ding stürze", type: "sprinter" },
+                { text: "Eine kurze Pause und dann weiter im normalen Tempo", type: "jogger" },
+                { text: "Ich fühle mich energiegeladen und bin sofort bereit für die nächste Herausforderung", type: "marathoner" }
+            ]},
+            { category: "Kommunikation", text: "Wenn du eine komplexe Idee erklärst, bevorzugst du...", options: [
+                { text: "Mit der großen Vision zu beginnen, dann Details nach Bedarf zu ergänzen", type: "visionary" },
+                { text: "Eine logische, strukturierte Aufschlüsselung mit klaren Schritten zu präsentieren", type: "architect" },
+                { text: "Geschichten und Beispiele zu nutzen, die emotional verbinden", type: "facilitator" },
+                { text: "Direkt auf den Punkt zu kommen mit umsetzbaren Erkenntnissen", type: "executor" }
+            ]},
+            { category: "Kommunikation", text: "Bei einer Meinungsverschiedenheit mit einem Kollegen tendierst du dazu...", options: [
+                { text: "Dich auf die gemeinsame Vision zu fokussieren und Gemeinsamkeiten bei den Zielen zu finden", type: "visionary" },
+                { text: "Fakten und Daten zu präsentieren, um deine Position logisch zu untermauern", type: "architect" },
+                { text: "Erst ihre Perspektive zu verstehen, bevor du deine vertritst", type: "facilitator" },
+                { text: "Eine schnelle Entscheidung vorzuschlagen, damit ihr weitermachen und testen könnt", type: "executor" }
+            ]},
+            { category: "Kommunikation", text: "Wenn du einem Teammitglied Feedback gibst, fokussierst du auf...", options: [
+                { text: "Wie ihr Wachstum mit größeren Chancen in der Zukunft zusammenhängt", type: "visionary" },
+                { text: "Spezifische Verhaltensweisen und messbare Verbesserungen", type: "architect" },
+                { text: "Ihre Gefühle und dass sie sich bei der Verbesserung unterstützt fühlen", type: "facilitator" },
+                { text: "Was sie ab sofort anders machen müssen", type: "executor" }
+            ]},
+            { category: "Unter Druck", text: "Bei einer hochriskanten Deadline...", options: [
+                { text: "Werde ich durch die Herausforderung energetisiert und inspiriere andere, sich zu erheben", type: "visionary" },
+                { text: "Erstelle ich einen detaillierten Plan und arbeite jeden Schritt systematisch ab", type: "architect" },
+                { text: "Checke ich beim Team ein, um sicherzustellen, dass es allen gut geht", type: "facilitator" },
+                { text: "Eliminiere ich Ablenkungen und fokussiere mich rein darauf, es zu erledigen", type: "executor" }
+            ]},
+            { category: "Unter Druck", text: "Deine größte Frustration bei der Arbeit ist normalerweise...", options: [
+                { text: "Menschen, die nicht über die heutigen Probleme hinaus zu zukünftigen Möglichkeiten sehen können", type: "visionary" },
+                { text: "Chaos, fehlende klare Prozesse und Desorganisation", type: "architect" },
+                { text: "Konflikte, die Beziehungen und Teammoral beschädigen", type: "facilitator" },
+                { text: "Endlose Diskussionen und Meetings ohne konkrete Aktion", type: "executor" }
+            ]},
+            { category: "Unter Druck", text: "Wenn du überfordert bist, bewältigst du das, indem du...", options: [
+                { text: "Herauszoomst, um dich wieder mit Sinn und Zweck zu verbinden", type: "visionary" },
+                { text: "Listen machst und Aufgaben organisierst, um wieder Kontrolle zu gewinnen", type: "architect" },
+                { text: "Es mit jemandem durchsprichst, dem du vertraust", type: "facilitator" },
+                { text: "Eine Sache auswählst und angreifst, um Momentum aufzubauen", type: "executor" }
+            ]},
+            { category: "Motivation", text: "Du fühlst dich am energiegeladensten, wenn...", options: [
+                { text: "Du neue Ideen brainstormst und dir vorstellst, was möglich sein könnte", type: "visionary" },
+                { text: "Du komplexe Probleme mit eleganten, systematischen Lösungen löst", type: "architect" },
+                { text: "Du jemandem zu einem Durchbruch verhilfst oder neue Fähigkeiten entwickelst", type: "facilitator" },
+                { text: "Du große Punkte von deiner Liste streichst und greifbaren Fortschritt siehst", type: "executor" }
+            ]},
+            { category: "Motivation", text: "Was treibt dich am meisten in deiner Führungsrolle an?", options: [
+                { text: "Etwas Bedeutungsvolles zu erschaffen, das mich überdauert", type: "visionary" },
+                { text: "Systeme zu bauen, die effizient funktionieren und skalieren", type: "architect" },
+                { text: "Menschen zu entwickeln und sie wachsen zu sehen", type: "facilitator" },
+                { text: "Ergebnisse zu erzielen und ambitionierte Ziele zu erreichen", type: "executor" }
+            ]}
+        ];
+
+        const typeData = {
+            visionary: { name: "Visionärer Leader", desc: "Du inspirierst mit kühner Vision und hilfst anderen, Möglichkeiten zu sehen, die sie allein nicht erkennen würden. Deine Gabe ist es, die Arbeit von heute mit der Wirkung von morgen zu verbinden." },
+            architect: { name: "Strategischer Architekt", desc: "Du baust Systeme, die skalieren und bringst Klarheit in Komplexität durch strukturiertes Denken. Deine Gabe ist es, Chaos in elegante, wiederholbare Lösungen zu verwandeln." },
+            facilitator: { name: "Katalysator-Coach", desc: "Du entfesselst Teampotenzial, indem du Sicherheit schaffst und sicherstellst, dass jede Stimme zählt. Deine Gabe ist es, durch echte Verbindung das Beste in Menschen hervorzubringen." },
+            executor: { name: "Momentum-Treiber", desc: "Du verwandelst Pläne in Realität mit unermüdlichem Fokus auf Ergebnisse und Vorwärtsbewegung. Deine Gabe ist es, durch den Lärm zu schneiden und Dinge geschehen zu lassen." }
+        };
+
+        let currentQuestion = 0, answers = {};
+        let scores = { visionary: 0, architect: 0, facilitator: 0, executor: 0 };
+        let rhythmScores = { sprinter: 0, jogger: 0, marathoner: 0 };
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('qNum').textContent = currentQuestion + 1;
+            document.getElementById('questionCategory').textContent = q.category;
+            document.getElementById('questionText').textContent = q.text;
+            const progress = ((currentQuestion) / questions.length * 100);
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            document.getElementById('optionsContainer').innerHTML = q.options.map((opt, i) => `
+                <div class="option ${answers[currentQuestion] === i ? 'selected' : ''}" onclick="selectOption(${i}, '${opt.type}')">
+                    <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                    <div class="option-text">${opt.text}</div>
+                </div>
+            `).join('');
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').disabled = answers[currentQuestion] === undefined;
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? 'Ergebnisse sehen' : 'Weiter';
+        }
+
+        function selectOption(index, type) {
+            const q = questions[currentQuestion];
+            if (answers[currentQuestion] !== undefined) {
+                const prevType = q.options[answers[currentQuestion]].type;
+                if (['sprinter', 'jogger', 'marathoner'].includes(prevType)) rhythmScores[prevType]--;
+                else scores[prevType]--;
+            }
+            answers[currentQuestion] = index;
+            if (['sprinter', 'jogger', 'marathoner'].includes(type)) rhythmScores[type]++;
+            else scores[type]++;
+            renderQuestion();
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) { currentQuestion++; renderQuestion(); }
+            else showResults();
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) { currentQuestion--; renderQuestion(); }
+        }
+
+        function showResults() {
+            const topType = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+            const secondType = Object.entries(scores).sort((a, b) => b[1] - a[1])[1][0];
+            const topRhythm = Object.entries(rhythmScores).sort((a, b) => b[1] - a[1])[0][0];
+            localStorage.setItem('tap_in_assessment_results', JSON.stringify({ leadershipType: topType, secondaryType: secondType, workRhythm: topRhythm, scores, rhythmScores, timestamp: new Date().toISOString() }));
+            localStorage.setItem('tap_in_profile', JSON.stringify({ leadershipType: topType, secondaryType: secondType, workerType: topRhythm, belt: 'white', name: 'Leader', timestamp: new Date().toISOString() }));
+            document.getElementById('questionContainer').classList.add('hide');
+            document.getElementById('resultsContainer').classList.add('show');
+            document.getElementById('resultType').textContent = typeData[topType].name;
+            document.getElementById('resultDesc').textContent = typeData[topType].desc;
+            document.getElementById('progressFill').style.width = '100%';
+            document.getElementById('progressPercent').textContent = '100%';
+        }
+
+        renderQuestion();
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>

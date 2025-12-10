@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta property="og:title" content="Team-Gesundheits-Assessment | TAP-IN">
+    <meta property="og:description" content="Assess your team against the Five Dysfunctions framework by Patrick Lencioni.">
+    <meta name="theme-color" content="#0d0d14">
+    <title>Team-Gesundheits-Assessment - TAP-IN</title>
+    <style>
+        :root {
+            --black: #0d0d14; --dark-grey: #1a1a24; --mid-grey: #2a2a3a; --light-grey: #8a8a9a; --white: #ffffff;
+            --green: #10b981; --green-glow: rgba(16, 185, 129, 0.3); --gold: #fbbf24; --blue: #3b82f6; --purple: #8b5cf6; --red: #ef4444;
+            --trust-color: #10b981; --conflict-color: #f59e0b; --commitment-color: #3b82f6; --accountability-color: #8b5cf6; --results-color: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--black); min-height: 100vh; color: var(--white); line-height: 1.6; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: linear-gradient(180deg, var(--dark-grey) 0%, var(--black) 100%); border-bottom: 1px solid var(--mid-grey); margin-bottom: 30px; }
+        .header h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); margin-bottom: 15px; background: linear-gradient(135deg, var(--green) 0%, var(--purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .header .subtitle { color: var(--light-grey); font-size: 1.1rem; max-width: 550px; margin: 0 auto 25px; }
+        .pyramid { display: flex; flex-direction: column; align-items: center; gap: 8px; margin: 30px 0; }
+        .pyramid-level { padding: 12px 20px; border-radius: 8px; text-align: center; font-weight: 600; font-size: 0.9rem; }
+        .pyramid-level.results { width: 50%; background: linear-gradient(135deg, var(--results-color), #dc2626); }
+        .pyramid-level.accountability { width: 62%; background: linear-gradient(135deg, var(--accountability-color), #7c3aed); }
+        .pyramid-level.commitment { width: 74%; background: linear-gradient(135deg, var(--commitment-color), #2563eb); }
+        .pyramid-level.conflict { width: 86%; background: linear-gradient(135deg, var(--conflict-color), #d97706); }
+        .pyramid-level.trust { width: 100%; background: linear-gradient(135deg, var(--trust-color), #059669); }
+        .start-btn { background: linear-gradient(135deg, var(--green) 0%, #059669 100%); color: white; border: none; padding: 18px 50px; font-size: 1.2rem; font-weight: 600; border-radius: 12px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 20px var(--green-glow); }
+        .start-btn:hover { transform: translateY(-2px); }
+        .progress-container { position: sticky; top: 0; background: var(--dark-grey); padding: 15px 20px; border-radius: 12px; margin-bottom: 25px; border: 1px solid var(--mid-grey); z-index: 100; display: none; }
+        .progress-container.show { display: block; }
+        .progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .progress-label { font-size: 0.9rem; color: var(--light-grey); }
+        .progress-xp { font-size: 0.85rem; color: var(--gold); font-weight: 600; }
+        .progress-bar { height: 8px; background: var(--mid-grey); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--purple)); border-radius: 10px; transition: width 0.5s ease; width: 0%; }
+        .question-card { background: var(--dark-grey); border-radius: 20px; padding: 35px; margin-bottom: 25px; border: 1px solid var(--mid-grey); animation: fadeIn 0.5s ease; display: none; }
+        .question-card.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .section-header { background: linear-gradient(135deg, var(--mid-grey), var(--dark-grey)); padding: 20px; border-radius: 12px; margin-bottom: 25px; }
+        .section-header h3 { font-size: 1.2rem; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+        .section-header p { font-size: 0.9rem; color: var(--light-grey); }
+        .question-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--mid-grey); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; color: var(--light-grey); margin-bottom: 20px; }
+        .question-text { font-size: clamp(1.2rem, 4vw, 1.5rem); font-weight: 600; margin-bottom: 30px; line-height: 1.4; }
+        /* Agreement Scale */
+        .agreement-scale { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; justify-content: center; }
+        .agree-option { flex: 1; min-width: 100px; text-align: center; padding: 20px 15px; background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; }
+        .agree-option:hover { border-color: var(--green); transform: translateY(-3px); }
+        .agree-option.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .agree-option .value { font-size: 1.5rem; font-weight: 700; margin-bottom: 5px; }
+        .agree-option .label { font-size: 0.75rem; color: var(--light-grey); }
+        /* Scenario */
+        .scenario-box { background: var(--mid-grey); padding: 20px; border-radius: 12px; margin-bottom: 25px; border-left: 4px solid var(--gold); }
+        .scenario-box .label { font-size: 0.8rem; color: var(--gold); text-transform: uppercase; margin-bottom: 8px; }
+        .scenario-options { display: flex; flex-direction: column; gap: 12px; }
+        .scenario-opt { background: var(--mid-grey); border: 2px solid transparent; border-radius: 12px; padding: 18px 20px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 15px; }
+        .scenario-opt:hover { border-color: var(--green); }
+        .scenario-opt.selected { border-color: var(--green); background: rgba(16, 185, 129, 0.15); }
+        .scenario-opt .letter { width: 36px; height: 36px; background: var(--black); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: var(--green); }
+        .scenario-opt.selected .letter { background: var(--green); color: var(--black); }
+        /* True/False */
+        .tf-buttons { display: flex; gap: 20px; justify-content: center; margin: 30px 0; }
+        .tf-btn { flex: 1; max-width: 180px; padding: 25px 20px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .tf-btn.true { background: linear-gradient(135deg, var(--green), #059669); color: white; }
+        .tf-btn.false { background: var(--mid-grey); color: var(--light-grey); }
+        .tf-btn:hover { transform: scale(1.05); }
+        /* Insight */
+        .insight-card { background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid var(--mid-grey); border-left: 4px solid var(--green); border-radius: 12px; padding: 25px; margin-top: 25px; display: none; }
+        .insight-card.show { display: block; animation: fadeIn 0.5s ease; }
+        .insight-card .title { font-weight: 600; color: var(--green); margin-bottom: 10px; }
+        .insight-card .content { color: var(--light-grey); line-height: 1.7; margin-bottom: 15px; }
+        .insight-card .quote { font-style: italic; padding: 15px; background: var(--mid-grey); border-radius: 8px; border-left: 3px solid var(--gold); }
+        /* Nav */
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+        .btn-secondary { background: var(--mid-grey); color: var(--white); }
+        .btn-primary { background: linear-gradient(135deg, var(--green), #059669); color: white; box-shadow: 0 4px 15px var(--green-glow); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        /* Toast */
+        .toast { position: fixed; top: 20px; right: 20px; background: linear-gradient(135deg, var(--green), #059669); color: white; padding: 15px 25px; border-radius: 12px; z-index: 1002; display: none; }
+        .toast.show { display: block; }
+        /* Results */
+        .results-section { display: none; }
+        .results-section.active { display: block; }
+        .result-hero { text-align: center; padding: 50px 30px; border-radius: 20px; margin-bottom: 30px; background: linear-gradient(135deg, var(--dark-grey), var(--mid-grey)); }
+        .overall-score { font-size: 5rem; font-weight: 700; background: linear-gradient(135deg, var(--green), var(--purple)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .score-label { font-size: 1.2rem; color: var(--light-grey); margin-bottom: 20px; }
+        .category-scores { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin: 30px 0; }
+        .cat-score { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 12px; padding: 20px; text-align: center; }
+        .cat-score .value { font-size: 2rem; font-weight: 700; margin-bottom: 5px; }
+        .cat-score .name { font-size: 0.85rem; color: var(--light-grey); }
+        .cat-score.trust .value { color: var(--trust-color); }
+        .cat-score.conflict .value { color: var(--conflict-color); }
+        .cat-score.commitment .value { color: var(--commitment-color); }
+        .cat-score.accountability .value { color: var(--accountability-color); }
+        .cat-score.results .value { color: var(--results-color); }
+        .result-card { background: var(--dark-grey); border: 1px solid var(--mid-grey); border-radius: 16px; padding: 25px; margin-bottom: 20px; }
+        .result-card h3 { margin-bottom: 15px; }
+        .result-card ul { list-style: none; }
+        .result-card li { padding: 10px 0; border-bottom: 1px solid var(--mid-grey); color: var(--light-grey); }
+        .result-card li:last-child { border-bottom: none; }
+        .cta-section { background: linear-gradient(135deg, var(--green), #059669); border-radius: 20px; padding: 40px; text-align: center; margin-top: 30px; }
+        .cta-section .btn { background: white; color: var(--green); margin-top: 15px; }
+        .lang-switch { position: fixed; top: 20px; right: 20px; display: flex; gap: 5px; background: var(--dark-grey); padding: 5px; border-radius: 8px; border: 1px solid var(--mid-grey); z-index: 100; }
+        .lang-btn { padding: 8px 14px; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--light-grey); }
+        .lang-btn.active { background: var(--green); color: white; }
+        .celebration { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(13,13,20,0.95); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .celebration.show { display: flex; }
+        .celebration-content { text-align: center; }
+        .celebration-icon { font-size: 5rem; margin-bottom: 20px; }
+        .celebration-text { font-size: 1.5rem; font-weight: 600; margin-bottom: 10px; }
+        .celebration-sub { color: var(--light-grey); margin-bottom: 30px; }
+        @media (max-width: 600px) { .nav-buttons, .tf-buttons { flex-direction: column; } .btn, .tf-btn { width: 100%; max-width: none; } .agreement-scale { flex-direction: column; } .agree-option { min-width: auto; } }
+    </style>
+</head>
+<body>
+    <div class="lang-switch"><button class="lang-btn active" onclick="switchLang('en')">EN</button><button class="lang-btn" onclick="switchLang('de')">DE</button></div>
+    <div class="toast" id="toast"><div class="title">+25 XP</div><div class="message">Team insight unlocked!</div></div>
+    <div class="container">
+        <div id="introScreen">
+            <div class="header">
+                <h1>Team-Gesundheits-Assessment</h1>
+                <p class="subtitle">Based on Patrick Lencioni's "Five Dysfunctions von a Team" - the most trusted framework for building high-performing teams.</p>
+                <div class="pyramid">
+                    <div class="pyramid-level results">Results</div>
+                    <div class="pyramid-level accountability">Accountability</div>
+                    <div class="pyramid-level commitment">Commitment</div>
+                    <div class="pyramid-level conflict">Conflict</div>
+                    <div class="pyramid-level trust">Trust (Foundation)</div>
+                </div>
+                <button class="start-btn" onclick="startAssessment()">Mein Team bewerten</button>
+                <p style="margin-top: 20px; color: var(--light-grey); font-size: 0.9rem;">~8 Minuten • 20 Fragen • Umsetzbare Einblicke</p>
+            </div>
+        </div>
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-top"><span class="progress-label" id="progressLabel">Frage 1 von 20</span><span class="progress-xp" id="progressXP">+0 XP</span></div>
+            <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        </div>
+        <div id="questionsContainer"></div>
+        <div class="results-section" id="resultsSection"><div id="resultsContent"></div></div>
+    </div>
+    <div class="celebration" id="celebration"><div class="celebration-content"><div class="celebration-icon" id="celebrationIcon"></div><div class="celebration-text" id="celebrationText"></div><div class="celebration-sub" id="celebrationSub"></div><button class="btn btn-primary" onclick="closeCelebration()">Weiter</button></div></div>
+    <script>
+        const questions = [
+            // TRUST (4 questions)
+            { section: 'Trust', sectionDesc: 'The foundation - vulnerability-based trust', sectionColor: 'var(--trust-color)', type: 'agreement', category: 'trust', question: 'Team members admit mistakes and weaknesses openly', insight: { title: 'The Vulnerability Paradox', content: 'Research shows 75% von team dysfunction stems from lack von trust. When leaders admit mistakes first, team psychological safety increases by 47%.', quote: '"Trust is knowing that when a team member pushes you, they\'re doing it because they care." - Patrick Lencioni' }},
+            { type: 'trueFalse', category: 'trust', question: 'People on our team ask for help when they need it', trueValue: 5, falseValue: 1, insight: { title: 'The Help-Seeking Signal', content: 'High-performing teams ask for help 3x more often than average teams. Google\'s Project Aristotle found this was the #1 predictor von team success.', quote: 'Navy SEAL teams spend 80% von training time building trust, only 20% on tactics.' }},
+            { type: 'scenario', category: 'trust', question: 'When a team member makes a significant mistake:', scenario: 'A colleague drops the ball on an important deliverable...', options: [{ value: 1, letter: 'A', text: 'Others point fingers and protect themselves' }, { value: 3, letter: 'B', text: 'It\'s discussed but people are guarded' }, { value: 5, letter: 'C', text: 'Team rallies to help fix it without blame' }], insight: { title: 'Benefit von the Doubt', content: 'Teams with high trust assume positive intent by default. This single shift reduces conflict resolution time by 60%.', quote: 'The Trust Equation: Credibility + Reliability + Intimacy ÷ Self-Orientation = Trust' }},
+            { type: 'agreement', category: 'trust', question: 'Team members genuinely know and understand each other', insight: { title: 'Personal Histories Exercise', content: 'Lencioni recommends teams share personal histories: where you grew up, siblings, childhood challenges, first job. Takes 30 minutes, transforms trust.', quote: '"The greatest teams are not those with the greatest players, but those who play best together."' }},
+            
+            // CONFLICT (4 questions)
+            { section: 'Conflict', sectionDesc: 'Productive conflict around ideas', sectionColor: 'var(--conflict-color)', type: 'agreement', category: 'conflict', question: 'Team meetings are lively and engaging (not boring)', insight: { title: 'Productive Conflict ≠ Drama', content: 'Healthy teams spend 40% more time debating ideas, but 50% less time in dysfunctional conflict afterward. They fight about IDEAS, not PEOPLE.', quote: 'Intel\'s Andy Grove: "Disagree and commit" only works if you actually disagree first.' }},
+            { type: 'trueFalse', category: 'conflict', question: 'Disagreements get addressed openly in meetings (not in hallways after)', trueValue: 5, falseValue: 1, insight: { title: 'Real-Time Resolution', content: 'Teams that resolve disagreements IN the meeting make decisions 3x faster than teams who "parking lot" issues. Parking lots become graveyards.', quote: 'The meeting after the meeting is where real decisions die.' }},
+            { type: 'scenario', category: 'conflict', question: 'When two people disagree on approach:', scenario: 'There\'s a fundamental disagreement about strategy...', options: [{ value: 1, letter: 'A', text: 'One person backs down to avoid tension' }, { value: 3, letter: 'B', text: 'They agree to disagree and move on' }, { value: 5, letter: 'C', text: 'They debate until reaching the best solution' }], insight: { title: 'Mining for Conflict', content: 'Great team leaders actually "mine for conflict" - they draw out disagreements because diverse perspectives improve decisions.', quote: 'If everyone is thinking alike, someone isn\'t thinking.' }},
+            { type: 'agreement', category: 'conflict', question: 'Team members challenge each other\'s ideas directly', insight: { title: 'Radical Candor', content: 'Kim Scott: Care personally + Challenge directly = Radical Candor. Google\'s research: teams with high conflict + high trust have 40% better outcomes.', quote: '"Challenge the idea, not the person." - Pixar Braintrust rule' }},
+            
+            // COMMITMENT (4 questions)
+            { section: 'Commitment', sectionDesc: 'Clarity and buy-in to decisions', sectionColor: 'var(--commitment-color)', type: 'agreement', category: 'commitment', question: 'Team meetings end with clear decisions and action items', insight: { title: 'Clarity = Commitment', content: 'Vague goals create vague commitment. Teams with crystal-clear objectives are 2.5x more likely to hit targets.', quote: '"Clear is kind. Unclear is unkind." - Brené Brown' }},
+            { type: 'trueFalse', category: 'commitment', question: 'After debate, everyone commits fully to decisions (even if they disagreed)', trueValue: 5, falseValue: 1, insight: { title: 'Disagree & Commit', content: 'Netflix culture: You can disagree strongly during discussion, but once decided, commit as if it was your idea. The alternative? Passive-aggressive execution.', quote: '"Supporting a decision you disagree with is leadership. Undermining it is sabotage."' }},
+            { type: 'scenario', category: 'commitment', question: 'When priorities compete:', scenario: 'The team has more projects than capacity allows...', options: [{ value: 1, letter: 'A', text: 'Everyone works on their own priorities' }, { value: 3, letter: 'B', text: 'Leadership decides (team accepts grudgingly)' }, { value: 5, letter: 'C', text: 'Team aligns on ONE top priority together' }], insight: { title: 'The Power von One', content: 'Lencioni: If everything is #1 priority, nothing is. Elite teams obsess over ONE thing. Apple under Jobs had one product focus per year.', quote: '"People think focus means saying yes to the thing you\'ve got to focus on. It means saying no to the hundred other good ideas." - Steve Jobs' }},
+            { type: 'agreement', category: 'commitment', question: 'Everyone knows exactly what the team\'s top priorities are', insight: { title: 'The Thematic Goal', content: 'Ask 3 team members what the #1 priority is. If you get 3 different answers, you don\'t have commitment. You have alignment theater.', quote: '"A goal without a deadline is just a wish." - Antoine de Saint-Exupéry' }},
+            
+            // ACCOUNTABILITY (4 questions)
+            { section: 'Accountability', sectionDesc: 'Holding each other to high standards', sectionColor: 'var(--accountability-color)', type: 'agreement', category: 'accountability', question: 'Team members call out each other\'s underperformance', insight: { title: 'Peer Accountability', content: 'When teams hold EACH OTHER accountable (not just the manager), performance improves 30%. Peer pressure > boss pressure.', quote: '"If only the leader holds people accountable, you don\'t have a team—you have a daycare." - Patrick Lencioni' }},
+            { type: 'trueFalse', category: 'accountability', question: 'People feel pressure from peers to maintain high standards', trueValue: 5, falseValue: 1, insight: { title: 'Fear von Letting Down', content: 'The ultimate team glue? Caring more about disappointing teammates than disappointing the boss. Internal accountability beats external.', quote: '"The highest form von accountability is when you hold yourself accountable to your team."' }},
+            { type: 'scenario', category: 'accountability', question: 'When someone misses a commitment:', scenario: 'A team member fails to deliver what they promised...', options: [{ value: 1, letter: 'A', text: 'Nobody mentions it (too awkward)' }, { value: 3, letter: 'B', text: 'Manager addresses it privately' }, { value: 5, letter: 'C', text: 'Team addresses it directly and supportively' }], insight: { title: 'SBIR Feedback Framework', content: 'Situation <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Behavior <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Impact <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg> Request. Address the behavior, not the person. Timely, specific, focused on improvement.', quote: '"Feedback is best served hot." - Marcus Buckingham' }},
+            { type: 'agreement', category: 'accountability', question: 'Team members take ownership when things go wrong', insight: { title: 'Ownership Language', content: 'High-accountability teams use "I/we" language. Low-accountability teams use "it/they" language. This linguistic shift increases problem-solving by 50%.', quote: '"Ownership starts the moment you stop blaming."' }},
+            
+            // RESULTS (4 questions)
+            { section: 'Results', sectionDesc: 'Collective outcomes over individual ego', sectionColor: 'var(--results-color)', type: 'agreement', category: 'results', question: 'Team celebrates collective wins over individual achievements', insight: { title: 'Collective Results', content: 'Lencioni: "Team members who focus on individual status destroy teams." Golden State Warriors before Durant: ball movement. After: hero ball, fewer championships.', quote: '"Talent wins games, but teamwork wins championships." - Michael Jordan' }},
+            { type: 'trueFalse', category: 'results', question: 'Team members willingly sacrifice personal goals for team success', trueValue: 5, falseValue: 1, insight: { title: 'Ego vs. Team', content: 'Navy SEALs select for "quiet professionals" over talented individuals. Ego is the enemy von team results.', quote: '"There is no limit to what can be accomplished if it doesn\'t matter who gets the credit." - Ralph Waldo Emerson' }},
+            { type: 'scenario', category: 'results', question: 'When individual and team goals conflict:', scenario: 'Your personal bonus depends on metrics that hurt the team...', options: [{ value: 1, letter: 'A', text: 'Optimize personal metrics' }, { value: 3, letter: 'B', text: 'Try to balance both' }, { value: 5, letter: 'C', text: 'Prioritize team success' }], insight: { title: 'The Scoreboard Principle', content: 'If you could only measure one thing, measure the collective scoreboard everyone obsesses over. Amazon: customer obsession. Pixar: best story ever.', quote: '"What gets measured gets managed." - Peter Drucker' }},
+            { type: 'agreement', category: 'results', question: 'Everyone is genuinely concerned about letting teammates down', insight: { title: 'The Ultimate Glue', content: 'When team members fear letting each other down more than any other consequence, you have a championship team.', quote: '"The strength von the team is each individual member. The strength von each member is the team." - Phil Jackson' }}
+        ];
+
+        let currentFrage = 0, answers = {}, totalXP = 0, currentSection = '';
+
+        function startAssessment() { document.getElementById('introScreen').style.display = 'none'; document.getElementById('progressContainer').classList.add('show'); renderQuestion(); }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            const container = document.getElementById('questionsContainer');
+            let html = `<div class="question-card active">`;
+            if (q.section && q.section !== currentSection) { currentSection = q.section; html += `<div class="section-header" style="border-left: 4px solid ${q.sectionColor}"><h3><span style="color: ${q.sectionColor}">●</span> ${q.section}</h3><p>${q.sectionDesc}</p></div>`; }
+            html += `<div class="question-badge">${q.category.charAt(0).toUpperCase() + q.category.slice(1)} • Q${currentFrage + 1}/20</div>`;
+            html += `<div class="question-text">${q.question}</div>`;
+            if (q.type === 'agreement') html += renderAgreement();
+            else if (q.type === 'trueFalse') html += renderTrueFalse(q);
+            else if (q.type === 'scenario') html += renderScenario(q);
+            html += `<div class="insight-card" id="insightCard"><div class="title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 0 6 6c0 3.314-2.686 6-6 6a6 6 0 0 1-6-6 6 6 0 0 1 6-6z"/></svg> ${q.insight.title}</div><div class="content">${q.insight.content}</div><div class="quote">${q.insight.quote}</div></div>`;
+            html += `<div class="nav-buttons">${currentFrage > 0 ? '<button class="btn btn-secondary" onclick="prevQuestion()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück</button>' : '<div></div>'}<button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>${currentFrage === questions.length - 1 ? 'Ergebnisse sehen' : 'Weiter'} <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div></div>`;
+            container.innerHTML = html;
+            updateProgress();
+        }
+
+        function renderAgreement() { return `<div class="agreement-scale"><div class="agree-option" onclick="selectAgreement(1)"><div class="value">1</div><div class="label">Strongly<br>Disagree</div></div><div class="agree-option" onclick="selectAgreement(2)"><div class="value">2</div><div class="label">Disagree</div></div><div class="agree-option" onclick="selectAgreement(3)"><div class="value">3</div><div class="label">Neutral</div></div><div class="agree-option" onclick="selectAgreement(4)"><div class="value">4</div><div class="label">Agree</div></div><div class="agree-option" onclick="selectAgreement(5)"><div class="value">5</div><div class="label">Strongly<br>Agree</div></div></div>`; }
+        function renderTrueFalse(q) { return `<div class="tf-buttons"><button class="tf-btn true" onclick="selectTF(${q.trueValue})">Trifft zu</button><button class="tf-btn false" onclick="selectTF(${q.falseValue})">Noch nicht</button></div>`; }
+        function renderScenario(q) { return `<div class="scenario-box"><div class="label">Scenario</div><div>${q.scenario}</div></div><div class="scenario-options">${q.options.map(o => `<div class="scenario-opt" onclick="selectScenario(this, ${o.value})"><div class="letter">${o.letter}</div><div>${o.text}</div></div>`).join('')}</div>`; }
+
+        function selectAgreement(value) { document.querySelectorAll('.agree-option').forEach(e => e.classList.remove('selected')); event.target.closest('.agree-option').classList.add('selected'); answers[currentQuestion] = { category: questions[currentQuestion].category, value }; showInsightAndEnable(); }
+        function selectTF(value) { answers[currentQuestion] = { category: questions[currentQuestion].category, value }; showInsightAndEnable(); }
+        function selectScenario(el, value) { document.querySelectorAll('.scenario-opt').forEach(e => e.classList.remove('selected')); el.classList.add('selected'); answers[currentQuestion] = { category: questions[currentQuestion].category, value }; showInsightAndEnable(); }
+
+        function showInsightAndEnable() { document.getElementById('insightCard').classList.add('show'); document.getElementById('nextBtn').disabled = false; totalXP += 25; document.getElementById('progressXP').textContent = `+${totalXP} XP`; showToast(); }
+        function showToast() { const t = document.getElementById('toast'); t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2000); }
+        function updateProgress() { document.getElementById('progressFill').style.width = `${(currentFrage / questions.length) * 100}%`; document.getElementById('progressLabel').textContent = `Frage ${currentFrage + 1} von ${questions.length}`; }
+        function nextQuestion() { if (currentFrage < questions.length - 1) { currentQuestion++; renderQuestion(); if (currentFrage === 10) showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>', 'Halfway!', 'Great team insights so far!'); } else showResults(); }
+        function prevQuestion() { if (currentFrage > 0) { currentQuestion--; renderQuestion(); } }
+        function showCelebration(icon, text, sub) { document.getElementById('celebrationIcon').textContent = icon; document.getElementById('celebrationText').textContent = text; document.getElementById('celebrationSub').textContent = sub; document.getElementById('celebration').classList.add('show'); }
+        function closeCelebration() { document.getElementById('celebration').classList.remove('show'); }
+
+        function showResults() {
+            document.getElementById('progressContainer').style.display = 'none';
+            document.getElementById('questionsContainer').style.display = 'none';
+            const cats = { trust: [], conflict: [], commitment: [], accountability: [], results: [] };
+            Object.values(answers).forEach(a => cats[a.category].push(a.value));
+            const catScores = {};
+            let total = 0;
+            Object.keys(cats).forEach(cat => { const avg = cats[cat].reduce((a, b) => a + b, 0) / cats[cat].length; catScores[cat] = Math.round(avg * 20); total += catScores[cat]; });
+            const overall = Math.round(total / 5);
+            const sorted = Object.entries(catScores).sort((a, b) => a[1] - b[1]);
+            const weakest = sorted[0], strongest = sorted[4];
+            
+            let interpretation = overall >= 80 ? 'Exceptional! Your team has strong foundations across all five areas.' : overall >= 60 ? 'Good foundation with room for growth. Focus on your weakest area.' : overall >= 40 ? 'Several dysfunction patterns present. Start with Trust - it\'s the foundation.' : 'Significant dysfunction present. Consider team intervention or coaching.';
+            
+            showCelebration('<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8 21s-4-3-4-9 4-9 4-9"/><path d="M16 3s4 3 4 9-4 9-4 9"/><path d="M15 8l-6 6"/><path d="M9 8l6 6"/></svg>', 'Assessment Complete!', `You earned ${totalXP} XP!`);
+            
+            document.getElementById('resultsSection').classList.add('active');
+            document.getElementById('resultsContent').innerHTML = `
+                <div class="result-hero"><div class="overall-score">${overall}%</div><div class="score-label">Team Health Score</div><p style="max-width: 500px; margin: 0 auto;">${interpretation}</p></div>
+                <div class="category-scores">
+                    <div class="cat-score trust"><div class="value">${catScores.trust}%</div><div class="name">Trust</div></div>
+                    <div class="cat-score conflict"><div class="value">${catScores.conflict}%</div><div class="name">Conflict</div></div>
+                    <div class="cat-score commitment"><div class="value">${catScores.commitment}%</div><div class="name">Commitment</div></div>
+                    <div class="cat-score accountability"><div class="value">${catScores.accountability}%</div><div class="name">Accountability</div></div>
+                    <div class="cat-score results"><div class="value">${catScores.results}%</div><div class="name">Results</div></div>
+                </div>
+                <div class="result-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Priority Focus: ${weakest[0].charAt(0).toUpperCase() + weakest[0].slice(1)} (${weakest[1]}%)</h3><ul><li>This is your biggest opportunity for improvement.</li><li>Remember: The pyramid builds from bottom up. If Trust is weak, everything above suffers.</li></ul></div>
+                <div class="result-card"><h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M17 10c0-5-3-7-3-7s-3 2-3 7"/><path d="M14 10h6"/><path d="M20 10v4a2 2 0 0 1-2 2h-2"/><path d="M4 10h6"/><path d="M4 10v4a2 2 0 0 0 2 2h2"/></svg> Team Strength: ${strongest[0].charAt(0).toUpperCase() + strongest[0].slice(1)} (${strongest[1]}%)</h3><ul><li>This is where your team excels. Celebrate it!</li><li>Consider how practices here can inform improvements elsewhere.</li></ul></div>
+                <div class="result-card"><h3>📋 Recommended Actions</h3><ul><li><strong>This Week:</strong> Share results with your team for discussion</li><li><strong>This Month:</strong> Run one team exercise targeting ${weakest[0]}</li><li><strong>This Quarter:</strong> Re-assess to track improvement</li></ul></div>
+                <div class="cta-section"><h3>Build a Stronger Team</h3><p>The TAP-IN Belt System includes comprehensive team development training based on the Five Dysfunctions framework.</p><a href="gym-dashboard.html" class="btn">Explore Belt System <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a></div>`;
+            localStorage.setItem('tapin-team-assessment', JSON.stringify({ overall, categories: catScores, completedAt: new Date().toISOString(), xp: totalXP }));
+        }
+        function switchLang(lang) { if (lang === 'de') window.location.href = 'team-assessment-enhanced-v2-de.html'; }
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+</body>
+</html>

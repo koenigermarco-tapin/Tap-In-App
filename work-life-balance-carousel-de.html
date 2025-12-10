@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2d2d2d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>Work-Life-Balance Assessment - TAP-IN</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); min-height: 100vh; padding: 20px; color: #333; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 3px solid #f0f0f0; }
+        .header h1 { color: #1a365d; font-size: 2.3em; margin-bottom: 15px; }
+        .header .subtitle { color: #666; font-size: 1.1em; margin-bottom: 10px; }
+        .header .duration { color: #999; font-size: 0.9em; font-style: italic; }
+        .progress-bar { position: sticky; top: 10px; background: white; padding: 15px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
+        .progress-text { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 8px; }
+        .progress-fill { height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+        .progress-fill-bar { background: linear-gradient(90deg, #1a365d 0%, #c9513f 100%); height: 100%; width: 0%; transition: width 0.3s ease; }
+        .section-header { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; }
+        .section-header h3 { font-size: 1.2em; margin-bottom: 5px; }
+        .section-header .section-desc { font-size: 0.9em; opacity: 0.95; font-style: italic; }
+        .carousel-container { position: relative; }
+        .question-card { background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 20px; }
+        .question-number { color: #1a365d; font-weight: bold; font-size: 0.9em; margin-bottom: 10px; }
+        .question-text { font-size: 1.2em; color: #333; margin-bottom: 25px; font-weight: 500; line-height: 1.5; }
+        .scale-options { display: flex; justify-content: space-between; align-items: flex-end; gap: 2px; flex-wrap: nowrap; height: 140px; position: relative; background: linear-gradient(to top right, rgba(169, 50, 38, 0.1) 0%, rgba(169, 50, 38, 0.05) 50%, transparent 50%); border-radius: 8px; padding: 5px; cursor: pointer; user-select: none; }
+        .scale-option { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; background: linear-gradient(135deg, rgba(169, 50, 38, 0.15) 0%, rgba(169, 50, 38, 0.1) 100%); border: 2px solid transparent; border-radius: 6px; transition: all 0.15s ease; position: relative; z-index: 1; }
+        .scale-option:nth-child(1) { height: 50px; opacity: 0.15; }
+        .scale-option:nth-child(2) { height: 70px; opacity: 0.35; }
+        .scale-option:nth-child(3) { height: 90px; opacity: 0.55; }
+        .scale-option:nth-child(4) { height: 110px; opacity: 0.75; }
+        .scale-option:nth-child(5) { height: 130px; opacity: 0.85; }
+        .scale-option span { font-size: 1.3em; font-weight: bold; color: #333; margin-bottom: 5px; }
+        .scale-option small { font-size: 0.75em; color: #666; text-align: center; }
+        .scale-option:hover { transform: scale(1.05); border-color: #1a365d; }
+        .scale-option.active, .scale-option.selected { background: linear-gradient(135deg, #1a365d 0%, #c9513f 100%); color: white; border-color: #0f1f3d; box-shadow: 0 2px 8px rgba(169, 50, 38, 0.4); }
+        .scale-option.active ~ .scale-option { background: linear-gradient(135deg, rgba(169, 50, 38, 0.15) 0%, rgba(169, 50, 38, 0.1) 100%); color: #333; }
+        .scale-option.active span, .scale-option.selected span { color: white; }
+        .scale-option.active small, .scale-option.selected small { color: rgba(255,255,255,0.9); }
+        .insight-card { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #1a365d; padding: 20px; margin: 20px 0; border-radius: 10px; animation: slideIn 0.4s ease; }
+        .insight-icon { font-size: 2rem; margin-bottom: 10px; }
+        .insight-title { color: #1a365d; font-size: 1.1em; font-weight: bold; margin-bottom: 12px; }
+        .insight-content { color: #555; line-height: 1.7; margin-bottom: 12px; }
+        .insight-quote { font-style: italic; color: #666; font-size: 0.95em; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 6px; border-left: 3px solid #1a365d; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-buttons { display: flex; gap: 15px; justify-content: space-between; margin-top: 25px; }
+        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #d0d0d0; }
+        .btn-primary { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; }
+        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(169, 50, 38, 0.4); }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .results-container { display: none; }
+        .results-container.active { display: block; }
+        .overall-score { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; }
+        .score-number { font-size: 4em; font-weight: bold; margin-bottom: 10px; }
+        .score-label { font-size: 1.3em; opacity: 0.95; }
+        .score-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
+        .category-score { background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #1a365d; }
+        .category-score h4 { color: #1a365d; margin-bottom: 10px; }
+        .category-score .score { font-size: 2em; color: #333; font-weight: bold; margin-bottom: 8px; }
+        .category-score .label { color: #666; font-size: 0.9em; }
+        .cta-box { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
+        .cta-box h3 { font-size: 1.6em; margin-bottom: 15px; }
+        .cta-box p { font-size: 1em; margin-bottom: 20px; opacity: 0.95; }
+        .cta-btn { background: white; color: #1a365d; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; transition: all 0.2s; }
+        .cta-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,255,255,0.3); }
+        @media (max-width: 768px) { .container { padding: 25px; } .header h1 { font-size: 2em; } .score-categories { grid-template-columns: 1fr; } }
+        .achievement-toast{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#4a7c9c 0%,#3d6680 100%);color:white;padding:20px 25px;border-radius:12px;box-shadow:0 8px 32px rgba(102,126,234,0.4);z-index:10000;min-width:300px;animation:slideInRight 0.5s ease-out;}.achievement-toast.show{display:block;}@keyframes slideInRight{from{transform:translateX(400px);opacity:0;}to{transform:translateX(0);opacity:1;}}.achievement-icon{font-size:2.5em;margin-bottom:10px;}.achievement-title{font-size:1.2em;font-weight:700;margin-bottom:5px;}.achievement-desc{font-size:0.9em;opacity:0.95;}.confetti{position:fixed;width:10px;height:10px;background:#4a7c9c;z-index:9999;}.xp-bar{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:white;padding:15px 25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;min-width:320px;text-align:center;}.xp-bar .level{font-weight:700;color:#1a365d;margin-bottom:8px;font-size:0.95em;}.progress-container{background:#e2e8f0;border-radius:10px;height:12px;overflow:hidden;margin-bottom:8px;}.progress-fill{background:linear-gradient(90deg,#4a7c9c 0%,#3d6680 100%);height:100%;border-radius:10px;transition:width 0.3s ease;}.xp-text{font-size:0.85em;color:#64748b;font-weight:600;}.achievements-section{margin-top:40px;padding:30px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%);border-radius:15px;}.achievements-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:20px;}.badge{background:white;padding:25px;border-radius:12px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform 0.2s;}.badge:hover{transform:translateY(-5px);}.badge.unlocked{border:2px solid #4a7c9c;}.badge.locked{opacity:0.4;border:2px solid #cbd5e1;}.badge-icon{font-size:3em;margin-bottom:10px;}.badge-name{font-weight:700;color:#1a365d;margin-bottom:5px;}.badge-desc{font-size:0.85em;color:#64748b;}.streak-badge{position:fixed;top:20px;left:20px;background:white;padding:12px 20px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;display:flex;align-items:center;gap:10px;}.streak-badge .fire{font-size:1.5em;}.streak-badge .streak-text{font-weight:700;color:#1a365d;}
+    </style>
+</head>
+<body>
+    <div class="xp-bar" id="xpBar" style="display:none;">
+        <div class="level">Level 1: Balance Explorer</div>
+        <div class="progress-container">
+            <div class="progress-fill" style="width: 0%"></div>
+        </div>
+        <div class="xp-text">0 / 100 XP</div>
+    </div>
+    <div class="streak-badge" id="streakBadge" style="display:none;">
+        <div class="fire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg></div>
+        <div class="streak-text"><span id="streakCount">0</span> Tage Serie</div>
+    </div>
+    <div class="achievement-toast" id="achievementToast" style="display:none;">
+        <div class="achievement-icon" id="toastIcon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+        <div class="achievement-title" id="toastTitle">Erfolg freigeschaltet!</div>
+        <div class="achievement-desc" id="toastDesc">Du hast ein neues Badge erhalten</div>
+    </div>
+    <!-- Language Switcher -->
+    <div style="position:fixed;top:16px;right:16px;z-index:1200;">
+        <div style="background:white;border-radius:999px;padding:8px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);font-size:0.95em;">
+            <a href="work-life-balance-carousel.html" style="color:#333;text-decoration:none;font-weight:700;margin-right:10px;border-right:1px solid #eee;padding-right:10px;">EN</a>
+            <a href="work-life-balance-carousel-de.html" style="color:#1a365d;text-decoration:none;font-weight:700;">DE</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Assessment Form -->
+        <div id="assessmentForm">
+            <div class="header">
+                <h1>⚖️ Work-Life-Balance Assessment</h1>
+                <p class="subtitle">Finde dein nachhaltiges Performance-Profil</p>
+                <p class="duration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> 5 Minuten • 20 Fragen</p>
+            </div>
+
+            <!-- Intro Section (shows before Q1) -->
+            <div id="introSection" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #1a365d;">
+                <h3 style="color: #333; margin-bottom: 15px;">⚖️ Warum Balance zählt</h3>
+                <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+                    Studien zeigen: Führungskräfte mit hoher Work-Life-Balance sind <strong>23% produktiver</strong>, treffen <strong>40% bessere Entscheidungen</strong> und ihre Teams haben <strong>31% mehr Engagement</strong>. Es geht nicht um weniger Leistung, sondern um nachhaltige Leistung.
+                </p>
+                <button onclick="startAssessment()" style="background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(169, 50, 38, 0.3); display: block; margin: 20px auto 0; width: auto;">
+                    Assessment starten <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+
+            <div class="progress-bar" style="display: none;">
+                <div class="progress-text"><span id="currentSection">Energie-Management</span> • Frage <span id="currentQ">1</span> von 20</div>
+                <div class="progress-fill">
+                    <div class="progress-fill-bar" id="progressBar"></div>
+                </div>
+            </div>
+
+            <div id="questionContainer" style="display: none;"></div>
+
+            <div class="nav-buttons" style="display: none;">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="results-container">
+            <div class="header">
+                <h1><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg> Dein Work-Life-Balance Profil</h1>
+            </div>
+
+            <div class="overall-score">
+                <div class="score-number" id="totalScore">0</div>
+                <div class="score-label" id="overallLabel">Berechnung…</div>
+            </div>
+
+            <!-- Personal Progress Section -->
+            <div id="benchmarkingSection" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 40px; border-radius: 15px; margin: 30px 0; text-align: center;">
+                <div style="font-size: 3rem; margin-bottom: 15px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg></div>
+                <h3 style="font-size: 2em; margin-bottom: 10px; font-weight: bold;">Dein Balance-Baseline</h3>
+                <p style="font-size: 1.1em; opacity: 0.95; margin-bottom: 30px;">Verfolge deinen Fortschritt über die Zeit</p>
+                
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 25px;">
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">Arbeitszufriedenheit</div>
+                        <div style="font-size: 1.8em; font-weight: bold;" id="workBench">0/20</div>
+                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 5px;">dein Score</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">Persönliches Wachstum</div>
+                        <div style="font-size: 1.8em; font-weight: bold;" id="growthBench">0/20</div>
+                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 5px;">dein Score</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">Beziehungen</div>
+                        <div style="font-size: 1.8em; font-weight: bold;" id="relationshipsBench">0/20</div>
+                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 5px;">dein Score</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">Gesundheit & Energie</div>
+                        <div style="font-size: 1.8em; font-weight: bold;" id="healthBench">0%</div>
+                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 5px;">vs. Durchschnitt</div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.2); padding: 20px; border-radius: 10px; backdrop-filter: blur(10px);">
+                        <div style="font-size: 0.9em; opacity: 0.9; margin-bottom: 8px;">Werte-Alignment</div>
+                        <div style="font-size: 1.8em; font-weight: bold;" id="valuesBench">0%</div>
+                        <div style="font-size: 0.85em; opacity: 0.8; margin-top: 5px;">vs. Durchschnitt</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 25px; padding: 20px; background: rgba(255,255,255,0.15); border-radius: 10px; backdrop-filter: blur(10px);">
+                    <p style="font-size: 1.05em; line-height: 1.6; margin: 0;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M9 21h6"/><path d="M12 3a6 6 0 0 0 6 6c0 3.314-2.686 6-6 6a6 6 0 0 1-6-6 6 6 0 0 1 6-6z"/></svg> <strong>Nachhaltigkeits-Insight:</strong> Professionals im obersten Quartil der Work-Life-Balance halten 47% höhere Produktivität über 5+ Jahre und berichten 82% mehr Karrierezufriedenheit.</p>
+                </div>
+            </div>
+
+            <div class="score-categories" id="categoryScores"></div>
+
+            <div class="cta-box">
+                <h3>Bereit für bessere Balance?</h3>
+                <p>Schließe dich dem TAP-IN Leadership Programm an für Coaching und Strategien für nachhaltige Performance.</p>
+                <a href="#" class="cta-btn">Jetzt Beratung buchen</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { section: 'Energie-Management', sectionDesc: 'Vitalität über den Tag halten', question: 'Ich habe konstant Energie für Arbeit und Privatleben', category: 'energy' },
+            { question: 'Ich wache erholt auf und bin bereit für den Tag', category: 'energy' },
+            { question: 'Ich steuere meine Energie über den Tag bewusst', category: 'energy' },
+            { question: 'Ich vermeide Energie-Crashs oder Burnout-Phasen', category: 'energy' },
+            { section: 'Grenzen setzen', sectionDesc: 'Zeit und Raum schützen', question: 'Ich schütze Zeit für nicht-arbeitsbezogene Prioritäten', category: 'boundaries' },
+            { question: 'Ich kann „Nein“ sagen, wenn Arbeit mein Wohlbefinden gefährdet', category: 'boundaries' },
+            { question: 'Ich trenne mich nach Feierabend von der Arbeit', category: 'boundaries' },
+            { question: 'Mein Arbeitsplan erlaubt persönliche Verpflichtungen', category: 'boundaries' },
+            { section: 'Erholung', sectionDesc: 'Wie gut du auflädst', question: 'Ich mache regelmäßige Pausen im Arbeitstag', category: 'recovery' },
+            { question: 'Ich pflege Abendroutinen, die Schlaf und Regeneration fördern', category: 'recovery' },
+            { question: 'Ich plane Erholung wie Meetings – sie hat Priorität', category: 'recovery' },
+            { question: 'Ich kann nach intensiven Phasen schnell wieder auftanken', category: 'recovery' },
+            { section: 'Ausrichtung & Ziele', sectionDesc: 'Werte und Prioritäten verbinden', question: 'Meine Ziele passen zu meinen wichtigsten Werten', category: 'alignment' },
+            { question: 'Ich weiß klar, was in diesem Quartal für mich zählt', category: 'alignment' },
+            { question: 'Ich treffe Entscheidungen entlang meiner persönlichen Leitlinien', category: 'alignment' },
+            { question: 'Ich fühle mich auf Kurs, was Erfolg für mich bedeutet', category: 'alignment' },
+            { section: 'Beziehungen & Support', sectionDesc: 'Netzwerk und Verbundenheit', question: 'Ich habe starke Beziehungen, die mich emotional stützen', category: 'relationships' },
+            { question: 'Ich bekomme Hilfe/Delegation, wenn die Last zu hoch wird', category: 'relationships' },
+            { question: 'Ich investiere Zeit in meine wichtigsten Beziehungen', category: 'relationships' },
+            { question: 'Ich fühle mich zugehörig – beruflich wie privat', category: 'relationships' },
+        ];
+
+        const categoryLabels = {
+            energy: 'Energie',
+            boundaries: 'Grenzen',
+            recovery: 'Erholung',
+            alignment: 'Ausrichtung',
+            relationships: 'Beziehungen'
+        };
+
+        const labels = {
+            progressText: (section, idx, total) => `${section} • Frage ${idx} von ${total}`,
+            overallLabel: (score) => score >= 80 ? 'Starke Balance – weiter so!' : score >= 60 ? 'Solide Basis – Feintuning nötig' : 'Aufbauphase – starte mit 1-2 Bereichen',
+            categoryLabel: 'dein Score',
+            ctaTitle: 'Bereit für bessere Balance?',
+            ctaText: 'Schließe dich dem TAP-IN Leadership Programm an für Coaching und Strategien für nachhaltige Performance.',
+            ctaBtn: 'Jetzt Beratung buchen',
+            start: 'Assessment starten <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+            next: 'Weiter <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>',
+            prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M19 12H5M12 19l-7-7 7-7"/></svg> Zurück'
+        };
+
+        let currentIndex = 0;
+        const answers = [];
+
+        function startAssessment() {
+            document.getElementById('introSection').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'block';
+            document.getElementById('questionContainer').style.display = 'block';
+            document.querySelector('.nav-buttons').style.display = 'flex';
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentIndex];
+            document.getElementById('currentSection').textContent = q.section || categoryLabels[q.category] || '';
+            document.getElementById('currentQ').textContent = currentIndex + 1;
+            document.querySelector('.progress-fill-bar').style.width = `${((currentIndex) / questions.length) * 100}%`;
+
+            const container = document.getElementById('questionContainer');
+            container.innerHTML = '';
+
+            if (q.section) {
+                const sectionEl = document.createElement('div');
+                sectionEl.className = 'section-header';
+                sectionEl.innerHTML = `<h3>${q.section}</h3><div class="section-desc">${q.sectionDesc || ''}</div>`;
+                container.appendChild(sectionEl);
+            }
+
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            card.innerHTML = `
+                <div class="question-number">Frage ${currentIndex + 1} von ${questions.length}</div>
+                <div class="question-text">${q.question}</div>
+                <div class="scale-options" id="scaleOptions">
+                    ${[1,2,3,4,5].map(n => `
+                        <div class="scale-option" data-value="${n}">
+                            <span>${n}</span>
+                            <small>${n === 1 ? 'Stimmt gar nicht' : n === 3 ? 'Teilweise' : n === 5 ? 'Stimmt völlig' : ''}</small>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            container.appendChild(card);
+
+            document.querySelectorAll('.scale-option').forEach(opt => {
+                opt.addEventListener('click', () => selectOption(opt));
+            });
+
+            document.getElementById('prevBtn').disabled = currentIndex === 0;
+            document.getElementById('nextBtn').disabled = !answers[currentIndex];
+            document.getElementById('nextBtn').textContent = currentIndex === questions.length - 1 ? 'Ergebnisse anzeigen <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 1em; height: 1em; display: inline-block; vertical-align: middle;"><path d="M5 12h14M12 5l7 7-7 7"/></svg>' : labels.next;
+        }
+
+        function selectOption(opt) {
+            document.querySelectorAll('.scale-option').forEach(o => o.classList.remove('selected'));
+            opt.classList.add('selected');
+            answers[currentIndex] = parseInt(opt.dataset.value, 10);
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (currentIndex < questions.length - 1) {
+                currentIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                renderQuestion();
+            }
+        }
+
+        function showResults() {
+            const totalScore = answers.reduce((a, b) => a + b, 0) * 10; // max 100
+            document.getElementById('totalScore').textContent = `${totalScore}%`;
+            document.getElementById('overallLabel').textContent = labels.overallLabel(totalScore);
+
+            const categoryScores = {};
+            questions.forEach((q, idx) => {
+                const val = answers[idx] || 0;
+                if (!categoryScores[q.category]) categoryScores[q.category] = { total: 0, count: 0 };
+                categoryScores[q.category].total += val;
+                categoryScores[q.category].count += 1;
+            });
+
+            const scoresArr = Object.entries(categoryScores).map(([cat, data]) => {
+                const score = Math.round((data.total / (data.count * 5)) * 100);
+                return { cat, score };
+            }).sort((a,b) => b.score - a.score);
+
+            const scoreContainer = document.getElementById('categoryScores');
+            scoreContainer.innerHTML = scoresArr.map(s => `
+                <div class="category-score">
+                    <h4>${categoryLabels[s.cat] || s.cat}</h4>
+                    <div class="score">${s.score}%</div>
+                    <div class="label">${labels.categoryLabel}</div>
+                </div>
+            `).join('');
+
+            document.getElementById('assessmentForm').style.display = 'none';
+            document.getElementById('resultsContainer').classList.add('active');
+        }
+
+        // Keep XP/streak UI hidden for now (not wired in DE variant)
+        document.getElementById('xpBar').style.display = 'none';
+        document.getElementById('streakBadge').style.display = 'none';
+    </script>
+    <script src="js/assessment-team-sync.js"></script>
+    <script>if(typeof AssessmentTeamSync!=="undefined")AssessmentTeamSync.syncToTeamMember();</script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+<title>Weiterleitung…</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#c62828">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body style="font-family: Arial, sans-serif; background:#0f172a; color:#e2e8f0; display:flex; align-items:center; justify-content:center; min-height:100vh; text-align:center;">
+  <div>
+    <h1 style="margin-bottom:0.5rem;">Weiterleitung…</h1>
+    <p style="margin-bottom:1rem;">Diese Seite ist noch nicht auf Deutsch verfügbar. Du wirst zur englischen Version weitergeleitet.</p>
+    <p><a href="work-life-balance-carousel.html" style="color:#10b981;">Jetzt öffnen</a></p>
+  </div>
+  <script>window.location.href = 'work-life-balance-carousel.html';</script>
+  <script>if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').catch(()=>{}); }</script>
+</body>
+</html>
