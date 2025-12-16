@@ -1,380 +1,363 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<head>    <meta name="description" content="TAP-IN Leadership Academy: Leadership development that actually sticks.">
 
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Quick Demo Data Loader - TAP-IN</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        h1 {
-            color: #a93226;
-            margin-bottom: 20px;
-        }
-        button {
-            background: #a93226;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            margin: 10px 5px;
-        }
-        button:hover {
-            background: #8b2820;
-        }
-        .success {
-            background: #4caf50;
-            color: white;
-            padding: 15px;
-            border-radius: 5px;
-            margin-top: 20px;
-            display: none;
-        }
-        .info {
-            background: #e3f2fd;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
-    <link rel="stylesheet" href="css/accessibility.css">
+<meta charset="UTF-8">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Quick Demo Data Loader - TAP-IN</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+max-width: 600px;
+margin: 50px auto;
+padding: 20px;
+background: #f5f5f5;
+}
+.card {
+background: white;
+padding: 30px;
+border-radius: 10px;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+h1 {
+color: var(--tap-red);
+margin-bottom: 20px;
+}
+button {
+background: var(--tap-red);
+color: white;
+border: none;
+padding: 15px 30px;
+border-radius: 5px;
+cursor: pointer;
+font-size: 16px;
+margin: 10px 5px;
+}
+button:hover {
+background: #8b2820;
+}
+.success {
+background: #4caf50;
+color: white;
+padding: 15px;
+border-radius: 5px;
+margin-top: 20px;
+display: none;
+}
+.info {
+background: #e3f2fd;
+padding: 15px;
+border-radius: 5px;
+margin-bottom: 20px;
+}
+</style>
+<link rel="stylesheet" href="css/accessibility.css">
 
 <body>
-    <!-- Skip Links for Accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <a href="#navigation" class="skip-link">Skip to navigation</a>
-
-    <div class="card">
-        <h1>🚀 Demo Data Loader</h1>
-        
-        <div class="info">
-            <strong>What this does:</strong>
-            <ul>
-                <li>Adds 10 sample assessments to your dashboard</li>
-                <li>Creates a demo team with 5 members</li>
-                <li>Adds 8 sample candidates for recruiter portal</li>
-            </ul>
-        </div>
-
-        <button onclick="loadDemoAssessments()">📊 Load Demo Assessments</button>
-        <button onclick="loadDemoTeam()">👥 Load Demo Team</button>
-        <button onclick="loadDemoCandidates()">🎯 Load Demo Candidates</button>
-        <br>
-        <button onclick="clearAllData()" style="background: #dc2626;">🗑️ Clear All Demo Data</button>
-
-        <div id="success" class="success"></div>
-
-        <div style="margin-top: 30px; font-size: 14px; color: #666;">
-            <p><strong>After loading:</strong></p>
-            <ul>
-                <li>Visit <a href="/dashboard.html">Dashboard</a> to see your assessment history</li>
-                <li>Visit <a href="/team-dashboard.html">Team Dashboard</a> to see the demo team</li>
-                <li>Visit <a href="/recruiter-portal.html">Recruiter Portal</a> to see candidates</li>
-            </ul>
-        </div>
-    </div>
-
-    <script>
-        function showSuccess(message) {
-            const el = document.getElementById('success');
-            el.textContent = message;
-            el.style.display = 'block';
-            setTimeout(() => {
-                el.style.display = 'none';
-            }, 3000);
-        }
-
-        function loadDemoAssessments() {
-            const demoAssessments = [
-                {
-                    id: Date.now() - 90*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 90*24*60*60*1000).toISOString(),
-                    assessmentType: 'work-life-balance',
-                    totalScore: 45,
-                    scores: {
-                        'Work-Life Balance': 45,
-                        'Boundary Setting': 40,
-                        'Energy Management': 50
-                    }
-                },
-                {
-                    id: Date.now() - 60*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 60*24*60*60*1000).toISOString(),
-                    assessmentType: 'mental-health',
-                    totalScore: 52,
-                    scores: {
-                        'Mental Health': 52,
-                        'Stress Management': 48,
-                        'Emotional Wellbeing': 56
-                    }
-                },
-                {
-                    id: Date.now() - 30*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 30*24*60*60*1000).toISOString(),
-                    assessmentType: 'work-life-balance',
-                    totalScore: 58,
-                    scores: {
-                        'Work-Life Balance': 58,
-                        'Boundary Setting': 55,
-                        'Energy Management': 61
-                    },
-                    workerType: 'Jogger'
-                },
-                {
-                    id: Date.now() - 14*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 14*24*60*60*1000).toISOString(),
-                    assessmentType: 'team-dynamics',
-                    totalScore: 64,
-                    scores: {
-                        'Trust': 70,
-                        'Conflict': 58,
-                        'Commitment': 62,
-                        'Accountability': 66,
-                        'Results': 64
-                    }
-                },
-                {
-                    id: Date.now() - 7*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 7*24*60*60*1000).toISOString(),
-                    assessmentType: 'leadership-style',
-                    totalScore: 72,
-                    leadershipStyle: 'Visionary',
-                    scores: {
-                        'Visionary': 72,
-                        'Executor': 58,
-                        'Facilitator': 65
-                    }
-                },
-                {
-                    id: Date.now() - 3*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 3*24*60*60*1000).toISOString(),
-                    assessmentType: 'combined-profile',
-                    totalScore: 68,
-                    workerType: 'Ultrarunner',
-                    leadershipStyle: 'Facilitator',
-                    scores: {
-                        'Work-Life Balance': 70,
-                        'Mental Health': 66,
-                        'Team Dynamics': 68,
-                        'Leadership': 72
-                    }
-                },
-                {
-                    id: Date.now() - 1*24*60*60*1000,
-                    timestamp: new Date(Date.now() - 1*24*60*60*1000).toISOString(),
-                    assessmentType: 'work-life-balance',
-                    totalScore: 75,
-                    scores: {
-                        'Work-Life Balance': 75,
-                        'Boundary Setting': 73,
-                        'Energy Management': 77
-                    }
-                }
-            ];
-
-            localStorage.setItem('tap-in-assessments', JSON.stringify(demoAssessments));
-            showSuccess('✅ Loaded 7 demo assessments! Visit your dashboard.');
-        }
-
-        function loadDemoTeam() {
-            const demoTeam = {
-                id: 'team_demo_' + Date.now(),
-                name: 'Product Team Alpha',
-                admin: 'manager@company.com',
-                members: [
-                    {email: 'manager@company.com', role: 'admin', joinedAt: new Date().toISOString()},
-                    {email: 'sarah.johnson@company.com', role: 'member', joinedAt: new Date().toISOString()},
-                    {email: 'mike.chen@company.com', role: 'member', joinedAt: new Date().toISOString()},
-                    {email: 'emma.davis@company.com', role: 'member', joinedAt: new Date().toISOString()},
-                    {email: 'alex.rodriguez@company.com', role: 'member', joinedAt: new Date().toISOString()}
-                ],
-                inviteCode: 'DEMO2025',
-                createdAt: new Date().toISOString()
-            };
-
-            const teams = JSON.parse(localStorage.getItem('tap-in-teams') || '{}');
-            teams[demoTeam.id] = demoTeam;
-            localStorage.setItem('tap-in-teams', JSON.stringify(teams));
-            localStorage.setItem('tap-in-current-team', demoTeam.id);
-
-            showSuccess('✅ Created demo team "Product Team Alpha"! Visit team dashboard.');
-        }
-
-        function loadDemoCandidates() {
-            const demoCandidates = [
-                {
-                    id: 'cand_' + (Date.now() - 7000),
-                    name: 'Sarah Johnson',
-                    email: 'sarah.j@email.com',
-                    role: 'Senior Product Manager',
-                    status: 'completed',
-                    invitedAt: new Date(Date.now() - 14*24*60*60*1000).toISOString(),
-                    assessmentData: {
-                        totalScore: 82,
-                        workerType: 'Ultrarunner',
-                        leadershipStyle: 'Visionary'
-                    }
-                },
-                {
-                    id: 'cand_' + (Date.now() - 6000),
-                    name: 'Michael Chen',
-                    email: 'michael.chen@email.com',
-                    role: 'Engineering Manager',
-                    status: 'completed',
-                    invitedAt: new Date(Date.now() - 12*24*60*60*1000).toISOString(),
-                    assessmentData: {
-                        totalScore: 78,
-                        workerType: 'Jogger',
-                        leadershipStyle: 'Architect'
-                    }
-                },
-                {
-                    id: 'cand_' + (Date.now() - 5000),
-                    name: 'Emma Davis',
-                    email: 'emma.d@email.com',
-                    role: 'Senior Product Manager',
-                    status: 'completed',
-                    invitedAt: new Date(Date.now() - 10*24*60*60*1000).toISOString(),
-                    assessmentData: {
-                        totalScore: 75,
-                        workerType: 'Jogger',
-                        leadershipStyle: 'Facilitator'
-                    }
-                },
-                {
-                    id: 'cand_' + (Date.now() - 4000),
-                    name: 'Alex Rodriguez',
-                    email: 'alex.r@email.com',
-                    role: 'Engineering Manager',
-                    status: 'completed',
-                    invitedAt: new Date(Date.now() - 8*24*60*60*1000).toISOString(),
-                    assessmentData: {
-                        totalScore: 71,
-                        workerType: 'Sprinter',
-                        leadershipStyle: 'Executor'
-                    }
-                },
-                {
-                    id: 'cand_' + (Date.now() - 3000),
-                    name: 'Jessica Lee',
-                    email: 'jessica.lee@email.com',
-                    role: 'Sales Director',
-                    status: 'pending',
-                    invitedAt: new Date(Date.now() - 5*24*60*60*1000).toISOString(),
-                    expiresAt: new Date(Date.now() + 2*24*60*60*1000).toISOString()
-                },
-                {
-                    id: 'cand_' + (Date.now() - 2000),
-                    name: 'David Park',
-                    email: 'david.park@email.com',
-                    role: 'Sales Director',
-                    status: 'pending',
-                    invitedAt: new Date(Date.now() - 3*24*60*60*1000).toISOString(),
-                    expiresAt: new Date(Date.now() + 4*24*60*60*1000).toISOString()
-                },
-                {
-                    id: 'cand_' + (Date.now() - 1000),
-                    name: 'Maria Garcia',
-                    email: 'maria.g@email.com',
-                    role: 'UX Design Lead',
-                    status: 'completed',
-                    invitedAt: new Date(Date.now() - 6*24*60*60*1000).toISOString(),
-                    assessmentData: {
-                        totalScore: 68,
-                        workerType: 'Jogger',
-                        leadershipStyle: 'Coach'
-                    }
-                },
-                {
-                    id: 'cand_' + Date.now(),
-                    name: 'James Wilson',
-                    email: 'james.w@email.com',
-                    role: 'UX Design Lead',
-                    status: 'pending',
-                    invitedAt: new Date(Date.now() - 2*24*60*60*1000).toISOString(),
-                    expiresAt: new Date(Date.now() + 5*24*60*60*1000).toISOString()
-                }
-            ];
-
-            localStorage.setItem('recruiter-candidates', JSON.stringify(demoCandidates));
-            showSuccess('✅ Loaded 8 demo candidates! Visit recruiter portal.');
-        }
-
-        function clearAllData() {
-            if (confirm('Clear ALL demo data?')) {
-                localStorage.removeItem('tap-in-assessments');
-                localStorage.removeItem('tap-in-teams');
-                localStorage.removeItem('tap-in-current-team');
-                localStorage.removeItem('recruiter-candidates');
-                showSuccess('🗑️ All demo data cleared!');
-            }
-        }
-    </script>
+<!-- Skip Links for Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<a href="#navigation" class="skip-link">Skip to navigation</a>
+<div class="card">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-rocket-launch"></use></svg> Demo Data Loader</h1>
+<div class="info">
+<strong>What this does:</strong>
+<ul>
+<li>Adds 10 sample assessments to your dashboard</li>
+<li>Creates a demo team with 5 members</li>
+<li>Adds 8 sample candidates for recruiter portal</li>
+</ul>
+</div>
+<button onclick="loadDemoAssessments()" aria-label="Add"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Load Demo Assessments</button>
+<button onclick="loadDemoTeam()" aria-label="Add">👥 Load Demo Team</button>
+<button onclick="loadDemoCandidates()" aria-label="Add"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Load Demo Candidates</button>
+<br>
+<button onclick="clearAllData()" style="background: #dc2626;" aria-label="Action">🗑️ Clear All Demo Data</button>
+<div id="success" class="success"></div>
+<div style="margin-top: 30px; font-size: 14px; color: #666;">
+<p><strong>After loading:</strong></p>
+<ul>
+<li>Visit <a href="/dashboard.html">Dashboard</a> to see your assessment history</li>
+<li>Visit <a href="/team-dashboard.html">Team Dashboard</a> to see the demo team</li>
+<li>Visit <a href="/recruiter-portal.html">Recruiter Portal</a> to see candidates</li>
+</ul>
+</div>
+</div>
+<script>
+function showSuccess(message) {
+const el = document.getElementById('success');
+el.textContent = message;
+el.style.display = 'block';
+setTimeout(() => {
+el.style.display = 'none';
+}, 3000);
+}
+function loadDemoAssessments() {
+const demoAssessments = [
+{
+id: Date.now() - 90*24*60*60*1000,
+timestamp: new Date(Date.now() - 90*24*60*60*1000).toISOString(),
+assessmentType: 'work-life-balance',
+totalScore: 45,
+scores: {
+'Work-Life Balance': 45,
+'Boundary Setting': 40,
+'Energy Management': 50
+}
+},
+{
+id: Date.now() - 60*24*60*60*1000,
+timestamp: new Date(Date.now() - 60*24*60*60*1000).toISOString(),
+assessmentType: 'mental-health',
+totalScore: 52,
+scores: {
+'Mental Health': 52,
+'Stress Management': 48,
+'Emotional Wellbeing': 56
+}
+},
+{
+id: Date.now() - 30*24*60*60*1000,
+timestamp: new Date(Date.now() - 30*24*60*60*1000).toISOString(),
+assessmentType: 'work-life-balance',
+totalScore: 58,
+scores: {
+'Work-Life Balance': 58,
+'Boundary Setting': 55,
+'Energy Management': 61
+},
+workerType: 'Jogger'
+},
+{
+id: Date.now() - 14*24*60*60*1000,
+timestamp: new Date(Date.now() - 14*24*60*60*1000).toISOString(),
+assessmentType: 'team-dynamics',
+totalScore: 64,
+scores: {
+'Trust': 70,
+'Conflict': 58,
+'Commitment': 62,
+'Accountability': 66,
+'Results': 64
+}
+},
+{
+id: Date.now() - 7*24*60*60*1000,
+timestamp: new Date(Date.now() - 7*24*60*60*1000).toISOString(),
+assessmentType: 'leadership-style',
+totalScore: 72,
+leadershipStyle: 'Visionary',
+scores: {
+'Visionary': 72,
+'Executor': 58,
+'Facilitator': 65
+}
+},
+{
+id: Date.now() - 3*24*60*60*1000,
+timestamp: new Date(Date.now() - 3*24*60*60*1000).toISOString(),
+assessmentType: 'combined-profile',
+totalScore: 68,
+workerType: 'Ultrarunner',
+leadershipStyle: 'Facilitator',
+scores: {
+'Work-Life Balance': 70,
+'Mental Health': 66,
+'Team Dynamics': 68,
+'Leadership': 72
+}
+},
+{
+id: Date.now() - 1*24*60*60*1000,
+timestamp: new Date(Date.now() - 1*24*60*60*1000).toISOString(),
+assessmentType: 'work-life-balance',
+totalScore: 75,
+scores: {
+'Work-Life Balance': 75,
+'Boundary Setting': 73,
+'Energy Management': 77
+}
+}
+];
+localStorage.setItem('tap-in-assessments', JSON.stringify(demoAssessments));
+showSuccess('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Loaded 7 demo assessments! Visit your dashboard.');
+}
+function loadDemoTeam() {
+const demoTeam = {
+id: 'team_demo_' + Date.now(),
+name: 'Product Team Alpha',
+admin: 'manager@company.com',
+members: [
+{email: 'manager@company.com', role: 'admin', joinedAt: new Date().toISOString()},
+{email: 'sarah.johnson@company.com', role: 'member', joinedAt: new Date().toISOString()},
+{email: 'mike.chen@company.com', role: 'member', joinedAt: new Date().toISOString()},
+{email: 'emma.davis@company.com', role: 'member', joinedAt: new Date().toISOString()},
+{email: 'alex.rodriguez@company.com', role: 'member', joinedAt: new Date().toISOString()}
+],
+inviteCode: 'DEMO2025',
+createdAt: new Date().toISOString()
+};
+const teams = JSON.parse(localStorage.getItem('tap-in-teams') || '{}');
+teams[demoTeam.id] = demoTeam;
+localStorage.setItem('tap-in-teams', JSON.stringify(teams));
+localStorage.setItem('tap-in-current-team', demoTeam.id);
+showSuccess('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Created demo team "Product Team Alpha"! Visit team dashboard.');
+}
+function loadDemoCandidates() {
+const demoCandidates = [
+{
+id: 'cand_' + (Date.now() - 7000),
+name: 'Sarah Johnson',
+email: 'sarah.j@email.com',
+role: 'Senior Product Manager',
+status: 'completed',
+invitedAt: new Date(Date.now() - 14*24*60*60*1000).toISOString(),
+assessmentData: {
+totalScore: 82,
+workerType: 'Ultrarunner',
+leadershipStyle: 'Visionary'
+}
+},
+{
+id: 'cand_' + (Date.now() - 6000),
+name: 'Michael Chen',
+email: 'michael.chen@email.com',
+role: 'Engineering Manager',
+status: 'completed',
+invitedAt: new Date(Date.now() - 12*24*60*60*1000).toISOString(),
+assessmentData: {
+totalScore: 78,
+workerType: 'Jogger',
+leadershipStyle: 'Architect'
+}
+},
+{
+id: 'cand_' + (Date.now() - 5000),
+name: 'Emma Davis',
+email: 'emma.d@email.com',
+role: 'Senior Product Manager',
+status: 'completed',
+invitedAt: new Date(Date.now() - 10*24*60*60*1000).toISOString(),
+assessmentData: {
+totalScore: 75,
+workerType: 'Jogger',
+leadershipStyle: 'Facilitator'
+}
+},
+{
+id: 'cand_' + (Date.now() - 4000),
+name: 'Alex Rodriguez',
+email: 'alex.r@email.com',
+role: 'Engineering Manager',
+status: 'completed',
+invitedAt: new Date(Date.now() - 8*24*60*60*1000).toISOString(),
+assessmentData: {
+totalScore: 71,
+workerType: 'Sprinter',
+leadershipStyle: 'Executor'
+}
+},
+{
+id: 'cand_' + (Date.now() - 3000),
+name: 'Jessica Lee',
+email: 'jessica.lee@email.com',
+role: 'Sales Director',
+status: 'pending',
+invitedAt: new Date(Date.now() - 5*24*60*60*1000).toISOString(),
+expiresAt: new Date(Date.now() + 2*24*60*60*1000).toISOString()
+},
+{
+id: 'cand_' + (Date.now() - 2000),
+name: 'David Park',
+email: 'david.park@email.com',
+role: 'Sales Director',
+status: 'pending',
+invitedAt: new Date(Date.now() - 3*24*60*60*1000).toISOString(),
+expiresAt: new Date(Date.now() + 4*24*60*60*1000).toISOString()
+},
+{
+id: 'cand_' + (Date.now() - 1000),
+name: 'Maria Garcia',
+email: 'maria.g@email.com',
+role: 'UX Design Lead',
+status: 'completed',
+invitedAt: new Date(Date.now() - 6*24*60*60*1000).toISOString(),
+assessmentData: {
+totalScore: 68,
+workerType: 'Jogger',
+leadershipStyle: 'Coach'
+}
+},
+{
+id: 'cand_' + Date.now(),
+name: 'James Wilson',
+email: 'james.w@email.com',
+role: 'UX Design Lead',
+status: 'pending',
+invitedAt: new Date(Date.now() - 2*24*60*60*1000).toISOString(),
+expiresAt: new Date(Date.now() + 5*24*60*60*1000).toISOString()
+}
+];
+localStorage.setItem('recruiter-candidates', JSON.stringify(demoCandidates));
+showSuccess('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Loaded 8 demo candidates! Visit recruiter portal.');
+}
+function clearAllData() {
+if (confirm('Clear ALL demo data?')) {
+localStorage.removeItem('tap-in-assessments');
+localStorage.removeItem('tap-in-teams');
+localStorage.removeItem('tap-in-current-team');
+localStorage.removeItem('recruiter-candidates');
+showSuccess('🗑️ All demo data cleared!');
+}
+}
+</script>
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.min.js"></script>
 <script src="js/storage-health.min.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-    <script src="js/keyboard-navigation.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<script src="js/keyboard-navigation.js" defer></script>
 
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered:', registration.scope);
-                        
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
                         // Check for updates
-                        registration.addEventListener('updatefound', function() {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     // New service worker available
                                     console.log('New service worker available');
-                                }
-                            });
-                        });
-                    })
-                    .catch(function(error) {
+}
+});
+});
+})
+.catch(function(error) {
                         // Silent fail - not critical
-                    });
-            });
-        }
-    </script>
-    <script src="js/pwa-install-prompt.js"></script>
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
 </html>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>

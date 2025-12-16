@@ -661,6 +661,39 @@ font-size: 24px;
 }
 }
 </style>
+<style>
+.achievement-toast {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, var(--tap-green) 0%, #059669 100%);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    z-index: 10000;
+    transform: translateX(400px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.achievement-toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.achievement-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+}
+</style>
+
 <link rel="canonical" href="https://tap-in-platform.netlify.app/white-belt-stripe1-gamified.html">
 
 <body>
@@ -775,7 +808,7 @@ Document what happened in your leadership journal.
 </p>
 </div>
 <div style="margin-top: 30px; position: relative;">
-<button class="btn btn-primary" onclick="completeLesson(1)" aria-label="25 XP">
+<button class="btn btn-primary" onclick="completeLesson(); window.dispatchEvent(new Event(\'achievement-earned\'));" aria-label="25 XP">
 Mark Complete <span class="xp-badge">+25 XP</span>
 </button>
 </div>
@@ -851,7 +884,7 @@ Choose one and consciously do the opposite once. Notice what happens internally 
 </p>
 </div>
 <div style="margin-top: 30px;">
-<button class="btn btn-primary" onclick="completeLesson(2)" aria-label="25 XP">
+<button class="btn btn-primary" onclick="completeLesson(); window.dispatchEvent(new Event(\'achievement-earned\'));" aria-label="25 XP">
 Mark Complete <span class="xp-badge">+25 XP</span>
 </button>
 </div>
@@ -923,7 +956,7 @@ Trace each symptom back to trust. What vulnerability is being avoided?
 </p>
 </div>
 <div style="margin-top: 30px;">
-<button class="btn btn-primary" onclick="completeLesson(3)" aria-label="25 XP">
+<button class="btn btn-primary" onclick="completeLesson(); window.dispatchEvent(new Event(\'achievement-earned\'));" aria-label="25 XP">
 Mark Complete <span class="xp-badge">+25 XP</span>
 </button>
 </div>
@@ -1011,7 +1044,7 @@ Don't try to fix it yet. Just diagnose. Awareness comes before action.
 </p>
 </div>
 <div style="margin-top: 30px;">
-<button class="btn btn-primary" onclick="completeLesson(4)" aria-label="25 XP">
+<button class="btn btn-primary" onclick="completeLesson(); window.dispatchEvent(new Event(\'achievement-earned\'));" aria-label="25 XP">
 Mark Complete <span class="xp-badge">+25 XP</span>
 </button>
 </div>
@@ -1263,8 +1296,7 @@ D) Only trust people you know well
 <h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
 <p class="quiz-score">You scored: <span id="quizScore">0</span>/10</p>
 <p class="quiz-xp">+50 XP awarded!</p>
-<button class="btn-primary" onclick="completeQuiz(1)
-window.dispatchEvent(new CustomEvent(\'lessonCompleted\'));" aria-label="Complete">Continue</button>
+<button class="btn-primary" onclick="completeQuiz(1); window.dispatchEvent(new CustomEvent('lessonCompleted'));" aria-label="Complete">Continue</button>
 </div>
 </div>
 <div style="text-align: center; margin: 40px 0; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
@@ -1301,31 +1333,45 @@ markLessonAsComplete(lessonNum, false);
 updateAllStats();
 }
 function toggleLesson(lessonId) {
-const body = document.getElementById(lessonId);
-body.classList.toggle('active');
+  const body = document.getElementById(lessonId);
+  body.classList.toggle('active');
 }
-completed.push(lessonNum);
-localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
-let moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
-moduleXP += XP_PER_LESSON;
-if (completed.length === TOTAL_LESSONS) {
-moduleXP += MODULE_BONUS_XP;
-localStorage.setItem(XP_KEY, moduleXP);
-                // Award stripe
-const stripesEarned = JSON.parse(localStorage.getItem('whiteStripesEarned') || '[]');
-if (!stripesEarned.includes(1)) {
-stripesEarned.push(1);
-localStorage.setItem('whiteStripesEarned', JSON.stringify(stripesEarned));
-}
-markLessonAsComplete(lessonNum, true);
-updateAllStats();
-showAchievement('Stripe 1 Complete! Academic Cap', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
-} else {
-localStorage.setItem(XP_KEY, moduleXP);
-markLessonAsComplete(lessonNum, true);
-updateAllStats();
-showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
-}
+function completeLesson(lessonNum) {
+  const completed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  if (completed.includes(lessonNum)) {
+    showAchievement('Already Complete!', 'You\'ve already completed this lesson');
+    return;
+  }
+  completed.push(lessonNum);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(completed));
+  let moduleXP = parseInt(localStorage.getItem(XP_KEY) || '0');
+  moduleXP += XP_PER_LESSON;
+  if (completed.length === TOTAL_LESSONS) {
+    moduleXP += MODULE_BONUS_XP;
+    localStorage.setItem(XP_KEY, moduleXP);
+    // Award stripe
+    const stripesEarned = JSON.parse(localStorage.getItem('whiteStripesEarned') || '[]');
+    if (!stripesEarned.includes(1)) {
+      stripesEarned.push(1);
+      localStorage.setItem('whiteStripesEarned', JSON.stringify(stripesEarned));
+    }
+    // Save to gamification system
+    if (typeof TapInGamification !== 'undefined') {
+      TapInGamification.saveStripeCompletion('white', 1, 100);
+    }
+    markLessonAsComplete(lessonNum, true);
+    updateAllStats();
+    showAchievement('Stripe 1 Complete! Academic Cap', `+${XP_PER_LESSON} XP + ${MODULE_BONUS_XP} XP Bonus!`);
+  } else {
+    localStorage.setItem(XP_KEY, moduleXP);
+    // Award XP for lesson
+    if (typeof TapInGamification !== 'undefined') {
+      TapInGamification.awardXP(XP_PER_LESSON, 'Lesson Completion');
+    }
+    markLessonAsComplete(lessonNum, true);
+    updateAllStats();
+    showAchievement('Lesson Complete!', `+${XP_PER_LESSON} XP`);
+  }
 }
 function markLessonAsComplete(lessonNum, showBadge) {
 const status = document.getElementById(`status${lessonNum}`);
@@ -1386,8 +1432,84 @@ checkVersion();
 initModule();
 });
 function getStripeNumber() {
-const match = window.location.pathname.match(/stripe(\d+)/);
-return match ? parseInt(match[1]) : 1;
+  const filename = window.location.pathname.split('/').pop();
+  const match = filename.match(/(white|blue|purple|brown|black)-belt-stripe(\d+)/);
+  if (match) {
+    return {
+      belt: match[1],
+      stripe: parseInt(match[2])
+    }
+function completeLesson() {
+    const current = getStripeNumber();
+    const belt = current.belt;
+    const stripeNum = current.stripe;
+    
+    // Save to localStorage
+    const progress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+    if (!progress.completedStripes) progress.completedStripes = [];
+    const stripeKey = `${belt}-${stripeNum}`;
+    if (!progress.completedStripes.includes(stripeKey)) {
+        progress.completedStripes.push(stripeKey);
+    }
+    localStorage.setItem('userProgress', JSON.stringify(progress));
+    
+    // Save to gamification system
+    if (typeof TapInGamification !== 'undefined') {
+        TapInGamification.saveStripeCompletion(belt, stripeNum, 100);
+    }
+    
+    // Show achievement
+    showAchievement('Stripe Complete! +100 XP');
+    
+    // Redirect to next stripe or dashboard
+    redirectToNext();
+}
+
+function redirectToNext() {
+    const current = getStripeNumber();
+    const belt = current.belt;
+    const stripeNum = current.stripe;
+    const nextStripe = stripeNum + 1;
+    
+    if (nextStripe <= 4) {
+        window.location.href = `${belt}-belt-stripe${nextStripe}-gamified.html`;
+    } else {
+        // Belt complete, go to dashboard
+        window.location.href = 'gym-dashboard.html';
+    }
+}
+
+function getStripeNumber() {
+    const filename = window.location.pathname.split('/').pop();
+    const match = filename.match(/(white|blue|purple|brown|black)-belt-stripe([0-9]+)/);
+    if (match) {
+        return {
+            belt: match[1],
+            stripe: parseInt(match[2])
+        };
+    }
+    return { belt: 'white', stripe: 1 };
+}
+
+function showAchievement(message) {
+    const achievement = document.createElement('div');
+    achievement.className = 'achievement-toast';
+    achievement.innerHTML = `
+        <svg class="achievement-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <span>${message}</span>
+    `;
+    document.body.appendChild(achievement);
+    setTimeout(() => achievement.classList.add('show'), 100);
+    setTimeout(() => {
+        achievement.classList.remove('show');
+        setTimeout(() => achievement.remove(), 300);
+    }, 3000);
+}
+;
+  }
+  return { belt: 'white', stripe: 1 };
 }
 function retryQuiz() {
 quizAnswers = [];
@@ -1478,12 +1600,12 @@ const passingThreshold = 7;
 const passed = quizScore >= passingThreshold;
 if (passed) {
                     // PASSED - Show success message
-safeSetInnerHTML(completionDiv, `
+completionDiv.innerHTML = `
 <h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
 <p class="quiz-score">You scored: <span id="quizScore">${quizScore}</span>/10</p>
 <p class="quiz-xp">+${quizScore === 10 ? 75 : 50} XP awarded!</p>
-<button class="btn-primary" onclick="completeQuiz(getStripeNumber())" aria-label="Complete">Continue</button>
-`);
+<button class="btn-primary" onclick="completeQuiz(getStripeNumber().stripe)" aria-label="Complete">Continue</button>
+`;
 document.getElementById('quizScore').textContent = quizScore;
                     // Award XP and save progress
 if (typeof TapInGamification !== "undefined") {
@@ -1496,7 +1618,6 @@ if (typeof TapInGamification !== "undefined") {
             const failMsg = typeof TapInGamification !== "undefined" 
                 ? TapInGamification.getBeltFailureMessage("white")
                 : { title: "Quiz Failed", message: "Please review and try again." };
-             message
 const failedQuestions = [];
 quizAnswers.forEach((isCorrect, index) => {
 if (!isCorrect) {
@@ -1510,13 +1631,13 @@ text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
 }
 }
 });
-safeSetInnerHTML(completionDiv, `
-<div style="text-align: center); padding: 2rem;">
+completionDiv.innerHTML = `
+<div style="text-align: center; padding: 2rem;">
 <div style="font-size: 4rem; margin-bottom: 1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
 <h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">You Got Submitted by a White Belt! Academic Cap</h3>
 <p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">A white belt just showed you there's more to learn. In BJJ, getting submitted is how you learn. Review the sections below and try again!</p>
 <div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
-<h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-bok-open"></use></svg> Review These Questions:</h4>
+<h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-book-open"></use></svg> Review These Questions:</h4>
 <ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
 ${failedQuestions.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Question ${q.num}:</strong> ${q.text}</li>`).join('')}
 </ul>
@@ -1550,29 +1671,47 @@ localStorage.setItem('totalXP', newXP.toString());
 }
 }
 function completeQuiz(stripeNum) {
-            // Mark quiz complete
-const storageKey = 'whitebeltStripe' + stripeNum + 'QuizComplete';
-localStorage.setItem(storageKey, 'true');
-localStorage.setItem(storageKey + 'Score', quizScore.toString());
-localStorage.setItem(storageKey + 'Date', new Date().toISOString());
-            // Trigger achievement event
-window.dispatchEvent(new CustomEvent('lessonCompleted'));
-            // Track quiz result if achievement system is available
-if (typeof AchievementSystem !== 'undefined') {
-AchievementSystem.recordQuizResult(quizScore, quizScore >= 7, false);
-}
-            // Navigate to next stripe or back to hub
-const nextStripe = stripeNum + 1;
-if (nextStripe <= 4) {
-if (confirm('Quiz Complete! Continue to Stripe ' + nextStripe + '?')) {
-window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
-} else {
-window.location.href = 'gym-dashboard.html';
-}
-} else {
-alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg> White Belt Complete! Ready for the next level.');
-window.location.href = 'gym-dashboard.html';
-}
+  // If no stripeNum provided, get it from URL
+  if (!stripeNum) {
+    const current = getStripeNumber();
+    stripeNum = current.stripe;
+  }
+  
+  const current = getStripeNumber();
+  const belt = current.belt;
+  
+  // Mark quiz complete
+  const storageKey = belt + 'beltStripe' + stripeNum + 'QuizComplete';
+  localStorage.setItem(storageKey, 'true');
+  localStorage.setItem(storageKey + 'Score', quizScore.toString());
+  localStorage.setItem(storageKey + 'Date', new Date().toISOString());
+  
+  // Save completion to gamification system
+  if (typeof TapInGamification !== 'undefined') {
+    const scorePercent = Math.round((quizScore / totalQuizQuestions) * 100);
+    TapInGamification.saveStripeCompletion(belt, stripeNum, scorePercent);
+  }
+  
+  // Trigger achievement event
+  window.dispatchEvent(new CustomEvent('lessonCompleted'));
+  
+  // Track quiz result if achievement system is available
+  if (typeof AchievementSystem !== 'undefined') {
+    AchievementSystem.recordQuizResult(quizScore, quizScore >= 7, false);
+  }
+  
+  // Navigate to next stripe or back to hub
+  const nextStripe = stripeNum + 1;
+  if (nextStripe <= 4) {
+    if (confirm('Quiz Complete! Continue to Stripe ' + nextStripe + '?')) {
+      window.location.href = belt + '-belt-stripe' + nextStripe + '-gamified.html';
+    } else {
+      window.location.href = 'gym-dashboard.html';
+    }
+  } else {
+    alert(belt.charAt(0).toUpperCase() + belt.slice(1) + ' Belt Complete! Ready for the next level.');
+    window.location.href = 'gym-dashboard.html';
+  }
 }
 </script>
 <!-- TAP-IN Core Modules -->

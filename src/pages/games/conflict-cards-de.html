@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<<<<<<< HEAD
+<title>Konflikt-Karten - Workplace Edition</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+.fade-in { animation: fadeIn 0.5s ease-out; }
+.slide-in { animation: slideIn 0.3s ease-out; }
+.pulse-animation { animation: pulse 2s infinite; }
+.wiggle-animation { animation: wiggle 0.5s ease-in-out; }
+.card-3d {
+transform-style: preserve-3d;
+transition: transform 0.3s;
+}
+.card-3d:hover {
+transform: translateY(-10px) rotateX(5deg);
+}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAP-IN">
+<link rel="stylesheet" href="css/pwa-install-banner.css">
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 min-h-screen">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+        // BLACK CARDS - Conflict Scenarios (100 total - showing 50 here, expand as needed)
+const BLACK_CARDS = [
+            // Team Dynamics
+"A teammate takes credit for dein idea in front of the CEO. Du _____.",
+"Dein coworker's hygiene is affecting the whole office. Du _____.",
+"Someone on dein team is consistently 30 Minuten late to every meeting. Du _____.",
+"A colleague constantly interrupts du in meetings. Du _____.",
+"Dein teammate misses another deadline. Du _____.",
+"Someone on the team is clearly not pulling their weight. Du _____.",
+"A coworker gossips about other team members to du. Du _____.",
+"Dein manager asks du to cover for an underperforming colleague again. Du _____.",
+"A team member micromanages everything du do. Du _____.",
+"Someone keeps changing the project requirements without telling anyone. Du _____.",
+            // Client/Customer
+"A client demands a refund after 11 months of service. Du _____.",
+"Dein biggest customer wants a feature that violates dein company values. Du _____.",
+"A client yells at du for something that wasn't dein fault. Du _____.",
+"The customer insists on talking to 'someone more senior.' Du _____.",
+"A client asks du to do something that's not in the contract. Du _____.",
+"Dein customer ghost du for three months, then demands immediate service. Du _____.",
+"A client publicly badmouths dein company on social media. Du _____.",
+"The customer expects 24/7 support but only paid for business hours. Du _____.",
+"A client asks for 'just one small change' for the tenth time this week. Du _____.",
+"Dein customer demands to speak to the CEO about a $50 issue. Du _____.",
+            // Leadership Failures
+"Dein boss takes credit for the team's success but blames du for failures. Du _____.",
+"Leadership announces another reorganization without explanation. Du _____.",
+"Dein manager asks du to work overtime again this weekend. Du _____.",
+"The CEO says 'we're a family' right before layoffs. Du _____.",
+"Dein boss gives du conflicting directions from yesterday. Du _____.",
+"Leadership cancels dein project after six months of work. Du _____.",
+"Dein manager criticizes du in front of the whole team. Du _____.",
+"The executive team makes a decision that everyone knows will fail. Du _____.",
+"Dein boss asks du to do something unethical. Du _____.",
+"Leadership announces mandatory fun. Du _____.",
+            // Performance Issues
+"Du discover a major mistake du made three months ago. Du _____.",
+"Dein presentation completely bombs in front of stakeholders. Du _____.",
+"Du accidentally replied-all to the entire company. Du _____.",
+"Du realize du've been doing the wrong thing for weeks. Du _____.",
+"Dein demo fails spectacularly during the sales pitch. Du _____.",
+"Du missed a critical deadline because du forgot about it. Du _____.",
+"Dein code broke production on a Friday evening. Du _____.",
+"Du gave the wrong advice and the client lost money. Du _____.",
+"Du forgot to invite the most important stakeholder to the meeting. Du _____.",
+"Du sent confidential information to the wrong person. Du _____.",
+            // Difficult Conversations
+"Du need to fire someone on their birthday. Du _____.",
+"Dein best employee says they're quitting. Du _____.",
+"HR says du need to address that employee's performance. Again. Du _____.",
+"Du have to tell the team the project is cancelled. Du _____.",
+"Dein employee asks for a raise du can't give them. Du _____.",
+"Du need to reject dein friend's job application. Du _____.",
+"The intern made a huge mistake. Du _____.",
+"Dein star performer is toxic to team morale. Du _____.",
+"Du have to deliver bad news to an already stressed team. Du _____.",
+"Someone files a complaint about dein leadership style. Du _____.",
+];
+        // WHITE CARDS - Responses (400 total - showing 100 here, organized by category)
+const WHITE_CARDS = [
+            // Professional/SBIR-Compliant (100 cards)
+"schedule a 1-on-1 to discuss specific observations",
+"use SBIR to address the behavior directly",
+"ask clarifying questions to understand their perspective",
+"share the impact and request a specific change",
+"acknowledge my feelings, then focus on facts",
+"propose a solution that benefits both parties",
+"escalate to leadership with documented examples",
+"set a clear boundary with consequences",
+"request mediation from HR or a neutral third party",
+"take 24 hours to respond thoughtfully",
+"acknowledge my role in the situation",
+"focus on observable behaviors, not character",
+"ask what success looks like for them",
+"share how this affects our team goals",
+"propose we revisit this conversation tomorrow",
+"document everything in writing immediately",
+"request specific examples of what they need",
+"offer multiple solutions and ask them to choose",
+"acknowledge the constraint and work within it",
+"explain my reasoning transparently",
+"ask for their advice on how to handle it",
+"set a time limit for the discussion",
+"name the pattern I'm observing",
+"commit to following up within 48 hours",
+"suggest we bring in a facilitator",
+"share my intention before giving feedback",
+"ask permission to share difficult feedback",
+"focus on future behavior, not past mistakes",
+"acknowledge what's going well first",
+"propose a pilot test before full commitment",
+"request time to think about it",
+"share the business impact with data",
+"ask what they would do in my position",
+"explain the constraints I'm operating under",
+"propose a compromise with clear next steps",
+"acknowledge this is uncomfortable for both of us",
+"circle back to our shared goals",
+"name the tension in the room directly",
+"ask what's behind their request",
+"share my values that inform this decision",
+"request we table this and revisit with fresh eyes",
+            // Passive-Aggressive (75 cards)
+"send a very detailed email cc'ing their boss",
+"say 'per my last email' with a screenshot",
+"reply with 'as discussed' when it was never discussed",
+"schedule a meeting to discuss their meeting behavior",
+"forward them their own email from three months ago",
+"suggest they might want to review the handbook",
+"ask them to 'circle back' indefinitely",
+"recommend they attend a workshop on this topic",
+"cc everyone who wasn't involved",
+"put them on a performance improvement plan",
+"schedule a 'quick sync' that lasts 90 Minuten",
+"create a task force to study the issue",
+"suggest this be added to the backlog",
+"forward the policy they're clearly violating",
+"ask them to document their reasoning in writing",
+"recommend they speak with their manager about it",
+"add it to the 'parking lot' of issues",
+"suggest we revisit this during the retrospective",
+"ask them to present their case to the leadership team",
+"recommend they review the org chart",
+"put them on read-only access",
+"schedule a skip-level meeting",
+"ask them to submit a formal request",
+"refer them to the FAQ they clearly didn't read",
+"suggest this be escalated to the steering committee",
+            // Avoidant (75 cards)
+"pretend I didn't see it",
+"hope it resolves itself",
+"wait until they bring it up",
+"delegate it to someone else",
+"mark it as low priority",
+"schedule a meeting for next quarter",
+"say I'll get back to them and never do",
+"claim I need to check with my manager first",
+"take a sudden vacation",
+"reorganize my way out of the problem",
+"wait until one of us changes jobs",
+"hope they forget about it",
+"lose the email in my inbox",
+"claim I'm waiting on legal approval",
+"schedule a meeting during their PTO",
+"say I need more data before deciding",
+"form a committee to investigate",
+"say it's outside my scope",
+"defer to whoever is louder",
+"implement a new policy instead of addressing it directly",
+"start job hunting immediately",
+"request a transfer to another team",
+"call in sick the day we need to discuss it",
+"suddenly remember I have another urgent meeting",
+"claim I don't have the authority to address this",
+            // Aggressive/Toxic (75 cards)
+"tell them that's just how things are done here",
+"say 'not my problem'",
+"remind them they're lucky to have this job",
+"suggest they lack a sense of humor",
+"tell them to toughen up",
+"question their commitment to the team",
+"imply they're being too sensitive",
+"compare them unfavorably to their predecessor",
+"threaten to escalate unnecessarily",
+"use their mistake against them forever",
+"bring up unrelated past failures",
+"make it personal",
+"raise my voice to establish dominance",
+"copy their tone mockingly",
+"publicly shame them in Slack",
+"give them the silent treatment",
+"reassign their favorite project to someone else",
+"exclude them from important meetings going forward",
+"remind them of the unemployment rate",
+"suggest they might be happier elsewhere",
+"document everything to build a case against them",
+"start looking for their replacement",
+"make an example of them to the team",
+"weaponize HR policies against them",
+"gaslight them about what actually happened",
+            // Humorous/Absurd (75 cards)
+"resign dramatically via interpretive dance",
+"blame Mercury in retrograde",
+"suggest we resolve this with rock-paper-scissors",
+"fake my own death",
+"start a company-wide betting pool on the outcome",
+"hire a skywriter to spell out my resignation",
+"reply only in GIFs for the rest of the day",
+"propose trial by combat",
+"change my Slack status to 'witnessing a felony'",
+"update my LinkedIn while maintaining eye contact",
+"submit my two weeks notice in the form of a haiku",
+"schedule a meeting titled 'We Need to Talk About Kevin'",
+"start speaking only in corporate buzzwords",
+"turn it into a trust fall exercise",
+"suggest we take this to Judge Judy",
+"respond by playing 'Everybody Hurts' by R.E.M.",
+"launch a company-wide survey about it",
+"create a Slack channel called #things-we-dont-talk-about",
+"propose we settle this in the metaverse",
+"start a podcast about this exact situation",
+"make a vision board about my feelings",
+"schedule a wellness day to recover from this conversation",
+"suggest we align our chakras first",
+"reply 'k'",
+"change the subject to cryptocurrency",
+];
+        // Firebase config
+const firebaseConfig = {
+apiKey: "AIzaSyBvK_vZ3vXj5k5L0Qp6X9K5Z6Yq8L0A5B0",
+authDomain: "conflict-cards.firebaseapp.com",
+databaseURL: "https://conflict-cards-default-rtdb.firebaseio.com",
+projectId: "conflict-cards"
+};
+let firebaseApp = null;
+try {
+if (!firebase.apps.length) firebaseApp = firebase.initializeApp(firebaseConfig);
+} catch (error) {
+            console.warn('Firebase init failed:', error);
+}
+class GameRoom {
+constructor(roomCode, multiDevice = false) {
+this.roomCode = roomCode;
+this.multiDevice = multiDevice && firebaseApp !== null;
+this.storageKey = `conflict-cards-${roomCode}`;
+if (this.multiDevice) {
+this.dbRef = firebase.database().ref(`rooms/${roomCode}`);
+}
+}
+async getState() {
+if (this.multiDevice) {
+const snapshot = await this.dbRef.once('value');
+return snapshot.val();
+}
+const data = localStorage.getItem(this.storageKey);
+return data ? JSON.parse(data) : null;
+}
+async setState(state) {
+if (this.multiDevice) {
+await this.dbRef.set(state);
+} else {
+localStorage.setItem(this.storageKey, JSON.stringify(state));
+window.dispatchEvent(new Event('storage'));
+}
+}
+subscribe(callback) {
+if (this.multiDevice) {
+this.dbRef.on('value', (snapshot) => callback(snapshot.val()));
+return () => this.dbRef.off('value');
+} else {
+const handler = () => {
+const data = localStorage.getItem(this.storageKey);
+callback(data ? JSON.parse(data) : null);
+};
+window.addEventListener('storage', handler);
+return () => window.removeEventListener('storage', handler);
+}
+}
+}
+function ConflictCards() {
+const [screen, setScreen] = useState('mode-select');
+const [gameMode, setGameMode] = useState(null);
+const [roomCode, setRoomCode] = useState('');
+const [myName, setMyName] = useState('');
+const [players, setPlayers] = useState([]);
+const [judgeIndex, setJudgeIndex] = useState(0);
+const [playerHands, setPlayerHands] = useState({});
+const [blackCard, setBlackCard] = useState(null);
+const [submissions, setSubmissions] = useState({});
+const [scores, setScores] = useState({});
+const [round, setRound] = useState(0);
+const [usedBlackCards, setUsedBlackCards] = useState([]);
+const [usedWhiteCards, setUsedWhiteCards] = useState([]);
+const [showWinner, setShowWinner] = useState(false);
+const [roundWinner, setRoundWinner] = useState(null);
+const [sbirBonus, setSbirBonus] = useState(false);
+const roomRef = useRef(null);
+useEffect(() => {
+if (!roomCode || screen === 'mode-select') return;
+const room = new GameRoom(roomCode, gameMode === 'multi-device');
+roomRef.current = room;
+const unsubscribe = room.subscribe((state) => {
+if (state) {
+setPlayers(state.players || []);
+setJudgeIndex(state.judgeIndex || 0);
+setPlayerHands(state.playerHands || {});
+setBlackCard(state.blackCard || null);
+setSubmissions(state.submissions || {});
+setScores(state.scores || {});
+setRound(state.round || 0);
+setUsedBlackCards(state.usedBlackCards || []);
+setUsedWhiteCards(state.usedWhiteCards || []);
+if (state.screen) setScreen(state.screen);
+}
+});
+room.getState().then(state => {
+if (!state) {
+room.setState({
+players: [],
+judgeIndex: 0,
+playerHands: {},
+scores: {},
+round: 0,
+usedBlackCards: [],
+usedWhiteCards: [],
+screen: 'lobby'
+});
+}
+});
+return unsubscribe;
+}, [roomCode, gameMode]);
+const updateRoom = async (updates) => {
+if (!roomRef.current) return;
+const state = await roomRef.current.getState();
+await roomRef.current.setState({ ...state, ...updates });
+};
+const selectMode = (mode) => {
+setGameMode(mode);
+setScreen('lobby');
+const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+setRoomCode(code);
+};
+const addPlayer = async (name) => {
+if (!name.trim() || !roomRef.current) return;
+const state = await roomRef.current.getState();
+if (state.players.some(p => p.name === name)) {
+alert('Name taken!');
+return;
+}
+const newPlayer = { name, id: Date.now() };
+await updateRoom({
+players: [...state.players, newPlayer],
+scores: { ...state.scores, [name]: 0 }
+});
+setMyName(name);
+};
+const dealCards = () => {
+const hands = {};
+let availableCards = [...WHITE_CARDS];
+players.forEach(player => {
+hands[player.name] = [];
+for (let i = 0; i < 10; i++) {
+if (availableCards.length === 0) availableCards = [...WHITE_CARDS];
+const index = Math.floor(Math.random() * availableCards.length);
+hands[player.name].push(availableCards[index]);
+availableCards.splice(index, 1);
+}
+});
+return hands;
+};
+const startGame = async () => {
+const state = await roomRef.current.getState();
+if (state.players.length < 4) {
+alert('Need at least 4 players!');
+return;
+}
+const hands = dealCards();
+await updateRoom({
+screen: 'game',
+round: 1,
+judgeIndex: 0,
+playerHands: hands
+});
+drawBlackCard();
+};
+const drawBlackCard = async () => {
+const state = await roomRef.current.getState();
+const available = BLACK_CARDS.filter((_, i) => !state.usedBlackCards.includes(i));
+if (available.length === 0) {
+await updateRoom({ screen: 'end' });
+return;
+}
+const index = Math.floor(Math.random() * available.length);
+const cardIndex = BLACK_CARDS.indexOf(available[index]);
+await updateRoom({
+blackCard: available[index],
+usedBlackCards: [...state.usedBlackCards, cardIndex],
+submissions: {}
+});
+};
+const submitCard = async (card) => {
+const state = await roomRef.current.getState();
+const newHand = state.playerHands[myName].filter(c => c !== card);
+await updateRoom({
+submissions: { ...state.submissions, [myName]: card },
+playerHands: {
+...state.playerHands,
+[myName]: newHand
+}
+});
+};
+const pickWinner = async (winnerName) => {
+const state = await roomRef.current.getState();
+const points = sbirBonus ? 2 : 1;
+setRoundWinner(winnerName);
+setShowWinner(true);
+setTimeout(async () => {
+setShowWinner(false);
+setSbirBonus(false);
+const newScores = { ...state.scores };
+newScores[winnerName] = (newScores[winnerName] || 0) + points;
+                    // Check win condition
+if (newScores[winnerName] >= 7 || state.round >= 15) {
+await updateRoom({ scores: newScores, screen: 'end' });
+return;
+}
+                    // Weiter round
+const newJudgeIndex = (state.judgeIndex + 1) % state.players.length;
+const newRound = state.round + 1;
+                    // Refill hands
+const newHands = { ...state.playerHands };
+Object.keys(newHands).forEach(name => {
+while (newHands[name].length < 10) {
+const availableCards = WHITE_CARDS.filter(c => !newHands[name].includes(c));
+if (availableCards.length === 0) break;
+const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+newHands[name].push(randomCard);
+}
+});
+await updateRoom({
+scores: newScores,
+judgeIndex: newJudgeIndex,
+round: newRound,
+playerHands: newHands
+});
+drawBlackCard();
+}, 3000);
+};
+const resetGame = () => {
+setScreen('mode-select');
+setGameMode(null);
+setMyName('');
+setRoomCode('');
+};
+const judge = players[judgeIndex];
+const isJudge = judge?.name === myName;
+const myHand = playerHands[myName] || [];
+const hasSubmitted = submissions[myName] !== undefined;
+const allSubmitted = Object.keys(submissions).length === players.length - 1;
+            // Mode Select Screen
+if (screen === 'mode-select') {
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-2xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20 fade-in">
+<h1 className="text-5xl font-bold text-white mb-4 text-center">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-briefcase"></use></svg> Konflikt-Karten
+</h1>
+<p className="text-white/80 text-center mb-12 text-lg">
+Workplace Edition - Against Harmony
+</p>
+<div className="space-y-6">
+<button
+onClick={() = aria-label="className="w-full bg-gradient-to-r from-purple-50"> selectMode('pass-play')}
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-6 rounded-2xl font-bold text-xl hover:shadow-2xl transform hover:scale-105 transition"
+>
+<div className="text-3xl mb-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg></div>
+Pass & Play
+</button>
+<button
+onClick={() = aria-label="className="w-full bg-gradient-to-r from-blue-500"> selectMode('multi-device')}
+className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-8 py-6 rounded-2xl font-bold text-xl hover:shadow-2xl transform hover:scale-105 transition"
+>
+<div className="text-3xl mb-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-globe-alt"></use></svg></div>
+Multi-Device
+</button>
+</div>
+</div>
+</div>
+</div>
+);
+}
+            // Lobby Screen
+if (screen === 'lobby') {
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-2xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 fade-in">
+<div className="text-center mb-8">
+<h2 className="text-3xl font-bold text-white mb-4">Game Lobby</h2>
+<div className="inline-block bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-lg px-6 py-3 border border-purple-500/50">
+<p className="text-white/60 text-sm">Room Code</p>
+<p className="text-4xl font-mono font-bold text-white">{roomCode}</p>
+</div>
+</div>
+{!myName ? (
+<input
+type="text"
+placeholder="Enter dein name"
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 mb-6"
+onKeyPress={(e) => {
+if (e.key === 'Enter') {
+addPlayer(e.target.value);
+e.target.value = '';
+}
+}}
+/>
+) : (
+<>
+<div className="mb-6">
+<h3 className="text-white font-bold mb-4">Players ({players.length}/10)</h3>
+<div className="space-y-2">
+{players.map(player => (
+<div key={player.id} className="bg-white/5 rounded-lg p-3 flex justify-between">
+<span className="text-white">{player.name}</span>
+{player.name === myName && <span className="text-purple-400">(Du)</span>}
+</div>
+))}
+</div>
+</div>
+{players.length >= 4 && players[0]?.name === myName && (
+<button
+onClick={startGame}
+className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition pulse-animation"
+aria-label="Start game">
+Start Game
+</button>
+)}
+{players.length < 4 && (
+<p className="text-white/60 text-center">Need {4 - players.length} more players</p>
+)}
+</>
+)}
+<button onClick={() = aria-label="← Back"> setScreen('mode-select')} className="w-full mt-4 text-white/60 hover:text-white">
+← Back
+</button>
+</div>
+</div>
+</div>
+);
+}
+            // Game Screen
+if (screen === 'game') {
+return (
+<div className="min-h-screen p-4">
+<div className="max-w-6xl mx-auto">
+                            {/* Header */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6">
+<div className="flex justify-between items-center">
+<div>
+<h2 className="text-2xl font-bold text-white">Round {round}</h2>
+<p className="text-white/60">Judge: {judge?.name}</p>
+</div>
+<div className="text-right">
+<p className="text-white/60 text-sm">Room: {roomCode}</p>
+<p className="text-white text-sm">Target: 7 points</p>
+</div>
+</div>
+</div>
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Main Area */}
+<div className="lg:col-span-2 space-y-6">
+                                    {/* Black Card */}
+{blackCard && (
+<div className="bg-black border-4 border-white rounded-2xl p-8 shadow-2xl">
+<p className="text-white text-2xl font-bold text-center">
+{blackCard}
+</p>
+</div>
+)}
+                                    {/* Judge View */}
+{isJudge && allSubmitted && (
+<div className="space-y-4">
+<div className="flex items-center gap-4 mb-4">
+<label className="flex items-center gap-2 text-white">
+<input
+type="checkbox"
+checked={sbirBonus}
+onChange={(e) => setSbirBonus(e.target.checked)}
+className="w-5 h-5"
+/>
+<span>SBIR Bonus (+2 points instead of 1)</span>
+</label>
+</div>
+<p className="text-white text-center font-bold mb-4">Pick the Winner:</p>
+{Object.entries(submissions).map(([name, card], i) => (
+<button
+key={i}
+onClick={() = aria-label="className="w-full bg-white rounded-xl p-6 text-le"> pickWinner(name)}
+className="w-full bg-white rounded-xl p-6 text-left hover:bg-purple-100 transition transform hover:scale-105 shadow-lg"
+>
+<p className="text-gray-800 text-lg">{card}</p>
+</button>
+))}
+</div>
+)}
+                                    {/* Player View */}
+{!isJudge && (
+<div>
+{!hasSubmitted ? (
+<div>
+<p className="text-white text-center mb-4 font-bold">Choose Dein Card:</p>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+{myHand.map((card, i) => (
+<button
+key={i}
+onClick={() = aria-label="className="bg-white rounded-xl p-4 text-left hove"> submitCard(card)}
+className="bg-white rounded-xl p-4 text-left hover:bg-purple-100 transition transform hover:scale-105 shadow-lg"
+>
+<p className="text-gray-800">{card}</p>
+</button>
+))}
+</div>
+</div>
+) : (
+<p className="text-green-400 text-center text-xl">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Card submitted! Waiting for judge...
+</p>
+)}
+</div>
+)}
+{isJudge && !allSubmitted && (
+<p className="text-white/60 text-center text-xl">
+Waiting for players to submit cards...
+<br />
+<span className="text-sm">({Object.keys(submissions).length}/{players.length - 1})</span>
+</p>
+)}
+</div>
+                                {/* Scoreboard */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6">
+<h3 className="text-xl font-bold text-white mb-4">Scores</h3>
+<div className="space-y-2">
+{players
+.sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0))
+.map(player => (
+<div
+key={player.id}
+className={`p-3 rounded-lg ${
+player.name === judge?.name ? 'bg-yellow-500/30 border border-yellow-500' : 'bg-white/5'
+}`}
+>
+<div className="flex justify-between items-center">
+<div>
+<span className="text-white">{player.name}</span>
+{player.name === myName && <span className="ml-2 text-purple-400 text-xs">(Du)</span>}
+{player.name === judge?.name && <span className="ml-2 text-yellow-400 text-xs">👨‍<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-scale"></use></svg></span>}
+</div>
+<span className="text-2xl font-bold text-purple-400">
+{scores[player.name] || 0}
+</span>
+</div>
+</div>
+))}
+</div>
+<button onClick={resetGame} className="w-full mt-4 text-white/60 hover:text-white text-sm" aria-label="End Game">
+End Game
+</button>
+</div>
+</div>
+</div>
+                        {/* Winner Modal */}
+{showWinner && (
+<div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 fade-in">
+<div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-12 max-w-2xl shadow-2xl wiggle-animation">
+<h2 className="text-5xl font-bold text-white text-center mb-8"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg></h2>
+<h3 className="text-3xl font-bold text-white text-center mb-4">Round Winner!</h3>
+<p className="text-4xl font-bold text-white text-center">{roundWinner}</p>
+<p className="text-white/80 text-center mt-4">
++{sbirBonus ? 2 : 1} point{sbirBonus ? 's' : ''}
+{sbirBonus && <span className="ml-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-star"></use></svg> SBIR Bonus!</span>}
+</p>
+</div>
+</div>
+)}
+</div>
+);
+}
+            // End Screen
+if (screen === 'end') {
+const sorted = [...players].sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0));
+const winner = sorted[0];
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-4xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20">
+<h1 className="text-6xl text-center mb-8"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg></h1>
+<h2 className="text-4xl font-bold text-white text-center mb-8">Game Over!</h2>
+<div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl p-8 mb-8 border border-purple-500/50 text-center">
+<p className="text-white/80 mb-2">Winner</p>
+<p className="text-5xl font-bold text-white">{winner?.name}</p>
+<p className="text-3xl text-purple-400 mt-4">{scores[winner?.name]} points</p>
+</div>
+<div className="space-y-3 mb-8">
+<h3 className="text-2xl font-bold text-white text-center mb-4">Final Standings</h3>
+{sorted.map((player, i) => (
+<div key={player.id} className="bg-white/5 rounded-lg p-4 flex justify-between">
+<span className="text-white">#{i + 1} {player.name}</span>
+<span className="text-2xl font-bold text-purple-400">{scores[player.name] || 0}</span>
+</div>
+))}
+</div>
+<button
+onClick={resetGame}
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+aria-label="Play Again">
+Play Again
+</button>
+</div>
+</div>
+</div>
+);
+}
+return null;
+}
+ReactDOM.render(<ConflictCards />, document.getElementById('root'));
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
+</body>
+</html>
+=======
+<title>Konflikt-Karten - Feedback Training Game | Tap-In</title>
+<meta name="description" content="Cards Against Humanity meets SBIR feedback training. Practice professional vs. toxic responses to workplace conflicts. From Tap-In Leadership Academy.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+min-height: 100vh;
+padding: 20px;
+}
+.container {
+max-width: 900px;
+margin: 0 auto;
+}
+.back-link {
+display: inline-block;
+color: white;
+text-decoration: none;
+font-weight: 600;
+margin-bottom: 20px;
+padding: 10px 20px;
+background: rgba(255, 255, 255, 0.2);
+border-radius: 10px;
+}
+.game-screen {
+display: none;
+}
+.game-screen.active {
+display: block;
+}
+        /* Setup */
+.setup-card {
+background: white;
+border-radius: 20px;
+padding: 60px 40px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+text-align: center;
+}
+.game-logo {
+font-size: 80px;
+margin-bottom: 20px;
+}
+.game-title {
+font-size: 48px;
+font-weight: 800;
+color: var(--bg-primary);
+margin-bottom: 15px;
+}
+.game-subtitle {
+font-size: 18px;
+color: var(--text-muted);
+margin-bottom: 40px;
+}
+.input-group {
+margin-bottom: 30px;
+text-align: left;
+}
+.input-group label {
+display: block;
+font-weight: 600;
+color: var(--bg-primary);
+margin-bottom: 10px;
+}
+.input-group input {
+width: 100%;
+padding: 15px;
+border: 2px solid var(--border-light);
+border-radius: 10px;
+font-size: 16px;
+}
+.player-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin-top: 15px;
+}
+.player-tag {
+background: #ede9fe;
+color: #5b21b6;
+padding: 8px 16px;
+border-radius: 20px;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.remove-player {
+cursor: pointer;
+font-weight: bold;
+color: #991b1b;
+}
+.btn {
+padding: 16px 40px;
+border: none;
+border-radius: 12px;
+font-size: 18px;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.btn-primary {
+background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+color: white;
+}
+.btn-primary:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+        /* Game Screen */
+.game-card {
+background: white;
+border-radius: 20px;
+padding: 40px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+.round-header {
+text-align: center;
+margin-bottom: 30px;
+}
+.round-number {
+font-size: 16px;
+color: var(--text-muted);
+font-weight: 600;
+margin-bottom: 10px;
+}
+.judge-name {
+font-size: 28px;
+font-weight: 800;
+color: #7c3aed;
+}
+        /* Black Card (Conflict Scenario) */
+.black-card {
+background: linear-gradient(135deg, var(--belt-black) 0%, #111827 100%);
+border: 4px solid #374151;
+border-radius: 15px;
+padding: 40px;
+margin-bottom: 30px;
+min-height: 200px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.black-card-text {
+font-size: 24px;
+font-weight: 700;
+color: white;
+text-align: center;
+line-height: 1.6;
+}
+        /* White Cards (Responses) */
+.hand-section {
+margin-top: 30px;
+}
+.hand-title {
+font-size: 20px;
+font-weight: 700;
+color: var(--bg-primary);
+margin-bottom: 15px;
+}
+.hand-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 15px;
+}
+.white-card {
+background: white;
+border: 3px solid var(--border-light);
+border-radius: 12px;
+padding: 20px;
+cursor: pointer;
+transition: all 0.3s ease;
+min-height: 120px;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.white-card:hover {
+transform: translateY(-5px);
+border-color: #7c3aed;
+box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+}
+.white-card.selected {
+background: #ede9fe;
+border-color: #7c3aed;
+transform: translateY(-5px);
+}
+.white-card-text {
+font-size: 16px;
+font-weight: 600;
+color: var(--bg-primary);
+text-align: center;
+line-height: 1.4;
+}
+        /* Judge View */
+.submissions-section {
+margin-top: 30px;
+}
+.submission-card {
+background: #f1f5f9;
+border-radius: 12px;
+padding: 25px;
+margin-bottom: 20px;
+cursor: pointer;
+transition: all 0.3s ease;
+border: 3px solid transparent;
+}
+.submission-card:hover {
+background: #ede9fe;
+border-color: #7c3aed;
+transform: translateX(5px);
+}
+.submission-text {
+font-size: 18px;
+font-weight: 600;
+color: var(--bg-primary);
+margin-bottom: 15px;
+}
+.sbir-checkbox {
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.sbir-checkbox input {
+width: 24px;
+height: 24px;
+cursor: pointer;
+}
+.sbir-checkbox label {
+font-size: 14px;
+color: var(--text-muted);
+cursor: pointer;
+}
+        /* Score Display */
+.score-section {
+background: #f1f5f9;
+border-radius: 12px;
+padding: 20px;
+margin-top: 30px;
+}
+.score-title {
+font-size: 18px;
+font-weight: 700;
+color: var(--bg-primary);
+margin-bottom: 15px;
+}
+.player-scores {
+display: grid;
+gap: 10px;
+}
+.player-score-row {
+display: flex;
+justify-content: space-between;
+align-items: center;
+background: white;
+padding: 12px 20px;
+border-radius: 8px;
+}
+.player-score-row.leader {
+background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+}
+.player-name {
+font-weight: 600;
+color: var(--bg-primary);
+}
+.points {
+font-size: 28px;
+font-weight: 800;
+color: #7c3aed;
+}
+        /* Results */
+.results-card {
+background: white;
+border-radius: 20px;
+padding: 40px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+text-align: center;
+}
+.winner-badge {
+font-size: 72px;
+margin-bottom: 20px;
+}
+.winner-name {
+font-size: 48px;
+font-weight: 900;
+color: var(--bg-primary);
+margin-bottom: 40px;
+}
+@media (max-width: 768px) {
+.hand-grid {
+grid-template-columns: 1fr;
+}
+.black-card-text {
+font-size: 20px;
+}
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+</head>
+<body>
+<div class="container">
+<a href="leadership-games-de.html" class="back-link">← Back to Games</a>
+<!-- Setup -->
+<div id="setupScreen" class="game-screen active">
+<div class="setup-card">
+<div class="game-logo"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-briefcase"></use></svg></div>
+<h1 class="game-title">Konflikt-Karten</h1>
+<p class="game-subtitle">Cards Against Humanity meets SBIR feedback training</p>
+<div class="input-group">
+<label>Add Players (4-10 players)</label>
+<input type="text" id="playerInput" placeholder="Enter player name..." onkeypress="if(event.key==='Enter') addPlayer()">
+<button onclick="addPlayer()" class="btn btn-primary" style="margin-top: 10px; width: 100%;" aria-label="Primary action">Add Player</button>
+<div id="playerTags" class="player-tags"></div>
+</div>
+<button onclick="startGame()" id="startButton" class="btn btn-primary" disabled aria-label="Start">
+Start Game
+</button>
+<div style="margin-top: 40px; padding-top: 40px; border-top: 2px solid var(--border-light);">
+<h3 style="font-size: 20px; font-weight: 700; color: var(--bg-primary); margin-bottom: 15px;">How to Play:</h3>
+<ol style="text-align: left; color: #475569; line-height: 1.8; padding-left: 20px;">
+<li><strong>Black card</strong> - Judge reads workplace conflict scenario</li>
+<li><strong>Submit responses</strong> - Others play white cards (pass device)</li>
+<li><strong>Judge picks winner</strong> - Best response gets points</li>
+<li><strong>SBIR BONUS</strong> - If winner used proper feedback (Situation-Behavior-Impact-Request) = 2 points vs 1</li>
+<li><strong>Rotate judge</strong> - Weiter player becomes judge</li>
+<li><strong>First to 7 points wins!</strong></li>
+</ol>
+</div>
+</div>
+</div>
+<!-- Player Submit Card -->
+<div id="submitScreen" class="game-screen">
+<div class="game-card">
+<div class="round-header">
+<div class="round-number">Round <span id="roundNum">1</span></div>
+<div style="font-size: 20px; font-weight: 700; color: var(--text-muted); margin-top: 10px;">
+<span id="currentPlayer">Player</span>'s Turn
+</div>
+</div>
+<div class="black-card">
+<div class="black-card-text" id="blackCardText">Loading scenario...</div>
+</div>
+<div class="hand-section">
+<div class="hand-title">Select Dein Response:</div>
+<div class="hand-grid" id="handGrid"></div>
+</div>
+<button onclick="submitCard()" id="submitButton" class="btn btn-primary" style="width: 100%; margin-top: 20px;" disabled aria-label="Submit">
+Submit Response
+</button>
+</div>
+</div>
+<!-- Judge Pick Winner -->
+<div id="judgeScreen" class="game-screen">
+<div class="game-card">
+<div class="round-header">
+<div class="round-number">Round <span id="judgeRoundNum">1</span></div>
+<div class="judge-name"><span id="judgeName">Judge</span> Picks the Winner</div>
+</div>
+<div class="black-card">
+<div class="black-card-text" id="judgeBlackCard">Scenario...</div>
+</div>
+<div class="submissions-section">
+<div class="hand-title">All Responses:</div>
+<div id="submissionsGrid"></div>
+</div>
+<div class="score-section">
+<div class="score-title">Current Scores</div>
+<div class="player-scores" id="scoreDisplay"></div>
+</div>
+</div>
+</div>
+<!-- Results -->
+<div id="resultsScreen" class="game-screen">
+<div class="results-card">
+<div class="winner-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg></div>
+<h2 style="font-size: 36px; font-weight: 700; color: var(--bg-primary); margin-bottom: 20px;">
+Feedback Master
+</h2>
+<div class="winner-name" id="winnerName">Player Name</div>
+<div class="player-scores" id="finalScores"></div>
+<div style="display: flex; gap: 15px; margin-top: 40px;">
+<button onclick="location.reload()" class="btn btn-primary" style="flex: 1;" aria-label="Primary action">
+Play Again
+</button>
+<button onclick="location.href='leadership-games-de.html'" class="btn btn-primary" style="flex: 1;" aria-label="Navigate">
+More Games
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Mock cards database
+const blackCards = [
+"Dein teammate keeps missing deadlines. How do du address it?",
+"Someone takes credit for dein idea in a meeting. What do du say?",
+"A colleague's work quality has dropped. How do du bring it up?",
+"Dein boss micromanages everything du do. How do du handle it?",
+"Someone interrupts du constantly in meetings. Dein response?",
+"A team member's negative attitude is affecting morale. What do du do?",
+"Du disagree with dein manager's decision. How do du communicate it?",
+"Someone gives du harsh criticism publicly. How do du respond?",
+"Dein direct report asks for feedback. What's dein approach?",
+"A peer makes a mistake that affects dein work. How do du address it?"
+];
+const whiteCards = [
+"I noticed in yesterday's meeting, when du spoke over me three times, it made me feel unheard. Could we discuss turn-taking?",
+"Can we talk about the deadline situation? I want to understand what's blocking du.",
+"Dein recent deliverables seem different from before. Is everything okay? How can I support?",
+"I've observed du cutting people off. It impacts team dynamics. Let's find a solution.",
+"When du took ownership of that idea without mentioning my contribution, it felt dismissive. Can we align on credit?",
+"Let's schedule time to discuss workload and autonomy. I value independence.",
+"I appreciate the feedback. Can du help me understand the specifics so I can improve?",
+"Dein tone in that email came across harsh. Could we discuss communication preferences?",
+"Just do dein job better.",
+"Maybe try not being terrible at dein job?",
+"That's a stupid way to do it.",
+"Du're always screwing things up.",
+"Why can't du just be professional?",
+"Figure it out yourself.",
+"Not my problem.",
+"Can du please stop being incompetent?",
+"I'm tired of dein excuses.",
+"Du're wasting everyone's time.",
+"Stopp being so sensitive.",
+"Whatever, I don't care."
+];
+        // Game state
+let players = [];
+let scores = {};
+let hands = {};
+let deck = [...whiteCards];
+let currentJudge = 0;
+let currentRound = 0;
+let currentBlackCard = null;
+let submissions = {};
+let currentPlayerIndex = 0;
+let selectedCard = null;
+function addPlayer() {
+const input = document.getElementById('playerInput');
+const name = input.value.trim();
+if (name && !players.includes(name)) {
+players.push(name);
+scores[name] = 0;
+input.value = '';
+updatePlayerTags();
+updateStartButton();
+}
+}
+function removePlayer(name) {
+players = players.filter(p => p !== name);
+delete scores[name];
+updatePlayerTags();
+updateStartButton();
+}
+function updatePlayerTags() {
+const container = document.getElementById('playerTags');
+safeSetInnerHTML(container, players.map(name => `
+<div class="player-tag">
+${name}
+<span class="remove-player" onclick="removePlayer('${name}')">×</span>
+</div>
+`).join(''));
+}
+function updateStartButton() {
+document.getElementById('startButton').disabled = players.length < 4;
+}
+function startGame() {
+if (players.length < 4) {
+alert('Need at least 4 players!');
+return;
+}
+            // Deal initial hands
+players.forEach(player => {
+hands[player] = [];
+for (let i = 0; i < 10; i++) {
+drawCard(player);
+}
+});
+nextRound();
+}
+function drawCard(player) {
+if (deck.length === 0) {
+deck = [...whiteCards]; // Reshuffle
+}
+const randomIndex = Math.floor(Math.random() * deck.length);
+const card = deck.splice(randomIndex, 1)[0];
+hands[player].push(card);
+}
+function nextRound() {
+currentRound++;
+            // Check for winner
+const winner = Object.keys(scores).find(p => scores[p] >= 7);
+if (winner) {
+showWinner(winner);
+return;
+}
+            // Get black card
+currentBlackCard = blackCards[Math.floor(Math.random() * blackCards.length)];
+            // Zurücksetzen submissions
+submissions = {};
+currentPlayerIndex = 0;
+selectedCard = null;
+            // Start submission phase
+nextPlayerSubmit();
+}
+function nextPlayerSubmit() {
+const judgeName = players[currentJudge];
+const nonJudgePlayers = players.filter(p => p !== judgeName);
+if (currentPlayerIndex >= nonJudgePlayers.length) {
+                // All submitted - move to judge screen
+showJudgeScreen();
+return;
+}
+const currentPlayer = nonJudgePlayers[currentPlayerIndex];
+            // Update display
+document.getElementById('roundNum').textContent = currentRound;
+document.getElementById('currentPlayer').textContent = currentPlayer;
+document.getElementById('blackCardText').textContent = currentBlackCard;
+            // Show player's hand
+const handGrid = document.getElementById('handGrid');
+safeSetInnerHTML(handGrid, hands[currentPlayer].map((card, index) => `
+<div class="white-card" onclick="selectCard(${index})">
+<div class="white-card-text">${card}</div>
+</div>
+`).join(''));
+document.getElementById('submitButton').disabled = true;
+showScreen('submitScreen');
+}
+function selectCard(index) {
+selectedCard = index;
+document.querySelectorAll('.white-card').forEach((card, i) => {
+if (i === index) {
+card.classList.add('selected');
+} else {
+card.classList.remove('selected');
+}
+});
+document.getElementById('submitButton').disabled = false;
+}
+function submitCard() {
+if (selectedCard === null) return;
+const judgeName = players[currentJudge];
+const nonJudgePlayers = players.filter(p => p !== judgeName);
+const currentPlayer = nonJudgePlayers[currentPlayerIndex];
+            // Record submission
+const card = hands[currentPlayer][selectedCard];
+submissions[currentPlayer] = card;
+            // Remove card from hand and draw new one
+hands[currentPlayer].splice(selectedCard, 1);
+drawCard(currentPlayer);
+            // Weiter player
+currentPlayerIndex++;
+selectedCard = null;
+nextPlayerSubmit();
+}
+function showJudgeScreen() {
+const judgeName = players[currentJudge];
+document.getElementById('judgeRoundNum').textContent = currentRound;
+document.getElementById('judgeName').textContent = judgeName;
+document.getElementById('judgeBlackCard').textContent = currentBlackCard;
+            // Show all submissions
+const submissionsGrid = document.getElementById('submissionsGrid');
+safeSetInnerHTML(submissionsGrid, Object.keys(submissions).map(player => `
+<div class="submission-card" onclick="pickWinner('${player}')">
+<div class="submission-text">${submissions[player]}</div>
+<div class="sbir-checkbox" onclick="event.stopPropagation()">
+<input type="checkbox" id="sbir-${player}">
+<label for="sbir-${player}">Used SBIR Feedback (+2 points vs +1)</label>
+</div>
+</div>
+`).join(''));
+updateScoreDisplay();
+showScreen('judgeScreen');
+}
+function pickWinner(player) {
+            // Check SBIR checkbox
+const isSBIR = document.getElementById(`sbir-${player}`).checked;
+const points = isSBIR ? 2 : 1;
+scores[player] += points;
+alert(`${player} wins! +${points} point${points > 1 ? 's' : ''} ${isSBIR ? '(SBIR Bonus!)' : ''}`);
+            // Weiter judge
+currentJudge = (currentJudge + 1) % players.length;
+setTimeout(nextRound, 1000);
+}
+function updateScoreDisplay() {
+const container = document.getElementById('scoreDisplay');
+const sorted = [...players].sort((a, b) => scores[b] - scores[a]);
+safeSetInnerHTML(container, sorted.map((player, index) => `
+<div class="player-score-row ${index === 0 ? 'leader' : ''}">
+<div class="player-name">${index === 0 ? '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> ' : ''}${player}</div>
+<div class="points">${scores[player]}</div>
+</div>
+`).join(''));
+}
+function showWinner(winner) {
+document.getElementById('winnerName').textContent = winner;
+const sorted = [...players].sort((a, b) => scores[b] - scores[a]);
+safeSetInnerHTML(document.getElementById('finalScores'), sorted.map((player, index) => `
+<div class="player-score-row ${index === 0 ? 'leader' : ''}">
+<div class="player-name">${index === 0 ? '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> ' : ''}${player}</div>
+<div class="points">${scores[player]}</div>
+</div>
+`).join('');
+showScreen('resultsScreen');
+}
+function showScreen(screenId) {
+document.querySelectorAll('.game-screen').forEach(screen => {
+screen.classList.remove('active');
+});
+document.getElementById(screenId).classList.add('active');
+}
+</script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>
+>>>>>>> f82bb98a71dd8a9521785cc7a4d3d6198bde9727

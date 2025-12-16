@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tap-in-platform.netlify.app/feedback-module.html">
+<meta property="og:title" content="TAP-IN Leadership Development">
+<meta property="og:description" content="Transform teams through embodied leadership training.">
+<meta property="og:image" content="https://tap-in-platform.netlify.app/og-image.png">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://tap-in-platform.netlify.app/feedback-module.html">
+<meta property="twitter:title" content="TAP-IN Leadership Development">
+<meta property="twitter:description" content="Transform teams through embodied leadership training.">
+<meta property="twitter:image" content="https://tap-in-platform.netlify.app/og-image.png">
+    <title>Feedback Learning Module</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .progress-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            font-size: 0.9em;
+            color: #666;
+            text-align: right;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .lesson-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .lesson-header {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            padding: 20px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .lesson-header.lesson-2 {
+            background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+        }
+
+        .lesson-header.lesson-3 {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        }
+
+        .lesson-header.lesson-4 {
+            background: linear-gradient(135deg, #fcd34d 0%, #fbbf24 100%);
+        }
+
+        .lesson-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .lesson-title {
+            flex: 1;
+        }
+
+        .lesson-title h3 {
+            font-size: 1.3em;
+            margin-bottom: 5px;
+        }
+
+        .lesson-subtitle {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .lesson-status {
+            font-size: 0.8em;
+            background: rgba(255, 255, 255, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            margin-left: 10px;
+            white-space: nowrap;
+        }
+
+        .lesson-content {
+            padding: 25px;
+        }
+
+        .lesson-content h4 {
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .lesson-body {
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        .lesson-body.active {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                max-height: 1000px;
+                transform: translateY(0);
+            }
+        }
+
+        .lesson-intro {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+        }
+
+        .lesson-section {
+            margin-bottom: 25px;
+        }
+
+        .lesson-section h5 {
+            color: #1a365d;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+        }
+
+        .technique-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #f59e0b;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .technique-item.technique-2 {
+            border-left-color: #fb923c;
+        }
+
+        .technique-item.technique-3 {
+            border-left-color: #fbbf24;
+        }
+
+        .technique-item.technique-4 {
+            border-left-color: #fcd34d;
+        }
+
+        .technique-name {
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 5px;
+        }
+
+        .technique-desc {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .interactive-tool {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .feedback-conversation {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border: 2px solid #fde68a;
+        }
+
+        .conversation-label {
+            font-weight: 600;
+            color: #1a365d;
+            margin-bottom: 8px;
+        }
+
+        .conversation-example {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 8px;
+            line-height: 1.5;
+            padding: 8px;
+            background: #fffbeb;
+            border-radius: 4px;
+        }
+
+        .lesson-footer {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #f59e0b;
+            border: 2px solid #f59e0b;
+        }
+
+        .btn-secondary:hover {
+            background: #fffbeb;
+        }
+
+        .practical-exercises {
+            background: #fef3c7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .exercise-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .exercise-list li {
+            padding: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .exercise-list li:before {
+            content: "✓";
+            color: #f59e0b;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .summary-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .summary-item.summary-2 {
+            border-left-color: #fb923c;
+        }
+
+        .summary-item.summary-3 {
+            border-left-color: #fbbf24;
+        }
+
+        .summary-item.summary-4 {
+            border-left-color: #fcd34d;
+        }
+
+        .summary-label {
+            font-size: 0.85em;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .summary-value {
+            font-size: 1.3em;
+            font-weight: 700;
+            color: #1a365d;
+        }
+
+        .feedback-model {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .feedback-model.model-2 {
+            border-left-color: #fb923c;
+        }
+
+        .feedback-model.model-3 {
+            border-left-color: #fbbf24;
+        }
+
+        .feedback-model.model-4 {
+            border-left-color: #fcd34d;
+        }
+
+        .feedback-model-name {
+            font-weight: 600;
+            color: #f59e0b;
+            font-size: 0.95em;
+            margin-bottom: 4px;
+        }
+
+        .feedback-model.model-2 .feedback-model-name { color: #fb923c; }
+        .feedback-model.model-3 .feedback-model-name { color: #fbbf24; }
+        .feedback-model.model-4 .feedback-model-name { color: #fcd34d; }
+
+        .feedback-model-desc {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .lessons-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .lesson-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .lesson-status {
+                margin-left: 0;
+                margin-top: 10px;
+            }
+        }
+    </style>
+    <link rel="canonical" href="https://tap-in-platform.netlify.app/feedback-module.html">
+
+    <link rel="stylesheet" href="css/hero-icons.css">
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💬 Feedback Mastery</h1>
+            <p>Give and receive feedback that drives growth and strengthens relationships</p>
+        </div>
+
+        <!-- Progress Tracker -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 0%;" id="progressFill"></div>
+            </div>
+            <div class="progress-text">
+                <span id="lessonsCompleted">0</span> of 4 lessons completed
+            </div>
+        </div>
+
+        <!-- Lessons Grid -->
+        <div class="lessons-grid">
+            <!-- Lesson 1: Feedback Fundamentals -->
+            <div class="lesson-card">
+                <div class="lesson-header">
+                    <div class="lesson-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg></div>
+                    <div class="lesson-title">
+                        <h3>Feedback Fundamentals</h3>
+                        <p class="lesson-subtitle">Understanding feedback as a gift</p>
+                    </div>
+                    <div class="lesson-status" id="status1">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4>Feedback Fundamentals</h4>
+                    <div class="lesson-body" id="lesson1">
+                        <p class="lesson-intro">Feedback is information about how your actions landed. It's not judgment—it's data. The best performers actively seek it.</p>
+
+                        <div class="lesson-section">
+                            <h5>Two Types of Feedback</h5>
+                            <div class="feedback-model">
+                                <div class="feedback-model-name"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-arrow-trending-up"></use></svg> Appreciation</div>
+                                <div class="feedback-model-desc">Recognition and acknowledgment. "I noticed you stayed late to help—that meant a lot." Builds confidence and relationships.</div>
+                            </div>
+                            <div class="feedback-model model-2">
+                                <div class="feedback-model-name">🔧 Coaching</div>
+                                <div class="feedback-model-desc">Guidance for improvement. "That presentation was good. Next time, lead with your conclusion." Drives growth.</div>
+                            </div>
+                            <div class="feedback-model model-3">
+                                <div class="feedback-model-name">🎲 Correction</div>
+                                <div class="feedback-model-desc">Direct feedback about misalignment. "That approach doesn't fit our values." Clarifies expectations.</div>
+                            </div>
+                            <div class="feedback-model model-4">
+                                <div class="feedback-model-name">🗣️ Perspective</div>
+                                <div class="feedback-model-desc">How your actions affected others. "When you interrupted, it made me feel unheard." Shows impact.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Feedback Mindset Shifts</h5>
+                            <div class="technique-item">
+                                <div class="technique-name"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-x-circle"></use></svg> → Check Circle Feedback is criticism</div>
+                                <div class="technique-desc">Feedback is information. It's not about your worth—it's about your work.</div>
+                            </div>
+                            <div class="technique-item">
+                                <div class="technique-name"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-x-circle"></use></svg> → Check Circle Feedback is personal attack</div>
+                                <div class="technique-desc">Feedback is about behavior/impact, not character. Separate the action from the person.</div>
+                            </div>
+                            <div class="technique-item">
+                                <div class="technique-name"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-x-circle"></use></svg> → Check Circle I should wait to give feedback</div>
+                                <div class="technique-desc">Timely feedback is more useful. Within 24-48 hours of the event is ideal.</div>
+                            </div>
+                        </div>
+
+                        <div class="interactive-tool">
+                            <strong>🧭 Your Feedback Comfort</strong>
+                            <div class="feedback-conversation">
+                                <div class="conversation-label">How comfortable are you:</div>
+                                <div class="conversation-example">1. Asking for feedback? (Scale 1-10) ____</div>
+                                <div class="conversation-example">2. Giving appreciation? (Scale 1-10) ____</div>
+                                <div class="conversation-example">3. Giving corrective feedback? (Scale 1-10) ____</div>
+                                <div class="conversation-example">4. Receiving critical feedback? (Scale 1-10) ____</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson1')">Collapse</button>
+                            <button class="btn btn-primary" onclick="markLessonComplete(1)">Mark Complete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 2: Giving Effective Feedback -->
+            <div class="lesson-card">
+                <div class="lesson-header lesson-2">
+                    <div class="lesson-icon">🎁</div>
+                    <div class="lesson-title">
+                        <h3>Giving Feedback</h3>
+                        <p class="lesson-subtitle">Delivering feedback that lands</p>
+                    </div>
+                    <div class="lesson-status" id="status2">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4>Giving Effective Feedback</h4>
+                    <div class="lesson-body" id="lesson2">
+                        <p class="lesson-intro">Good feedback is specific, timely, and kind. It focuses on behavior, not character. It offers a path forward.</p>
+
+                        <div class="lesson-section">
+                            <h5>The SBI Framework (Situation-Behavior-Impact)</h5>
+                            <div class="technique-item technique-2">
+                                <div class="technique-name">1️⃣ Situation</div>
+                                <div class="technique-desc">Set the context. "In the meeting yesterday..." Specificity prevents confusion.</div>
+                            </div>
+                            <div class="technique-item technique-2">
+                                <div class="technique-name">2️⃣ Behavior</div>
+                                <div class="technique-desc">Describe what you observed without judgment. "You interrupted three times" (not "You're rude").</div>
+                            </div>
+                            <div class="technique-item technique-2">
+                                <div class="technique-name">3️⃣ Impact</div>
+                                <div class="technique-desc">Explain the effect. "It made me hesitant to share my perspective." Shows why it matters.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>Examples</h5>
+                            <div class="feedback-conversation">
+                                <div class="conversation-label">Appreciation (SBI):</div>
+                                <div class="conversation-example">"This morning, you presented that data clearly with visuals. It made the complex information really accessible—the client asked great questions because they understood."</div>
+                            </div>
+                            <div class="feedback-conversation">
+                                <div class="conversation-label">Coaching (SBI):</div>
+                                <div class="conversation-example">"In the 1-on-1 earlier, I noticed you answered most of your own questions before I could respond. I'd love to understand your thinking more—try pausing after questions to let me respond first."</div>
+                            </div>
+                            <div class="feedback-conversation">
+                                <div class="conversation-label">Correction (SBI):</div>
+                                <div class="conversation-example">"Yesterday's update to that project file without notifying the team caused rework. Going forward, let's align before making changes—it keeps everyone synced."</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong>💡 This Week's Challenge:</strong>
+                            <ul class="exercise-list">
+                                <li>Give one piece of appreciation feedback (be specific with SBI)</li>
+                                <li>Give one piece of coaching feedback</li>
+                                <li>Deliver within 24-48 hours of the behavior</li>
+                                <li>Notice how the person responds to clear, kind feedback</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson2')">Collapse</button>
+                            <button class="btn btn-primary" onclick="markLessonComplete(2)">Mark Complete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 3: Receiving Feedback -->
+            <div class="lesson-card">
+                <div class="lesson-header lesson-3">
+                    <div class="lesson-icon">👂</div>
+                    <div class="lesson-title">
+                        <h3>Receiving Feedback</h3>
+                        <p class="lesson-subtitle">Staying open when it's about you</p>
+                    </div>
+                    <div class="lesson-status" id="status3">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4>Receiving Feedback</h4>
+                    <div class="lesson-body" id="lesson3">
+                        <p class="lesson-intro">Receiving feedback well is a skill. The first instinct is to defend. The growth move is to listen, understand, and decide.</p>
+
+                        <div class="lesson-section">
+                            <h5>The Feedback Reception Protocol</h5>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">🧠 Listen without interrupting</div>
+                                <div class="technique-desc">Let them finish. Your job isn't to defend—it's to understand what they observed and how it landed for them.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">🤔 Ask clarifying questions</div>
+                                <div class="technique-desc">"Can you give me an example?" or "What would that look like differently?" gets specifics.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">✏️ Take notes</div>
+                                <div class="technique-desc">Calms your nervous system. Shows you're taking it seriously. Helps you remember later.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-clock"></use></svg> Pause before responding</div>
+                                <div class="technique-desc">"Let me think about this" or "I'll get back to you" is fine. Impulse responses often regret.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>What to Do After</h5>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">🔍 Assess it as data</div>
+                                <div class="technique-desc">Is there truth in it? Not all feedback is valuable, but consider it objectively.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Decide what to do</div>
+                                <div class="technique-desc">Act on it, consider it, or respectfully disagree. The choice is yours.</div>
+                            </div>
+                            <div class="technique-item technique-3">
+                                <div class="technique-name">🙏 Thank them</div>
+                                <div class="technique-desc">Even if you disagree, someone took time to give you perspective. Appreciation keeps feedback flowing.</div>
+                            </div>
+                        </div>
+
+                        <div class="interactive-tool">
+                            <strong>🎬 Practice: Common Reactions</strong>
+                            <div class="feedback-conversation">
+                                <div class="conversation-label">Your manager: "Your reports are good but sometimes hard to follow. Add a summary at the top."</div>
+                                <div class="conversation-example"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-x-circle"></use></svg> Defensive: "I always put important info first. My last report was fine."</div>
+                                <div class="conversation-example"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-check-circle"></use></svg> Growth: "That's helpful. Can you show me an example? I want to make them easier for you to use."</div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong>💡 Next Week: Feedback Courage</strong>
+                            <ul class="exercise-list">
+                                <li>Ask for specific feedback from someone you trust</li>
+                                <li>Use the reception protocol (listen, ask, take notes, pause)</li>
+                                <li>Decide what action to take (even if it's "I disagree")</li>
+                                <li>Notice how your openness affects the relationship</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson3')">Collapse</button>
+                            <button class="btn btn-primary" onclick="markLessonComplete(3)">Mark Complete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lesson 4: Feedback Culture -->
+            <div class="lesson-card">
+                <div class="lesson-header lesson-4">
+                    <div class="lesson-icon">🌍</div>
+                    <div class="lesson-title">
+                        <h3>Feedback Culture</h3>
+                        <p class="lesson-subtitle">Building psychological safety</p>
+                    </div>
+                    <div class="lesson-status" id="status4">Start</div>
+                </div>
+                <div class="lesson-content">
+                    <h4>Feedback Culture</h4>
+                    <div class="lesson-body" id="lesson4">
+                        <p class="lesson-intro">Psychological safety—the belief that you can speak up without punishment—is where great feedback happens. You can start building it.</p>
+
+                        <div class="lesson-section">
+                            <h5>What Kills Psychological Safety</h5>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🔴 Punishment for speaking up</div>
+                                <div class="technique-desc">If feedback is met with defensiveness or retaliation, people stop offering it.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🔴 Perfectionism</div>
+                                <div class="technique-desc">If mistakes are treated as failures, people hide problems rather than surface them.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🔴 Status plays</div>
+                                <div class="technique-desc">When high-status people dismiss low-status people's input, feedback disappears.</div>
+                            </div>
+                        </div>
+
+                        <div class="lesson-section">
+                            <h5>What Builds Psychological Safety</h5>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🟢 Acknowledge your own mistakes</div>
+                                <div class="technique-desc">"I got that wrong. Here's what I learned." Signals it's safe to be human.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🟢 Ask for feedback first</div>
+                                <div class="technique-desc">Vulnerability invites vulnerability. "What could I do better?" opens the door.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🟢 Respond well to feedback</div>
+                                <div class="technique-desc">When someone gives feedback, thank them and show you're acting on it. That teaches safety.</div>
+                            </div>
+                            <div class="technique-item technique-4">
+                                <div class="technique-name">🟢 Treat people as learners</div>
+                                <div class="technique-desc">"You're growing in this" vs "You failed." One shuts down feedback, one opens it.</div>
+                            </div>
+                        </div>
+
+                        <div class="interactive-tool">
+                            <strong>🛠️ Build Your Feedback Habit</strong>
+                            <div class="summary-grid">
+                                <div class="summary-item summary-4">
+                                    <div class="summary-label">Frequency Goal</div>
+                                    <input type="text" placeholder="e.g., 1 appreciation/week" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; margin-top: 8px;">
+                                </div>
+                                <div class="summary-item summary-4">
+                                    <div class="summary-label">Feedback Ritual</div>
+                                    <input type="text" placeholder="e.g., weekly 1-on-1 check-in" style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px; margin-top: 8px;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="practical-exercises">
+                            <strong>💡 Create a Feedback-Rich Environment:</strong>
+                            <ul class="exercise-list">
+                                <li>Ask "How can I do better?" in your next 1-on-1</li>
+                                <li>Share a mistake you made and what you learned</li>
+                                <li>Give 3 specific appreciations this week</li>
+                                <li>Notice: Does the feedback conversation feel safer when you go first?</li>
+                            </ul>
+                        </div>
+
+                        <div class="lesson-footer">
+                            <button class="btn btn-secondary" onclick="toggleLesson('lesson4')">Collapse</button>
+                            <button class="btn btn-primary" onclick="markLessonComplete(4)">Mark Complete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Summary Dashboard -->
+        <div class="progress-container" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <h3 style="color: #1a365d; margin-bottom: 20px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Your Feedback Mastery Summary</h3>
+            <div class="summary-grid">
+                <div class="summary-item summary-1">
+                    <div class="summary-label">Lessons Completed</div>
+                    <div class="summary-value" id="summaryComplete">0/4</div>
+                </div>
+                <div class="summary-item summary-2">
+                    <div class="summary-label">Module Status</div>
+                    <div class="summary-value" id="summaryStatus">0%</div>
+                </div>
+                <div class="summary-item summary-3">
+                    <div class="summary-label">Skill Level</div>
+                    <div class="summary-value" id="summarySkill">—</div>
+                </div>
+                <div class="summary-item summary-4">
+                    <div class="summary-label">Action Items</div>
+                    <div class="summary-value" id="summaryActions">4</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize from localStorage
+        function initModule() {
+            const completed = JSON.parse(localStorage.getItem('feedbackLessonsCompleted') || '[]');
+            completed.forEach(lessonNum => {
+                markLessonComplete(lessonNum, false);
+            });
+        }
+
+        // Toggle lesson content
+        function toggleLesson(lessonId) {
+            const body = document.getElementById(lessonId);
+            body.classList.toggle('active');
+        }
+
+        // Mark lesson as complete
+        function markLessonComplete(lessonNum, saveThem = true) {
+            const status = document.getElementById(`status${lessonNum}`);
+            const lessonBody = document.getElementById(`lesson${lessonNum}`);
+            
+            lessonBody.classList.add('active');
+            status.textContent = '✓ Completed';
+            status.style.background = '#f59e0b';
+            status.style.color = 'white';
+
+            if (saveThem) {
+                const completed = JSON.parse(localStorage.getItem('feedbackLessonsCompleted') || '[]');
+                if (!completed.includes(lessonNum)) {
+                    completed.push(lessonNum);
+                    localStorage.setItem('feedbackLessonsCompleted', JSON.stringify(completed));
+                }
+                updateProgress();
+            }
+        }
+
+        // Update progress
+        function updateProgress() {
+            const completed = JSON.parse(localStorage.getItem('feedbackLessonsCompleted') || '[]');
+            const total = 4;
+            const percentage = (completed.length / total) * 100;
+            
+            document.getElementById('progressFill').style.width = percentage + '%';
+            document.getElementById('lessonsCompleted').textContent = completed.length;
+            document.getElementById('summaryComplete').textContent = completed.length + '/4';
+            document.getElementById('summaryStatus').textContent = Math.round(percentage) + '%';
+
+            if (completed.length === total) {
+                document.getElementById('summarySkill').textContent = '✓ Advanced';
+                document.getElementById('summarySkill').parentElement.style.background = '#f0fdf4';
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', initModule);
+        window.addEventListener('DOMContentLoaded', updateProgress);
+    </script>
+
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.min.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+
+    <!-- Screen Reader Enhancements for Accessibility -->
+    <script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>

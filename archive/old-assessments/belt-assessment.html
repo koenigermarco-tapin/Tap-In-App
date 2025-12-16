@@ -526,7 +526,7 @@
             </div>
 
             <div class="nav-buttons" style="justify-content: center;">
-                <button class="btn btn-primary" onclick="startAssessment()" style="font-size: 1.3em; padding: 20px 50px;">Begin Assessment →</button>
+                <button class="btn btn-primary" onclick="startAssessment()" style="font-size: 1.3em; padding: 20px 50px;" aria-label="Button">Begin Assessment →</button>
             </div>
         </div>
 
@@ -546,12 +546,12 @@
             </div>
 
             <div class="nav-buttons">
-                <button class="btn-secondary" onclick="previousQuestion()" id="prevBtn">← Previous</button>
-                <button class="btn-primary" onclick="nextQuestion()" id="nextBtn" disabled>Next →</button>
+                <button class="btn-secondary" onclick="previousQuestion()" id="prevBtn" aria-label="Button">← Previous</button>
+                <button class="btn-primary" onclick="nextQuestion()" id="nextBtn" disabled aria-label="Button">Next →</button>
             </div>
             
             <div style="text-align: center; margin-top: 30px;">
-                <button class="btn-tap" onclick="showTapModal()">🥋 Tap</button>
+                <button class="btn-tap" onclick="showTapModal()" aria-label="Button">🥋 Tap</button>
                 <p style="color: #64748b; font-size: 0.9em; margin-top: 10px;">Ready to start training? Or need a break?</p>
             </div>
         </div>
@@ -576,7 +576,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-secondary" onclick="closeTapModal()" style="margin-top: 20px;">← Back to Assessment</button>
+                <button class="btn-secondary" onclick="closeTapModal()" style="margin-top: 20px;" aria-label="Button">← Back to Assessment</button>
             </div>
         </div>
         
@@ -618,7 +618,7 @@
                     </div>
                 </div>
                 
-                <button class="btn-secondary" onclick="closeBeltSelector()" style="margin-top: 20px;">← Back</button>
+                <button class="btn-secondary" onclick="closeBeltSelector()" style="margin-top: 20px;" aria-label="Button">← Back</button>
             </div>
         </div>
 
@@ -1453,10 +1453,10 @@
                 }
                 
                 enhancementBox.style.display = 'block';
-                enhancementBox.innerHTML = `
+                safeSetInnerHTML(enhancementBox, `
                     <h3>${item.title}</h3>
                     ${item.content}
-                `;
+                `);
                 
                 // Auto-enable next button for enhancement boxes
                 document.getElementById('nextBtn').disabled = false;
@@ -1491,7 +1491,7 @@
             
             // Create scale
             const scaleContainer = document.getElementById('scaleOptions');
-            scaleContainer.innerHTML = '';
+            safeSetInnerHTML(scaleContainer, '');
             
             q.scale.forEach((label, index) => {
                 const value = index + 1;
@@ -1501,11 +1501,11 @@
                     option.classList.add('selected');
                 }
                 
-                option.innerHTML = `
+                safeSetInnerHTML(option, `
                     <input type="radio" name="q${q.id}" value="${value}" id="q${q.id}_${value}">
                     <div class="scale-value">${value}</div>
                     <div class="scale-label">${label}</div>
-                `;
+                `);
                 
                 option.onclick = (evt) => selectOption(q.id, value, evt);
                 scaleContainer.appendChild(option);
@@ -1650,7 +1650,7 @@
         function displayResults(beltScores) {
             // Display belt readiness cards
             const beltReadinessContainer = document.getElementById('beltReadinessCards');
-            beltReadinessContainer.innerHTML = '';
+            safeSetInnerHTML(beltReadinessContainer, '');
 
             const beltData = {
                 white: {
@@ -1787,7 +1787,7 @@
 
         function displayDysfunctionCards() {
             const scoresContainer = document.getElementById('dysfunctionScores');
-            scoresContainer.innerHTML = '';
+            safeSetInnerHTML(scoresContainer, '');
             
             const dysfunctionData = {
                 trust: {
@@ -1897,8 +1897,8 @@
             const beltOrder = ['white', 'blue', 'purple', 'brown', 'black'];
             const startIndex = beltOrder.indexOf(weakestBelt);
 
-            roadmapContainer.innerHTML = `
-                <p style="color: #475569; line-height: 1.8; margin-bottom: 25px; font-size: 1.1em;">
+            safeSetInnerHTML(roadmapContainer, `
+                <p style="color: #475569); line-height: 1.8; margin-bottom: 25px; font-size: 1.1em;">
                     Based on your scores, here's your personalized 90-day training roadmap. <strong>Start with your weakest area (${beltNames[weakestBelt]})</strong>, then progress sequentially.
                 </p>
                 

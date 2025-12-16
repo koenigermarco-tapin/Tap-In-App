@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Talent Finder (DE) | Tap-In Leadership Academy</title>
+<!-- PWA Manifest -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="var(--tap-blue)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Tap-In">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+background: linear-gradient(135deg, #1a1d2e 0%, #2c2f3e 100%);
+min-height: 100vh;
+color: white;
+}
+.top-nav {
+background: rgba(0,0,0,0.3);
+padding: 1rem 2rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+backdrop-filter: blur(10px);
+}
+.top-nav a {
+color: white;
+text-decoration: none;
+margin: 0 1rem;
+transition: color 0.3s;
+}
+.top-nav a:hover {
+color: var(--tap-blue);
+}
+.talent-hero {
+text-align: center;
+padding: 4rem 2rem 2rem;
+max-width: 1200px;
+margin: 0 auto;
+}
+.talent-hero h1 {
+font-size: 3rem;
+margin-bottom: 1rem;
+background: linear-gradient(135deg, var(--tap-blue) 0%, #6fa8d8 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+.talent-types {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 2rem;
+padding: 2rem;
+max-width: 1200px;
+margin: 0 auto;
+}
+.type-card {
+background: rgba(255,255,255,0.05);
+padding: 2rem;
+border-radius: 16px;
+border: 2px solid transparent;
+transition: all 0.3s;
+}
+.type-card:hover {
+border-color: var(--tap-blue);
+transform: translateY(-4px);
+box-shadow: 0 8px 24px rgba(74,124,156,0.3);
+}
+.type-card.sprinter { border-left: 4px solid #ff6b6b; }
+.type-card.jogger { border-left: 4px solid #51cf66; }
+.type-card.ultrarunner { border-left: 4px solid var(--tap-blue); }
+.type-card h2 { margin-top: 0; font-size: 1.5rem; margin-bottom: 1rem; }
+.type-card p { color: rgba(255,255,255,0.8); line-height: 1.6; margin-bottom: 0.5rem; }
+.start-btn {
+display: inline-block;
+padding: 1rem 2rem;
+font-size: 1.25rem;
+background: linear-gradient(135deg, var(--tap-blue) 0%, #6fa8d8 100%);
+border: none;
+border-radius: 12px;
+color: white;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s;
+text-decoration: none;
+}
+.start-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 24px rgba(74,124,156,0.4);
+}
+.question-card {
+background: rgba(255,255,255,0.05);
+padding: 2rem;
+border-radius: 16px;
+margin: 2rem auto;
+max-width: 800px;
+}
+.option-button {
+display: block;
+width: 100%;
+padding: 1rem;
+margin: 0.5rem 0;
+background: rgba(255,255,255,0.05);
+border: 2px solid rgba(74,124,156,0.3);
+border-radius: 12px;
+color: white;
+cursor: pointer;
+transition: all 0.3s;
+text-align: left;
+font-size: 1rem;
+}
+.option-button:hover {
+background: rgba(74,124,156,0.2);
+border-color: var(--tap-blue);
+transform: translateX(4px);
+}
+.option-button.selected {
+background: linear-gradient(135deg, var(--tap-blue) 0%, #6fa8d8 100%);
+border-color: var(--tap-blue);
+font-weight: bold;
+}
+.bar-container {
+margin: 1.5rem 0;
+}
+.bar-label {
+display: flex;
+justify-content: space-between;
+margin-bottom: 0.5rem;
+font-weight: bold;
+}
+.bar {
+height: 40px;
+background: rgba(255,255,255,0.1);
+border-radius: 20px;
+overflow: hidden;
+position: relative;
+}
+.bar-fill {
+height: 100%;
+border-radius: 20px;
+transition: width 1s ease-out;
+display: flex;
+align-items: center;
+justify-content: flex-end;
+padding-right: 1rem;
+font-weight: bold;
+font-size: 1.125rem;
+}
+.bar-fill.sprinter { background: linear-gradient(90deg, #ff6b6b 0%, #ff8787 100%); }
+.bar-fill.jogger { background: linear-gradient(90deg, #51cf66 0%, #69db7c 100%); }
+.bar-fill.ultrarunner { background: linear-gradient(90deg, var(--tap-blue) 0%, #6fa8d8 100%); }
+.result-chart {
+background: rgba(255,255,255,0.05);
+padding: 2rem;
+border-radius: 16px;
+margin: 2rem 0;
+}
+.progress-container {
+max-width: 800px;
+margin: 2rem auto;
+padding: 0 2rem;
+}
+.progress-bar-outer {
+height: 8px;
+background: rgba(255,255,255,0.1);
+border-radius: 4px;
+overflow: hidden;
+}
+.progress-bar-inner {
+height: 100%;
+background: linear-gradient(90deg, var(--tap-blue) 0%, #6fa8d8 100%);
+transition: width 0.3s;
+width: 0%;
+}
+.btn-group {
+display: flex;
+gap: 1rem;
+justify-content: center;
+flex-wrap: wrap;
+margin-top: 2rem;
+}
+.btn-secondary {
+padding: 1rem 2rem;
+background: rgba(255,255,255,0.1);
+border: 2px solid rgba(74,124,156,0.3);
+border-radius: 12px;
+color: white;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s;
+}
+.btn-secondary:hover {
+background: rgba(255,255,255,0.2);
+border-color: var(--tap-blue);
+}
+@media (max-width: 768px) {
+.talent-hero h1 { font-size: 2rem; }
+.talent-types { grid-template-columns: 1fr; }
+.top-nav { flex-direction: column; gap: 0.5rem; }
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Talent Finder (DE) | Tap-In Leadership Academy - TAP-IN Leadership Academy">
+</head>
+<body>
+<nav class="top-nav">
+<div>
+<a href="index-DUAL-ENTRY-de.html">🏠 Home</a>
+<a href="src/pages/gym/gym-dashboard-de.html"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-trophy"></use></svg> Gym</a>
+<a href="learning-hub-de.html"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Hub</a>
+<a href="busines-portal-de.html"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-briefcase"></use></svg> Business</a>
+</div>
+<div>
+<a href="src/pages/hub/tolkit/talent-finder-de.html">EN English</a>
+</div>
+</nav>
+<!-- Overview Section -->
+<div id="overview-section">
+<div class="talent-hero">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Talent Finder</h1>
+<p style="font-size: 1.25rem; color: rgba(255,255,255,0.8); max-width: 600px; margin: 1rem auto 2rem;">
+Discover your natural working style and build balanced teams
+</p>
+<button class="start-btn" onclick="startAssessment()" aria-label="Start">
+Start Assessment (5 min) →
+</button>
+</div>
+<div class="talent-types">
+<div class="type-card sprinter">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-bolt"></use></svg> Sprinter</h2>
+<p><strong>Profile:</strong> High-intensity, fast results, thrives under pressure</p>
+<p><strong>Best For:</strong> Crisis management, urgent projects, quick wins</p>
+<p><strong>Challenge:</strong> Needs recovery time, can burn out</p>
+<p><strong>Example:</strong> Launch specialist, firefighter, rapid prototyper</p>
+</div>
+<div class="type-card jogger">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-bolt"></use></svg> Jogger</h2>
+<p><strong>Profile:</strong> Consistent, reliable, steady performance</p>
+<p><strong>Best For:</strong> Operations, maintenance, predictable workflows</p>
+<p><strong>Challenge:</strong> May resist rapid change</p>
+<p><strong>Example:</strong> Operations manager, customer support, admin</p>
+</div>
+<div class="type-card ultrarunner">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Ultrarunner</h2>
+<p><strong>Profile:</strong> Long-term strategic, endurance-focused, big picture</p>
+<p><strong>Best For:</strong> Strategy, R&D, transformation projects</p>
+<p><strong>Challenge:</strong> Slow to pivot, needs autonomy</p>
+<p><strong>Example:</strong> Architect, strategist, researcher</p>
+</div>
+</div>
+</div>
+<!-- Assessment Section -->
+<div id="assessment-section" style="display: none; padding: 2rem;">
+<div class="question-card">
+<div style="color: rgba(255,255,255,0.6); margin-bottom: 1rem;">
+Question <span id="current-question">1</span> of <span id="total-questions">10</span>
+</div>
+<h2 id="question-text" style="margin-bottom: 2rem;"></h2>
+<div id="options-container"></div>
+<div style="display: flex; justify-content: space-between; margin-top: 2rem;">
+<button onclick="previousQuestion()" id="prev-btn" class="btn-secondary" aria-label="Previous">
+← Previous
+</button>
+<button onclick="nextQuestion()" id="next-btn" class="start-btn" aria-label="Next">
+Next →
+</button>
+</div>
+</div>
+<div class="progress-container">
+<div class="progress-bar-outer">
+<div class="progress-bar-inner" id="progress-bar"></div>
+</div>
+</div>
+</div>
+<!-- Results Section -->
+<div id="results-section" style="display: none; padding: 2rem;">
+<div style="max-width: 1000px; margin: 0 auto;">
+<h1 style="text-align: center;">Your Team Type Profile</h1>
+<div class="result-chart">
+<h2>Your Working Style Distribution:</h2>
+<div class="bar-container">
+<div class="bar-label">
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-bolt"></use></svg> Sprinter</span>
+<span id="sprinter-percent">0%</span>
+</div>
+<div class="bar">
+<div class="bar-fill sprinter" id="sprinter-bar" style="width: 0%;">
+<span id="sprinter-score">0</span>
+</div>
+</div>
+</div>
+<div class="bar-container">
+<div class="bar-label">
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-bolt"></use></svg> Jogger</span>
+<span id="jogger-percent">0%</span>
+</div>
+<div class="bar">
+<div class="bar-fill jogger" id="jogger-bar" style="width: 0%;">
+<span id="jogger-score">0</span>
+</div>
+</div>
+</div>
+<div class="bar-container">
+<div class="bar-label">
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Ultrarunner</span>
+<span id="ultrarunner-percent">0%</span>
+</div>
+<div class="bar">
+<div class="bar-fill ultrarunner" id="ultrarunner-bar" style="width: 0%;">
+<span id="ultrarunner-score">0</span>
+</div>
+</div>
+</div>
+</div>
+<div id="primary-type-description" class="result-chart"></div>
+<div id="team-recommendations" class="result-chart"></div>
+<div class="btn-group">
+<button onclick="downloadResults()" class="start-btn" aria-label="Start">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Download Results
+</button>
+<button onclick="shareResults()" class="btn-secondary" aria-label="Secondary action">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-up-tray"></use></svg> Share
+</button>
+<button onclick="retakeAssessment()" class="btn-secondary" aria-label="Secondary action">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-arrow-path"></use></svg> Retake
+</button>
+<a href="src/pages/gym/gym-dashboard-de.html" class="btn-secondary" style="text-decoration: none; display: inline-block;">
+🏠 Back to Dashboard
+</a>
+</div>
+</div>
+</div>
+<!-- Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', () => {
+navigator.serviceWorker.register('/sw.js')
+//           .then(reg => console.log('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg> Service Worker registered'))
+//           .catch(err => console.log('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-x-mark"></use></svg> SW registration failed:', err).catch(() => {});
+});
+}
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<script src="js/gamification.js" defer></script>
+<script src="js/talent-finder.js" defer></script>
+<!-- Wisdom Tracker & Hub Unlock Systems -->
+<script src="js/wisdom-tracker.min.js" defer></script>
+<script src="js/hub-unlock-system.min.js" defer></script>
+<script src="js/progres-sync-init.js" defer></script>
+<!-- Initialize Systems -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+      // Initialize Wisdom Tracker
+if (typeof WisdomTracker !== 'undefined') {
+WisdomTracker.init();
+//         console.log('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg> Wisdom Tracker initialized');
+}
+      // Initialize Hub Unlock System  
+if (typeof HubUnlockSystem !== 'undefined') {
+HubUnlockSystem.init();
+        console.log('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg> Hub Unlock System initialized');
+}
+});
+</script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/language-switcher.min.js"></script>
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>

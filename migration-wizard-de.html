@@ -1,558 +1,480 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <title>Fortschritt migrieren - TAP-IN</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/core-styles.css">
-    
-    <style>
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
-            min-height: 100vh;
-            padding: 2rem;
-            margin: 0;
-        }
-
-        .wizard-container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-        }
-
-        .wizard-header {
-            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
-            color: white;
-            padding: 2rem;
-            text-align: center;
-        }
-
-        .wizard-header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .wizard-header p {
-            margin: 0;
-            opacity: 0.9;
-            font-size: 0.95rem;
-        }
-
-        .wizard-content {
-            padding: 2rem;
-        }
-
-        .wizard-step {
-            display: none;
-        }
-
-        .wizard-step.active {
-            display: block;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: #e2e8f0;
-            margin-bottom: 2rem;
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #1a365d 0%, #7c3aed 100%);
-            transition: width 0.3s ease;
-            width: 0%;
-        }
-
-        .step-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #1a365d;
-            margin-bottom: 0.5rem;
-        }
-
-        .step-description {
-            color: #64748b;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        label {
-            display: block;
-            font-weight: 600;
-            color: #334155;
-            margin-bottom: 0.5rem;
-        }
-
-        input[type="email"] {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-            box-sizing: border-box;
-        }
-
-        input[type="email"]:focus {
-            outline: none;
-            border-color: #7c3aed;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 0.75rem 2rem;
-            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .data-preview {
-            background: #f8fafc;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .data-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .data-item:last-child {
-            border-bottom: none;
-        }
-
-        .data-label {
-            font-weight: 600;
-            color: #64748b;
-        }
-
-        .data-value {
-            color: #1a365d;
-            font-weight: 600;
-        }
-
-        .check-email {
-            text-align: center;
-            padding: 2rem 0;
-        }
-
-        .check-email-icon {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-        }
-
-        .migrating-spinner {
-            display: inline-block;
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e2e8f0;
-            border-top-color: #7c3aed;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 2rem auto;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .success-icon {
-            font-size: 4rem;
-            color: #10b981;
-            margin-bottom: 1rem;
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #991b1b;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .back-link {
-            display: inline-block;
-            color: #7c3aed;
-            text-decoration: none;
-            margin-top: 1rem;
-            font-weight: 600;
-        }
-
-        .back-link:hover {
-            text-decoration: underline;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Fortschritt migrieren - TAP-IN</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/core-styles.css">
+<style>
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+min-height: 100vh;
+padding: 2rem;
+margin: 0;
+}
+.wizard-container {
+max-width: 600px;
+margin: 0 auto;
+background: white;
+border-radius: 16px;
+box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+overflow: hidden;
+}
+.wizard-header {
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+color: white;
+padding: 2rem;
+text-align: center;
+}
+.wizard-header h1 {
+margin: 0 0 0.5rem 0;
+font-size: 1.5rem;
+font-weight: 700;
+}
+.wizard-header p {
+margin: 0;
+opacity: 0.9;
+font-size: 0.95rem;
+}
+.wizard-content {
+padding: 2rem;
+}
+.wizard-step {
+display: none;
+}
+.wizard-step.active {
+display: block;
+animation: fadeIn 0.3s ease-in;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.progress-bar {
+height: 4px;
+background: var(--border-light);
+margin-bottom: 2rem;
+border-radius: 2px;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--bg-primary) 0%, #7c3aed 100%);
+transition: width 0.3s ease;
+width: 0%;
+}
+.step-title {
+font-size: 1.5rem;
+font-weight: 700;
+color: var(--bg-primary);
+margin-bottom: 0.5rem;
+}
+.step-description {
+color: var(--text-muted);
+margin-bottom: 2rem;
+line-height: 1.6;
+}
+.form-group {
+margin-bottom: 1.5rem;
+}
+label {
+display: block;
+font-weight: 600;
+color: var(--bg-tertiary);
+margin-bottom: 0.5rem;
+}
+input[type="email"] {
+width: 100%;
+padding: 0.75rem 1rem;
+border: 2px solid var(--border-light);
+border-radius: 8px;
+font-size: 1rem;
+transition: border-color 0.2s;
+box-sizing: border-box;
+}
+input[type="email"]:focus {
+outline: none;
+border-color: #7c3aed;
+}
+.btn {
+display: inline-block;
+padding: 0.75rem 2rem;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+color: white;
+border: none;
+border-radius: 8px;
+font-size: 1rem;
+font-weight: 600;
+cursor: pointer;
+transition: transform 0.2s, box-shadow 0.2s;
+width: 100%;
+margin-top: 1rem;
+}
+.btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 20px rgba(124, 58, 237, 0.3);
+}
+.btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+.data-preview {
+background: var(--text-primary);
+border: 2px solid var(--border-light);
+border-radius: 8px;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+}
+.data-item {
+display: flex;
+justify-content: space-between;
+padding: 0.5rem 0;
+border-bottom: 1px solid var(--border-light);
+}
+.data-item:last-child {
+border-bottom: none;
+}
+.data-label {
+font-weight: 600;
+color: var(--text-muted);
+}
+.data-value {
+color: var(--bg-primary);
+font-weight: 600;
+}
+.check-email {
+text-align: center;
+padding: 2rem 0;
+}
+.check-email-icon {
+font-size: 4rem;
+margin-bottom: 1rem;
+}
+.migrating-spinner {
+display: inline-block;
+width: 40px;
+height: 40px;
+border: 4px solid var(--border-light);
+border-top-color: #7c3aed;
+border-radius: 50%;
+animation: spin 1s linear infinite;
+margin: 2rem auto;
+}
+@keyframes spin {
+to { transform: rotate(360deg); }
+}
+.success-icon {
+font-size: 4rem;
+color: var(--tap-green);
+margin-bottom: 1rem;
+}
+.error-message {
+background: #fee2e2;
+color: #991b1b;
+padding: 1rem;
+border-radius: 8px;
+margin-bottom: 1rem;
+display: none;
+}
+.error-message.show {
+display: block;
+}
+.back-link {
+display: inline-block;
+color: #7c3aed;
+text-decoration: none;
+margin-top: 1rem;
+font-weight: 600;
+}
+.back-link:hover {
+text-decoration: underline;
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Fortschritt migrieren - TAP-IN - TAP-IN Leadership Academy">
 </head>
 <body>
-    <div class="wizard-container">
-        <div class="wizard-header">
-            <h1>🚀 Fortschritt migrieren</h1>
-            <p>Synchronisiere deine TAP-IN Daten mit der Cloud</p>
-        </div>
-
-        <div class="wizard-content">
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-
-            <div class="error-message" id="error-message"></div>
-
-            <!-- Step 1: Welcome -->
-            <div class="wizard-step active" id="step-1">
-                <h2 class="step-title">Willkommen!</h2>
-                <p class="step-description">
-                    Wir helfen dir, deine lokalen Fortschritte in die Cloud zu migrieren, damit du von jedem Gerät darauf zugreifen kannst.
-                </p>
-                
-                <div class="data-preview" id="local-data-preview">
-                    <h3 style="margin-top: 0; color: #1a365d;">Deine lokalen Daten:</h3>
-                    <div class="data-item">
-                        <span class="data-label">Gesamt XP:</span>
-                        <span class="data-value" id="preview-xp">0</span>
-                    </div>
-                    <div class="data-item">
-                        <span class="data-label">Aktueller Gürtel:</span>
-                        <span class="data-value" id="preview-belt">Weiß</span>
-                    </div>
-                    <div class="data-item">
-                        <span class="data-label">Abgeschlossene Streifen:</span>
-                        <span class="data-value" id="preview-stripes">0</span>
-                    </div>
-                    <div class="data-item">
-                        <span class="data-label">Serie:</span>
-                        <span class="data-value" id="preview-streak">0 Tage</span>
-                    </div>
-                </div>
-
-                <button class="btn" onclick="nextStep()">Los geht's</button>
-            </div>
-
-            <!-- Step 2: Email -->
-            <div class="wizard-step" id="step-2">
-                <h2 class="step-title">E-Mail eingeben</h2>
-                <p class="step-description">
-                    Wir senden dir einen Magic-Link zum Anmelden. Kein Passwort nötig!
-                </p>
-
-                <form onsubmit="handleEmailSubmit(event)">
-                    <div class="form-group">
-                        <label for="email">E-Mail-Adresse</label>
-                        <input 
-                            type="email" 
-                            id="email" 
-                            required 
-                            placeholder="deine@email.com"
-                            autocomplete="email"
-                        >
-                    </div>
-
-                    <button type="submit" class="btn" id="email-submit-btn">
-                        Magic-Link senden
-                    </button>
-                </form>
-
-                <a href="#" class="back-link" onclick="previousStep()">← Zurück</a>
-            </div>
-
-            <!-- Step 3: Check Email -->
-            <div class="wizard-step" id="step-3">
-                <div class="check-email">
-                    <div class="check-email-icon">📧</div>
-                    <h2 class="step-title">E-Mail prüfen</h2>
-                    <p class="step-description">
-                        Wir haben einen Magic-Link an <strong id="sent-email"></strong> gesendet
-                    </p>
-                    <p class="step-description" style="font-size: 0.9rem; color: #64748b;">
-                        Klicke auf den Link in der E-Mail, um fortzufahren. Der Link ist 1 Stunde gültig.
-                    </p>
-                </div>
-            </div>
-
-            <!-- Step 4: Migrating -->
-            <div class="wizard-step" id="step-4">
-                <div class="check-email">
-                    <div class="migrating-spinner"></div>
-                    <h2 class="step-title">Daten werden migriert...</h2>
-                    <p class="step-description" id="migrating-status">
-                        Fortschritt wird mit der Cloud synchronisiert...
-                    </p>
-                </div>
-            </div>
-
-            <!-- Step 5: Success -->
-            <div class="wizard-step" id="step-5">
-                <div class="check-email">
-                    <div class="success-icon">✅</div>
-                    <h2 class="step-title">Migration abgeschlossen!</h2>
-                    <p class="step-description">
-                        Dein Fortschritt wurde erfolgreich mit der Cloud synchronisiert.
-                        Du kannst jetzt von jedem Gerät darauf zugreifen!
-                    </p>
-                    <button class="btn" onclick="goToDashboard()">
-                        Zum Dashboard
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="js/supabase-client.js"></script>
-    <script>
-        let currentStep = 1;
-        let userEmail = '';
-        let localData = {};
-
+<div class="wizard-container">
+<div class="wizard-header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-rocket-launch"></use></svg> Fortschritt migrieren</h1>
+<p>Synchronisiere deine TAP-IN Daten mit der Cloud</p>
+</div>
+<div class="wizard-content">
+<div class="progress-bar">
+<div class="progress-fill" id="progress-fill"></div>
+</div>
+<div class="error-message" id="error-message"></div>
+<!-- Step 1: Welcome -->
+<div class="wizard-step active" id="step-1">
+<h2 class="step-title">Willkommen!</h2>
+<p class="step-description">
+Wir helfen dir, deine lokalen Fortschritte in die Cloud zu migrieren, damit du von jedem Gerät darauf zugreifen kannst.
+</p>
+<div class="data-preview" id="local-data-preview">
+<h3 style="margin-top: 0; color: var(--bg-primary);">Deine lokalen Daten:</h3>
+<div class="data-item">
+<span class="data-label">Gesamt XP:</span>
+<span class="data-value" id="preview-xp">0</span>
+</div>
+<div class="data-item">
+<span class="data-label">Aktueller Gürtel:</span>
+<span class="data-value" id="preview-belt">Weiß</span>
+</div>
+<div class="data-item">
+<span class="data-label">Abgeschlossene Streifen:</span>
+<span class="data-value" id="preview-stripes">0</span>
+</div>
+<div class="data-item">
+<span class="data-label">Serie:</span>
+<span class="data-value" id="preview-streak">0 Tage</span>
+</div>
+</div>
+<button class="btn" onclick="nextStep()" aria-label="Next">Los geht's</button>
+</div>
+<!-- Step 2: Email -->
+<div class="wizard-step" id="step-2">
+<h2 class="step-title">E-Mail eingeben</h2>
+<p class="step-description">
+Wir senden dir einen Magic-Link zum Anmelden. Kein Passwort nötig!
+</p>
+<form onsubmit="handleEmailSubmit(event)">
+<div class="form-group">
+<label for="email">E-Mail-Adresse</label>
+<input
+type="email"
+id="email"
+required
+placeholder="deine@email.com"
+autocomplete="email"
+>
+</div>
+<button type="Absenden" class="btn" id="email-submit-btn" aria-label="Submit">
+Magic-Link senden
+</button>
+</form>
+<a href="#" class="back-link" onclick="previousStep()">← Zurück</a>
+</div>
+<!-- Step 3: Check Email -->
+<div class="wizard-step" id="step-3">
+<div class="check-email">
+<div class="check-email-icon">📧</div>
+<h2 class="step-title">E-Mail prüfen</h2>
+<p class="step-description">
+Wir haben einen Magic-Link an <strong id="sent-email"></strong> gesendet
+</p>
+<p class="step-description" style="font-size: 0.9rem; color: var(--text-muted);">
+Klicke auf den Link in der E-Mail, um fortzufahren. Der Link ist 1 Stunde gültig.
+</p>
+</div>
+</div>
+<!-- Step 4: Migrating -->
+<div class="wizard-step" id="step-4">
+<div class="check-email">
+<div class="migrating-spinner"></div>
+<h2 class="step-title">Daten werden migriert...</h2>
+<p class="step-description" id="migrating-status">
+Fortschritt wird mit der Cloud synchronisiert...
+</p>
+</div>
+</div>
+<!-- Step 5: Success -->
+<div class="wizard-step" id="step-5">
+<div class="check-email">
+<div class="success-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg></div>
+<h2 class="step-title">Migration abgeschlossen!</h2>
+<p class="step-description">
+Dein Fortschritt wurde erfolgreich mit der Cloud synchronisiert.
+Du kannst jetzt von jedem Gerät darauf zugreifen!
+</p>
+<button class="btn" onclick="goToDashboard()" aria-label="Zum Dashboard">
+Zum Dashboard
+</button>
+</div>
+</div>
+</div>
+</div>
+<script src="js/supabase-client.js"></script>
+<script>
+let currentStep = 1;
+let userEmail = '';
+let localData = {};
         // Initialize wizard
-        document.addEventListener('DOMContentLoaded', () => {
-            loadLocalData();
-            updateProgress();
-            checkForAuthCallback();
-        });
-
+document.addEventListener('DOMContentLoaded', () => {
+loadLocalData();
+updateProgress();
+checkForAuthCallback();
+});
         // Load local data for preview
-        function loadLocalData() {
-            localData = {
-                totalXP: parseInt(localStorage.getItem('totalXP') || '0'),
-                currentBelt: localStorage.getItem('currentBelt') || 'white',
-                currentStripe: parseInt(localStorage.getItem('currentStripe') || '1'),
-                streakCount: parseInt(localStorage.getItem('streakCount') || '0')
-            };
-
+function loadLocalData() {
+localData = {
+totalXP: parseInt(localStorage.getItem('totalXP') || '0'),
+currentBelt: localStorage.getItem('currentBelt') || 'white',
+currentStripe: parseInt(localStorage.getItem('currentStripe') || '1'),
+streakCount: parseInt(localStorage.getItem('streakCount') || '0')
+};
             // Count completed stripes
-            let completedStripes = 0;
-            const belts = ['white', 'blue', 'purple', 'brown', 'black'];
-            belts.forEach(belt => {
-                for (let i = 1; i <= 4; i++) {
-                    if (localStorage.getItem(`${belt}BeltStripe${i}Complete`) === 'true') {
-                        completedStripes++;
-                    }
-                }
-            });
-
-            localData.completedStripes = completedStripes;
-
+let completedStripes = 0;
+const belts = ['white', 'blue', 'purple', 'brown', 'black'];
+belts.forEach(belt => {
+for (let i = 1; i <= 4; i++) {
+if (localStorage.getItem(`${belt}BeltStripe${i}Complete`) === 'true') {
+completedStripes++;
+}
+}
+});
+localData.completedStripes = completedStripes;
             // Belt names in German
-            const beltNames = {
-                'white': 'Weiß',
-                'blue': 'Blau',
-                'purple': 'Lila',
-                'brown': 'Braun',
-                'black': 'Schwarz'
-            };
-
+const beltNames = {
+'white': 'Weiß',
+'blue': 'Blau',
+'purple': 'Lila',
+'brown': 'Braun',
+'black': 'Schwarz'
+};
             // Update preview
-            document.getElementById('preview-xp').textContent = localData.totalXP.toLocaleString('de-DE');
-            document.getElementById('preview-belt').textContent = beltNames[localData.currentBelt] + ' Gürtel';
-            document.getElementById('preview-stripes').textContent = completedStripes;
-            document.getElementById('preview-streak').textContent = 
-                localData.streakCount + (localData.streakCount === 1 ? ' Tag' : ' Tage');
-        }
-
+document.getElementById('preview-xp').textContent = localData.totalXP.toLocaleString('de-DE');
+document.getElementById('preview-belt').textContent = beltNames[localData.currentBelt] + ' Gürtel';
+document.getElementById('preview-stripes').textContent = completedStripes;
+document.getElementById('preview-streak').textContent =
+localData.streakCount + (localData.streakCount === 1 ? ' Tag' : ' Tage');
+}
         // Handle email submit
-        async function handleEmailSubmit(event) {
-            event.preventDefault();
-            
-            const email = document.getElementById('email').value.trim();
-            if (!email) return;
-
-            userEmail = email;
-            const btn = document.getElementById('email-submit-btn');
-            btn.disabled = true;
-            btn.textContent = 'Wird gesendet...';
-
-            try {
-                const result = await TapInSupabase.signInWithMagicLink(email);
-                
-                if (result.success) {
-                    document.getElementById('sent-email').textContent = email;
-                    nextStep();
-                } else {
-                    showError(result.error || 'Magic-Link konnte nicht gesendet werden');
-                    btn.disabled = false;
-                    btn.textContent = 'Magic-Link senden';
-                }
-            } catch (error) {
-                showError(error.message || 'Ein Fehler ist aufgetreten');
-                btn.disabled = false;
-                btn.textContent = 'Magic-Link senden';
-            }
-        }
-
+async function handleEmailSubmit(event) {
+event.preventDefault();
+const email = document.getElementById('email').value.trim();
+if (!email) return;
+userEmail = email;
+const btn = document.getElementById('email-submit-btn');
+btn.disabled = true;
+btn.textContent = 'Wird gesendet...';
+try {
+const result = await TapInSupabase.signInWithMagicLink(email);
+if (result.success) {
+document.getElementById('sent-email').textContent = email;
+nextStep();
+} else {
+showError(result.error || 'Magic-Link konnte nicht gesendet werden');
+btn.disabled = false;
+btn.textContent = 'Magic-Link senden';
+}
+} catch (error) {
+showError(error.message || 'Ein Fehler ist aufgetreten');
+btn.disabled = false;
+btn.textContent = 'Magic-Link senden';
+}
+}
         // Check for auth callback (user clicked magic link)
-        async function checkForAuthCallback() {
-            if (window.location.hash.includes('access_token')) {
+async function checkForAuthCallback() {
+if (window.location.hash.includes('access_token')) {
                 // User clicked magic link
-                showStep(4);
-                
-                try {
+showStep(4);
+try {
                     // Wait for auth to complete
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
+await new Promise(resolve => setTimeout(resolve, 1000));
                     // Migrate data
-                    await migrateData();
-                    
-                } catch (error) {
-                    showError('Migration fehlgeschlagen: ' + error.message);
-                }
-            }
-        }
-
+await migrateData();
+} catch (error) {
+showError('Migration fehlgeschlagen: ' + error.message);
+}
+}
+}
         // Migrate data to server
-        async function migrateData() {
-            try {
+async function migrateData() {
+try {
                 // Update status
-                document.getElementById('migrating-status').textContent = 'Verbindung zum Server wird hergestellt...';
-                
+document.getElementById('migrating-status').textContent = 'Verbindung zum Server wird hergestellt...';
                 // Get current user
-                const user = await TapInSupabase.getCurrentUser();
-                if (!user) {
-                    throw new Error('Nicht authentifiziert');
-                }
-
+const user = await TapInSupabase.getCurrentUser();
+if (!user) {
+throw new Error('Nicht authentifiziert');
+}
                 // Create/update profile
-                document.getElementById('migrating-status').textContent = 'Profil wird gespeichert...';
-                await TapInSupabase.getUserProfile(user.id);
-                
+document.getElementById('migrating-status').textContent = 'Profil wird gespeichert...';
+await TapInSupabase.getUserProfile(user.id);
                 // Sync progress
-                document.getElementById('migrating-status').textContent = 'Fortschritt wird synchronisiert...';
-                await TapInSupabase.syncToServer(localData);
-
+document.getElementById('migrating-status').textContent = 'Fortschritt wird synchronisiert...';
+await TapInSupabase.syncToServer(localData);
                 // Migrate stripe completions
-                document.getElementById('migrating-status').textContent = 'Streifen-Abschlüsse werden migriert...';
-                const belts = ['white', 'blue', 'purple', 'brown', 'black'];
-                for (const belt of belts) {
-                    for (let i = 1; i <= 4; i++) {
-                        const key = `${belt}BeltStripe${i}Complete`;
-                        if (localStorage.getItem(key) === 'true') {
-                            await TapInSupabase.saveProgress({
-                                type: 'stripe_completion',
-                                belt: belt,
-                                stripe: i,
-                                totalXP: localData.totalXP
-                            });
-                        }
-                    }
-                }
-
+document.getElementById('migrating-status').textContent = 'Streifen-Abschlüsse werden migriert...';
+const belts = ['white', 'blue', 'purple', 'brown', 'black'];
+for (const belt of belts) {
+for (let i = 1; i <= 4; i++) {
+const key = `${belt}BeltStripe${i}Complete`;
+if (localStorage.getItem(key) === 'true') {
+await TapInSupabase.saveProgress({
+type: 'stripe_completion',
+belt: belt,
+stripe: i,
+totalXP: localData.totalXP
+});
+}
+}
+}
                 // Complete
-                document.getElementById('migrating-status').textContent = 'Migration abgeschlossen!';
-                await new Promise(resolve => setTimeout(resolve, 500));
-                nextStep();
-
-            } catch (error) {
+document.getElementById('migrating-status').textContent = 'Migration abgeschlossen!';
+await new Promise(resolve => setTimeout(resolve, 500));
+nextStep();
+} catch (error) {
                 console.error('Migration error:', error);
-                showError('Migration fehlgeschlagen: ' + error.message);
-            }
-        }
-
+showError('Migration fehlgeschlagen: ' + error.message);
+}
+}
         // Navigation
-        function nextStep() {
-            if (currentStep < 5) {
-                currentStep++;
-                showStep(currentStep);
-                updateProgress();
-            }
-        }
-
-        function previousStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                showStep(currentStep);
-                updateProgress();
-            }
-        }
-
-        function showStep(step) {
-            document.querySelectorAll('.wizard-step').forEach(el => {
-                el.classList.remove('active');
-            });
-            document.getElementById(`step-${step}`).classList.add('active');
-            currentStep = step;
-            updateProgress();
-        }
-
-        function updateProgress() {
-            const percentage = ((currentStep - 1) / 4) * 100;
-            document.getElementById('progress-fill').style.width = percentage + '%';
-        }
-
-        function showError(message) {
-            const errorEl = document.getElementById('error-message');
-            errorEl.textContent = message;
-            errorEl.classList.add('show');
-            
-            setTimeout(() => {
-                errorEl.classList.remove('show');
-            }, 5000);
-        }
-
-        function goToDashboard() {
-            window.location.href = 'gym-dashboard-de.html';
-        }
-    </script>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+function nextStep() {
+if (currentStep < 5) {
+currentStep++;
+showStep(currentStep);
+updateProgress();
+}
+}
+function previousStep() {
+if (currentStep > 1) {
+currentStep--;
+showStep(currentStep);
+updateProgress();
+}
+}
+function showStep(step) {
+document.querySelectorAll('.wizard-step').forEach(el => {
+el.classList.remove('active');
+});
+document.getElementById(`step-${step}`).classList.add('active');
+currentStep = step;
+updateProgress();
+}
+function showError(message) {
+const errorEl = document.getElementById('error-message');
+errorEl.textContent = message;
+errorEl.classList.add('show');
+setTimeout(() => {
+errorEl.classList.remove('show');
+}, 5000);
+}
+function goToDashboard() {
+window.location.href = 'gym-dashboard-de.html';
+}
+</script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>
-

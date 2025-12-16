@@ -1,338 +1,279 @@
 /**
- * TAP-IN PDF Export Utilities
- * Generate professional PDF reports with charts and branding
- */
-
+* TAP-IN PDF Export Utilities
+* Generate professional PDF reports with charts and branding
+*/
 // Load jsPDF from CDN if not already loaded
 if (typeof window.jspdf === 'undefined') {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    document.head.appendChild(script);
+const script = document.createElement('script');
+script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+document.head.appendChild(script);
 }
-
 /**
- * Generate individual assessment PDF
- */
+* Generate individual assessment PDF
+*/
 async function generateAssessmentPDF(assessmentData) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
     // Add TAP-IN branding
-    doc.setFillColor(169, 50, 38);
-    doc.rect(0, 0, 210, 40, 'F');
-    
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.text('TAP-IN Leadership Assessment', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.text('Personal Assessment Report', 105, 30, { align: 'center' });
-    
+doc.setFillColor(169, 50, 38);
+doc.rect(0, 0, 210, 40, 'F');
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(24);
+doc.text('TAP-IN Leadership Assessment', 105, 20, { align: 'center' });
+doc.setFontSize(12);
+doc.text('Personal Assessment Report', 105, 30, { align: 'center' });
     // Assessment details
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    doc.text(`Date: ${new Date(assessmentData.timestamp).toLocaleDateString()}`, 20, 50);
-    doc.text(`Assessment Type: ${assessmentData.assessmentType || 'Combined Profile'}`, 20, 56);
-    
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(10);
+doc.text(`Date: ${new Date(assessmentData.timestamp).toLocaleDateString()}`, 20, 50);
+doc.text(`Assessment Type: ${assessmentData.assessmentType || 'Combined Profile'}`, 20, 56);
     // Overall Score (large)
-    doc.setFontSize(16);
-    doc.setTextColor(169, 50, 38);
-    doc.text(`Overall Score: ${assessmentData.totalScore || 'N/A'}/100`, 20, 70);
-    
+doc.setFontSize(16);
+doc.setTextColor(169, 50, 38);
+doc.text(`Overall Score: ${assessmentData.totalScore || 'N/A'}/100`, 20, 70);
     // Category Scores
-    doc.setFontSize(12);
-    doc.setTextColor(0, 0, 0);
-    doc.text('Category Breakdown:', 20, 85);
-    
-    let yPos = 95;
-    if (assessmentData.scores) {
-        Object.entries(assessmentData.scores).forEach(([category, score]) => {
-            doc.setFontSize(10);
-            doc.text(`${category}:`, 25, yPos);
-            
+doc.setFontSize(12);
+doc.setTextColor(0, 0, 0);
+doc.text('Category Breakdown:', 20, 85);
+let yPos = 95;
+if (assessmentData.scores) {
+Object.entries(assessmentData.scores).forEach(([category, score]) => {
+doc.setFontSize(10);
+doc.text(`${category}:`, 25, yPos);
             // Progress bar
-            const barWidth = score * 1.2; // Scale to fit page
-            doc.setFillColor(169, 50, 38);
-            doc.rect(80, yPos - 3, barWidth, 5, 'F');
-            doc.setDrawColor(200, 200, 200);
-            doc.rect(80, yPos - 3, 120, 5);
-            
-            doc.text(`${score}/100`, 205, yPos);
-            yPos += 10;
-        });
-    }
-    
+const barWidth = score * 1.2; // Scale to fit page
+doc.setFillColor(169, 50, 38);
+doc.rect(80, yPos - 3, barWidth, 5, 'F');
+doc.setDrawColor(200, 200, 200);
+doc.rect(80, yPos - 3, 120, 5);
+doc.text(`${score}/100`, 205, yPos);
+yPos += 10;
+});
+}
     // Worker Type & Leadership Style
-    yPos += 10;
-    if (assessmentData.workerType) {
-        doc.setFontSize(12);
-        doc.setTextColor(169, 50, 38);
-        doc.text(`Worker Type: ${assessmentData.workerType}`, 20, yPos);
-        yPos += 8;
-    }
-    
-    if (assessmentData.leadershipStyle) {
-        doc.setFontSize(12);
-        doc.setTextColor(169, 50, 38);
-        doc.text(`Leadership Style: ${assessmentData.leadershipStyle}`, 20, yPos);
-        yPos += 8;
-    }
-    
+yPos += 10;
+if (assessmentData.workerType) {
+doc.setFontSize(12);
+doc.setTextColor(169, 50, 38);
+doc.text(`Worker Type: ${assessmentData.workerType}`, 20, yPos);
+yPos += 8;
+}
+if (assessmentData.leadershipStyle) {
+doc.setFontSize(12);
+doc.setTextColor(169, 50, 38);
+doc.text(`Leadership Style: ${assessmentData.leadershipStyle}`, 20, yPos);
+yPos += 8;
+}
     // Recommendations section
-    yPos += 10;
-    doc.setFontSize(14);
-    doc.setTextColor(169, 50, 38);
-    doc.text('Recommendations:', 20, yPos);
-    
-    yPos += 10;
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    
-    const recommendations = getRecommendations(assessmentData);
-    recommendations.forEach(rec => {
-        const lines = doc.splitTextToSize(`• ${rec}`, 170);
-        doc.text(lines, 25, yPos);
-        yPos += lines.length * 6;
-    });
-    
+yPos += 10;
+doc.setFontSize(14);
+doc.setTextColor(169, 50, 38);
+doc.text('Recommendations:', 20, yPos);
+yPos += 10;
+doc.setFontSize(10);
+doc.setTextColor(0, 0, 0);
+const recommendations = getRecommendations(assessmentData);
+recommendations.forEach(rec => {
+const lines = doc.splitTextToSize(`• ${rec}`, 170);
+doc.text(lines, 25, yPos);
+yPos += lines.length * 6;
+});
     // Footer
-    doc.setFontSize(8);
-    doc.setTextColor(150, 150, 150);
-    doc.text('Generated by TAP-IN Leadership Assessments', 105, 285, { align: 'center' });
-    doc.text(window.location.origin, 105, 290, { align: 'center' });
-    
-    return doc;
+doc.setFontSize(8);
+doc.setTextColor(150, 150, 150);
+doc.text('Generated by TAP-IN Leadership Assessments', 105, 285, { align: 'center' });
+doc.text(window.location.origin, 105, 290, { align: 'center' });
+return doc;
 }
-
 /**
- * Generate team comparison PDF
- */
+* Generate team comparison PDF
+*/
 async function generateTeamPDF(teamData, members) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
     // Header
-    doc.setFillColor(169, 50, 38);
-    doc.rect(0, 0, 210, 40, 'F');
-    
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.text('TAP-IN Team Dashboard', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.text(`${teamData.name} - Team Report`, 105, 30, { align: 'center' });
-    
+doc.setFillColor(169, 50, 38);
+doc.rect(0, 0, 210, 40, 'F');
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(24);
+doc.text('TAP-IN Team Dashboard', 105, 20, { align: 'center' });
+doc.setFontSize(12);
+doc.text(`${teamData.name} - Team Report`, 105, 30, { align: 'center' });
     // Team Stats
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(14);
-    doc.text('Team Overview', 20, 55);
-    
-    doc.setFontSize(11);
-    doc.text(`Total Members: ${members.length}`, 20, 65);
-    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 72);
-    
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(14);
+doc.text('Team Overview', 20, 55);
+doc.setFontSize(11);
+doc.text(`Total Members: ${members.length}`, 20, 65);
+doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 72);
     // Member table
-    doc.setFontSize(12);
-    doc.text('Team Members', 20, 90);
-    
+doc.setFontSize(12);
+doc.text('Team Members', 20, 90);
     // Table headers
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, 95, 170, 8, 'F');
-    doc.setFontSize(9);
-    doc.text('Name', 22, 100);
-    doc.text('Email', 70, 100);
-    doc.text('Score', 140, 100);
-    doc.text('Type', 160, 100);
-    
-    let yPos = 108;
-    members.forEach((member, index) => {
-        if (yPos > 270) {
-            doc.addPage();
-            yPos = 20;
-        }
-        
-        if (index % 2 === 0) {
-            doc.setFillColor(250, 250, 250);
-            doc.rect(20, yPos - 4, 170, 7, 'F');
-        }
-        
-        doc.setFontSize(8);
-        doc.text(member.name || member.email.split('@')[0], 22, yPos);
-        doc.text(member.email, 70, yPos);
-        doc.text(member.score?.toString() || 'N/A', 140, yPos);
-        doc.text(member.workerType || '-', 160, yPos);
-        
-        yPos += 8;
-    });
-    
+doc.setFillColor(240, 240, 240);
+doc.rect(20, 95, 170, 8, 'F');
+doc.setFontSize(9);
+doc.text('Name', 22, 100);
+doc.text('Email', 70, 100);
+doc.text('Score', 140, 100);
+doc.text('Type', 160, 100);
+let yPos = 108;
+members.forEach((member, index) => {
+if (yPos > 270) {
+doc.addPage();
+yPos = 20;
+}
+if (index % 2 === 0) {
+doc.setFillColor(250, 250, 250);
+doc.rect(20, yPos - 4, 170, 7, 'F');
+}
+doc.setFontSize(8);
+doc.text(member.name || member.email.split('@')[0], 22, yPos);
+doc.text(member.email, 70, yPos);
+doc.text(member.score?.toString() || 'N/A', 140, yPos);
+doc.text(member.workerType || '-', 160, yPos);
+yPos += 8;
+});
     // Add insights page
-    doc.addPage();
-    doc.setFillColor(169, 50, 38);
-    doc.rect(0, 0, 210, 30, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.text('Team Insights & Recommendations', 105, 18, { align: 'center' });
-    
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(11);
-    yPos = 45;
-    
-    const insights = [
-        'Focus on improving weak areas identified in the analysis',
-        'Schedule regular team check-ins to maintain progress',
-        'Encourage members with lower scores to retake assessments in 30 days',
-        'Leverage strong performers as mentors for team development',
-        'Consider team-building activities targeting specific weak dimensions'
-    ];
-    
-    insights.forEach(insight => {
-        const lines = doc.splitTextToSize(`• ${insight}`, 170);
-        doc.text(lines, 20, yPos);
-        yPos += lines.length * 7 + 3;
-    });
-    
-    return doc;
+doc.addPage();
+doc.setFillColor(169, 50, 38);
+doc.rect(0, 0, 210, 30, 'F');
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(18);
+doc.text('Team Insights & Recommendations', 105, 18, { align: 'center' });
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(11);
+yPos = 45;
+const insights = [
+'Focus on improving weak areas identified in the analysis',
+'Schedule regular team check-ins to maintain progress',
+'Encourage members with lower scores to retake assessments in 30 days',
+'Leverage strong performers as mentors for team development',
+'Consider team-building activities targeting specific weak dimensions'
+];
+insights.forEach(insight => {
+const lines = doc.splitTextToSize(`• ${insight}`, 170);
+doc.text(lines, 20, yPos);
+yPos += lines.length * 7 + 3;
+});
+return doc;
 }
-
 /**
- * Generate recruiter candidate comparison PDF
- */
+* Generate recruiter candidate comparison PDF
+*/
 async function generateRecruiterPDF(candidates) {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-    
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
     // Header
-    doc.setFillColor(169, 50, 38);
-    doc.rect(0, 0, 210, 40, 'F');
-    
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(24);
-    doc.text('TAP-IN Recruiter Report', 105, 20, { align: 'center' });
-    
-    doc.setFontSize(12);
-    doc.text('Candidate Assessment Comparison', 105, 30, { align: 'center' });
-    
+doc.setFillColor(169, 50, 38);
+doc.rect(0, 0, 210, 40, 'F');
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(24);
+doc.text('TAP-IN Recruiter Report', 105, 20, { align: 'center' });
+doc.setFontSize(12);
+doc.text('Candidate Assessment Comparison', 105, 30, { align: 'center' });
     // Summary stats
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(10);
-    doc.text(`Total Candidates: ${candidates.length}`, 20, 50);
-    doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 56);
-    
-    const avgScore = candidates.reduce((sum, c) => sum + (c.score || 0), 0) / candidates.length;
-    doc.text(`Average Score: ${Math.round(avgScore)}`, 20, 62);
-    
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(10);
+doc.text(`Total Candidates: ${candidates.length}`, 20, 50);
+doc.text(`Report Date: ${new Date().toLocaleDateString()}`, 20, 56);
+const avgScore = candidates.reduce((sum, c) => sum + (c.score || 0), 0) / candidates.length;
+doc.text(`Average Score: ${Math.round(avgScore)}`, 20, 62);
     // Candidate comparison table
-    doc.setFontSize(12);
-    doc.text('Candidate Rankings', 20, 75);
-    
+doc.setFontSize(12);
+doc.text('Candidate Rankings', 20, 75);
     // Sort by score
-    const sorted = [...candidates].sort((a, b) => (b.score || 0) - (a.score || 0));
-    
+const sorted = [...candidates].sort((a, b) => (b.score || 0) - (a.score || 0));
     // Table headers
-    doc.setFillColor(240, 240, 240);
-    doc.rect(20, 80, 170, 8, 'F');
-    doc.setFontSize(9);
-    doc.text('#', 22, 85);
-    doc.text('Candidate', 30, 85);
-    doc.text('Role', 90, 85);
-    doc.text('Score', 130, 85);
-    doc.text('Type', 150, 85);
-    doc.text('Style', 170, 85);
-    
-    let yPos = 93;
-    sorted.forEach((candidate, index) => {
-        if (yPos > 270) {
-            doc.addPage();
-            yPos = 20;
-        }
-        
+doc.setFillColor(240, 240, 240);
+doc.rect(20, 80, 170, 8, 'F');
+doc.setFontSize(9);
+doc.text('#', 22, 85);
+doc.text('Candidate', 30, 85);
+doc.text('Role', 90, 85);
+doc.text('Score', 130, 85);
+doc.text('Type', 150, 85);
+doc.text('Style', 170, 85);
+let yPos = 93;
+sorted.forEach((candidate, index) => {
+if (yPos > 270) {
+doc.addPage();
+yPos = 20;
+}
         // Highlight top 3
-        if (index < 3) {
-            doc.setFillColor(76, 175, 80, 0.2);
-            doc.rect(20, yPos - 4, 170, 7, 'F');
-        } else if (index % 2 === 0) {
-            doc.setFillColor(250, 250, 250);
-            doc.rect(20, yPos - 4, 170, 7, 'F');
-        }
-        
-        doc.setFontSize(8);
-        doc.text(`${index + 1}`, 22, yPos);
-        doc.text(candidate.name, 30, yPos);
-        doc.text(candidate.role || '-', 90, yPos);
-        doc.text((candidate.score || 'N/A').toString(), 130, yPos);
-        doc.text(candidate.workerType?.substring(0, 8) || '-', 150, yPos);
-        doc.text(candidate.leadershipStyle?.substring(0, 8) || '-', 170, yPos);
-        
-        yPos += 8;
-    });
-    
+if (index < 3) {
+doc.setFillColor(76, 175, 80, 0.2);
+doc.rect(20, yPos - 4, 170, 7, 'F');
+} else if (index % 2 === 0) {
+doc.setFillColor(250, 250, 250);
+doc.rect(20, yPos - 4, 170, 7, 'F');
+}
+doc.setFontSize(8);
+doc.text(`${index + 1}`, 22, yPos);
+doc.text(candidate.name, 30, yPos);
+doc.text(candidate.role || '-', 90, yPos);
+doc.text((candidate.score || 'N/A').toString(), 130, yPos);
+doc.text(candidate.workerType?.substring(0, 8) || '-', 150, yPos);
+doc.text(candidate.leadershipStyle?.substring(0, 8) || '-', 170, yPos);
+yPos += 8;
+});
     // Recommendations page
-    doc.addPage();
-    doc.setFillColor(169, 50, 38);
-    doc.rect(0, 0, 210, 30, 'F');
-    doc.setTextColor(255, 255, 255);
-    doc.setFontSize(18);
-    doc.text('Hiring Recommendations', 105, 18, { align: 'center' });
-    
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(12);
-    doc.setTextColor(76, 175, 80);
-    doc.text('🏆 Top Candidates:', 20, 45);
-    
-    doc.setFontSize(10);
-    doc.setTextColor(0, 0, 0);
-    yPos = 55;
-    sorted.slice(0, 3).forEach((candidate, index) => {
-        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
-        doc.text(`${medal} ${candidate.name} - Score: ${candidate.score || 'N/A'}`, 25, yPos);
-        doc.text(`   ${candidate.role} | ${candidate.workerType || 'N/A'}`, 25, yPos + 5);
-        yPos += 15;
-    });
-    
-    return doc;
+doc.addPage();
+doc.setFillColor(169, 50, 38);
+doc.rect(0, 0, 210, 30, 'F');
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(18);
+doc.text('Hiring Recommendations', 105, 18, { align: 'center' });
+doc.setTextColor(0, 0, 0);
+doc.setFontSize(12);
+doc.setTextColor(76, 175, 80);
+doc.text('🏆 Top Candidates:', 20, 45);
+doc.setFontSize(10);
+doc.setTextColor(0, 0, 0);
+yPos = 55;
+sorted.slice(0, 3).forEach((candidate, index) => {
+const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : '🥉';
+doc.text(`${medal} ${candidate.name} - Score: ${candidate.score || 'N/A'}`, 25, yPos);
+doc.text(` ${candidate.role} | ${candidate.workerType || 'N/A'}`, 25, yPos + 5);
+yPos += 15;
+});
+return doc;
 }
-
 /**
- * Helper: Get recommendations based on scores
- */
+* Helper: Get recommendations based on scores
+*/
 function getRecommendations(assessmentData) {
-    const recommendations = [];
-    
-    if (assessmentData.scores) {
-        const sortedScores = Object.entries(assessmentData.scores)
-            .sort(([, a], [, b]) => a - b);
-        
+const recommendations = [];
+if (assessmentData.scores) {
+const sortedScores = Object.entries(assessmentData.scores)
+.sort(([, a], [, b]) => a - b);
         // Focus on lowest 2 scores
-        sortedScores.slice(0, 2).forEach(([category, score]) => {
-            if (score < 60) {
-                recommendations.push(`Prioritize improving ${category} (current: ${score}/100)`);
-            }
-        });
-    }
-    
-    if (assessmentData.workerType === 'sprinter') {
-        recommendations.push('Take regular breaks to recharge - leverage your sprint capacity');
-    } else if (assessmentData.workerType === 'ultrarunner') {
-        recommendations.push('Ensure sustainable pace to avoid long-term burnout');
-    }
-    
-    if (assessmentData.totalScore < 60) {
-        recommendations.push('Consider retaking assessment in 30 days to track progress');
-        recommendations.push('Explore TAP-IN resources for targeted improvement strategies');
-    }
-    
-    return recommendations.length > 0 ? recommendations : [
-        'Continue maintaining your strong performance',
-        'Share your strategies with team members',
-        'Retake in 60 days to track continued growth'
-    ];
+sortedScores.slice(0, 2).forEach(([category, score]) => {
+if (score < 60) {
+recommendations.push(`Prioritize improving ${category} (current: ${score}/100)`);
 }
-
+});
+}
+if (assessmentData.workerType === 'sprinter') {
+recommendations.push('Take regular breaks to recharge - leverage your sprint capacity');
+} else if (assessmentData.workerType === 'ultrarunner') {
+recommendations.push('Ensure sustainable pace to avoid long-term burnout');
+}
+if (assessmentData.totalScore < 60) {
+recommendations.push('Consider retaking assessment in 30 days to track progress');
+recommendations.push('Explore TAP-IN resources for targeted improvement strategies');
+}
+return recommendations.length > 0 ? recommendations : [
+'Continue maintaining your strong performance',
+'Share your strategies with team members',
+'Retake in 60 days to track continued growth'
+];
+}
 /**
- * Export functions for use in other files
- */
+* Export functions for use in other files
+*/
 window.TAPINPDFExport = {
-    generateAssessmentPDF,
-    generateTeamPDF,
-    generateRecruiterPDF
+generateAssessmentPDF,
+generateTeamPDF,
+generateRecruiterPDF
 };

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="description" content="Restore your TAP-IN progress using your backup code. Recover your belt level, XP, and assessment results.">
+    <title>Restore Progress | TAP-IN Leadership Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- TAP-IN Core Utilities -->
+    <link rel="stylesheet" href="../../css/components/toast.css">
+    <link rel="stylesheet" href="../../css/components/forms.css">
+    <script src="../../js/utils/error-handler.js"></script>
+    <script src="../../js/utils/validation.js"></script>
+    <script src="../../js/utils/security.js"></script>
+    <script src="../../js/utils/data-manager.js"></script>
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --brick-red-light: #c0392b;
+            --blue: #4a6fa5;
+            --purple: #6b5b95;
+            --green: #10b981;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .logo {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+        .subtitle {
+            text-align: center;
+            color: var(--light-grey);
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-label {
+            display: block;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--black);
+            border: 2px solid var(--mid-grey);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        .form-input:focus {
+            outline: none;
+            border-color: var(--purple);
+        }
+        .code-input {
+            text-align: center;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(169, 50, 38, 0.4);
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .error-message {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            border-radius: 8px;
+            padding: 1rem;
+            color: #fca5a5;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .success-message {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--green);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #86efac;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        .info-box {
+            background: rgba(107, 91, 149, 0.1);
+            border: 1px solid var(--purple);
+            border-radius: 8px;
+            padding: 1rem;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            margin-top: 1.5rem;
+            text-align: center;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 1.5rem;
+            color: var(--purple);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../../index.html" class="back-link">← Back to Home</a>
+        <div class="logo"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> TAP-IN</div>
+        <h1>Restore Your Progress</h1>
+        <p class="subtitle">Enter your backup code to restore your belt level, XP, and assessment results</p>
+        
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        
+        <form id="restoreForm">
+            <div class="form-group">
+                <label class="form-label">Backup Code</label>
+                <input
+                    type="text"
+                    id="backupCode"
+                    class="form-input code-input"
+                    placeholder="TAP-XXXX-XXXX or WHITE-START-2024"
+                    required
+                    maxlength="20"
+                />
+            </div>
+            <button type="submit" class="btn" id="submitBtn" aria-label="Restore progress">
+                Restore Progress
+            </button>
+        </form>
+        
+        <div class="info-box">
+            <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Don't have a backup code? Your progress is stored locally in your browser. If you cleared your browser data, you'll need to start fresh.
+        </div>
+        
+        <div class="info-box" style="margin-top: 1rem; background: rgba(107, 91, 149, 0.15); border-color: var(--purple);">
+            <strong style="color: var(--purple);">🎮 Cheat Codes:</strong><br>
+            <span style="font-size: 0.85rem;">Use belt codes to unlock levels: WHITE-START-2024, BLUE-START-2024, PURPLE-START-2024, BROWN-START-2024, BLACK-START-2024</span>
+        </div>
+    </div>
+    
+    <script>
+        // Extract code from URL if present
+        const urlParams = new URLSearchParams(window.location.search);
+        const codeFromURL = urlParams.get('code');
+        if (codeFromURL) {
+            document.getElementById('backupCode').value = codeFromURL.toUpperCase();
+        }
+        
+        // Auto-format backup code (but allow cheat codes)
+        document.getElementById('backupCode').addEventListener('input', function(e) {
+            let value = e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '');
+            
+            // Don't format if it's a belt cheat code - check if it starts with a belt name
+            const beltCodePatterns = ['WHITE-START', 'BLUE-START', 'PURPLE-START', 'BROWN-START', 'BLACK-START'];
+            const isBeltCode = beltCodePatterns.some(pattern => value.startsWith(pattern));
+            
+            if (isBeltCode) {
+                // Allow full cheat code without formatting
+                e.target.value = value;
+                return;
+            }
+            
+            // Only format if it starts with TAP
+            if (!value.startsWith('TAP')) {
+                e.target.value = value;
+                return;
+            }
+            
+            // Auto-format: TAP-XXXX-XXXX (only for TAP codes)
+            if (value.length > 4 && value[4] !== '-') {
+                value = value.slice(0, 4) + '-' + value.slice(4);
+            }
+            if (value.length > 9 && value[9] !== '-') {
+                value = value.slice(0, 9) + '-' + value.slice(9);
+            }
+            e.target.value = value;
+        });
+        
+        document.getElementById('restoreForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const backupCodeInput = document.getElementById('backupCode');
+            const backupCode = backupCodeInput.value.trim().toUpperCase();
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Clear previous messages and errors
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            TapInValidator.clearFieldError(backupCodeInput);
+            
+            // Validate backup code
+            const result = TapInValidator.validateBackupCode(backupCode);
+            
+            if (!result.valid) {
+                TapInValidator.showFieldError(backupCodeInput, result.error);
+                return;
+            }
+            
+            // Disable button and show loading
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Restoring...';
+            TapInErrorHandler.showLoading('Restoring your progress...');
+            
+            setTimeout(() => {
+                try {
+                    if (result.isCheatCode) {
+                        // Handle cheat code
+                        applyCheatCode(result.belt);
+                        TapInErrorHandler.hideLoading();
+                        TapInErrorHandler.showSuccess('Cheat Activated!', `${result.belt.toUpperCase()} belt unlocked!`);
+                        setTimeout(() => {
+                            window.location.href = '../../src/pages/gym/gym-dashboard.html';
+                        }, 1500);
+                    } else {
+                        // Handle backup code restoration
+                        const restored = restoreFromBackup(result.code);
+                        
+                        if (!restored) {
+                            TapInErrorHandler.hideLoading();
+                            TapInValidator.showFieldError(backupCodeInput, 'Could not find data for this backup code.');
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Restore Progress';
+                            return;
+                        }
+                        
+                        TapInErrorHandler.hideLoading();
+                        TapInErrorHandler.showSuccess('Progress Restored!', 'Welcome back, champion!');
+                        setTimeout(() => {
+                            window.location.href = '../../src/pages/gym/gym-dashboard.html';
+                        }, 1500);
+                    }
+                } catch (error) {
+                    TapInErrorHandler.hideLoading();
+                    TapInErrorHandler.logError('restoreProgress', error);
+                    TapInErrorHandler.showToast('UNKNOWN_ERROR', error.message);
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Restore Progress';
+                }
+            }, 500);
+        });
+        
+        // Apply cheat code
+        function applyCheatCode(belt) {
+            const beltOrder = ['white', 'blue', 'purple', 'brown', 'black'];
+            const beltIndex = beltOrder.indexOf(belt);
+            const beltData = {
+                'white': { stripe: 0, xp: 0 },
+                'blue': { stripe: 0, xp: 1000 },
+                'purple': { stripe: 0, xp: 2500 },
+                'brown': { stripe: 0, xp: 5000 },
+                'black': { stripe: 0, xp: 10000 }
+            };
+            
+            // Unlock all belts up to and including the cheat belt
+            const beltsEarned = beltOrder.slice(0, beltIndex + 1);
+            
+            safeSet('currentBelt', belt);
+            safeSet('beltsEarned', beltsEarned);
+            safeSet('beltLevel', beltIndex);
+            safeSet('currentStripe', beltData[belt].stripe.toString());
+            safeSet('totalXP', beltData[belt].xp.toString());
+            safeSet('beltProgress', []);
+        }
+        
+        // Restore from backup code
+        function restoreFromBackup(code) {
+            // Try data manager first
+            const restored = TapInDataManager.restoreFromCode(code);
+            if (restored) return true;
+            
+            // Fallback to localStorage backup codes
+            try {
+                const savedCodes = safeGet('backupCodes', {});
+                const progressData = savedCodes[code];
+                
+                if (!progressData) return false;
+                
+                // Restore all progress data with safeSet
+                if (progressData.totalXP) safeSet('totalXP', progressData.totalXP);
+                if (progressData.currentBelt) safeSet('currentBelt', progressData.currentBelt);
+                if (progressData.whiteBeltProgress) safeSet('whiteBeltProgress', progressData.whiteBeltProgress);
+                if (progressData.blueBeltProgress) safeSet('blueBeltProgress', progressData.blueBeltProgress);
+                if (progressData.assessments) safeSet('assessments', progressData.assessments);
+                
+                // Save the backup code for future reference
+                safeSet('lastBackupCode', code);
+                
+                return true;
+            } catch (e) {
+                console.error('Failed to restore backup:', e);
+                return false;
+            }
+        }
+    </script>
+</body>
+</html>
+

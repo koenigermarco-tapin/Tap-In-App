@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Team Composition Analyzer | TAP-IN</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+--primary-navy: var(--bg-primary);
+--secondary-navy: var(--bg-tertiary);
+--accent-red: #b91c1c;
+--accent-purple: #a78bfa;
+--success-green: #38a169;
+--text-dark: var(--bg-secondary);
+--text-muted: var(--text-muted);
+--light-bg: var(--text-primary);
+}
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%);
+min-height: 100vh;
+padding: 2rem 1rem;
+line-height: 1.6;
+}
+.container { max-width: 1200px; margin: 0 auto; }
+        /* Header */
+.header {
+text-align: center;
+margin-bottom: 3rem;
+color: white;
+}
+.header h1 {
+font-size: 2.5rem;
+font-weight: 800;
+margin-bottom: 0.5rem;
+}
+.header .subtitle {
+font-size: 1.2rem;
+opacity: 0.9;
+margin-bottom: 1rem;
+}
+.header .description {
+font-size: 1rem;
+opacity: 0.8;
+max-width: 700px;
+margin: 0 auto;
+}
+        /* Main Card */
+.main-card {
+background: white;
+border-radius: 20px;
+padding: 2.5rem;
+margin-bottom: 2rem;
+box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+        /* Upload Section */
+.upload-section {
+background: linear-gradient(135deg, var(--text-primary) 0%, var(--border-light) 100%);
+border: 2px dashed var(--accent-purple);
+border-radius: 15px;
+padding: 2rem;
+text-align: center;
+margin-bottom: 2rem;
+}
+.upload-section h3 {
+color: var(--primary-navy);
+font-size: 1.5rem;
+margin-bottom: 1rem;
+}
+.upload-section p {
+color: var(--text-muted);
+margin-bottom: 1.5rem;
+}
+.upload-instructions {
+background: white;
+border-radius: 10px;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+text-align: left;
+}
+.upload-instructions h4 {
+color: var(--primary-navy);
+margin-bottom: 1rem;
+font-size: 1.1rem;
+}
+.upload-instructions ol {
+color: var(--text-dark);
+margin-left: 1.5rem;
+}
+.upload-instructions li {
+margin-bottom: 0.5rem;
+}
+        /* Team Member Input */
+.team-input-section {
+margin-bottom: 2rem;
+}
+.team-member-form {
+background: var(--light-bg);
+border-radius: 12px;
+padding: 1.5rem;
+margin-bottom: 1rem;
+}
+.form-row {
+display: grid;
+grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+gap: 1rem;
+margin-bottom: 1rem;
+}
+.form-group {
+display: flex;
+flex-direction: column;
+}
+.form-group label {
+color: var(--text-dark);
+font-weight: 600;
+font-size: 0.9rem;
+margin-bottom: 0.5rem;
+}
+.form-group input, .form-group select {
+padding: 0.75rem;
+border: 2px solid var(--border-light);
+border-radius: 8px;
+font-size: 1rem;
+transition: border-color 0.2s;
+}
+.form-group input:focus, .form-group select:focus {
+outline: none;
+border-color: var(--accent-purple);
+}
+        /* Buttons */
+.btn {
+padding: 0.75rem 1.5rem;
+border-radius: 10px;
+font-size: 1rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+border: none;
+text-decoration: none;
+display: inline-block;
+}
+.btn-primary {
+background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+color: white;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3);
+}
+.btn-secondary {
+background: #edf2f7;
+color: var(--text-dark);
+}
+.btn-success {
+background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%);
+color: white;
+}
+.btn-danger {
+background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+color: white;
+}
+.btn-small {
+padding: 0.5rem 1rem;
+font-size: 0.9rem;
+}
+        /* Team Members List */
+.team-members-list {
+margin-bottom: 2rem;
+}
+.team-member-item {
+background: white;
+border: 2px solid var(--border-light);
+border-radius: 12px;
+padding: 1rem;
+margin-bottom: 0.75rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.member-info {
+display: flex;
+gap: 2rem;
+flex: 1;
+}
+.member-name {
+font-weight: 700;
+color: var(--primary-navy);
+min-width: 150px;
+}
+.member-profile {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+}
+.profile-badge {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+padding: 0.25rem 0.75rem;
+border-radius: 20px;
+font-size: 0.85rem;
+font-weight: 600;
+}
+.profile-badge.worker { background: #dbeafe; color: #1e40af; }
+.profile-badge.dynamic { background: #ede9fe; color: #6b21a8; }
+.profile-badge.impact { background: #fce7f3; color: #be185d; }
+.profile-badge.comm { background: #fef3c7; color: var(--belt-brown); }
+        /* Analysis Section */
+.analysis-section {
+display: none;
+}
+.analysis-section.active {
+display: block;
+}
+.analysis-header {
+background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+color: white;
+padding: 2rem;
+border-radius: 15px;
+text-align: center;
+margin-bottom: 2rem;
+}
+.analysis-header h2 {
+font-size: 2rem;
+margin-bottom: 0.5rem;
+}
+.team-size {
+font-size: 1.2rem;
+opacity: 0.9;
+}
+        /* Composition Grid */
+.composition-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+gap: 1.5rem;
+margin-bottom: 2rem;
+}
+.composition-card {
+background: white;
+border-radius: 15px;
+padding: 1.5rem;
+box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.composition-card h3 {
+color: var(--primary-navy);
+font-size: 1.3rem;
+margin-bottom: 1.5rem;
+display: flex;
+align-items: center;
+gap: 0.5rem;
+}
+.breakdown-item {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding: 0.75rem;
+margin-bottom: 0.5rem;
+background: var(--light-bg);
+border-radius: 8px;
+}
+.breakdown-label {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+color: var(--text-dark);
+font-weight: 600;
+}
+.breakdown-count {
+display: flex;
+align-items: center;
+gap: 0.75rem;
+}
+.count-number {
+font-weight: 700;
+font-size: 1.2rem;
+color: var(--primary-navy);
+min-width: 30px;
+text-align: right;
+}
+.count-bar {
+width: 100px;
+height: 8px;
+background: var(--border-light);
+border-radius: 4px;
+overflow: hidden;
+}
+.count-bar-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--accent-purple) 0%, var(--primary-navy) 100%);
+transition: width 0.5s;
+}
+        /* Insights */
+.insights-section {
+background: white;
+border-radius: 15px;
+padding: 2rem;
+margin-bottom: 2rem;
+}
+.insights-section h3 {
+color: var(--primary-navy);
+font-size: 1.5rem;
+margin-bottom: 1.5rem;
+}
+.insight-item {
+background: linear-gradient(135deg, var(--text-primary) 0%, var(--border-light) 100%);
+border-left: 4px solid var(--accent-purple);
+padding: 1.5rem;
+margin-bottom: 1rem;
+border-radius: 10px;
+}
+.insight-item h4 {
+color: var(--primary-navy);
+font-size: 1.1rem;
+margin-bottom: 0.75rem;
+}
+.insight-item p {
+color: var(--text-dark);
+line-height: 1.7;
+}
+        /* Team Matrix */
+.team-matrix {
+background: white;
+border-radius: 15px;
+padding: 2rem;
+margin-bottom: 2rem;
+}
+.team-matrix h3 {
+color: var(--primary-navy);
+font-size: 1.5rem;
+margin-bottom: 1.5rem;
+}
+.matrix-grid {
+display: grid;
+grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+gap: 1rem;
+}
+.matrix-cell {
+background: var(--light-bg);
+border-radius: 10px;
+padding: 1rem;
+text-align: center;
+}
+.matrix-cell .emoji {
+font-size: 2rem;
+margin-bottom: 0.5rem;
+}
+.matrix-cell .type {
+color: var(--primary-navy);
+font-weight: 700;
+font-size: 0.9rem;
+margin-bottom: 0.25rem;
+}
+.matrix-cell .names {
+color: var(--text-muted);
+font-size: 0.85rem;
+}
+@media (max-width: 768px) {
+body { padding: 1rem; }
+.header h1 { font-size: 2rem; }
+.main-card { padding: 1.5rem; }
+.form-row { grid-template-columns: 1fr; }
+.composition-grid { grid-template-columns: 1fr; }
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Team Composition Analyzer | TAP-IN - TAP-IN Leadership Academy">
+</head>
+<body>
+<div class="container">
+<!-- Header -->
+<div class="header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-magnifying-glass"></use></svg> Team Composition Analyzer</h1>
+<p class="subtitle">Visualize your team's multi-dimensional profile</p>
+<p class="description">Add team members' Complete Team Profile results to see composition, identify patterns, and discover team dynamics</p>
+</div>
+<!-- Main Card -->
+<div class="main-card">
+<!-- Upload Instructions -->
+<div class="upload-section">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> How to Use This Tool</h3>
+<div class="upload-instructions">
+<h4>Steps:</h4>
+<ol>
+<li>Have team members complete the <strong>Complete Team Profile</strong> assessment</li>
+<li>Collect their results (Worker Type, Team Dynamic, Impact Type, Communication Style)</li>
+<li>Enter each team member's name and profile below</li>
+<li>Click "Analyze Team Composition" to see insights</li>
+</ol>
+</div>
+<p><strong>Tip:</strong> Share the assessment link: <code style="background: white; padding: 0.25rem 0.5rem; border-radius: 5px;">/src/pages/hub/team-profile-complete.html</code></p>
+</div>
+<!-- Team Member Input Form -->
+<div class="team-input-section">
+<h3 style="color: var(--primary-navy); margin-bottom: 1rem;">Add Team Members</h3>
+<div class="team-member-form">
+<div class="form-row">
+<div class="form-group">
+<label>Name</label>
+<input type="text" id="memberName" placeholder="e.g., Sarah Chen">
+</div>
+<div class="form-group">
+<label>Worker Type</label>
+<select id="workerType">
+<option value="">Select...</option>
+<option value="builder">Builder</option>
+<option value="solver">Solver</option>
+<option value="connector">Connector</option>
+<option value="optimizer">Optimizer</option>
+</select>
+</div>
+<div class="form-group">
+<label>Team Dynamic</label>
+<select id="teamDynamic">
+<option value="">Select...</option>
+<option value="driver">Driver</option>
+<option value="ideator">Ideator</option>
+<option value="harmonizer">Harmonizer</option>
+<option value="analyst">Analyst</option>
+</select>
+</div>
+<div class="form-group">
+<label>Impact Type</label>
+<select id="impactType">
+<option value="">Select...</option>
+<option value="innovator">Innovator</option>
+<option value="multiplier">Multiplier</option>
+<option value="transformer">Transformer</option>
+<option value="sustainer">Sustainer</option>
+</select>
+</div>
+<div class="form-group">
+<label>Comm Style</label>
+<select id="commStyle">
+<option value="">Select...</option>
+<option value="visual">Visual</option>
+<option value="narrative">Narrative</option>
+<option value="data-driven">Data-Driven</option>
+<option value="interactive">Interactive</option>
+</select>
+</div>
+</div>
+<button class="btn btn-primary" onclick="addTeamMember()" aria-label="Primary action">+ Add Team Member</button>
+</div>
+</div>
+<!-- Team Members List -->
+<div class="team-members-list" id="teamMembersList" style="display: none;">
+<h3 style="color: var(--primary-navy); margin-bottom: 1rem;">Your Team (<span id="teamCount">0</span>)</h3>
+<div id="membersList"></div>
+<div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+<button class="btn btn-success" onclick="analyzeTeam()" aria-label="Action"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-magnifying-glass"></use></svg> Analyze Team Composition</button>
+<button class="btn btn-secondary" onclick="clearTeam()" aria-label="Secondary action">Clear All</button>
+</div>
+</div>
+</div>
+<!-- Analysis Results -->
+<div class="analysis-section" id="analysisSection">
+<div class="main-card">
+<div class="analysis-header">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chart-bar"></use></svg> Team Composition Analysis</h2>
+<p class="team-size">Team Size: <span id="analysisteamCount">0</span> members</p>
+</div>
+<!-- Composition Breakdown -->
+<div class="composition-grid">
+<div class="composition-card">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-cog-6-tooth"></use></svg> Worker Types</h3>
+<div id="workerBreakdown"></div>
+</div>
+<div class="composition-card">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg> Team Dynamics</h3>
+<div id="dynamicBreakdown"></div>
+</div>
+<div class="composition-card">
+<h3>💥 Impact Types</h3>
+<div id="impactBreakdown"></div>
+</div>
+<div class="composition-card">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chat-bubble-left-right"></use></svg> Communication Styles</h3>
+<div id="commBreakdown"></div>
+</div>
+</div>
+<!-- AI-Generated Insights -->
+<div class="insights-section">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Team Insights</h3>
+<div id="insightsContainer"></div>
+</div>
+<!-- Team Matrix -->
+<div class="team-matrix">
+<h3>👥 Team Members by Type</h3>
+<div class="matrix-grid" id="teamMatrix"></div>
+</div>
+<div style="text-align: center; margin-top: 2rem;">
+<button class="btn btn-primary" onclick="window.location.href='/src/pages/gym/gym-dashboard.html'" aria-label="Navigate">← Back to Dashboard</button>
+<button class="btn btn-secondary" onclick="location.reload()" aria-label="Secondary action">Start New Analysis</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+let teamMembers = [];
+const icons = {
+worker: { builder: '🔨', solver: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-puzzle-piece"></use></svg>', connector: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg>', optimizer: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-cog-6-tooth"></use></svg>' },
+dynamic: { driver: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-rocket-launch"></use></svg>', ideator: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg>', harmonizer: '🎵', analyst: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chart-bar"></use></svg>' },
+impact: { innovator: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-star"></use></svg>', multiplier: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-sparkles"></use></svg>', transformer: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-path"></use></svg>', sustainer: '🏛️' },
+comm: { visual: '🎨', narrative: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-book-open"></use></svg>', 'data-driven': '📈', interactive: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chat-bubble-left-right"></use></svg>' }
+};
+function addTeamMember() {
+const name = document.getElementById('memberName').value.trim();
+const worker = document.getElementById('workerType').value;
+const dynamic = document.getElementById('teamDynamic').value;
+const impact = document.getElementById('impactType').value;
+const comm = document.getElementById('commStyle').value;
+if (!name || !worker || !dynamic || !impact || !comm) {
+alert('Please fill in all fields before adding a team member.');
+return;
+}
+teamMembers.push({ name, worker, dynamic, impact, comm });
+            // Clear form
+document.getElementById('memberName').value = '';
+document.getElementById('workerType').value = '';
+document.getElementById('teamDynamic').value = '';
+document.getElementById('impactType').value = '';
+document.getElementById('commStyle').value = '';
+updateMembersList();
+}
+function removeMember(index) {
+teamMembers.splice(index, 1);
+updateMembersList();
+}
+function updateMembersList() {
+const listContainer = document.getElementById('teamMembersList');
+const membersList = document.getElementById('membersList');
+const teamCount = document.getElementById('teamCount');
+if (teamMembers.length === 0) {
+listContainer.style.display = 'none';
+return;
+}
+listContainer.style.display = 'block';
+teamCount.textContent = teamMembers.length;
+safeSetInnerHTML(membersList, teamMembers.map((member, index) => `
+<div class="team-member-item">
+<div class="member-info">
+<div class="member-name">${member.name}</div>
+<div class="member-profile">
+<span class="profile-badge worker">${icons.worker[member.worker]} ${capitalize(member.worker)}</span>
+<span class="profile-badge dynamic">${icons.dynamic[member.dynamic]} ${capitalize(member.dynamic)}</span>
+<span class="profile-badge impact">${icons.impact[member.impact]} ${capitalize(member.impact)}</span>
+<span class="profile-badge comm">${icons.comm[member.comm]} ${member.comm === 'data-driven' ? 'Data-Driven' : capitalize(member.comm)}</span>
+</div>
+</div>
+<button class="btn btn-danger btn-small" onclick="removeMember(${index})" aria-label="Close">Remove</button>
+</div>
+`).join(''));
+}
+function clearTeam() {
+if (confirm('Are you sure you want to clear all team members?')) {
+teamMembers = [];
+updateMembersList();
+}
+}
+function analyzeTeam() {
+if (teamMembers.length < 2) {
+alert('Please add at least 2 team members to analyze composition.');
+return;
+}
+            // Count each type
+const counts = {
+worker: countTypes('worker'),
+dynamic: countTypes('dynamic'),
+impact: countTypes('impact'),
+comm: countTypes('comm')
+};
+            // Display analysis
+document.getElementById('analysisteamCount').textContent = teamMembers.length;
+displayBreakdown('workerBreakdown', counts.worker, 'worker');
+displayBreakdown('dynamicBreakdown', counts.dynamic, 'dynamic');
+displayBreakdown('impactBreakdown', counts.impact, 'impact');
+displayBreakdown('commBreakdown', counts.comm, 'comm');
+generateInsights(counts);
+generateMatrix();
+document.getElementById('analysisSection').classList.add('active');
+document.getElementById('analysisSection').scrollIntoView({ behavior: 'smooth' });
+}
+function countTypes(dimension) {
+const counts = {};
+teamMembers.forEach(member => {
+const type = member[dimension];
+counts[type] = (counts[type] || 0) + 1;
+});
+return counts;
+}
+function displayBreakdown(containerId, counts, dimension) {
+const container = document.getElementById(containerId);
+const total = teamMembers.length;
+const types = Object.keys(icons[dimension]);
+safeSetInnerHTML(container, types.map(type => {
+const count = counts[type] || 0);
+const percentage = total > 0 ? (count / total) * 100 : 0;
+const displayName = type === 'data-driven' ? 'Data-Driven' : capitalize(type);
+return `
+<div class="breakdown-item">
+<div class="breakdown-label">
+${icons[dimension][type]} ${displayName}
+</div>
+<div class="breakdown-count">
+<span class="count-number">${count}</span>
+<div class="count-bar">
+<div class="count-bar-fill" style="width: ${percentage}%"></div>
+</div>
+</div>
+</div>
+`;
+}).join('');
+}
+function generateInsights(counts) {
+const container = document.getElementById('insightsContainer');
+const insights = [];
+            // Worker Type insights
+const topWorker = getTopType(counts.worker);
+if (counts.worker[topWorker] >= teamMembers.length * 0.5) {
+insights.push({
+title: `${capitalize(topWorker)}-Heavy Team`,
+text: `Over half your team are ${capitalize(topWorker)}s. This creates strength in ${getWorkerStrength(topWorker)}, but watch for blind spots in ${getWorkerBlindspot(topWorker)}.`
+});
+}
+            // Team Dynamic insights
+const driverCount = counts.dynamic.driver || 0;
+const harmonizerCount = counts.dynamic.harmonizer || 0;
+if (driverCount > harmonizerCount * 2) {
+insights.push({
+title: 'Results-Driven Culture',
+text: 'Your team has strong Driver energy. This drives accountability and momentum, but remember to create space for relationship-building and team cohesion.'
+});
+} else if (harmonizerCount > driverCount * 2) {
+insights.push({
+title: 'Harmony-Focused Culture',
+text: 'Your team prioritizes cohesion and relationships. This builds strong bonds, but ensure you maintain healthy conflict and accountability for results.'
+});
+}
+            // Impact Type insights
+const innovatorCount = counts.impact.innovator || 0;
+const sustainerCount = counts.impact.sustainer || 0;
+if (innovatorCount > sustainerCount * 2) {
+insights.push({
+title: 'Innovation-Forward Team',
+text: 'Heavy Innovator presence means lots of new ideas. Balance this with Sustainers who can build systems that make innovations stick long-term.'
+});
+}
+            // Communication insights
+const commTypes = Object.keys(counts.comm).filter(k => counts.comm[k] > 0);
+if (commTypes.length === 1) {
+insights.push({
+title: 'Uniform Communication Style',
+text: `Your entire team prefers ${commTypes[0] === 'data-driven' ? 'Data-Driven' : capitalize(commTypes[0])} communication. This creates efficiency, but be aware of how to communicate with external stakeholders who may prefer different styles.`
+});
+} else if (commTypes.length === 4) {
+insights.push({
+title: 'Diverse Communication Styles',
+text: 'Your team has all four communication styles represented. This is a superpower for adaptability, but requires intentional communication norms to prevent misalignment.'
+});
+}
+            // Balanced team insight
+if (insights.length === 0) {
+insights.push({
+title: 'Balanced Team Composition',
+text: 'Your team has good balance across all dimensions. This diversity creates resilience and adaptability. Focus on leveraging these different perspectives effectively.'
+});
+}
+safeSetInnerHTML(container, insights.map(insight => `
+<div class="insight-item">
+<h4>${insight.title}</h4>
+<p>${insight.text}</p>
+</div>
+`).join(''));
+}
+function generateMatrix() {
+const container = document.getElementById('teamMatrix');
+const workerTypes = ['builder', 'solver', 'connector', 'optimizer'];
+safeSetInnerHTML(container, workerTypes.map(type => {
+const members = teamMembers.filter(m => m.worker === type));
+if (members.length === 0) return '';
+return `
+<div class="matrix-cell">
+<div class="emoji">${icons.worker[type]}</div>
+<div class="type">${capitalize(type)}s (${members.length})</div>
+<div class="names">${members.map(m => m.name).join(', ')}</div>
+</div>
+`;
+}).filter(Boolean).join('');
+}
+function getTopType(counts) {
+return Object.keys(counts).reduce((a, b) => (counts[a] || 0) > (counts[b] || 0) ? a : b, '');
+}
+function getWorkerStrength(type) {
+const strengths = {
+builder: 'execution and tangible output',
+solver: 'analytical thinking and problem-solving',
+connector: 'relationship-building and collaboration',
+optimizer: 'efficiency and process improvement'
+};
+return strengths[type];
+}
+function getWorkerBlindspot(type) {
+const blindspots = {
+builder: 'long-term planning and strategic thinking',
+solver: 'speed of execution and practical action',
+connector: 'independent work and difficult decisions',
+optimizer: 'innovation and creative exploration'
+};
+return blindspots[type];
+}
+function capitalize(str) {
+return str.charAt(0).toUpperCase() + str.slice(1);
+}
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>

@@ -1,645 +1,555 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- CACHE BUSTER - Load FIRST, before anything else -->
-    <script src="cache-buster.js"></script>
-
-  <title>Invite Your Team | Tap-In</title>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-  <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      background: #1a1d2e;
-      color: #e2e8f0;
-      font-family: Inter, -apple-system, sans-serif;
-      min-height: 100vh;
-      padding: 2rem;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 3rem;
-    }
-
-    .emoji-icon {
-      font-size: 4rem;
-      margin-bottom: 1rem;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      margin-bottom: 1rem;
-      color: #e2e8f0;
-    }
-
-    .subtitle {
-      font-size: 1.2rem;
-      color: #94a3b8;
-      line-height: 1.6;
-    }
-
-    .card {
-      background: #252940;
-      border: 2px solid #3d4466;
-      border-radius: 16px;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-
-    .section-title {
-      font-size: 1.3rem;
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      color: #e2e8f0;
-    }
-
-    .email-inputs {
-      display: grid;
-      gap: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .email-row {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      animation: fadeIn 0.3s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .email-input {
-      flex: 1;
-      padding: 1rem;
-      background: #1a1d2e;
-      border: 2px solid #3d4466;
-      border-radius: 8px;
-      color: #e2e8f0;
-      font-size: 1rem;
-      transition: all 0.2s ease;
-    }
-
-    .email-input:focus {
-      outline: none;
-      border-color: #4a7c9c;
-    }
-
-    .email-input.error {
-      border-color: #ef4444;
-    }
-
-    .remove-btn {
-      padding: 0.8rem;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      transition: all 0.2s ease;
-      width: 44px;
-      height: 44px;
-    }
-
-    .remove-btn:hover {
-      background: #dc2626;
-      transform: scale(1.05);
-    }
-
-    .add-email-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.8rem 1.5rem;
-      background: #3d4466;
-      color: #e2e8f0;
-      border: 2px solid #4d5476;
-      border-radius: 8px;
-      cursor: pointer;
-      font-weight: 600;
-      transition: all 0.2s ease;
-      font-size: 0.95rem;
-    }
-
-    .add-email-btn:hover {
-      background: #4d5476;
-      transform: translateY(-2px);
-    }
-
-    .message-textarea {
-      width: 100%;
-      min-height: 200px;
-      padding: 1rem;
-      background: #1a1d2e;
-      border: 2px solid #3d4466;
-      border-radius: 8px;
-      color: #e2e8f0;
-      font-family: inherit;
-      font-size: 0.95rem;
-      line-height: 1.6;
-      resize: vertical;
-      transition: all 0.2s ease;
-    }
-
-    .message-textarea:focus {
-      outline: none;
-      border-color: #4a7c9c;
-    }
-
-    .send-btn {
-      width: 100%;
-      padding: 1.2rem;
-      background: #4a7c9c;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-    }
-
-    .send-btn:hover {
-      background: #5a8cac;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(74, 124, 156, 0.3);
-    }
-
-    .send-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .divider {
-      text-align: center;
-      margin: 2rem 0;
-      color: #94a3b8;
-      font-weight: 600;
-      position: relative;
-    }
-
-    .divider::before,
-    .divider::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      width: 40%;
-      height: 2px;
-      background: #3d4466;
-    }
-
-    .divider::before { left: 0; }
-    .divider::after { right: 0; }
-
-    .link-box {
-      background: #1a1d2e;
-      border: 2px solid #3d4466;
-      border-radius: 8px;
-      padding: 1rem;
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-
-    .link-text {
-      flex: 1;
-      color: #4a7c9c;
-      font-size: 0.95rem;
-      word-break: break-all;
-    }
-
-    .copy-btn {
-      padding: 0.8rem 1.5rem;
-      background: #4a7c9c;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-    }
-
-    .copy-btn:hover {
-      background: #5a8cac;
-      transform: translateY(-2px);
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 1rem;
-      margin-top: 1.5rem;
-    }
-
-    .stat-box {
-      background: #1a1d2e;
-      padding: 1.5rem;
-      border-radius: 12px;
-      border: 2px solid #3d4466;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 2.5rem;
-      font-weight: 800;
-      color: #4a7c9c;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
-      color: #94a3b8;
-      font-size: 0.9rem;
-    }
-
-    .badge-showcase {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1.5rem;
-    }
-
-    .badge {
-      background: #1a1d2e;
-      border: 2px solid #3d4466;
-      border-radius: 12px;
-      padding: 1rem 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 0.8rem;
-      transition: all 0.3s ease;
-    }
-
-    .badge.earned {
-      border-color: #10b981;
-      background: rgba(16, 185, 129, 0.1);
-    }
-
-    .badge.locked {
-      opacity: 0.5;
-    }
-
-    .badge-emoji {
-      font-size: 1.8rem;
-    }
-
-    .badge-info {
-      flex: 1;
-    }
-
-    .badge-name {
-      font-weight: 700;
-      color: #e2e8f0;
-      font-size: 0.9rem;
-    }
-
-    .badge-threshold {
-      color: #94a3b8;
-      font-size: 0.8rem;
-    }
-
-    .info-box {
-      background: rgba(74, 124, 156, 0.1);
-      border: 2px solid #4a7c9c;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-top: 1.5rem;
-      display: flex;
-      align-items: start;
-      gap: 1rem;
-    }
-
-    .info-icon {
-      font-size: 2rem;
-      flex-shrink: 0;
-    }
-
-    .info-text {
-      color: #94a3b8;
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-
-    @media (max-width: 768px) {
-      h1 { font-size: 2rem; }
-      .stats-grid { grid-template-columns: 1fr; }
-      .email-row { flex-direction: column; }
-      .remove-btn { width: 100%; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- CACHE BUSTER - Load FIRST, before anything else -->
+<script src="cache-buster.js"></script>
+<title>Invite Your Team | Tap-In</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: #1a1d2e;
+color: var(--border-light);
+font-family: Inter, -apple-system, sans-serif;
+min-height: 100vh;
+padding: 2rem;
+}
+.container {
+max-width: 800px;
+margin: 0 auto;
+}
+.header {
+text-align: center;
+margin-bottom: 3rem;
+}
+.emoji-icon {
+font-size: 4rem;
+margin-bottom: 1rem;
+}
+h1 {
+font-size: 2.5rem;
+font-weight: 800;
+margin-bottom: 1rem;
+color: var(--border-light);
+}
+.subtitle {
+font-size: 1.2rem;
+color: var(--text-secondary);
+line-height: 1.6;
+}
+.card {
+background: #252940;
+border: 2px solid #3d4466;
+border-radius: 16px;
+padding: 2rem;
+margin-bottom: 2rem;
+}
+.section-title {
+font-size: 1.3rem;
+font-weight: 700;
+margin-bottom: 1.5rem;
+color: var(--border-light);
+}
+.email-inputs {
+display: grid;
+gap: 1rem;
+margin-bottom: 1rem;
+}
+.email-row {
+display: flex;
+gap: 0.5rem;
+align-items: center;
+animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(-10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.email-input {
+flex: 1;
+padding: 1rem;
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 8px;
+color: var(--border-light);
+font-size: 1rem;
+transition: all 0.2s ease;
+}
+.email-input:focus {
+outline: none;
+border-color: var(--tap-blue);
+}
+.email-input.error {
+border-color: var(--error);
+}
+.remove-btn {
+padding: 0.8rem;
+background: var(--error);
+color: white;
+border: none;
+border-radius: 8px;
+cursor: pointer;
+font-size: 1.2rem;
+transition: all 0.2s ease;
+width: 44px;
+height: 44px;
+}
+.remove-btn:hover {
+background: #dc2626;
+transform: scale(1.05);
+}
+.add-email-btn {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+padding: 0.8rem 1.5rem;
+background: #3d4466;
+color: var(--border-light);
+border: 2px solid #4d5476;
+border-radius: 8px;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.2s ease;
+font-size: 0.95rem;
+}
+.add-email-btn:hover {
+background: #4d5476;
+transform: translateY(-2px);
+}
+.message-textarea {
+width: 100%;
+min-height: 200px;
+padding: 1rem;
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 8px;
+color: var(--border-light);
+font-family: inherit;
+font-size: 0.95rem;
+line-height: 1.6;
+resize: vertical;
+transition: all 0.2s ease;
+}
+.message-textarea:focus {
+outline: none;
+border-color: var(--tap-blue);
+}
+.send-btn {
+width: 100%;
+padding: 1.2rem;
+background: var(--tap-blue);
+color: white;
+border: none;
+border-radius: 10px;
+font-weight: 700;
+font-size: 1.1rem;
+cursor: pointer;
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 0.5rem;
+}
+.send-btn:hover {
+background: #5a8cac;
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(74, 124, 156, 0.3);
+}
+.send-btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+.divider {
+text-align: center;
+margin: 2rem 0;
+color: var(--text-secondary);
+font-weight: 600;
+position: relative;
+}
+.divider::before,
+.divider::after {
+content: '';
+position: absolute;
+top: 50%;
+width: 40%;
+height: 2px;
+background: #3d4466;
+}
+.divider::before { left: 0; }
+.divider::after { right: 0; }
+.link-box {
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 8px;
+padding: 1rem;
+display: flex;
+gap: 0.5rem;
+align-items: center;
+margin-bottom: 1rem;
+}
+.link-text {
+flex: 1;
+color: var(--tap-blue);
+font-size: 0.95rem;
+word-break: break-all;
+}
+.copy-btn {
+padding: 0.8rem 1.5rem;
+background: var(--tap-blue);
+color: white;
+border: none;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+white-space: nowrap;
+}
+.copy-btn:hover {
+background: #5a8cac;
+transform: translateY(-2px);
+}
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 1rem;
+margin-top: 1.5rem;
+}
+.stat-box {
+background: #1a1d2e;
+padding: 1.5rem;
+border-radius: 12px;
+border: 2px solid #3d4466;
+text-align: center;
+}
+.stat-value {
+font-size: 2.5rem;
+font-weight: 800;
+color: var(--tap-blue);
+margin-bottom: 0.5rem;
+}
+.stat-label {
+color: var(--text-secondary);
+font-size: 0.9rem;
+}
+.badge-showcase {
+display: flex;
+gap: 1rem;
+flex-wrap: wrap;
+margin-top: 1.5rem;
+}
+.badge {
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 12px;
+padding: 1rem 1.5rem;
+display: flex;
+align-items: center;
+gap: 0.8rem;
+transition: all 0.3s ease;
+}
+.badge.earned {
+border-color: var(--tap-green);
+background: rgba(16, 185, 129, 0.1);
+}
+.badge.locked {
+opacity: 0.5;
+}
+.badge-emoji {
+font-size: 1.8rem;
+}
+.badge-info {
+flex: 1;
+}
+.badge-name {
+font-weight: 700;
+color: var(--border-light);
+font-size: 0.9rem;
+}
+.badge-threshold {
+color: var(--text-secondary);
+font-size: 0.8rem;
+}
+.info-box {
+background: rgba(74, 124, 156, 0.1);
+border: 2px solid var(--tap-blue);
+border-radius: 12px;
+padding: 1.5rem;
+margin-top: 1.5rem;
+display: flex;
+align-items: start;
+gap: 1rem;
+}
+.info-icon {
+font-size: 2rem;
+flex-shrink: 0;
+}
+.info-text {
+color: var(--text-secondary);
+line-height: 1.6;
+font-size: 0.95rem;
+}
+@media (max-width: 768px) {
+h1 { font-size: 2rem; }
+.stats-grid { grid-template-columns: 1fr; }
+.email-row { flex-direction: column; }
+.remove-btn { width: 100%; }
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Invite Your Team | Tap-In - TAP-IN Leadership Academy">
 </head>
 <body>
-  <div class="container">
-    
-    <div class="header">
-      <div class="emoji-icon">🚀</div>
-      <h1>Invite Your Team</h1>
-      <p class="subtitle">
-        Help your teammates discover their Impact-Level.<br>
-        Teams that assess together, grow together.
-      </p>
-    </div>
-
-    <!-- Email Invites Card -->
-    <div class="card">
-      <div class="section-title">📧 Send Email Invites</div>
-      
-      <div class="email-inputs" id="emailInputs">
-        <div class="email-row">
-          <input type="email" class="email-input" placeholder="teammate@company.com" />
-          <button class="remove-btn" onclick="removeEmailField(this)" style="visibility: hidden;">×</button>
-        </div>
-      </div>
-      
-      <button class="add-email-btn" onclick="addEmailField()">
-        + Add Another Email
-      </button>
-
-      <div style="margin-top: 2rem;">
-        <label class="section-title" for="messageTextarea">Personal Message (optional)</label>
-        <textarea 
-          id="messageTextarea" 
-          class="message-textarea"
-          placeholder="Add a personal note..."
-        ></textarea>
-      </div>
-
-      <button class="send-btn" onclick="sendInvites()">
-        📤 Send Invites
-      </button>
-    </div>
-
-    <!-- Shareable Link Card -->
-    <div class="card">
-      <div class="divider">OR</div>
-      
-      <div class="section-title">🔗 Share Your Unique Link</div>
-      <p style="color: #94a3b8; margin-bottom: 1rem; line-height: 1.6;">
-        Copy this link and share it anywhere — Slack, LinkedIn, email, or text.
-      </p>
-      
-      <div class="link-box">
-        <div class="link-text" id="referralLink">Loading...</div>
-        <button class="copy-btn" onclick="copyLink()">Copy Link</button>
-      </div>
-    </div>
-
-    <!-- Stats Card -->
-    <div class="card">
-      <div class="section-title">📊 Your Invite Stats</div>
-      
-      <div class="stats-grid">
-        <div class="stat-box">
-          <div class="stat-value" id="statSent">0</div>
-          <div class="stat-label">Invites Sent</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="statOpened">0</div>
-          <div class="stat-label">Links Opened</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="statCompleted">0</div>
-          <div class="stat-label">Assessments Completed</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-value" id="statConversion">0%</div>
-          <div class="stat-label">Conversion Rate</div>
-        </div>
-      </div>
-
-      <!-- Badges -->
-      <div style="margin-top: 2rem;">
-        <div class="section-title">🏆 Invite Badges</div>
-        <div class="badge-showcase" id="badgeShowcase">
-          <!-- Badges will be dynamically inserted -->
-        </div>
-      </div>
-
-      <!-- Info Box -->
-      <div class="info-box">
-        <div class="info-icon">✨</div>
-        <div class="info-text">
-          <strong>Earn +50 XP</strong> for each teammate who completes the assessment through your invite!
-          Unlock badges and climb the leaderboard as your invite count grows.
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Performance Optimizer - Load First -->
+<div class="container">
+<div class="header">
+<div class="emoji-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-rocket-launch"></use></svg></div>
+<h1>Invite Your Team</h1>
+<p class="subtitle">
+Help your teammates discover their Impact-Level.<br>
+Teams that assess together, grow together.
+</p>
+</div>
+<!-- Email Invites Card -->
+<div class="card">
+<div class="section-title">📧 Send Email Invites</div>
+<div class="email-inputs" id="emailInputs">
+<div class="email-row">
+<input type="email" class="email-input" placeholder="teammate@company.com" />
+<button class="remove-btn" onclick="removeEmailField(this)" style="visibility: hidden;" aria-label="Close">×</button>
+</div>
+</div>
+<button class="add-email-btn" onclick="addEmailField()" aria-label="+ Add Another Email">
++ Add Another Email
+</button>
+<div style="margin-top: 2rem;">
+<label class="section-title" for="messageTextarea">Personal Message (optional)</label>
+<textarea
+id="messageTextarea"
+class="message-textarea"
+placeholder="Add a personal note..."
+></textarea>
+</div>
+<button class="send-btn" onclick="sendInvites()" aria-label="<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-up-tray"></use></svg> Send Invites">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-up-tray"></use></svg> Send Invites
+</button>
+</div>
+<!-- Shareable Link Card -->
+<div class="card">
+<div class="divider">OR</div>
+<div class="section-title">🔗 Share Your Unique Link</div>
+<p style="color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6;">
+Copy this link and share it anywhere — Slack, LinkedIn, email, or text.
+</p>
+<div class="link-box">
+<div class="link-text" id="referralLink">Loading...</div>
+<button class="copy-btn" onclick="copyLink()" aria-label="Copy Link">Copy Link</button>
+</div>
+</div>
+<!-- Stats Card -->
+<div class="card">
+<div class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Your Invite Stats</div>
+<div class="stats-grid">
+<div class="stat-box">
+<div class="stat-value" id="statSent">0</div>
+<div class="stat-label">Invites Sent</div>
+</div>
+<div class="stat-box">
+<div class="stat-value" id="statOpened">0</div>
+<div class="stat-label">Links Opened</div>
+</div>
+<div class="stat-box">
+<div class="stat-value" id="statCompleted">0</div>
+<div class="stat-label">Assessments Completed</div>
+</div>
+<div class="stat-box">
+<div class="stat-value" id="statConversion">0%</div>
+<div class="stat-label">Conversion Rate</div>
+</div>
+</div>
+<!-- Badges -->
+<div style="margin-top: 2rem;">
+<div class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg> Invite Badges</div>
+<div class="badge-showcase" id="badgeShowcase">
+<!-- Badges will be dynamically inserted -->
+</div>
+</div>
+<!-- Info Box -->
+<div class="info-box">
+<div class="info-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-sparkles"></use></svg></div>
+<div class="info-text">
+<strong>Earn +50 XP</strong> for each teammate who completes the assessment through your invite!
+Unlock badges and climb the leaderboard as your invite count grows.
+</div>
+</div>
+</div>
+</div>
+<!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.min.js"></script>
-
-    <script src="js/invite-system.min.js" defer></script>
-  <script>
-    let emailCount = 1;
-    const maxEmails = 10;
-
+<script src="js/invite-system.min.js" defer></script>
+<script>
+let emailCount = 1;
+const maxEmails = 10;
     // Initialize page
-    function init() {
+function init() {
       // Load referral link
-      document.getElementById('referralLink').textContent = generateReferralLink();
-      
+document.getElementById('referralLink').textContent = generateReferralLink();
       // Load invite message
-      document.getElementById('messageTextarea').value = generateInviteMessage();
-      
+document.getElementById('messageTextarea').value = generateInviteMessage();
       // Load stats
-      loadStats();
-      
+loadStats();
       // Load badges
-      loadBadges();
-    }
-
+loadBadges();
+}
     // Add email field
-    function addEmailField() {
-      if (emailCount >= maxEmails) {
-        alert('Maximum 10 email addresses allowed');
-        return;
-      }
-
-      const container = document.getElementById('emailInputs');
-      const row = document.createElement('div');
-      row.className = 'email-row';
-      row.innerHTML = `
-        <input type="email" class="email-input" placeholder="teammate@company.com" />
-        <button class="remove-btn" onclick="removeEmailField(this)">×</button>
-      `;
-      container.appendChild(row);
-      emailCount++;
-    }
-
+function addEmailField() {
+if (emailCount >= maxEmails) {
+alert('Maximum 10 email addresses allowed');
+return;
+}
+const container = document.getElementById('emailInputs');
+const row = document.createElement('div');
+row.className = 'email-row';
+safeSetInnerHTML(row, `
+<input type="email" class="email-input" placeholder="teammate@company.com" />
+<button class="remove-btn" onclick="removeEmailField(this)" aria-label="Close">×</button>
+`);
+container.appendChild(row);
+emailCount++;
+}
     // Remove email field
-    function removeEmailField(btn) {
-      if (emailCount <= 1) return;
-      btn.closest('.email-row').remove();
-      emailCount--;
-    }
-
+function removeEmailField(btn) {
+if (emailCount <= 1) return;
+btn.closest('.email-row').remove();
+emailCount--;
+}
     // Send invites
-    function sendInvites() {
-      const inputs = document.querySelectorAll('.email-input');
-      const emails = [];
-      let hasError = false;
-
+function sendInvites() {
+const inputs = document.querySelectorAll('.email-input');
+const emails = [];
+let hasError = false;
       // Validate emails
-      inputs.forEach(input => {
-        const email = input.value.trim();
-        if (email) {
-          if (isValidEmail(email)) {
-            emails.push(email);
-            input.classList.remove('error');
-          } else {
-            input.classList.add('error');
-            hasError = true;
-          }
-        }
-      });
-
-      if (hasError) {
-        alert('Please fix invalid email addresses');
-        return;
-      }
-
-      if (emails.length === 0) {
-        alert('Please enter at least one email address');
-        return;
-      }
-
+inputs.forEach(input => {
+const email = input.value.trim();
+if (email) {
+if (isValidEmail(email)) {
+emails.push(email);
+input.classList.remove('error');
+} else {
+input.classList.add('error');
+hasError = true;
+}
+}
+});
+if (hasError) {
+alert('Please fix invalid email addresses');
+return;
+}
+if (emails.length === 0) {
+alert('Please enter at least one email address');
+return;
+}
       // Get message
-      const message = document.getElementById('messageTextarea').value;
-      const link = generateReferralLink();
-
+const message = document.getElementById('messageTextarea').value;
+const link = generateReferralLink();
       // Save invite
-      saveInvite(emails, message, link);
-
+saveInvite(emails, message, link);
       // Show success
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-
-      alert(`✅ Success! Invites sent to ${emails.length} teammate${emails.length > 1 ? 's' : ''}`);
-
+confetti({
+particleCount: 100,
+spread: 70,
+origin: { y: 0.6 }
+});
+alert(`<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Success! Invites sent to ${emails.length} teammate${emails.length > 1 ? 's' : ''}`);
       // Clear inputs
-      inputs.forEach(input => input.value = '');
-
+inputs.forEach(input => input.value = '');
       // Reload stats
-      loadStats();
-    }
-
+loadStats();
+}
     // Copy link to clipboard
-    function copyLink() {
-      copyReferralLink();
-    }
-
+function copyLink() {
+copyReferralLink();
+}
     // Load stats
-    function loadStats() {
-      const stats = getInviteStats();
-      document.getElementById('statSent').textContent = stats.sent;
-      document.getElementById('statOpened').textContent = stats.opened;
-      document.getElementById('statCompleted').textContent = stats.completed;
-      document.getElementById('statConversion').textContent = stats.conversionRate + '%';
-    }
-
+function loadStats() {
+const stats = getInviteStats();
+document.getElementById('statSent').textContent = stats.sent;
+document.getElementById('statOpened').textContent = stats.opened;
+document.getElementById('statCompleted').textContent = stats.completed;
+document.getElementById('statConversion').textContent = stats.conversionRate + '%';
+}
     // Load badges
-    function loadBadges() {
-      const stats = getInviteStats();
-      const earnedBadges = JSON.parse(localStorage.getItem('inviteBadges') || '[]');
-      const container = document.getElementById('badgeShowcase');
-      container.innerHTML = '';
-
-      Object.entries(inviteBadges).forEach(([key, badge]) => {
-        const earned = earnedBadges.includes(key);
-        const div = document.createElement('div');
-        div.className = `badge ${earned ? 'earned' : 'locked'}`;
-        div.innerHTML = `
-          <div class="badge-emoji">${badge.emoji}</div>
-          <div class="badge-info">
-            <div class="badge-name">${badge.name}</div>
-            <div class="badge-threshold">${badge.threshold} completions</div>
-          </div>
-          ${earned ? '<div style="color: #10b981; font-size: 1.2rem;">✓</div>' : ''}
-        `;
-        container.appendChild(div);
-      });
-    }
-
+function loadBadges() {
+const stats = getInviteStats();
+const earnedBadges = JSON.parse(localStorage.getItem('inviteBadges') || '[]');
+const container = document.getElementById('badgeShowcase');
+safeSetInnerHTML(container, '');
+Object.entries(inviteBadges).forEach(([key, badge]) => {
+const earned = earnedBadges.includes(key);
+const div = document.createElement('div');
+div.className = `badge ${earned ? 'earned' : 'locked'}`;
+safeSetInnerHTML(div, `
+<div class="badge-emoji">${badge.emoji}</div>
+<div class="badge-info">
+<div class="badge-name">${badge.name}</div>
+<div class="badge-threshold">${badge.threshold} completions</div>
+</div>
+${earned ? '<div style="color: var(--tap-green)); font-size: 1.2rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg></div>' : ''}
+`;
+container.appendChild(div);
+});
+}
     // Initialize on load
-    init();
-  </script>
-
+init();
+</script>
 <!-- Wisdom Tracker & Hub Unlock Systems -->
 <script src="js/wisdom-tracker.min.js" defer></script>
 <script src="js/hub-unlock-system.min.js" defer></script>
-<script src="js/progress-sync-init.js" defer></script>
-
+<script src="js/progres-sync-init.js" defer></script>
 <!-- Initialize Systems -->
 <script>
-  document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Initialize Wisdom Tracker
-    if (typeof WisdomTracker !== 'undefined') {
-      WisdomTracker.init();
-      console.log('✅ Wisdom Tracker initialized');
-    }
-    
+if (typeof WisdomTracker !== 'undefined') {
+WisdomTracker.init();
+//       console.log('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg> Wisdom Tracker initialized');
+}
     // Initialize Hub Unlock System  
-    if (typeof HubUnlockSystem !== 'undefined') {
-      HubUnlockSystem.init();
-      console.log('✅ Hub Unlock System initialized');
-    }
-  });
+if (typeof HubUnlockSystem !== 'undefined') {
+HubUnlockSystem.init();
+      console.log('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg> Hub Unlock System initialized');
+}
+});
 </script>
-
-
 <script src="js/loading-states.js" defer></script>
 <script src="js/error-handler.js" defer></script>
-
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.min.js"></script>
 <script src="js/storage-health.min.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>
-

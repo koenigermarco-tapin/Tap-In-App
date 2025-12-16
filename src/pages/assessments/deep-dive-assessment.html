@@ -1,0 +1,1482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="../../manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="../../icon-192.png">
+    <title>Leadership Assessment - TAP-IN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- TAP-IN Core Utilities -->
+    <link rel="stylesheet" href="../../css/components/toast.css">
+    <link rel="stylesheet" href="../../css/components/forms.css">
+    <link rel="stylesheet" href="../../css/components/progress.css">
+    <script src="../../js/utils/error-handler.js"></script>
+    <script src="../../js/utils/validation.js"></script>
+    <script src="../../js/utils/security.js"></script>
+    <script src="../../js/utils/data-manager.js"></script>
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --brick-red-light: #c0392b;
+            --blue: #4a6fa5;
+            --purple: #6b5b95;
+            --blue-glow: rgba(74, 111, 165, 0.3);
+            --purple-glow: rgba(107, 91, 149, 0.3);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Inter', -apple-system, sans-serif; 
+            background: var(--black); 
+            min-height: 100vh; 
+            color: var(--white);
+        }
+        
+        .container { 
+            max-width: 700px; 
+            margin: 0 auto; 
+            padding: 40px 20px; 
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .header { 
+            text-align: center; 
+            margin-bottom: 40px; 
+        }
+        .logo { 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem; 
+            font-weight: 800; 
+            margin-bottom: 25px;
+            text-decoration: none;
+            color: var(--white);
+        }
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1rem;
+        }
+        h1 { 
+            font-size: 1.8rem; 
+            font-weight: 800; 
+            margin-bottom: 10px;
+            letter-spacing: -0.5px;
+        }
+        .subtitle { 
+            color: var(--light-grey); 
+            font-size: 1rem; 
+        }
+        
+        .progress-container {
+            margin-bottom: 40px;
+        }
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+            color: var(--light-grey);
+        }
+        .progress-text span:last-child {
+            color: var(--white);
+            font-weight: 600;
+        }
+        .progress-bar { 
+            background: var(--mid-grey); 
+            border-radius: 10px; 
+            height: 8px; 
+            overflow: hidden; 
+        }
+        .progress-fill { 
+            background: linear-gradient(90deg, var(--purple), var(--blue)); 
+            height: 100%; 
+            border-radius: 10px; 
+            transition: width 0.4s ease;
+            box-shadow: 0 0 20px var(--purple-glow);
+        }
+        
+        .question-card { 
+            background: var(--dark-grey); 
+            border: 1px solid var(--mid-grey); 
+            border-radius: 20px; 
+            padding: 35px; 
+            margin-bottom: 25px;
+            flex: 1;
+        }
+        .question-category {
+            display: inline-block;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(107, 91, 149, 0.2) 0%, rgba(74, 111, 165, 0.2) 100%);
+            border: 1px solid rgba(107, 91, 149, 0.3);
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--light-grey);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .question-text { 
+            font-size: 1.35rem; 
+            font-weight: 700; 
+            margin-bottom: 30px; 
+            line-height: 1.4;
+            letter-spacing: -0.3px;
+        }
+        
+        .options { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 12px; 
+        }
+        .option { 
+            background: rgba(255,255,255,0.03); 
+            border: 2px solid var(--mid-grey); 
+            border-radius: 14px; 
+            padding: 18px 20px; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .option:hover { 
+            border-color: var(--purple); 
+            background: rgba(107, 91, 149, 0.1); 
+        }
+        .option.selected { 
+            border-color: var(--purple); 
+            background: linear-gradient(135deg, rgba(107, 91, 149, 0.15) 0%, rgba(74, 111, 165, 0.15) 100%);
+            box-shadow: 0 0 30px rgba(107, 91, 149, 0.2);
+        }
+        .option-letter { 
+            width: 36px; 
+            height: 36px; 
+            border-radius: 10px; 
+            background: var(--mid-grey); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-weight: 700; 
+            font-size: 0.9rem;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+        .option.selected .option-letter { 
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%); 
+        }
+        .option-text { 
+            flex: 1; 
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        .nav-buttons { 
+            display: flex; 
+            gap: 15px; 
+            justify-content: space-between; 
+        }
+        .btn { 
+            padding: 16px 28px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            border: none; 
+        }
+        .btn-secondary { 
+            background: var(--mid-grey); 
+            color: var(--white); 
+        }
+        .btn-secondary:hover { 
+            background: rgba(255,255,255,0.15); 
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--brick-red), var(--brick-red-light)); 
+            color: var(--white); 
+            flex: 1;
+            box-shadow: 0 4px 20px rgba(169, 50, 38, 0.3);
+        }
+        .btn-primary:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 30px rgba(169, 50, 38, 0.4); 
+        }
+        .btn:disabled { 
+            opacity: 0.4; 
+            cursor: not-allowed; 
+            transform: none !important; 
+        }
+        
+        .results { 
+            display: none; 
+            text-align: center;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .results.show {
+            display: flex;
+        }
+        .results-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            box-shadow: 0 10px 40px var(--purple-glow);
+        }
+        .results-icon svg {
+            width: 40px;
+            height: 40px;
+            stroke: white;
+        }
+        .results h2 { 
+            font-size: 1.1rem; 
+            color: var(--light-grey);
+            font-weight: 500;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .result-type { 
+            font-size: 2.5rem; 
+            font-weight: 900; 
+            background: linear-gradient(135deg, var(--brick-red-light) 0%, var(--purple) 50%, var(--blue) 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        .result-desc { 
+            color: var(--light-grey); 
+            font-size: 1.1rem; 
+            margin-bottom: 35px; 
+            line-height: 1.7;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        
+        
+        #questionContainer { display: block; }
+        #questionContainer.hide { display: none; }
+        #resultsContainer { display: none; }
+        #resultsContainer.show { display: flex; flex-direction: column; justify-content: center; flex: 1; }
+        
+        /* XP & Gamification */
+        .xp-bar-container {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .xp-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--purple);
+            flex-shrink: 0;
+        }
+        .xp-text {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            font-weight: 600;
+        }
+        .xp-amount {
+            color: var(--white);
+            margin-left: auto;
+        }
+        
+        /* Achievement Toast */
+        .achievement-toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: var(--dark-grey);
+            border: 2px solid var(--purple);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(107, 91, 149, 0.4);
+            z-index: 10000;
+            display: none;
+            max-width: 320px;
+            animation: slideIn 0.3s ease;
+        }
+        .achievement-toast.show {
+            display: block;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+        .achievement-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .achievement-icon svg {
+            width: 20px;
+            height: 20px;
+            stroke: white;
+        }
+        .achievement-title {
+            font-weight: 700;
+            color: var(--white);
+            font-size: 1rem;
+        }
+        .achievement-desc {
+            font-size: 0.85rem;
+            color: var(--light-grey);
+            margin-bottom: 8px;
+        }
+        .achievement-xp {
+            font-size: 0.8rem;
+            color: var(--purple);
+            font-weight: 600;
+        }
+        
+        /* Educational Insight */
+        .insight-card {
+            background: rgba(107, 91, 149, 0.1);
+            border: 1px solid rgba(107, 91, 149, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 25px;
+            margin-bottom: 20px;
+        }
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .insight-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--purple);
+        }
+        .insight-title {
+            font-weight: 700;
+            color: var(--white);
+            font-size: 0.95rem;
+        }
+        .insight-content {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        /* Celebration Animation */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+        }
+        .celebration.show {
+            display: flex;
+        }
+        .celebration-content {
+            text-align: center;
+            color: var(--white);
+        }
+        .celebration-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            animation: pulse 1s ease infinite;
+        }
+        .celebration-icon svg {
+            width: 50px;
+            height: 50px;
+            stroke: white;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        @media (max-width: 480px) { 
+            .question-text { font-size: 1.15rem; } 
+            .option { padding: 15px; }
+            .option-text { font-size: 0.95rem; }
+            .result-type { font-size: 2rem; }
+            h1 { font-size: 1.5rem; }
+            .achievement-toast {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="language-switcher" style="position: fixed; top: 10px; right: 10px; z-index: 9999; display: flex; gap: 5px;">
+        <a href="deep-dive-assessment.html" class="lang-btn active" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #10b981; color: #000;">EN</a>
+        <a href="deep-dive-assessment-de.html" class="lang-btn" style="padding: 5px 10px; border-radius: 4px; text-decoration: none; font-size: 12px; background: #2a2a3a; color: #fff;">DE</a>
+    </div>
+    <script src="../../js/language-switcher.js"></script>
+
+
+    <div class="container">
+        <div class="header">
+            <a href="../../index.html" class="logo">
+                <div class="logo-icon">T</div>
+                <span>TAP-IN</span>
+            </a>
+            <h1>Discover Your Leadership DNA</h1>
+            <p class="subtitle"><span id="questionCount">15</span> questions · ~<span id="timeEstimate">5</span> minutes · Instant results</p>
+            <div style="margin-top: 20px; padding: 15px; background: rgba(107, 91, 149, 0.1); border: 1px solid rgba(107, 91, 149, 0.3); border-radius: 12px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; color: var(--white);">
+                    <input type="checkbox" id="executiveMode" style="width: 18px; height: 18px; cursor: pointer;" onchange="toggleExecutiveMode()">
+                    <div>
+                        <div style="font-weight: 700; margin-bottom: 4px;">Executive Mode</div>
+                        <div style="font-size: 0.85rem; color: var(--light-grey);">Add strategic leadership questions for C-suite insights</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="xp-bar-container" id="xpBar" style="display: none;">
+            <svg aria-hidden="true" class="xp-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+            </svg>
+            <div class="xp-text">XP: <span class="xp-amount" id="xpAmount">0</span></div>
+        </div>
+        
+        <div class="progress-container">
+            <div class="progress-text">
+                <span>Question <span id="qNum">1</span> of <span id="totalQuestions">15</span></span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+        </div>
+        
+        <div class="achievement-toast" id="achievementToast">
+            <div class="achievement-header">
+                <div class="achievement-icon">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </div>
+                <div class="achievement-title" id="achievementTitle">Achievement Unlocked!</div>
+            </div>
+            <div class="achievement-desc" id="achievementDesc"></div>
+            <div class="achievement-xp" id="achievementXP">+50 XP</div>
+        </div>
+        
+        <div class="celebration" id="celebration">
+            <div class="celebration-content">
+                <div class="celebration-icon">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                    </svg>
+                </div>
+                <h2 style="font-size: 2rem; margin-bottom: 10px;">Assessment Complete!</h2>
+                <p style="color: var(--light-grey); margin-bottom: 20px;">You've earned <span id="totalXP" style="color: var(--purple); font-weight: 700;">0</span> XP</p>
+                <button class="btn btn-primary" onclick="closeCelebration()">View Results</button>
+            </div>
+        </div>
+        
+        <div id="questionContainer">
+            <div class="question-card">
+                <div class="question-category" id="questionCategory">Leadership Style</div>
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>Back</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Continue</button>
+            </div>
+        </div>
+        
+        <div id="resultsContainer">
+            <div class="results-icon">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+                </svg>
+            </div>
+            <h2>Your Leadership Type</h2>
+            <div class="result-type" id="resultType"></div>
+            <p class="result-desc" id="resultDesc"></p>
+            <div style="display: flex; flex-direction: column; gap: 15px; margin-top: 30px; max-width: 500px; margin-left: auto; margin-right: auto;">
+                <a href="../gym/gym-dashboard.html?v=2025-12-15" class="btn btn-primary btn-lg" style="display: inline-flex; align-items: center; gap: 12px;">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1"/>
+                    </svg>
+                    Continue to Your Gym Dashboard
+                    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="../gym/gym-dashboard.html?v=2025-12-15" class="btn btn-secondary btn-lg" style="display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    View Your Profile
+                    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="../../join-team.html" style="padding: 16px 28px; background: rgba(255,255,255,0.05); border: 2px solid var(--mid-grey); border-radius: 12px; color: var(--white); text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                    Join a Team & See Team Dynamics
+                </a>
+                <a href="../hub/team-dashboard.html" style="padding: 16px 28px; background: rgba(107, 91, 149, 0.1); border: 2px solid rgba(107, 91, 149, 0.3); border-radius: 12px; color: var(--white); text-decoration: none; font-weight: 600; font-size: 1rem; transition: all 0.3s ease; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;">
+                        <path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    View Team Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Gamification System
+        const GAMIFICATION = {
+            xp: 0,
+            level: 1,
+            xpPerQuestion: 10,
+            xpForCompletion: 150,
+            achievements: {
+                'first_start': { icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', name: 'DNA Explorer', desc: 'Started your leadership assessment', xp: 50, unlocked: false },
+                'halfway': { icon: 'M13 10V3L4 14h7v7l9-11h-7z', name: 'Halfway Hero', desc: 'Answered 8 questions', xp: 50, unlocked: false },
+                'complete': { icon: 'M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z', name: 'Leadership Master', desc: 'Completed the assessment', xp: 50, unlocked: false },
+                'speed_demon': { icon: 'M13 10V3L4 14h7v7l9-11h-7z', name: 'Speed Demon', desc: 'Completed in under 5 minutes', xp: 50, unlocked: false }
+            },
+            startTime: Date.now(),
+            load() {
+                const saved = localStorage.getItem('tapinGamificationDNA');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    this.xp = data.xp || 0;
+                    this.level = data.level || 1;
+                    this.achievements = { ...this.achievements, ...data.achievements };
+                }
+                this.updateXPBar();
+            },
+            save() {
+                localStorage.setItem('tapinGamificationDNA', JSON.stringify({
+                    xp: this.xp,
+                    level: this.level,
+                    achievements: this.achievements
+                }));
+            },
+            addXP(amount) {
+                this.xp += amount;
+                this.updateXPBar();
+                this.save();
+                // Update global XP if exists
+                const globalXP = parseInt(localStorage.getItem('totalXP') || '0');
+                localStorage.setItem('totalXP', (globalXP + amount).toString());
+            },
+            updateXPBar() {
+                const xpBar = document.getElementById('xpBar');
+                const xpAmount = document.getElementById('xpAmount');
+                if (xpBar && xpAmount) {
+                    xpBar.style.display = 'flex';
+                    xpAmount.textContent = this.xp;
+                }
+            },
+            unlockAchievement(key) {
+                if (this.achievements[key] && !this.achievements[key].unlocked) {
+                    this.achievements[key].unlocked = true;
+                    const ach = this.achievements[key];
+                    this.addXP(ach.xp);
+                    this.showAchievement(ach);
+                    this.save();
+                }
+            },
+            showAchievement(ach) {
+                const toast = document.getElementById('achievementToast');
+                const title = document.getElementById('achievementTitle');
+                const desc = document.getElementById('achievementDesc');
+                const xp = document.getElementById('achievementXP');
+                const icon = toast.querySelector('.achievement-icon svg');
+                
+                if (toast && title && desc && xp && icon) {
+                    title.textContent = ach.name;
+                    desc.textContent = ach.desc;
+                    xp.textContent = `+${ach.xp} XP`;
+                    icon.setAttribute('d', ach.icon);
+                    
+                    toast.classList.add('show');
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                    }, 4000);
+                }
+            },
+            checkSpeedDemon() {
+                const elapsed = (Date.now() - this.startTime) / 1000;
+                if (elapsed < 300) {
+                    this.unlockAchievement('speed_demon');
+                }
+            }
+        };
+        
+        // Make closeCelebration globally accessible for onclick handler
+        window.closeCelebration = function() {
+            document.getElementById('celebration').classList.remove('show');
+        };
+        
+        function syncAssessmentToTeam(leadershipType, workRhythm) {
+            const teamCode = localStorage.getItem('teamCode') || localStorage.getItem('tap_in_team_code');
+            if (!teamCode) return;
+            
+            // Get or create team members array
+            const teamData = JSON.parse(localStorage.getItem('tap_in_team_data') || '{}');
+            const members = teamData.members || [];
+            
+            // Get user info
+            const userName = localStorage.getItem('tapin-user-name') || localStorage.getItem('userName') || 'You';
+            const userCode = localStorage.getItem('tap_in_user_code') || 'user_' + Date.now();
+            
+            // Find or create user in team
+            let memberIndex = members.findIndex(m => 
+                m.userCode === userCode || 
+                (userName && m.name && m.name.toLowerCase() === userName.toLowerCase())
+            );
+            
+            const memberData = {
+                name: userName,
+                userCode: userCode,
+                leadershipType: leadershipType,
+                leadershipStyle: leadershipType,
+                workRhythm: workRhythm,
+                workerType: workRhythm,
+                belt: localStorage.getItem('currentBelt') || 'white',
+                stripe: parseInt(localStorage.getItem('currentStripe')) || 1,
+                xp: parseInt(localStorage.getItem('totalXP')) || 0,
+                lastActive: new Date().toISOString(),
+                assessmentCompleted: true
+            };
+            
+            if (memberIndex >= 0) {
+                members[memberIndex] = { ...members[memberIndex], ...memberData };
+            } else {
+                memberData.joinedDate = new Date().toISOString();
+                members.push(memberData);
+            }
+            
+            // Save team data
+            teamData.members = members;
+            localStorage.setItem('tap_in_team_data', JSON.stringify(teamData));
+            localStorage.setItem('teamMembers', JSON.stringify(members));
+        }
+        
+        // Initialize gamification
+        GAMIFICATION.load();
+        GAMIFICATION.unlockAchievement('first_start');
+        
+        let executiveMode = false;
+        let executiveQuestions = [];
+        
+        // Make toggleExecutiveMode globally accessible for onchange handler
+        window.toggleExecutiveMode = function() {
+            executiveMode = document.getElementById('executiveMode').checked;
+            const questionCount = document.getElementById('questionCount');
+            const timeEstimate = document.getElementById('timeEstimate');
+            
+            if (executiveMode) {
+                questionCount.textContent = '20';
+                timeEstimate.textContent = '7';
+                // Add executive questions to the array
+                if (executiveQuestions.length === 0) {
+                    executiveQuestions = [
+                        {
+                            category: "Strategic Leadership",
+                            text: "When presenting to the board or investors, your primary focus is...",
+                            options: [
+                                { text: "Painting a compelling vision of future possibilities and market opportunities", type: "visionary" },
+                                { text: "Presenting detailed data, projections, and systematic analysis", type: "architect" },
+                                { text: "Building trust and demonstrating how the team is aligned and supported", type: "facilitator" },
+                                { text: "Showing concrete results, milestones achieved, and clear execution plan", type: "executor" }
+                            ],
+                            insight: {
+                                title: "Board Communication Styles",
+                                content: "Effective board presentations require adapting to your audience. Vision-driven works for growth-stage companies, data-driven for mature organizations, trust-building for relationship-focused boards, and results-driven for performance-oriented investors."
+                            }
+                        },
+                        {
+                            category: "Strategic Leadership",
+                            text: "During a company crisis (e.g., major product failure, PR issue, market shift), you...",
+                            options: [
+                                { text: "Reframe the crisis as an opportunity and rally the team around a new vision", type: "visionary" },
+                                { text: "Analyze root causes systematically and create a structured recovery plan", type: "architect" },
+                                { text: "Focus on team morale, ensure psychological safety, and maintain relationships", type: "facilitator" },
+                                { text: "Take immediate decisive action, cut losses, and pivot quickly", type: "executor" }
+                            ],
+                            insight: {
+                                title: "Crisis Leadership Patterns",
+                                content: "Research shows successful crisis leaders combine multiple approaches: immediate action (Executor), systematic analysis (Architect), team support (Facilitator), and future vision (Visionary). The best leaders flex between styles."
+                            }
+                        },
+                        {
+                            category: "Strategic Leadership",
+                            text: "When scaling your team from 50 to 200+ people, your biggest concern is...",
+                            options: [
+                                { text: "Maintaining the vision and culture as we grow", type: "visionary" },
+                                { text: "Creating scalable systems, processes, and structures that work at scale", type: "architect" },
+                                { text: "Ensuring people feel connected, heard, and valued despite growth", type: "facilitator" },
+                                { text: "Maintaining execution speed and results quality during rapid growth", type: "executor" }
+                            ],
+                            insight: {
+                                title: "Scaling Leadership Challenges",
+                                content: "Hypergrowth requires all four leadership dimensions: Vision (why we exist), Systems (how we operate), People (who we are), and Execution (what we deliver). Leaders who excel in scaling balance all four."
+                            }
+                        },
+                        {
+                            category: "Strategic Leadership",
+                            text: "Your approach to balancing short-term quarterly results with long-term strategic investments is...",
+                            options: [
+                                { text: "Communicate how short-term wins connect to long-term vision", type: "visionary" },
+                                { text: "Create clear frameworks and metrics that balance both timelines", type: "architect" },
+                                { text: "Engage stakeholders in understanding why we need both perspectives", type: "facilitator" },
+                                { text: "Deliver short-term results while building long-term capabilities incrementally", type: "executor" }
+                            ],
+                            insight: {
+                                title: "Time Horizon Management",
+                                content: "The most effective executives maintain dual focus: hitting quarterly targets while building 3-5 year capabilities. This requires clear communication, systematic planning, stakeholder alignment, and incremental execution."
+                            }
+                        },
+                        {
+                            category: "Strategic Leadership",
+                            text: "When making a major strategic pivot (e.g., new market, business model change), you prioritize...",
+                            options: [
+                                { text: "Creating excitement and buy-in around the new direction", type: "visionary" },
+                                { text: "Designing the transition plan with clear phases and milestones", type: "architect" },
+                                { text: "Ensuring the team understands the 'why' and feels supported through change", type: "facilitator" },
+                                { text: "Moving quickly to test the new approach and iterate based on results", type: "executor" }
+                            ],
+                            insight: {
+                                title: "Strategic Pivot Leadership",
+                                content: "Successful pivots require vision (new direction), structure (transition plan), people (change management), and speed (rapid iteration). Leaders who combine all four see 3x higher success rates."
+                            }
+                        }
+                    ];
+                }
+            } else {
+                questionCount.textContent = '15';
+                timeEstimate.textContent = '5';
+                
+                // If disabling executive mode and we're past regular questions, move back
+                if (currentQuestion >= questions.length) {
+                    currentQuestion = questions.length - 1;
+                }
+            }
+            
+            // Re-render current question with updated progress (no reset!)
+            renderQuestion();
+        };
+        
+        const questions = [
+            // Leadership Style (Q1-4)
+            {
+                category: "Leadership Style",
+                text: "When facing a major decision with your team, you typically...",
+                options: [
+                    { text: "Paint a compelling vision and rally everyone around the possibilities", type: "visionary" },
+                    { text: "Analyze all available data and options before committing to a path", type: "architect" },
+                    { text: "Consult with team members to understand their perspectives first", type: "facilitator" },
+                    { text: "Make a decisive call quickly and adjust course as you learn more", type: "executor" }
+                ],
+                insight: {
+                    title: "Decision-Making Styles",
+                    content: "Research shows that effective leaders adapt their decision-making style to the situation. Vision-driven decisions work best for strategic pivots, data-driven for complex problems, consultative for team buy-in, and decisive for urgent situations."
+                }
+            },
+            {
+                category: "Leadership Style",
+                text: "Your team would say your greatest strength is...",
+                options: [
+                    { text: "Inspiring them to think bigger and see new possibilities", type: "visionary" },
+                    { text: "Creating clear systems, processes, and structured approaches", type: "architect" },
+                    { text: "Building trust, psychological safety, and strong relationships", type: "facilitator" },
+                    { text: "Getting things done efficiently with no excuses or delays", type: "executor" }
+                ],
+                insight: {
+                    title: "Perceived Strengths",
+                    content: "Research shows that leaders who are aware of their perceived strengths are 40% more effective. Teams value different strengths: Visionaries inspire innovation, Architects create stability, Facilitators build culture, and Executors deliver results."
+                }
+            },
+            {
+                category: "Leadership Style",
+                text: "In team meetings, you're most likely to...",
+                options: [
+                    { text: "Challenge the group to think about future opportunities and innovations", type: "visionary" },
+                    { text: "Ask clarifying questions and ensure we have structured notes and next steps", type: "architect" },
+                    { text: "Make sure everyone's voice is heard and people feel included", type: "facilitator" },
+                    { text: "Push for clear action items, deadlines, and accountable owners", type: "executor" }
+                ],
+                insight: {
+                    title: "Meeting Leadership Styles",
+                    content: "Effective meetings need all four approaches: Vision (big picture), Structure (organization), Inclusion (participation), and Action (accountability). The best leaders rotate between these based on meeting purpose."
+                }
+            },
+            {
+                category: "Leadership Style",
+                text: "When a project falls behind schedule, your first instinct is to...",
+                options: [
+                    { text: "Remind everyone of the bigger picture and why this work matters", type: "visionary" },
+                    { text: "Dig into the data to find the root cause of the delays", type: "architect" },
+                    { text: "Have 1:1 conversations to understand what's blocking people", type: "facilitator" },
+                    { text: "Roll up your sleeves and help clear obstacles directly", type: "executor" }
+                ],
+                insight: {
+                    title: "Crisis Response Patterns",
+                    content: "When projects slip, different responses work for different situations: Vision re-energizes demotivated teams, Analysis fixes systemic issues, 1:1s address individual blockers, and Direct action clears immediate obstacles."
+                }
+            },
+            // Work Rhythm (Q5-7)
+            {
+                category: "Work Rhythm",
+                text: "How do you prefer to tackle challenging work?",
+                options: [
+                    { text: "Intense focused bursts with breaks to recharge between", type: "sprinter" },
+                    { text: "Steady, consistent effort spread throughout the day", type: "jogger" },
+                    { text: "Long sustained sessions where I can go deep for hours", type: "marathoner" }
+                ],
+                insight: {
+                    title: "Work Rhythm Patterns",
+                    content: "Understanding your work rhythm is crucial for peak performance. Sprinters excel at high-intensity projects, Joggers maintain steady progress, and Marathoners handle complex, long-term initiatives. The best teams have a mix of all three."
+                }
+            },
+            {
+                category: "Work Rhythm",
+                text: "When are you typically at your mental best?",
+                options: [
+                    { text: "Early morning - I'm sharpest before others are awake", type: "sprinter" },
+                    { text: "Mid-day - I hit my stride after warming up", type: "jogger" },
+                    { text: "Late afternoon/evening - I build momentum throughout the day", type: "marathoner" }
+                ]
+            },
+            {
+                category: "Work Rhythm",
+                text: "After completing a major project, you typically...",
+                options: [
+                    { text: "Need significant downtime before diving into the next big thing", type: "sprinter" },
+                    { text: "Take a brief pause then continue at your normal pace", type: "jogger" },
+                    { text: "Feel energized and ready to start the next challenge immediately", type: "marathoner" }
+                ]
+            },
+            // Communication (Q8-10)
+            {
+                category: "Communication",
+                text: "When explaining a complex idea, you prefer to...",
+                options: [
+                    { text: "Start with the big picture vision, then fill in details as needed", type: "visionary" },
+                    { text: "Present a logical, structured breakdown with clear steps", type: "architect" },
+                    { text: "Use stories and examples that connect emotionally", type: "facilitator" },
+                    { text: "Get straight to the point with actionable takeaways", type: "executor" }
+                ],
+                insight: {
+                    title: "Communication Styles",
+                    content: "Effective communication adapts to the audience. Vision-first works for strategic discussions, structured breakdowns for analytical teams, stories for building connection, and direct action items for execution-focused contexts."
+                }
+            },
+            {
+                category: "Communication",
+                text: "In a disagreement with a colleague, you're most likely to...",
+                options: [
+                    { text: "Focus on the shared vision and find common ground in goals", type: "visionary" },
+                    { text: "Present facts and data to support your position logically", type: "architect" },
+                    { text: "Seek to understand their perspective before advocating yours", type: "facilitator" },
+                    { text: "Propose a quick decision so you can move forward and test it", type: "executor" }
+                ],
+                insight: {
+                    title: "Conflict Resolution Styles",
+                    content: "Research shows the most effective conflict resolution combines all four: Finding common ground (Visionary), using data (Architect), understanding perspectives (Facilitator), and moving forward (Executor). The best leaders use all four sequentially."
+                }
+            },
+            {
+                category: "Communication",
+                text: "When giving feedback to a team member, you focus on...",
+                options: [
+                    { text: "How their growth connects to bigger opportunities ahead", type: "visionary" },
+                    { text: "Specific behaviors and measurable improvements to make", type: "architect" },
+                    { text: "Their feelings and ensuring they feel supported in improving", type: "facilitator" },
+                    { text: "What they need to do differently starting immediately", type: "executor" }
+                ],
+                insight: {
+                    title: "Feedback Effectiveness",
+                    content: "The most effective feedback includes all four elements: Future vision (why it matters), Specific behaviors (what to change), Emotional support (how they feel), and Immediate actions (what to do now). Leaders who combine all four see 60% better improvement rates."
+                }
+            },
+            // Stress & Challenge (Q11-13)
+            {
+                category: "Under Pressure",
+                text: "When facing a high-stakes deadline, you...",
+                options: [
+                    { text: "Get energized by the challenge and inspire others to rise up", type: "visionary" },
+                    { text: "Create a detailed plan and systematically execute each step", type: "architect" },
+                    { text: "Check in with the team to make sure everyone is okay", type: "facilitator" },
+                    { text: "Eliminate distractions and focus purely on getting it done", type: "executor" }
+                ],
+                insight: {
+                    title: "Pressure Performance",
+                    content: "High-pressure situations require all four leadership dimensions: Energy and vision (motivation), Systematic planning (efficiency), Team care (sustainability), and Focused execution (results). Teams with leaders who balance all four perform 35% better under pressure."
+                }
+            },
+            {
+                category: "Under Pressure",
+                text: "Your biggest frustration at work is usually...",
+                options: [
+                    { text: "People who can't see beyond today's problems to future possibilities", type: "visionary" },
+                    { text: "Chaos, lack of clear processes, and disorganization", type: "architect" },
+                    { text: "Conflict that damages relationships and team morale", type: "facilitator" },
+                    { text: "Endless discussions and meetings with no concrete action", type: "executor" }
+                ],
+                insight: {
+                    title: "Frustration Patterns",
+                    content: "Your frustrations reveal your values. Visionaries get frustrated by short-sightedness, Architects by chaos, Facilitators by relationship damage, and Executors by inaction. Understanding these patterns helps you recognize when to flex your style."
+                }
+            },
+            {
+                category: "Under Pressure",
+                text: "When you're overwhelmed, you cope by...",
+                options: [
+                    { text: "Zooming out to reconnect with meaning and purpose", type: "visionary" },
+                    { text: "Making lists and organizing tasks to regain control", type: "architect" },
+                    { text: "Talking it through with someone you trust", type: "facilitator" },
+                    { text: "Picking one thing and attacking it to build momentum", type: "executor" }
+                ],
+                insight: {
+                    title: "Stress Management Strategies",
+                    content: "Effective stress management uses multiple strategies: Reconnecting with purpose (Visionary), Creating structure (Architect), Seeking support (Facilitator), and Taking action (Executor). Leaders who use all four strategies recover 50% faster from overwhelm."
+                }
+            },
+            // Energy & Motivation (Q14-15)
+            {
+                category: "Motivation",
+                text: "You feel most energized when...",
+                options: [
+                    { text: "Brainstorming new ideas and imagining what could be possible", type: "visionary" },
+                    { text: "Solving complex problems with elegant, systematic solutions", type: "architect" },
+                    { text: "Helping someone have a breakthrough or develop new skills", type: "facilitator" },
+                    { text: "Crossing major items off your list and seeing tangible progress", type: "executor" }
+                ],
+                insight: {
+                    title: "Energy Sources",
+                    content: "Understanding what energizes you helps you structure your day for peak performance. Visionaries need creative time, Architects need problem-solving challenges, Facilitators need people interactions, and Executors need clear wins and progress."
+                }
+            },
+            {
+                category: "Motivation",
+                text: "What drives you most in your leadership role?",
+                options: [
+                    { text: "Creating something meaningful that outlasts me", type: "visionary" },
+                    { text: "Building systems that work efficiently and scale", type: "architect" },
+                    { text: "Developing people and watching them grow", type: "facilitator" },
+                    { text: "Achieving results and hitting ambitious targets", type: "executor" }
+                ],
+                insight: {
+                    title: "Core Motivation",
+                    content: "Your core motivation drives your leadership effectiveness. Visionaries create legacy, Architects build systems, Facilitators develop people, and Executors deliver results. The most successful leaders find ways to satisfy all four motivations over time."
+                }
+            }
+        ];
+
+        const typeData = {
+            visionary: { 
+                name: "Visionary Leader", 
+                desc: "You inspire with bold vision and help others see possibilities they couldn't imagine alone. Your gift is connecting today's work to tomorrow's impact." 
+            },
+            architect: { 
+                name: "Strategic Architect", 
+                desc: "You build systems that scale and bring clarity to complexity through structured thinking. Your gift is turning chaos into elegant, repeatable solutions." 
+            },
+            facilitator: { 
+                name: "Catalyst Coach", 
+                desc: "You unlock team potential by creating safety and ensuring every voice matters. Your gift is bringing out the best in people through genuine connection." 
+            },
+            executor: { 
+                name: "Momentum Driver", 
+                desc: "You turn plans into reality with relentless focus on results and forward motion. Your gift is cutting through noise to make things happen." 
+            }
+        };
+
+        const rhythmData = {
+            sprinter: "Sprinter",
+            jogger: "Steady Performer", 
+            marathoner: "Endurance Player"
+        };
+
+        let currentQuestion = 0;
+        let answers = {};
+        let scores = { visionary: 0, architect: 0, facilitator: 0, executor: 0 };
+        let rhythmScores = { sprinter: 0, jogger: 0, marathoner: 0 };
+
+        function getCurrentQuestions() {
+            return executiveMode ? [...questions, ...executiveQuestions] : questions;
+        }
+        
+        // Make selectOption globally accessible IMMEDIATELY (before renderQuestion)
+        // This ensures onclick handlers can access it
+        window.selectOption = function(index, type) {
+            console.log('selectOption called:', index, type, 'currentQuestion:', currentQuestion);
+            
+            const allQuestions = getCurrentQuestions();
+            if (!allQuestions || currentQuestion >= allQuestions.length) {
+                console.error('Invalid question index:', currentQuestion);
+                return;
+            }
+            
+            const q = allQuestions[currentQuestion];
+            if (!q || !q.options || !q.options[index]) {
+                console.error('Invalid option index:', index, 'for question:', currentQuestion);
+                return;
+            }
+            
+            // Remove previous score if changing answer
+            if (answers[currentQuestion] !== undefined) {
+                const prevIndex = answers[currentQuestion];
+                if (prevIndex >= 0 && prevIndex < q.options.length) {
+                    const prevType = q.options[prevIndex].type;
+                    if (['sprinter', 'jogger', 'marathoner'].includes(prevType)) {
+                        rhythmScores[prevType]--;
+                    } else {
+                        scores[prevType]--;
+                    }
+                }
+            }
+            
+            // Set new answer
+            answers[currentQuestion] = index;
+            
+            // Add new score
+            if (['sprinter', 'jogger', 'marathoner'].includes(type)) {
+                rhythmScores[type]++;
+            } else {
+                scores[type]++;
+            }
+            
+            // Save progress after each answer
+            saveProgress();
+            
+            // Update UI to show selected state
+            renderQuestion();
+        };
+        
+        // Save progress to localStorage
+        function saveProgress() {
+            try {
+                const progress = {
+                    currentQuestion: currentQuestion,
+                    answers: answers,
+                    scores: scores,
+                    rhythmScores: rhythmScores,
+                    executiveMode: executiveMode,
+                    timestamp: new Date().toISOString()
+                };
+                if (typeof safeSet === 'function') {
+                    safeSet('assessmentProgress', progress);
+                } else {
+                    localStorage.setItem('assessmentProgress', JSON.stringify(progress));
+                }
+            } catch (error) {
+                console.error('Error saving progress:', error);
+                if (typeof TapInErrorHandler !== 'undefined') {
+                    TapInErrorHandler.logError('saveProgress', error);
+                }
+            }
+        }
+        
+        // Load progress from localStorage
+        function loadProgress() {
+            try {
+                let saved;
+                if (typeof safeGet === 'function') {
+                    saved = safeGet('assessmentProgress');
+                } else {
+                    const savedStr = localStorage.getItem('assessmentProgress');
+                    saved = savedStr ? JSON.parse(savedStr) : null;
+                }
+                
+                if (saved && saved.answers) {
+                    currentQuestion = saved.currentQuestion || 0;
+                    answers = saved.answers || {};
+                    scores = saved.scores || { visionary: 0, architect: 0, facilitator: 0, executor: 0 };
+                    rhythmScores = saved.rhythmScores || { sprinter: 0, jogger: 0, marathoner: 0 };
+                    executiveMode = saved.executiveMode || false;
+                    
+                    // Restore executive mode checkbox state
+                    const execCheckbox = document.getElementById('executiveMode');
+                    if (execCheckbox) {
+                        execCheckbox.checked = executiveMode;
+                    }
+                    
+                    return true;
+                }
+            } catch (error) {
+                console.error('Error loading progress:', error);
+                if (typeof TapInErrorHandler !== 'undefined') {
+                    TapInErrorHandler.logError('loadProgress', error);
+                }
+            }
+            return false;
+        }
+        
+        function renderQuestion() {
+            try {
+                const allQuestions = getCurrentQuestions();
+                
+                // Validate questions array exists and has items
+                if (!allQuestions || !Array.isArray(allQuestions) || allQuestions.length === 0) {
+                    console.error('No questions available');
+                    TapInErrorHandler.showToast('UNKNOWN_ERROR', 'No questions available. Please refresh the page.');
+                    return;
+                }
+                
+                // Validate currentQuestion is in bounds
+                if (currentQuestion < 0 || currentQuestion >= allQuestions.length) {
+                    console.error('Question index out of bounds:', currentQuestion, 'of', allQuestions.length);
+                    currentQuestion = 0; // Reset to first question
+                }
+                
+                const q = allQuestions[currentQuestion];
+                
+                // Validate question object exists
+                if (!q || !q.text || !q.options || !Array.isArray(q.options)) {
+                    console.error('Invalid question object:', q);
+                    TapInErrorHandler.showToast('UNKNOWN_ERROR', 'Question data is invalid. Please refresh the page.');
+                    return;
+                }
+                
+                const totalQuestions = allQuestions.length;
+                
+                // Validate DOM elements exist
+                const qNumEl = document.getElementById('qNum');
+                const totalQuestionsEl = document.getElementById('totalQuestions');
+                const questionCategoryEl = document.getElementById('questionCategory');
+                const questionTextEl = document.getElementById('questionText');
+                const progressFillEl = document.getElementById('progressFill');
+                const progressPercentEl = document.getElementById('progressPercent');
+                const container = document.getElementById('optionsContainer');
+                
+                if (!qNumEl || !totalQuestionsEl || !questionCategoryEl || !questionTextEl || !progressFillEl || !progressPercentEl || !container) {
+                    console.error('Required DOM elements not found');
+                    TapInErrorHandler.showToast('UNKNOWN_ERROR', 'Page elements not found. Please refresh the page.');
+                    return;
+                }
+                
+                // Update question display
+                qNumEl.textContent = currentQuestion + 1;
+                totalQuestionsEl.textContent = totalQuestions;
+                questionCategoryEl.textContent = q.category || 'Leadership';
+                questionTextEl.textContent = q.text;
+                
+                const progress = ((currentQuestion) / totalQuestions * 100);
+                progressFillEl.style.width = progress + '%';
+                progressPercentEl.textContent = Math.round(progress) + '%';
+                
+                // Escape function helper for HTML content
+                const escapeHtml = (str) => {
+                    if (!str) return '';
+                    if (typeof TapInSecurity !== 'undefined' && TapInSecurity.escapeHtml) {
+                        return TapInSecurity.escapeHtml(str);
+                    }
+                    const div = document.createElement('div');
+                    div.textContent = str;
+                    return div.innerHTML;
+                };
+                
+                // Escape function for JavaScript string attributes (prevents breaking onclick)
+                const escapeJs = (str) => {
+                    if (!str) return '';
+                    return String(str)
+                        .replace(/\\/g, '\\\\')
+                        .replace(/'/g, "\\'")
+                        .replace(/"/g, '\\"')
+                        .replace(/\n/g, '\\n')
+                        .replace(/\r/g, '\\r')
+                        .replace(/\t/g, '\\t');
+                };
+                
+                // Build options HTML with inline onclick handlers for reliability
+                let html = q.options.map((opt, i) => {
+                    if (!opt || !opt.text || !opt.type) {
+                        console.warn('Invalid option at index', i, ':', opt);
+                        return '';
+                    }
+                    // Use inline onclick for reliable click handling (matches working assessments)
+                    // Escape the type for use in JavaScript string
+                    const escapedType = escapeJs(opt.type);
+                    return `
+                        <div class="option ${answers[currentQuestion] === i ? 'selected' : ''}" 
+                             onclick="selectOption(${i}, '${escapedType}')" 
+                             role="button" tabindex="0"
+                             onkeypress="if(event.key==='Enter'||event.key===' '){selectOption(${i},'${escapedType}');event.preventDefault();}">
+                            <div class="option-letter">${String.fromCharCode(65 + i)}</div>
+                            <div class="option-text">${escapeHtml(opt.text)}</div>
+                        </div>
+                    `;
+                }).filter(html => html !== '').join('');
+                
+                // Validate we have options HTML
+                if (!html || html.trim() === '') {
+                    console.error('No valid options generated for question');
+                    TapInErrorHandler.showToast('UNKNOWN_ERROR', 'No options available for this question. Please refresh the page.');
+                    return;
+                }
+                
+                // Add educational insight ONLY if answer is selected (after user clicks)
+                // This prevents showing insights before user has answered
+                if (answers[currentQuestion] !== undefined && q.insight) {
+                    html += `
+                        <div class="insight-card">
+                            <div class="insight-header">
+                                <svg aria-hidden="true" class="insight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+                                </svg>
+                                <div class="insight-title">${escapeHtml(q.insight.title || '')}</div>
+                            </div>
+                            <div class="insight-content">${escapeHtml(q.insight.content || '')}</div>
+                        </div>
+                    `;
+                }
+                
+                // Use innerHTML directly (we've already escaped the content)
+                // Options have inline onclick handlers for reliable click handling
+                container.innerHTML = html;
+                
+                // Update buttons
+                const prevBtn = document.getElementById('prevBtn');
+                const nextBtn = document.getElementById('nextBtn');
+                if (prevBtn) prevBtn.disabled = currentQuestion === 0;
+                if (nextBtn) {
+                    nextBtn.disabled = answers[currentQuestion] === undefined;
+                    nextBtn.textContent = currentQuestion === totalQuestions - 1 ? 'See Results' : 'Continue';
+                }
+            } catch (error) {
+                console.error('Error in renderQuestion:', error);
+                TapInErrorHandler.logError('renderQuestion', error);
+                TapInErrorHandler.showToast('UNKNOWN_ERROR', 'Failed to load question. Please refresh the page.');
+            }
+        }
+
+
+        // Make nextQuestion globally accessible for onclick handler
+        window.nextQuestion = function() {
+            if (answers[currentQuestion] === undefined) return;
+            
+            // Award XP for answering
+            GAMIFICATION.addXP(GAMIFICATION.xpPerQuestion);
+            
+            const allQuestions = getCurrentQuestions();
+            const halfway = Math.floor(allQuestions.length / 2);
+            
+            // Check for halfway achievement
+            if (currentQuestion + 1 === halfway) {
+                GAMIFICATION.unlockAchievement('halfway');
+            }
+            
+            if (currentQuestion < allQuestions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        };
+
+        // Make prevQuestion globally accessible for onclick handler
+        window.prevQuestion = function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        };
+
+        function showResults() {
+            // Validate all questions answered
+            const allQuestions = getCurrentQuestions();
+            const unanswered = allQuestions.filter((_, i) => answers[i] === undefined);
+            if (unanswered.length > 0) {
+                TapInErrorHandler.showToast('VALIDATION_ERROR', 
+                    `Please answer all questions. ${unanswered.length} remaining.`);
+                // Go to first unanswered
+                currentQuestion = allQuestions.findIndex((_, i) => answers[i] === undefined);
+                renderQuestion();
+                return;
+            }
+            
+            // Show loading
+            TapInErrorHandler.showLoading('Analyzing your responses...');
+            
+            // Calculate results (simulate processing time for UX)
+            setTimeout(() => {
+                try {
+                    // Award completion XP and achievements
+                    GAMIFICATION.addXP(GAMIFICATION.xpForCompletion);
+                    GAMIFICATION.unlockAchievement('complete');
+                    GAMIFICATION.checkSpeedDemon();
+                    
+                    const topType = Object.entries(scores).sort((a, b) => b[1] - a[1])[0][0];
+                    const secondType = Object.entries(scores).sort((a, b) => b[1] - a[1])[1][0];
+                    const topRhythm = Object.entries(rhythmScores).sort((a, b) => b[1] - a[1])[0][0];
+                    const data = typeData[topType];
+                    
+                    // Store comprehensive results with error handling
+                    const results = {
+                        leadershipType: topType,
+                        secondaryType: secondType,
+                        workRhythm: topRhythm,
+                        scores: scores,
+                        rhythmScores: rhythmScores,
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    const profile = {
+                        leadershipType: topType,
+                        secondaryType: secondType,
+                        workerType: topRhythm,
+                        belt: 'white',
+                        name: 'Leader',
+                        timestamp: new Date().toISOString()
+                    };
+                    
+                    // Save with error handling
+                    const saved = safeSet('tap_in_assessment_results', results) && 
+                                 safeSet('tap_in_profile', profile);
+                    
+                    if (!saved) {
+                        TapInErrorHandler.hideLoading();
+                        TapInErrorHandler.showToast('STORAGE_QUOTA');
+                        return;
+                    }
+                    
+                    // Clear progress
+                    try {
+                        if (typeof safeRemove === 'function') {
+                            safeRemove('assessmentProgress');
+                        } else {
+                            localStorage.removeItem('assessmentProgress');
+                        }
+                    } catch (error) {
+                        console.error('Error clearing progress:', error);
+                    }
+                    
+                    // Sync to team if user is in a team
+                    syncAssessmentToTeam(topType, topRhythm);
+                    
+                    TapInErrorHandler.hideLoading();
+                    TapInErrorHandler.showSuccess('Assessment Complete!', 'Viewing your results...');
+                    
+                    // Show celebration
+                    document.getElementById('totalXP').textContent = GAMIFICATION.xp;
+                    document.getElementById('celebration').classList.add('show');
+                    
+                    setTimeout(() => {
+                        document.getElementById('questionContainer').classList.add('hide');
+                        document.getElementById('resultsContainer').classList.add('show');
+                        document.getElementById('resultType').textContent = data.name;
+                        document.getElementById('resultDesc').textContent = data.desc;
+                        document.getElementById('progressFill').style.width = '100%';
+                        document.getElementById('progressPercent').textContent = '100%';
+                    }, 2000);
+                    
+                } catch (e) {
+                    TapInErrorHandler.hideLoading();
+                    TapInErrorHandler.logError('showResults', e);
+                    TapInErrorHandler.showToast('UNKNOWN_ERROR');
+                }
+            }, 800);
+        }
+
+        // Initialize: render first question
+        // Options now use inline onclick handlers, no event delegation needed
+        function initializeAssessment() {
+            // Try to load saved progress
+            const hasProgress = loadProgress();
+            
+            // Render the first question - options have inline onclick handlers
+            renderQuestion();
+            console.log('Assessment initialized with inline click handlers' + (hasProgress ? ' (progress restored)' : ''));
+        }
+        
+        // Use DOMContentLoaded to ensure DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeAssessment);
+        } else {
+            // DOM already loaded, but wait a tick to ensure everything is ready
+            setTimeout(initializeAssessment, 0);
+        }
+    </script>
+    <script>
+        // Unregister old service workers first
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+                // Clear all caches
+                if ('caches' in window) {
+                    caches.keys().then(function(cacheNames) {
+                        return Promise.all(cacheNames.map(function(cacheName) {
+                            return caches.delete(cacheName);
+                        }));
+                    }).then(function() {
+                        // Register new minimal service worker
+                        navigator.serviceWorker.register('../../sw.js', { scope: '/' })
+                            .catch(() => {});
+                    });
+                } else {
+                    navigator.serviceWorker.register('../../sw.js', { scope: '/' })
+                        .catch(() => {});
+                }
+            });
+        }
+    </script>
+</body>
+</html>

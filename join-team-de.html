@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Team beitreten | TAP-IN</title>
+<meta name="description" content="Team beitreten | TAP-IN - TAP-IN Leadership Academy">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+--green: #10b981;
+--green-dark: #059669;
+--green-light: #34d399;
+--text-primary: #ffffff;
+--text-secondary: #d1d5db;
+--text-muted: #9ca3af;
+}
+body {
+background: linear-gradient(135deg, #2d3142 0%, #3d4466 100%);
+color: var(--text-primary);
+font-family: Inter, -apple-system, sans-serif;
+min-height: 100vh;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 2rem;
+}
+.join-container {
+background: #3a3f5a;
+border: 2px solid var(--green);
+border-radius: 24px;
+padding: 3rem;
+max-width: 500px;
+width: 100%;
+box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(16, 185, 129, 0.1);
+}
+.logo {
+text-align: center;
+font-size: 2rem;
+font-weight: 900;
+margin-bottom: 1rem;
+background: linear-gradient(135deg, var(--green) 0%, var(--green-light) 100%);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+}
+h1 {
+text-align: center;
+font-size: 1.8rem;
+margin-bottom: 0.5rem;
+color: var(--text-primary);
+font-weight: 700;
+}
+.subtitle {
+text-align: center;
+color: var(--text-secondary);
+margin-bottom: 2rem;
+font-size: 1rem;
+}
+.form-group {
+margin-bottom: 1.5rem;
+}
+.form-label {
+display: block;
+color: var(--text-primary);
+font-size: 0.9rem;
+font-weight: 600;
+margin-bottom: 0.5rem;
+}
+.form-input {
+width: 100%;
+padding: 1rem;
+background: #2d3142;
+border: 2px solid #4a5568;
+border-radius: 8px;
+color: var(--text-primary);
+font-size: 1rem;
+transition: all 0.2s ease;
+}
+.form-input::placeholder {
+color: var(--text-muted);
+}
+.form-input:focus {
+outline: none;
+border-color: var(--green);
+box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+background: #353a4f;
+}
+.code-input {
+text-align: center;
+font-size: 1.5rem;
+letter-spacing: 2px;
+font-weight: 700;
+text-transform: uppercase;
+}
+.btn {
+width: 100%;
+padding: 1rem;
+background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+border: none;
+border-radius: 8px;
+color: white;
+font-size: 1.1rem;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s ease;
+box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+.btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+background: linear-gradient(135deg, var(--green-light) 0%, var(--green) 100%);
+}
+.btn:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+.error-message {
+background: rgba(239, 68, 68, 0.1);
+border: 1px solid var(--error);
+border-radius: 8px;
+padding: 1rem;
+color: #fca5a5;
+font-size: 0.9rem;
+margin-bottom: 1rem;
+display: none;
+}
+.success-message {
+background: rgba(34, 197, 94, 0.1);
+border: 1px solid #22c55e;
+border-radius: 8px;
+padding: 1rem;
+color: #86efac;
+font-size: 0.9rem;
+margin-bottom: 1rem;
+display: none;
+}
+.info-box {
+background: rgba(16, 185, 129, 0.1);
+border: 1px solid var(--green);
+border-radius: 8px;
+padding: 1rem;
+color: var(--text-secondary);
+font-size: 0.9rem;
+margin-top: 1.5rem;
+text-align: center;
+}
+.info-box strong {
+color: var(--green-light);
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+</head>
+<body>
+<div class="join-container">
+<div class="logo">TAP-IN</div>
+<h1>Deinem Team beitreten</h1>
+<p class="subtitle">Gib den Code ein, den dein Manager mit dir geteilt hat</p>
+<div class="error-message" id="errorMessage"></div>
+<div class="success-message" id="successMessage"></div>
+<form id="joinTeamForm">
+<!-- Team Code Input -->
+<div class="form-group">
+<label class="form-label">Team-Zugangscode</label>
+<input
+type="text"
+id="teamCode"
+class="form-input code-input"
+placeholder="TEAM-ABC123"
+required
+maxlength="12"
+/>
+</div>
+<!-- Your Name -->
+<div class="form-group">
+<label class="form-label">Dein Name</label>
+<input
+type="text"
+id="memberName"
+class="form-input"
+placeholder="Max Mustermann"
+required
+/>
+</div>
+<!-- Your Email -->
+<div class="form-group">
+<label class="form-label">Deine E-Mail</label>
+<input
+type="email"
+id="memberEmail"
+class="form-input"
+placeholder="max@unternehmen.com"
+required
+/>
+</div>
+<button type="submit" class="btn" id="submitBtn" aria-label="Beitreten">
+Team beitreten
+</button>
+</form>
+<div class="info-box">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-light-bulb"></use></svg> Keinen Code? Bitte deinen Manager, dich über das Business Portal einzuladen.
+</div>
+</div>
+<script>
+    // Extract code from URL if present
+const urlParams = new URLSearchParams(window.location.search);
+const codeFromURL = urlParams.get('code');
+if (codeFromURL) {
+document.getElementById('teamCode').value = codeFromURL.toUpperCase();
+}
+document.getElementById('joinTeamForm').addEventListener('submit', async function(e) {
+e.preventDefault();
+const teamCode = document.getElementById('teamCode').value.trim().toUpperCase();
+const memberName = document.getElementById('memberName').value.trim();
+const memberEmail = document.getElementById('memberEmail').value.trim();
+const errorMsg = document.getElementById('errorMessage');
+const successMsg = document.getElementById('successMessage');
+const submitBtn = document.getElementById('submitBtn');
+      // Clear previous messages
+errorMsg.style.display = 'none';
+successMsg.style.display = 'none';
+      // Validate code format
+if (!teamCode.startsWith('TEAM-')) {
+errorMsg.textContent = '❌ Ungültiges Code-Format. Code sollte mit TEAM- beginnen';
+errorMsg.style.display = 'block';
+return;
+}
+      // Disable button
+submitBtn.disabled = true;
+submitBtn.textContent = 'Beitritt läuft...';
+try {
+        // Check if code exists (from localStorage or business portal)
+        // First, check if there's a teamCode in localStorage (manager's code)
+const managerTeamCode = localStorage.getItem('teamCode');
+        // Also check validTeamCodes array (for multiple teams)
+const validCodes = JSON.parse(localStorage.getItem('validTeamCodes') || '[]');
+        // Add manager's code to valid codes if it exists
+if (managerTeamCode && !validCodes.includes(managerTeamCode)) {
+validCodes.push(managerTeamCode);
+localStorage.setItem('validTeamCodes', JSON.stringify(validCodes));
+}
+        // Check if code is valid
+if (teamCode !== managerTeamCode && !validCodes.includes(teamCode)) {
+          // Try to find team members with this code (in case team exists)
+const allMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+const teamExists = allMembers.some(m => m.teamCode === teamCode);
+if (!teamExists) {
+throw new Error('Team-Code nicht gefunden. Bitte überprüfe mit deinem Manager.');
+}
+          // Code exists in team members, add to valid codes
+validCodes.push(teamCode);
+localStorage.setItem('validTeamCodes', JSON.stringify(validCodes));
+}
+        // Check if email already exists in this team
+const allMembers = JSON.parse(localStorage.getItem('teamMembers') || '[]');
+const existingMember = allMembers.find(m => m.teamCode === teamCode && m.email === memberEmail);
+if (existingMember) {
+          // Member already exists, just update session
+localStorage.setItem('currentUser', JSON.stringify(existingMember));
+localStorage.setItem('userTeamCode', teamCode);
+successMsg.textContent = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Willkommen zurück! Weiterleitung zu deinem Dashboard...';
+successMsg.style.display = 'block';
+setTimeout(() => {
+window.location.href = 'src/pages/hub/team-member-dashboard.html';
+}, 2000);
+return;
+}
+        // Get current XP and progress from localStorage (if user was already using platform)
+const existingXP = parseInt(localStorage.getItem('totalXP') || '0');
+const currentBelt = localStorage.getItem('currentBelt') || 'white';
+const whiteBeltProgress = JSON.parse(localStorage.getItem('whiteBeltProgress') || '[]');
+const stripe = whiteBeltProgress.length > 0 ? whiteBeltProgress.length : 1;
+        // Create member record
+const member = {
+id: Date.now(),
+teamCode: teamCode,
+name: memberName,
+email: memberEmail,
+belt: currentBelt,
+stripe: stripe,
+xp: existingXP, // Use existing XP if available
+joinedDate: new Date().toISOString().split('T')[0],
+lastActive: new Date().toISOString().split('T')[0]
+};
+        // Save to team members
+allMembers.push(member);
+localStorage.setItem('teamMembers', JSON.stringify(allMembers));
+        // Save user session
+localStorage.setItem('currentUser', JSON.stringify(member));
+localStorage.setItem('userTeamCode', teamCode);
+        // Success!
+successMsg.textContent = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Erfolgreich dem Team beigetreten! Weiterleitung...';
+successMsg.style.display = 'block';
+        // Redirect to member dashboard after 2 seconds
+setTimeout(() => {
+window.location.href = 'src/pages/hub/team-member-dashboard.html';
+}, 2000);
+} catch (error) {
+errorMsg.textContent = `❌ ${error.message}`;
+errorMsg.style.display = 'block';
+submitBtn.disabled = false;
+submitBtn.textContent = 'Team beitreten';
+}
+});
+    // Auto-format team code
+document.getElementById('teamCode').addEventListener('input', function(e) {
+e.target.value = e.target.value.toUpperCase();
+});
+</script>
+<!-- TAP-IN Core Utilities -->
+<link rel="stylesheet" href="src/css/components/toast.css">
+<link rel="stylesheet" href="src/css/components/forms.css">
+<script src="src/js/utils/error-handler.js"></script>
+<script src="src/js/utils/validation.js"></script>
+<script src="src/js/utils/security.js"></script>
+<script src="src/js/utils/data-manager.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>
+

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Recruiting Demo - Candidate Comparison | TAP-IN</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); 
+            min-height: 100vh; 
+            padding: 20px; 
+            color: #333; 
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { 
+            background: white; 
+            border-radius: 20px; 
+            padding: 30px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            text-align: center;
+        }
+        .header h1 { color: #1a365d; font-size: 2.5em; margin-bottom: 10px; }
+        .header p { color: #64748b; font-size: 1.1em; }
+        .filters { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 20px; 
+            margin-bottom: 30px; 
+            display: flex; 
+            gap: 1rem; 
+            flex-wrap: wrap;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .filters select { 
+            padding: 10px 15px; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 8px; 
+            font-size: 1em;
+            flex: 1;
+            min-width: 200px;
+        }
+        .candidates-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+            gap: 25px; 
+        }
+        .candidate-card { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 25px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .candidate-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+        .candidate-card.excellent-fit { border-left: 5px solid #10b981; }
+        .candidate-card.good-fit { border-left: 5px solid #f59e0b; }
+        .candidate-card.poor-fit { border-left: 5px solid #ef4444; }
+        .candidate-header { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        .candidate-photo { 
+            font-size: 3em; 
+            width: 60px; 
+            height: 60px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #f8fafc; 
+            border-radius: 50%; 
+        }
+        .candidate-info h3 { color: #1e293b; font-size: 1.3em; margin-bottom: 5px; }
+        .candidate-title { color: #64748b; font-size: 0.9em; }
+        .candidate-scores { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+        .score-item { 
+            background: #f8fafc; 
+            padding: 15px; 
+            border-radius: 8px; 
+            text-align: center; 
+        }
+        .score-item span:first-child { 
+            display: block; 
+            color: #64748b; 
+            font-size: 0.85em; 
+            margin-bottom: 5px; 
+        }
+        .score-badge { 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            color: #1a365d; 
+        }
+        .score-badge.high { color: #10b981; }
+        .score-badge.medium { color: #f59e0b; }
+        .score-badge.low { color: #ef4444; }
+        .candidate-profile { margin-bottom: 20px; }
+        .profile-type { 
+            font-weight: 600; 
+            color: #1a365d; 
+            margin-bottom: 10px; 
+            font-size: 1.1em; 
+        }
+        .key-traits { 
+            display: flex; 
+            flex-wrap: wrap; 
+            gap: 8px; 
+        }
+        .trait { 
+            background: #e2e8f0; 
+            color: #475569; 
+            padding: 5px 12px; 
+            border-radius: 20px; 
+            font-size: 0.85em; 
+        }
+        .recommendation { 
+            background: #f8fafc; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+        }
+        .recommendation.excellent { 
+            background: #ecfdf5; 
+            border: 2px solid #10b981; 
+        }
+        .recommendation.good { 
+            background: #fffbeb; 
+            border: 2px solid #f59e0b; 
+        }
+        .recommendation.poor { 
+            background: #fef2f2; 
+            border: 2px solid #ef4444; 
+        }
+        .recommendation strong { 
+            display: block; 
+            font-size: 1.1em; 
+            margin-bottom: 5px; 
+            color: #1e293b; 
+        }
+        .recommendation.excellent strong { color: #10b981; }
+        .recommendation.good strong { color: #f59e0b; }
+        .recommendation.poor strong { color: #ef4444; }
+        .candidate-actions { 
+            display: flex; 
+            gap: 10px; 
+        }
+        .btn { 
+            padding: 12px 20px; 
+            border: none; 
+            border-radius: 8px; 
+            font-size: 0.95em; 
+            font-weight: 600; 
+            cursor: pointer; 
+            text-decoration: none; 
+            display: inline-block; 
+            text-align: center; 
+            flex: 1;
+            transition: all 0.2s;
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, #1a365d 0%, #334155 100%); 
+            color: white; 
+        }
+        .btn-primary:hover { box-shadow: 0 4px 12px rgba(26, 54, 93, 0.25); }
+        .btn-secondary { 
+            background: #f1f5f9; 
+            color: #475569; 
+            border: 1px solid #cbd5e1; 
+        }
+        .btn-secondary:hover { background: #e2e8f0; }
+        @media (max-width: 768px) {
+            .candidates-grid { grid-template-columns: 1fr; }
+            .filters { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Sales Candidate Comparison</h1>
+            <p>Demo view showing 3 sample candidate profiles</p>
+        </div>
+        
+        <div class="filters">
+            <select id="sort-by">
+                <option value="overall">Sort by Overall Score</option>
+                <option value="stage1">Sort by Stage 1</option>
+                <option value="stage2">Sort by Stage 2</option>
+            </select>
+            
+            <select id="filter-by">
+                <option value="all">All Candidates</option>
+                <option value="excellent">Excellent Fit Only</option>
+                <option value="good">Good Fit or Better</option>
+            </select>
+        </div>
+        
+        <div class="candidates-grid" id="candidatesGrid">
+            <!-- Candidate cards will be inserted here -->
+        </div>
+    </div>
+    
+    <script>
+        const sampleCandidates = [
+            {
+                id: 'sarah',
+                name: 'Sarah M.',
+                photo: '👤',
+                title: 'Sales Professional',
+                stage1Score: 92,
+                stage2Score: 87,
+                profileType: 'Systematic Jogger',
+                traits: ['Confident', 'Achievement-driven', 'High resilience'],
+                recommendation: 'EXCELLENT',
+                recommendationText: 'INTERVIEW IMMEDIATELY',
+                successRate: 85,
+                strengths: [
+                    'Systematic pipeline management',
+                    'Direct communication style',
+                    'Competitive drive',
+                    'Quick recovery from rejection'
+                ],
+                flags: { red: [], yellow: [] }
+            },
+            {
+                id: 'mike',
+                name: 'Mike T.',
+                photo: '👤',
+                title: 'Sales Representative',
+                stage1Score: 78,
+                stage2Score: 74,
+                profileType: 'Sprinter',
+                traits: ['Empathetic', 'Relationship-focused', 'Medium resilience'],
+                recommendation: 'GOOD',
+                recommendationText: 'INTERVIEW IF CAPACITY',
+                successRate: 65,
+                strengths: [
+                    'Strong relationship building',
+                    'Empathetic listening',
+                    'Collaborative approach'
+                ],
+                flags: { 
+                    red: [], 
+                    yellow: ['May struggle with rejection volume', 'Prefers longer sales cycles'] 
+                }
+            },
+            {
+                id: 'alex',
+                name: 'Alex R.',
+                photo: '👤',
+                title: 'Business Analyst',
+                stage1Score: 48,
+                stage2Score: null,
+                profileType: 'Ultrarunner',
+                traits: ['Analytical', 'Security-focused', 'Low rejection tolerance'],
+                recommendation: 'NOT_RECOMMENDED',
+                recommendationText: 'NOT RECOMMENDED',
+                successRate: 25,
+                strengths: [
+                    'Deep analytical skills',
+                    'Thorough research'
+                ],
+                flags: { 
+                    red: ['Poor rejection handling', 'Avoids competition', 'Passive closing style'], 
+                    yellow: ['Prefers technical roles'] 
+                }
+            }
+        ];
+        
+        function renderCandidates() {
+            const grid = document.getElementById('candidatesGrid');
+            const sortBy = document.getElementById('sort-by').value;
+            const filterBy = document.getElementById('filter-by').value;
+            
+            let candidates = [...sampleCandidates];
+            
+            // Filter
+            if (filterBy === 'excellent') {
+                candidates = candidates.filter(c => c.recommendation === 'EXCELLENT');
+            } else if (filterBy === 'good') {
+                candidates = candidates.filter(c => c.recommendation === 'EXCELLENT' || c.recommendation === 'GOOD');
+            }
+            
+            // Sort
+            candidates.sort((a, b) => {
+                if (sortBy === 'stage1') {
+                    return (b.stage1Score || 0) - (a.stage1Score || 0);
+                } else if (sortBy === 'stage2') {
+                    return (b.stage2Score || 0) - (a.stage2Score || 0);
+                } else {
+                    const aOverall = (a.stage1Score + (a.stage2Score || 0)) / 2;
+                    const bOverall = (b.stage1Score + (b.stage2Score || 0)) / 2;
+                    return bOverall - aOverall;
+                }
+            });
+            
+            grid.innerHTML = candidates.map(candidate => {
+                const fitClass = candidate.recommendation === 'EXCELLENT' ? 'excellent-fit' :
+                                candidate.recommendation === 'GOOD' ? 'good-fit' : 'poor-fit';
+                const recClass = candidate.recommendation === 'EXCELLENT' ? 'excellent' :
+                               candidate.recommendation === 'GOOD' ? 'good' : 'poor';
+                const stage1BadgeClass = candidate.stage1Score >= 85 ? 'high' :
+                                        candidate.stage1Score >= 70 ? 'medium' : 'low';
+                const stage2BadgeClass = candidate.stage2Score && candidate.stage2Score >= 85 ? 'high' :
+                                        candidate.stage2Score && candidate.stage2Score >= 70 ? 'medium' : 'low';
+                
+                return `
+                    <div class="candidate-card ${fitClass}">
+                        <div class="candidate-header">
+                            <div class="candidate-photo">${candidate.photo}</div>
+                            <div class="candidate-info">
+                                <h3>${candidate.name}</h3>
+                                <p class="candidate-title">${candidate.title}</p>
+                            </div>
+                        </div>
+                        
+                        <div class="candidate-scores">
+                            <div class="score-item">
+                                <span>Stage 1:</span>
+                                <span class="score-badge ${stage1BadgeClass}">${candidate.stage1Score}/100</span>
+                            </div>
+                            <div class="score-item">
+                                <span>Stage 2:</span>
+                                <span class="score-badge ${candidate.stage2Score ? stage2BadgeClass : 'low'}">${candidate.stage2Score || 'N/A'}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="candidate-profile">
+                            <p class="profile-type">${candidate.profileType}</p>
+                            <div class="key-traits">
+                                ${candidate.traits.map(t => `<span class="trait">${t}</span>`).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="recommendation ${recClass}">
+                            <strong>${candidate.recommendationText}</strong>
+                            <p>Expected success: ${candidate.successRate}%</p>
+                        </div>
+                        
+                        <div class="candidate-actions">
+                            <button class="btn btn-primary" onclick="viewFullProfile('${candidate.id}')">
+                                View Full Profile
+                            </button>
+                            <button class="btn btn-secondary" onclick="scheduleInterview('${candidate.id}')">
+                                Schedule Interview
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function viewFullProfile(id) {
+            const candidate = sampleCandidates.find(c => c.id === id);
+            alert(`Full Profile for ${candidate.name}\n\nStrengths:\n${candidate.strengths.join('\n')}\n\nRed Flags:\n${candidate.flags.red.join('\n') || 'None'}\n\nYellow Flags:\n${candidate.flags.yellow.join('\n') || 'None'}`);
+        }
+        
+        function scheduleInterview(id) {
+            alert(`Interview scheduling for candidate ${id} would open calendar integration.`);
+        }
+        
+        document.getElementById('sort-by').addEventListener('change', renderCandidates);
+        document.getElementById('filter-by').addEventListener('change', renderCandidates);
+        
+        // Initial render
+        renderCandidates();
+    </script>
+</body>
+</html>

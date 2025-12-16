@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <title>TAP-IN Shop | Avatar-Items & Streak-Erweiterungen</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/core-styles.css">
+    <link rel="stylesheet" href="avatar-styles.css">
+    
+    <!-- Coins & Avatar Systems -->
+    <script src="js/coins-system.min.js" defer></script>
+    <script src="js/enhanced-avatar-system.min.js" defer></script>
+    <script src="js/avatar-system.min.js" defer></script>
+    <script src="js/language-switcher.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js" defer></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-navy: #1a365d;
+            --navy-light: #2d4a7c;
+            --accent-gold: #f6e05e;
+            --success-green: #38a169;
+            --bg-dark: #0a0a0a;
+            --bg-card: #141414;
+            --text-white: #ffffff;
+            --text-muted: #a0aec0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1d2e 100%);
+            color: var(--text-white);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-gold), #fff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .coins-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(246, 224, 94, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            border: 2px solid var(--accent-gold);
+            margin-top: 1rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: 12px;
+        }
+
+        .nav-links a {
+            color: var(--text-white);
+            text-decoration: none;
+            margin: 0 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--bg-card);
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-white);
+        }
+
+        .tab.active {
+            color: var(--accent-gold);
+            border-bottom-color: var(--accent-gold);
+        }
+
+        /* Shop Grid */
+        .shop-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .shop-item {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .shop-item:hover {
+            border-color: var(--accent-gold);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(246, 224, 94, 0.2);
+        }
+
+        .shop-item.owned {
+            opacity: 0.6;
+        }
+
+        .shop-item.owned::after {
+            content: '✓ OWNED';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--success-green);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .item-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .item-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-description {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            min-height: 60px;
+        }
+
+        .item-price {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+
+        .price-coins {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .buy-btn {
+            background: linear-gradient(135deg, var(--accent-gold), #f59e0b);
+            color: #1a1d2e;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .buy-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(246, 224, 94, 0.4);
+        }
+
+        .buy-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .buy-btn.insufficient {
+            background: #ef4444;
+            color: white;
+        }
+
+        /* XP Conversion Section */
+        .convert-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 2px solid var(--accent-gold);
+        }
+
+        .convert-section h2 {
+            margin-bottom: 1rem;
+            color: var(--accent-gold);
+        }
+
+        .convert-input-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .convert-input-group input {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            color: var(--text-white);
+            font-size: 1.1rem;
+        }
+
+        .convert-btn {
+            background: var(--success-green);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        /* Purchase History */
+        .history-section {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 2rem;
+        }
+
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .shop-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Zum Hauptinhalt springen</a>
+    
+    <nav>
+        <div class="nav-links">
+            <a href="gym-dashboard-de.html">🏋️ Das Gym</a>
+            <a href="profile-de.html">👤 Profil</a>
+        </div>
+        <div id="language-switcher"></div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <header>
+            <h1>🛍️ TAP-IN Shop</h1>
+            <div class="coins-display">
+                <span>🪙</span>
+                <span id="coinsBalance">0</span>
+                <span>Münzen</span>
+            </div>
+        </header>
+
+        <!-- XP to Coins Conversion -->
+        <div class="convert-section">
+            <h2>💱 XP in Münzen umwandeln</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1rem;">
+                Tausche dein XP gegen Münzen zum Kurs von 0.8 (100 XP = 80 Münzen)
+            </p>
+            <div class="convert-input-group">
+                <input type="number" id="xpToConvert" placeholder="XP-Betrag eingeben (Min: 100)" min="100">
+                <span style="font-size: 1.2rem; font-weight: 700;">XP</span>
+                <span style="font-size: 1.2rem;">→</span>
+                <span id="coinsPreview" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-gold);">0</span>
+                <span style="font-size: 1.2rem; font-weight: 700;">Münzen</span>
+                <button class="convert-btn" onclick="convertXP()">Umwandeln</button>
+            </div>
+            <div id="convertMessage" style="margin-top: 1rem; font-weight: 600;"></div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('avatar')">👤 Avatar-Items</button>
+            <button class="tab" onclick="switchTab('rewards')">🎁 Assessment-Belohnungen</button>
+            <button class="tab" onclick="switchTab('streak')">🔥 Streak-Erweiterungen</button>
+            <button class="tab" onclick="switchTab('history')">📜 Kaufhistorie</button>
+        </div>
+
+        <!-- Avatar Items Tab -->
+        <div id="avatarTab" class="tab-content">
+            <div class="shop-grid" id="avatarItems"></div>
+        </div>
+
+        <!-- Assessment Rewards Tab -->
+        <div id="rewardsTab" class="tab-content" style="display: none;">
+            <div style="background: var(--bg-card); border-radius: 16px; padding: 2rem; margin-bottom: 2rem; border: 2px solid var(--accent-gold);">
+                <h2 style="color: var(--accent-gold); margin-bottom: 1rem;">🎁 Kostenlose Belohnungen aus deinem Assessment</h2>
+                <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                    Schließe das Gürtel-Assessment ab, um diese exklusiven kostenlosen Items freizuschalten!
+                </p>
+                <a href="belt-assessment-v2-de.html" style="display: inline-block; background: var(--accent-gold); color: #1a1d2e; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 700;">Assessment machen →</a>
+            </div>
+            <div class="shop-grid" id="assessmentRewards"></div>
+        </div>
+
+        <!-- Streak Extensions Tab -->
+        <div id="streakTab" class="tab-content" style="display: none;">
+            <div class="shop-grid" id="streakItems"></div>
+        </div>
+
+        <!-- Purchase History Tab -->
+        <div id="historyTab" class="tab-content" style="display: none;">
+            <div class="history-section">
+                <h2 style="margin-bottom: 1rem;">Deine Käufe</h2>
+                <div id="purchaseHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Assessment Rewards (FREE - unlocked by completing assessment or first stripe)
+        const assessmentRewards = [
+            { 
+                id: 'reward-rental-gi', 
+                name: 'Leih-Gi', 
+                description: 'Ein geliehenes Gi zum Start deiner Journey. Du bekommst dein eigenes nach dem ersten Stripe!', 
+                icon: '🥋', 
+                price: 0, 
+                type: 'gi', 
+                value: '#d1d5db',
+                condition: 'white-no-assessment'
+            },
+            { 
+                id: 'reward-old-gi', 
+                name: 'Altes, Gebrauchtes Gi', 
+                description: 'Dein erstes Trainings-Gi - getragen, geliebt und voller Charakter. Geschenk für Assessment-Abschluss oder ersten Stripe!', 
+                icon: '🥋', 
+                price: 0, 
+                type: 'gi', 
+                value: '#9ca3af',
+                condition: 'assessment-or-first-stripe'
+            },
+            { 
+                id: 'reward-flip-flops', 
+                name: 'Alte Flip-Flops', 
+                description: 'Klassische Dojo-Fußbekleidung - bequem und authentisch. Jeder bekommt ein Paar!', 
+                icon: '🩴', 
+                price: 0, 
+                type: 'accessory', 
+                value: 'flip-flops',
+                condition: 'always'
+            },
+            { 
+                id: 'reward-wrinkled-belt-white', 
+                name: 'Zerknitterter, Alter Weißer Gürtel', 
+                description: 'Dein erster Gürtel - zerknittert vom Training und durch Anstrengung verdient. Der Anfang deiner Journey.', 
+                icon: '🥋', 
+                price: 0, 
+                type: 'belt', 
+                value: 'white-old',
+                condition: 'white'
+            },
+            { 
+                id: 'reward-blue-belt-sandbag', 
+                name: 'Marken-Blau-Gürtel (Sandbag)', 
+                description: 'Du hast den Blauen Gürtel erreicht, solltest ihn aber schon lange haben. "Sandbagging" bedeutet, dass du dein wahres Potenzial zurückgehalten hast. Dieser neue Blaue Gürtel erkennt den Leader an, der du schon immer warst!', 
+                icon: '🥋', 
+                price: 0, 
+                type: 'belt', 
+                value: 'blue-new',
+                condition: 'blue-sandbag'
+            },
+            { 
+                id: 'reward-purple-belt-coach', 
+                name: 'Alter Lila Gürtel des Coaches', 
+                description: 'VERSTECKTER SUPERSTAR - Außergewöhnlich! Niemand bekommt einfach so einen Lila Gürtel. Das war der alte Gürtel deines Coaches, weitergegeben, um außergewöhnliches Talent anzuerkennen. Du hast nicht nur bestanden - du hast alle Erwartungen übertroffen.', 
+                icon: '🥋', 
+                price: 0, 
+                type: 'belt', 
+                value: 'purple-coach',
+                condition: 'purple'
+            }
+        ];
+
+        // Shop Items Data
+        const shopItems = {
+            avatar: [
+                { id: 'gi-red', name: 'Rotes Gi', description: 'Stich heraus mit einem lebendigen roten Trainings-Gi', icon: '🥋', price: 150, type: 'gi', value: '#dc2626' },
+                { id: 'gi-gold', name: 'Goldenes Gi', description: 'Exklusives goldenes Gi für Champions', icon: '🥋', price: 200, type: 'gi', value: '#f59e0b' },
+                { id: 'gi-black', name: 'Schwarzes Gi', description: 'Klassisches schwarzes Gi', icon: '🥋', price: 100, type: 'gi', value: '#1f2937' },
+                { id: 'hair-1', name: 'Klassischer Kurzhaarschnitt', description: 'Sauberer und professioneller Kurzhaarschnitt', icon: '💇', price: 50, type: 'hair', value: '#3b2e1f', style: 'short' },
+                { id: 'hair-2', name: 'Lange Wellen', description: 'Elegantes langes welliges Haar', icon: '💇', price: 75, type: 'hair', value: '#8b4513', style: 'long-wavy' },
+                { id: 'hair-3', name: 'Kräftiges Rot', description: 'Lebendiges rotes Haar, das auffällt', icon: '💇', price: 80, type: 'hair', value: '#dc2626', style: 'bold-red' },
+                { id: 'hair-4', name: 'Platinblond', description: 'Atemberaubendes platinblondes Haar', icon: '💇', price: 90, type: 'hair', value: '#fef3c7', style: 'platinum' },
+                { id: 'hair-5', name: 'Kohlrabenschwarz', description: 'Tiefschwarzes Haar für einen markanten Look', icon: '💇', price: 60, type: 'hair', value: '#1f2937', style: 'jet-black' },
+                { id: 'hair-6', name: 'Lila Strähnen', description: 'Coole lila Highlights', icon: '💇', price: 85, type: 'hair', value: '#8b5cf6', style: 'purple-streaks' },
+                { id: 'hair-7', name: 'Lockiger Afro', description: 'Kühner lockiger Afro-Stil', icon: '💇', price: 75, type: 'hair', value: '#78350f', style: 'afro' },
+                { id: 'hair-8', name: 'Pixie Cut', description: 'Trendiger kurzer Pixie-Schnitt', icon: '💇', price: 65, type: 'hair', value: '#6b7280', style: 'pixie' },
+                { id: 'hair-9', name: 'Blaue Highlights', description: 'Modernes blau gefärbtes Haar', icon: '💇', price: 95, type: 'hair', value: '#3b82f6', style: 'blue-highlights' },
+                { id: 'hair-10', name: 'Pink Ombre', description: 'Stylisher pink Ombre-Verlauf', icon: '💇', price: 100, type: 'hair', value: '#ec4899', style: 'pink-ombre' },
+                { id: 'accessory-badge', name: 'Erfolgs-Abzeichen', description: 'Trage deine Erfolge stolz', icon: '🏅', price: 50, type: 'accessory', value: 'badge' },
+                { id: 'accessory-patch', name: 'Individueller Patch', description: 'Füge einen individuellen Patch zu deinem Gi hinzu', icon: '⭐', price: 80, type: 'accessory', value: 'patch' },
+                { id: 'accessory-belt-upgrade', name: 'Gürtel-Upgrade-Effekt', description: 'Spezieller visueller Effekt für Gürtel-Upgrades', icon: '✨', price: 120, type: 'accessory', value: 'belt-upgrade' }
+            ],
+            streak: [
+                { id: 'streak-1day', name: '1-Tage-Streak-Erweiterung', description: 'Füge 1 zusätzlichen Tag zu deinem Streak hinzu', icon: '🔥', price: 20, days: 1 },
+                { id: 'streak-3day', name: '3-Tage-Streak-Erweiterung', description: 'Füge 3 zusätzliche Tage zu deinem Streak hinzu', icon: '🔥', price: 50, days: 3 },
+                { id: 'streak-7day', name: '7-Tage-Streak-Erweiterung', description: 'Füge 7 zusätzliche Tage zu deinem Streak hinzu', icon: '🔥', price: 100, days: 7 },
+                { id: 'streak-freeze', name: 'Streak-Frost', description: 'Verhindere das Verlieren deines Streaks für einen Tag', icon: '❄️', price: 75, type: 'freeze' }
+            ]
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateCoinsBalance();
+            loadShopItems();
+            loadPurchaseHistory();
+            
+            // Check for first stripe completion and auto-claim kit
+            autoClaimFirstStripeKit();
+            
+            // XP conversion input listener
+            document.getElementById('xpToConvert').addEventListener('input', updateConversionPreview);
+        });
+
+        // Check for first stripe completion on load
+        window.addEventListener('storage', function(e) {
+            if (e.key === 'whiteBeltStripe1Complete') {
+                autoClaimFirstStripeKit();
+                loadAssessmentRewards();
+            }
+        });
+
+        // Update coins balance display
+        function updateCoinsBalance() {
+            if (window.CoinsSystem) {
+                const coins = CoinsSystem.getCoins();
+                document.getElementById('coinsBalance').textContent = coins.toLocaleString();
+            }
+        }
+
+        // Update conversion preview
+        function updateConversionPreview() {
+            const xpInput = document.getElementById('xpToConvert');
+            const xpAmount = parseInt(xpInput.value) || 0;
+            
+            if (xpAmount >= 100 && window.CoinsSystem) {
+                const coins = CoinsSystem.getConversionPreview(xpAmount);
+                document.getElementById('coinsPreview').textContent = coins || 0;
+            } else {
+                document.getElementById('coinsPreview').textContent = 0;
+            }
+        }
+
+        // Convert XP to Coins
+        function convertXP() {
+            const xpInput = document.getElementById('xpToConvert');
+            const xpAmount = parseInt(xpInput.value) || 0;
+            
+            if (!window.CoinsSystem) {
+                alert('Coins system not loaded');
+                return;
+            }
+            
+            const result = CoinsSystem.convertXPToCoins(xpAmount);
+            
+            if (result.success) {
+                document.getElementById('convertMessage').textContent = 
+                    `✅ ${xpAmount} XP in ${result.coinsEarned} Münzen umgewandelt!`;
+                document.getElementById('convertMessage').style.color = '#38a169';
+                xpInput.value = '';
+                updateCoinsBalance();
+                updateConversionPreview();
+                
+                // Trigger confetti
+                if (window.confetti) {
+                    confetti({ particleCount: 100, spread: 70 });
+                }
+            } else {
+                document.getElementById('convertMessage').textContent = `❌ ${result.error}`;
+                document.getElementById('convertMessage').style.color = '#ef4444';
+            }
+        }
+
+        // Switch tabs
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.style.display = 'none';
+            });
+            
+            // Remove active class
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').style.display = 'block';
+            event.target.classList.add('active');
+        }
+
+        // Load shop items
+        function loadShopItems() {
+            loadAvatarItems();
+            loadStreakItems();
+            loadAssessmentRewards();
+        }
+
+        // Load assessment rewards
+        function loadAssessmentRewards() {
+            const container = document.getElementById('assessmentRewards');
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            // Check assessment completion
+            const assessmentCompleted = localStorage.getItem('beltAssessmentResult') || 
+                                       localStorage.getItem('beltAssessmentDate') ||
+                                       localStorage.getItem('tapinBeltAssessment');
+            const assessmentBelt = localStorage.getItem('beltAssessmentResult') || 
+                                  localStorage.getItem('beltLevel') || 'white';
+            
+            // Check if direct white belt path (no assessment)
+            const hasAssessment = !!assessmentCompleted;
+            const firstStripeComplete = localStorage.getItem('whiteBeltStripe1Complete') === 'true';
+            
+            // Determine sandbag status (blue belt but should have been higher)
+            const totalScore = parseInt(localStorage.getItem('assessmentTotal') || '0');
+            const isSandbag = assessmentBelt === 'blue' && totalScore >= 60; // Should have been purple
+            
+            assessmentRewards.forEach(reward => {
+                let showReward = false;
+                let isUnlocked = false;
+                let unlockReason = '';
+                
+                // Check conditions
+                if (reward.condition === 'always') {
+                    showReward = true;
+                    isUnlocked = assessmentCompleted || firstStripeComplete;
+                    if (isUnlocked) unlockReason = 'Freigeschaltet!';
+                } else if (reward.condition === 'white-no-assessment') {
+                    // Rental Gi: Show for direct white belt path (no assessment) until first stripe
+                    showReward = !hasAssessment && assessmentBelt === 'white';
+                    if (showReward) {
+                        isUnlocked = !firstStripeComplete; // Auto-unlocked until first stripe
+                        if (firstStripeComplete) {
+                            unlockReason = 'Upgraded! Du hast jetzt dein eigenes Gi.';
+                            isUnlocked = true; // Mark as "owned" but show upgrade message
+                        } else {
+                            unlockReason = 'Aktuell in Benutzung - Upgrade nach erstem Stripe!';
+                        }
+                    }
+                } else if (reward.condition === 'assessment-or-first-stripe') {
+                    // Old Used Gi: Available after assessment OR after first stripe
+                    showReward = true;
+                    if (reward.id === 'reward-old-gi' && !hasAssessment && firstStripeComplete) {
+                        showReward = true; // Show as upgrade option
+                        isUnlocked = firstStripeComplete;
+                        unlockReason = 'Nach erstem Stripe freigeschaltet!';
+                    } else if (reward.id === 'reward-old-gi' && hasAssessment) {
+                        isUnlocked = assessmentCompleted;
+                        unlockReason = 'Vom Assessment freigeschaltet!';
+                    } else {
+                        isUnlocked = assessmentCompleted || firstStripeComplete;
+                        if (isUnlocked) unlockReason = 'Freigeschaltet!';
+                    }
+                } else if (reward.condition === 'white') {
+                    showReward = assessmentBelt === 'white';
+                    isUnlocked = assessmentCompleted || firstStripeComplete;
+                    if (isUnlocked) unlockReason = 'Freigeschaltet!';
+                } else if (reward.condition === 'blue-sandbag') {
+                    showReward = isSandbag;
+                    isUnlocked = isSandbag;
+                    if (isUnlocked) unlockReason = 'Verstecktes Potenzial freigeschaltet!';
+                } else if (reward.condition === 'purple') {
+                    showReward = assessmentBelt === 'purple';
+                    isUnlocked = assessmentBelt === 'purple';
+                    if (isUnlocked) unlockReason = 'Außergewöhnliche Leistung!';
+                }
+                
+                if (!showReward) return;
+                
+                const rewardHTML = `
+                    <div class="shop-item ${isUnlocked ? 'owned' : ''}" style="border: 2px solid ${isUnlocked ? 'var(--success-green)' : 'var(--accent-gold)'};">
+                        <div class="item-icon">${reward.icon}</div>
+                        <div class="item-name">${reward.name}</div>
+                        <div class="item-description">${reward.description}</div>
+                        ${unlockReason ? `<div style="color: var(--accent-gold); font-weight: 600; margin-top: 0.5rem; font-size: 0.9rem;">${unlockReason}</div>` : ''}
+                        <div class="item-price">
+                            <span class="price-coins" style="color: var(--success-green);">KOSTENLOS</span>
+                            <button class="buy-btn" ${isUnlocked ? 'disabled' : ''} 
+                                    onclick="claimReward('${reward.id}')"
+                                    style="${isUnlocked ? 'opacity: 0.5; cursor: not-allowed;' : 'background: var(--success-green);'}">
+                                ${isUnlocked ? 'Abgeholt ✓' : 'Kostenlos abholen'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += rewardHTML;
+            });
+        }
+
+        // Auto-claim first stripe kit (for direct white belt path)
+        function autoClaimFirstStripeKit() {
+            const firstStripeComplete = localStorage.getItem('whiteBeltStripe1Complete') === 'true';
+            const hasAssessment = !!localStorage.getItem('beltAssessmentResult');
+            
+            // Only for direct white belt path (no assessment) after first stripe
+            if (firstStripeComplete && !hasAssessment) {
+                const claimed = JSON.parse(localStorage.getItem('assessmentRewardsClaimed') || '[]');
+                
+                // Auto-claim full kit
+                const kitItems = ['reward-old-gi', 'reward-wrinkled-belt-white', 'reward-flip-flops'];
+                let newClaims = false;
+                
+                kitItems.forEach(itemId => {
+                    if (!claimed.includes(itemId)) {
+                        claimed.push(itemId);
+                        const reward = assessmentRewards.find(r => r.id === itemId);
+                        if (reward) {
+                            applyItem(reward, 'reward');
+                            newClaims = true;
+                        }
+                    }
+                });
+                
+                if (newClaims) {
+                    localStorage.setItem('assessmentRewardsClaimed', JSON.stringify(claimed));
+                    // Show notification
+                    if (window.confetti) {
+                        confetti({ particleCount: 150, spread: 70 });
+                    }
+                    console.log('🎁 First Stripe Kit auto-claimed!');
+                }
+            }
+        }
+
+        // Claim assessment reward
+        function claimReward(rewardId) {
+            const reward = assessmentRewards.find(r => r.id === rewardId);
+            if (!reward) return;
+            
+            // Check if already claimed
+            const claimed = JSON.parse(localStorage.getItem('assessmentRewardsClaimed') || '[]');
+            if (claimed.includes(rewardId)) {
+                alert('Du hast diese Belohnung bereits abgeholt!');
+                return;
+            }
+            
+            // Mark as claimed
+            claimed.push(rewardId);
+            localStorage.setItem('assessmentRewardsClaimed', JSON.stringify(claimed));
+            
+            // Apply reward
+            applyItem(reward, 'reward');
+            
+            // Check for auto-claim after first stripe
+            autoClaimFirstStripeKit();
+            
+            // Show success
+            alert(`✅ ${reward.name} abgeholt! Schau dir deinen Avatar an, um es zu sehen!`);
+            
+            // Reload rewards
+            loadAssessmentRewards();
+            
+            // Confetti
+            if (window.confetti) {
+                confetti({ particleCount: 100, spread: 70 });
+            }
+        }
+
+        // Load avatar items
+        function loadAvatarItems() {
+            const container = document.getElementById('avatarItems');
+            container.innerHTML = '';
+            
+            shopItems.avatar.forEach(item => {
+                const owned = isItemOwned(item.id);
+                const canAfford = window.CoinsSystem && window.CoinsSystem.canAfford(item.price);
+                
+                const itemHTML = `
+                    <div class="shop-item ${owned ? 'owned' : ''}">
+                        <div class="item-icon">${item.icon}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-description">${item.description}</div>
+                        <div class="item-price">
+                            <span class="price-coins">${item.price} 🪙</span>
+                            <button class="buy-btn ${owned ? '' : !canAfford ? 'insufficient' : ''}" 
+                                    ${owned || !canAfford ? 'disabled' : ''} 
+                                    onclick="purchaseItem('${item.id}', 'avatar')">
+                                ${owned ? 'Besessen' : !canAfford ? 'Münzen benötigt' : 'Kaufen'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+        }
+
+        // Load streak items
+        function loadStreakItems() {
+            const container = document.getElementById('streakItems');
+            container.innerHTML = '';
+            
+            shopItems.streak.forEach(item => {
+                const canAfford = window.CoinsSystem && window.CoinsSystem.canAfford(item.price);
+                
+                const itemHTML = `
+                    <div class="shop-item">
+                        <div class="item-icon">${item.icon}</div>
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-description">${item.description}</div>
+                        <div class="item-price">
+                            <span class="price-coins">${item.price} 🪙</span>
+                            <button class="buy-btn ${!canAfford ? 'insufficient' : ''}" 
+                                    ${!canAfford ? 'disabled' : ''} 
+                                    onclick="purchaseItem('${item.id}', 'streak')">
+                                ${!canAfford ? 'Münzen benötigt' : 'Kaufen'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += itemHTML;
+            });
+        }
+
+        // Check if item is owned
+        function isItemOwned(itemId) {
+            const owned = JSON.parse(localStorage.getItem('shopOwnedItems') || '[]');
+            return owned.includes(itemId);
+        }
+
+        // Purchase item
+        function purchaseItem(itemId, category) {
+            if (!window.CoinsSystem) {
+                alert('Coins system not loaded');
+                return;
+            }
+            
+            // Find item
+            const items = category === 'avatar' ? shopItems.avatar : shopItems.streak;
+            const item = items.find(i => i.id === itemId);
+            
+            if (!item) {
+                alert('Item nicht gefunden');
+                return;
+            }
+            
+            // Check if owned (for avatar items)
+            if (category === 'avatar' && isItemOwned(itemId)) {
+                alert('You already own this item!');
+                return;
+            }
+            
+            // Check coins
+            if (!window.CoinsSystem.canAfford(item.price)) {
+                alert('Not enough coins!');
+                return;
+            }
+            
+            // Spend coins
+            const result = window.CoinsSystem.spendCoins(item.price);
+            
+            if (result.success) {
+                // Add to owned items (avatar)
+                if (category === 'avatar') {
+                    const owned = JSON.parse(localStorage.getItem('shopOwnedItems') || '[]');
+                    owned.push(itemId);
+                    localStorage.setItem('shopOwnedItems', JSON.stringify(owned));
+                }
+                
+                // Apply item
+                applyItem(item, category);
+                
+                // Save purchase
+                savePurchase(item, category);
+                
+                // Update UI
+                updateCoinsBalance();
+                loadShopItems();
+                
+                // Confetti
+                if (window.confetti) {
+                    confetti({ particleCount: 100, spread: 70 });
+                }
+                
+                alert(`✅ Purchased ${item.name}!`);
+            } else {
+                alert('Purchase failed: ' + result.error);
+            }
+        }
+
+        // Apply item
+        function applyItem(item, category) {
+            if (category === 'reward') {
+                // Handle assessment rewards
+                if (item.type === 'gi') {
+                    const settings = window.EnhancedAvatarSystem ? window.EnhancedAvatarSystem.getSettings() : {};
+                    settings.customGiColor = item.value;
+                    if (window.EnhancedAvatarSystem) {
+                        window.EnhancedAvatarSystem.saveSettings(settings);
+                    }
+                    // Save reward as owned
+                    const owned = JSON.parse(localStorage.getItem('shopOwnedItems') || '[]');
+                    if (!owned.includes(item.id)) {
+                        owned.push(item.id);
+                        localStorage.setItem('shopOwnedItems', JSON.stringify(owned));
+                    }
+                } else if (item.type === 'belt') {
+                    // Save belt reward
+                    localStorage.setItem('assessmentBeltReward', item.value);
+                } else if (item.type === 'accessory') {
+                    // Add accessory
+                    if (window.EnhancedAvatarSystem) {
+                        window.EnhancedAvatarSystem.addAccessory(item.value);
+                    }
+                }
+            } else if (category === 'avatar') {
+                if (item.type === 'gi') {
+                    // Save as custom gi color
+                    const settings = window.EnhancedAvatarSystem ? window.EnhancedAvatarSystem.getSettings() : {};
+                    settings.customGiColor = item.value;
+                    if (window.EnhancedAvatarSystem) {
+                        window.EnhancedAvatarSystem.saveSettings(settings);
+                    }
+                } else if (item.type === 'hair') {
+                    // Apply hair color
+                    if (window.EnhancedAvatarSystem) {
+                        window.EnhancedAvatarSystem.setHairColor(item.value);
+                    }
+                } else if (item.type === 'accessory') {
+                    // Add accessory
+                    if (window.EnhancedAvatarSystem) {
+                        window.EnhancedAvatarSystem.addAccessory(item.value);
+                    }
+                }
+            } else if (category === 'streak') {
+                if (item.type === 'freeze') {
+                    // Add streak freeze
+                    const freezes = parseInt(localStorage.getItem('streakFreezes') || '0');
+                    localStorage.setItem('streakFreezes', (freezes + 1).toString());
+                } else if (item.days) {
+                    // Extend streak
+                    const currentStreak = parseInt(localStorage.getItem('dailyStreak') || '0');
+                    localStorage.setItem('dailyStreak', (currentStreak + item.days).toString());
+                    if (window.DAILY_STREAK && window.DAILY_STREAK.displayStreak) {
+                        window.DAILY_STREAK.displayStreak();
+                    }
+                }
+            }
+        }
+
+        // Save purchase to history
+        function savePurchase(item, category) {
+            const history = JSON.parse(localStorage.getItem('shopPurchaseHistory') || '[]');
+            history.unshift({
+                id: item.id,
+                name: item.name,
+                category: category,
+                price: item.price,
+                timestamp: new Date().toISOString()
+            });
+            
+            // Keep last 50 purchases
+            if (history.length > 50) {
+                history.pop();
+            }
+            
+            localStorage.setItem('shopPurchaseHistory', JSON.stringify(history));
+            loadPurchaseHistory();
+        }
+
+        // Load purchase history
+        function loadPurchaseHistory() {
+            const container = document.getElementById('purchaseHistory');
+            const history = JSON.parse(localStorage.getItem('shopPurchaseHistory') || '[]');
+            
+            if (history.length === 0) {
+                container.innerHTML = '<p style="color: var(--text-muted); text-align: center; padding: 2rem;">Noch keine Käufe. Fang an zu shoppen!</p>';
+                return;
+            }
+            
+            container.innerHTML = '';
+            history.forEach(purchase => {
+                const date = new Date(purchase.timestamp).toLocaleDateString();
+                const historyHTML = `
+                    <div class="history-item">
+                        <div>
+                            <div style="font-weight: 600;">${purchase.name}</div>
+                            <div style="color: var(--text-muted); font-size: 0.9rem;">${date}</div>
+                        </div>
+                        <div style="color: var(--accent-gold); font-weight: 700;">${purchase.price} 🪙</div>
+                    </div>
+                `;
+                container.innerHTML += historyHTML;
+            });
+        }
+    </script>
+
+    <!-- Screen Reader Enhancements for Accessibility -->
+    <script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>
+

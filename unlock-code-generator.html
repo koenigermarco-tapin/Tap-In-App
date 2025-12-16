@@ -1,404 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <title>Tap-In Unlock Code Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Tap-In Unlock Code Generator</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Tap-In Unlock Code Generator - TAP-IN Leadership Academy">
 </head>
 <body class="bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 min-h-screen p-8">
-    
-    <div class="max-w-4xl mx-auto">
-        
-        <!-- Header -->
-        <div class="text-center mb-12">
-            <h1 class="text-5xl font-bold text-white mb-4">🔓 Unlock Code Generator</h1>
-            <p class="text-gray-300 text-lg">Generate unique unlock codes for Tap-In Gym members</p>
-        </div>
-
-        <!-- Generator Form -->
-        <div class="bg-white rounded-lg shadow-2xl p-8 mb-8">
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                
-                <!-- Tier Selection -->
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Membership Tier</label>
-                    <select id="tier" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                        <option value="CHALLENGER">🥉 Challenger ($29/mo)</option>
-                        <option value="CONTENDER">🥈 Contender ($79/mo)</option>
-                        <option value="CHAMPION">🥇 Champion ($199/mo)</option>
-                    </select>
-                </div>
-
-                <!-- Quantity -->
-                <div>
-                    <label class="block text-gray-700 font-semibold mb-2">Number of Codes</label>
-                    <input 
-                        type="number" 
-                        id="quantity" 
-                        min="1" 
-                        max="100" 
-                        value="1" 
-                        class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    >
-                    <p class="text-sm text-gray-500 mt-1">Max 100 codes per batch</p>
-                </div>
-
-            </div>
-
-            <!-- Member Name (Optional) -->
-            <div class="mb-6">
-                <label class="block text-gray-700 font-semibold mb-2">Member Name (Optional)</label>
-                <input 
-                    type="text" 
-                    id="memberName" 
-                    placeholder="e.g. Marco Koenigger"
-                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                >
-                <p class="text-sm text-gray-500 mt-1">Include name for tracking purposes (not part of code)</p>
-            </div>
-
-            <!-- Generate Button -->
-            <button 
-                onclick="generateCodes()" 
-                class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 rounded-lg hover:from-purple-700 hover:to-pink-700 transition transform hover:scale-105 shadow-lg"
-            >
-                🚀 Generate Codes
-            </button>
-
-        </div>
-
-        <!-- Results Section -->
-        <div id="results" class="hidden bg-white rounded-lg shadow-2xl p-8">
-            
-            <div class="flex justify-between items-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-800">Generated Codes</h2>
-                <div class="flex gap-3">
-                    <button 
-                        onclick="copyAllCodes()" 
-                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
-                    >
-                        📋 Copy All
-                    </button>
-                    <button 
-                        onclick="exportCSV()" 
-                        class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2"
-                    >
-                        📊 Export CSV
-                    </button>
-                </div>
-            </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-3 gap-4 mb-6">
-                <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white">
-                    <p class="text-sm opacity-80">Total Codes</p>
-                    <p id="totalCodes" class="text-3xl font-bold">0</p>
-                </div>
-                <div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-4 text-white">
-                    <p class="text-sm opacity-80">Tier</p>
-                    <p id="tierDisplay" class="text-3xl font-bold">-</p>
-                </div>
-                <div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg p-4 text-white">
-                    <p class="text-sm opacity-80">Generated</p>
-                    <p id="timestamp" class="text-sm font-bold">-</p>
-                </div>
-            </div>
-
-            <!-- Codes List -->
-            <div class="bg-gray-50 rounded-lg p-6 max-h-96 overflow-y-auto">
-                <div id="codesList" class="space-y-2"></div>
-            </div>
-
-            <!-- Instructions -->
-            <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h3 class="font-semibold text-yellow-800 mb-2">📨 How to Use These Codes:</h3>
-                <ol class="text-sm text-yellow-700 space-y-1">
-                    <li>1. Copy individual codes or export to CSV</li>
-                    <li>2. Send to members via Skool DM or email</li>
-                    <li>3. Members enter code in Tap-In app → "Unlock Full Access"</li>
-                    <li>4. Track code usage in your member spreadsheet</li>
-                </ol>
-            </div>
-
-        </div>
-
-        <!-- Code History -->
-        <div id="history" class="hidden bg-white rounded-lg shadow-2xl p-8 mt-8">
-            <h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Generations</h2>
-            <div id="historyList" class="space-y-3"></div>
-        </div>
-
-    </div>
-
-    <script>
+<div class="max-w-4xl mx-auto">
+<!-- Header -->
+<div class="text-center mb-12">
+<h1 class="text-5xl font-bold text-white mb-4">🔓 Unlock Code Generator</h1>
+<p class="text-gray-300 text-lg">Generate unique unlock codes for Tap-In Gym members</p>
+</div>
+<!-- Generator Form -->
+<div class="bg-white rounded-lg shadow-2xl p-8 mb-8">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<!-- Tier Selection -->
+<div>
+<label class="block text-gray-700 font-semibold mb-2">Membership Tier</label>
+<select id="tier" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+<option value="CHALLENGER">🥉 Challenger ($29/mo)</option>
+<option value="CONTENDER">🥈 Contender ($79/mo)</option>
+<option value="CHAMPION">🥇 Champion ($199/mo)</option>
+</select>
+</div>
+<!-- Quantity -->
+<div>
+<label class="block text-gray-700 font-semibold mb-2">Number of Codes</label>
+<input
+type="number"
+id="quantity"
+min="1"
+max="100"
+value="1"
+class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+>
+<p class="text-sm text-gray-500 mt-1">Max 100 codes per batch</p>
+</div>
+</div>
+<!-- Member Name (Optional) -->
+<div class="mb-6">
+<label class="block text-gray-700 font-semibold mb-2">Member Name (Optional)</label>
+<input
+type="text"
+id="memberName"
+placeholder="e.g. Marco Koenigger"
+class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+>
+<p class="text-sm text-gray-500 mt-1">Include name for tracking purposes (not part of code)</p>
+</div>
+<!-- Generate Button -->
+<button
+onclick="generateCodes()"
+class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold py-4 rounded-lg hover:from-purple-700 hover:to-pink-700 transition transform hover:scale-105 shadow-lg"
+aria-label="Generate unlock codes"
+ aria-label="Generate">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-rocket-launch"></use></svg> Generate Codes
+</button>
+</div>
+<!-- Results Section -->
+<div id="results" class="hidden bg-white rounded-lg shadow-2xl p-8">
+<div class="flex justify-between items-center mb-6">
+<h2 class="text-2xl font-bold text-gray-800">Generated Codes</h2>
+<div class="flex gap-3">
+<button
+onclick="copyAllCodes()"
+class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+aria-label="Copy all codes">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-clipboard-document-list"></use></svg> Copy All
+</button>
+<button
+onclick="exportCSV()"
+class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2"
+aria-label="Export to CSV">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Export CSV
+</button>
+</div>
+</div>
+<!-- Stats -->
+<div class="grid grid-cols-3 gap-4 mb-6">
+<div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-4 text-white">
+<p class="text-sm opacity-80">Total Codes</p>
+<p id="totalCodes" class="text-3xl font-bold">0</p>
+</div>
+<div class="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-4 text-white">
+<p class="text-sm opacity-80">Tier</p>
+<p id="tierDisplay" class="text-3xl font-bold">-</p>
+</div>
+<div class="bg-gradient-to-br from-pink-500 to-pink-600 rounded-lg p-4 text-white">
+<p class="text-sm opacity-80">Generated</p>
+<p id="timestamp" class="text-sm font-bold">-</p>
+</div>
+</div>
+<!-- Codes List -->
+<div class="bg-gray-50 rounded-lg p-6 max-h-96 overflow-y-auto">
+<div id="codesList" class="space-y-2"></div>
+</div>
+<!-- Instructions -->
+<div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+<h3 class="font-semibold text-yellow-800 mb-2">📨 How to Use These Codes:</h3>
+<ol class="text-sm text-yellow-700 space-y-1">
+<li>1. Copy individual codes or export to CSV</li>
+<li>2. Send to members via Skool DM or email</li>
+<li>3. Members enter code in Tap-In app → "Unlock Full Access"</li>
+<li>4. Track code usage in your member spreadsheet</li>
+</ol>
+</div>
+</div>
+<!-- Code History -->
+<div id="history" class="hidden bg-white rounded-lg shadow-2xl p-8 mt-8">
+<h2 class="text-2xl font-bold text-gray-800 mb-6">Recent Generations</h2>
+<div id="historyList" class="space-y-3"></div>
+</div>
+</div>
+<script>
         // Code generation logic
-        let generatedCodes = [];
-        let codeHistory = [];
-
-        function generateCode(tier) {
-            const year = new Date().getFullYear();
-            const month = String(new Date().getMonth() + 1).padStart(2, '0');
-            const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-            const checksum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
-            
-            return `${tier}-${year}${month}-${random}${checksum}`;
-        }
-
-        function generateCodes() {
-            const tier = document.getElementById('tier').value;
-            const quantity = parseInt(document.getElementById('quantity').value);
-            const memberName = document.getElementById('memberName').value;
-
+let generatedCodes = [];
+let codeHistory = [];
+function generateCode(tier) {
+const year = new Date().getFullYear();
+const month = String(new Date().getMonth() + 1).padStart(2, '0');
+const random = Math.random().toString(36).substring(2, 6).toUpperCase();
+const checksum = Math.floor(Math.random() * 10000).toString().padStart(4, '0');
+return `${tier}-${year}${month}-${random}${checksum}`;
+}
+function generateCodes() {
+const tier = document.getElementById('tier').value;
+const quantity = parseInt(document.getElementById('quantity').value);
+const memberName = document.getElementById('memberName').value;
             // Validation
-            if (quantity < 1 || quantity > 100) {
-                alert('❌ Please enter a quantity between 1 and 100');
-                return;
-            }
-
+if (quantity < 1 || quantity > 100) {
+alert('❌ Please enter a quantity between 1 and 100');
+return;
+}
             // Generate codes
-            generatedCodes = [];
-            const codes = new Set(); // Use Set to ensure uniqueness
-
-            while (codes.size < quantity) {
-                codes.add(generateCode(tier));
-            }
-
-            generatedCodes = Array.from(codes).map(code => ({
-                code,
-                tier,
-                memberName: memberName || 'N/A',
-                timestamp: new Date().toISOString()
-            }));
-
+generatedCodes = [];
+const codes = new Set(); // Use Set to ensure uniqueness
+while (codes.size < quantity) {
+codes.add(generateCode(tier));
+}
+generatedCodes = Array.from(codes).map(code => ({
+code,
+tier,
+memberName: memberName || 'N/A',
+timestamp: new Date().toISOString()
+}));
             // Display results
-            displayCodes();
-            saveToHistory();
-            
+displayCodes();
+saveToHistory();
             // Show results section
-            document.getElementById('results').classList.remove('hidden');
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function displayCodes() {
-            const tier = document.getElementById('tier').value;
-            const quantity = generatedCodes.length;
-            const timestamp = new Date().toLocaleString();
-
+document.getElementById('results').classList.remove('hidden');
+document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
+function displayCodes() {
+const tier = document.getElementById('tier').value;
+const quantity = generatedCodes.length;
+const timestamp = new Date().toLocaleString();
             // Update stats
-            document.getElementById('totalCodes').textContent = quantity;
-            document.getElementById('tierDisplay').textContent = getTierEmoji(tier);
-            document.getElementById('timestamp').textContent = timestamp;
-
+document.getElementById('totalCodes').textContent = quantity;
+document.getElementById('tierDisplay').textContent = getTierEmoji(tier);
+document.getElementById('timestamp').textContent = timestamp;
             // Display codes
-            const codesList = document.getElementById('codesList');
-            codesList.innerHTML = '';
-
-            generatedCodes.forEach((item, index) => {
-                const codeDiv = document.createElement('div');
-                codeDiv.className = 'flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 hover:border-purple-300 transition';
-                codeDiv.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-gray-500 font-mono text-sm">#${String(index + 1).padStart(2, '0')}</span>
-                        <span class="font-mono text-lg font-bold text-purple-600">${item.code}</span>
-                        ${item.memberName !== 'N/A' ? `<span class="text-sm text-gray-500">→ ${item.memberName}</span>` : ''}
-                    </div>
-                    <button 
-                        onclick="copyCode('${item.code}')" 
-                        class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition"
-                    >
-                        Copy
-                    </button>
-                `;
-                codesList.appendChild(codeDiv);
-            });
-        }
-
-        function getTierEmoji(tier) {
-            const emojis = {
-                'CHALLENGER': '🥉',
-                'CONTENDER': '🥈',
-                'CHAMPION': '🥇'
-            };
-            return emojis[tier] || '🎫';
-        }
-
-        function copyCode(code) {
-            navigator.clipboard.writeText(code).then(() => {
+const codesList = document.getElementById('codesList');
+safeSetInnerHTML(codesList, '');
+generatedCodes.forEach((item, index) => {
+const codeDiv = document.createElement('div');
+codeDiv.className = 'flex items-center justify-between bg-white p-3 rounded-lg border border-gray-200 hover:border-purple-300 transition';
+safeSetInnerHTML(codeDiv, `
+<div class="flex items-center gap-3">
+<span class="text-gray-500 font-mono text-sm">#${String(index + 1).padStart(2, '0')}</span>
+<span class="font-mono text-lg font-bold text-purple-600">${item.code}</span>
+${item.memberName !== 'N/A' ? `<span class="text-sm text-gray-500">→ ${item.memberName}</span>` : ''}
+</div>
+<button
+onclick="copyCode('${item.code}')"
+class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-3 py-1 rounded text-sm transition"
+aria-label="Copy code">
+Copy
+</button>
+`);
+codesList.appendChild(codeDiv);
+});
+}
+function getTierEmoji(tier) {
+const emojis = {
+'CHALLENGER': '🥉',
+'CONTENDER': '🥈',
+'CHAMPION': '🥇'
+};
+return emojis[tier] || '🎫';
+}
+function copyCode(code) {
+navigator.clipboard.writeText(code).then(() => {
                 // Visual feedback
-                const buttons = document.querySelectorAll('button');
-                buttons.forEach(btn => {
-                    if (btn.textContent === 'Copy' && btn.onclick && btn.onclick.toString().includes(code)) {
-                        btn.textContent = '✓ Copied!';
-                        btn.classList.add('bg-green-100', 'text-green-700');
-                        setTimeout(() => {
-                            btn.textContent = 'Copy';
-                            btn.classList.remove('bg-green-100', 'text-green-700');
-                        }, 2000);
-                    }
-                });
-            });
-        }
-
-        function copyAllCodes() {
-            const codesText = generatedCodes.map(item => {
-                return item.memberName !== 'N/A' 
-                    ? `${item.code} → ${item.memberName}`
-                    : item.code;
-            }).join('\n');
-
-            navigator.clipboard.writeText(codesText).then(() => {
-                alert('✓ All codes copied to clipboard!');
-            });
-        }
-
-        function exportCSV() {
-            const tier = document.getElementById('tier').value;
-            const tierNames = {
-                'CHALLENGER': 'Challenger',
-                'CONTENDER': 'Contender',
-                'CHAMPION': 'Champion'
-            };
-
+const buttons = document.querySelectorAll('button');
+buttons.forEach(btn => {
+if (btn.textContent === 'Copy' && btn.onclick && btn.onclick.toString().includes(code)) {
+btn.textContent = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg> Copied!';
+btn.classList.add('bg-green-100', 'text-green-700');
+setTimeout(() => {
+btn.textContent = 'Copy';
+btn.classList.remove('bg-green-100', 'text-green-700');
+}, 2000);
+}
+});
+});
+}
+function copyAllCodes() {
+const codesText = generatedCodes.map(item => {
+return item.memberName !== 'N/A'
+? `${item.code} → ${item.memberName}`
+: item.code;
+}).join('\n');
+navigator.clipboard.writeText(codesText).then(() => {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg> All codes copied to clipboard!');
+});
+}
+function exportCSV() {
+const tier = document.getElementById('tier').value;
+const tierNames = {
+'CHALLENGER': 'Challenger',
+'CONTENDER': 'Contender',
+'CHAMPION': 'Champion'
+};
             // Create CSV content
-            let csv = 'Code,Tier,Member Name,Generated Date,Status\n';
-            
-            generatedCodes.forEach(item => {
-                const date = new Date(item.timestamp).toLocaleDateString();
-                csv += `"${item.code}","${tierNames[item.tier]}","${item.memberName}","${date}","Unused"\n`;
-            });
-
+let csv = 'Code,Tier,Member Name,Generated Date,Status\n';
+generatedCodes.forEach(item => {
+const date = new Date(item.timestamp).toLocaleDateString();
+csv += `"${item.code}","${tierNames[item.tier]}","${item.memberName}","${date}","Unused"\n`;
+});
             // Create download
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `tap-in-unlock-codes-${tier}-${Date.now()}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-
-            alert('✓ CSV exported successfully!');
-        }
-
-        function saveToHistory() {
-            const tier = document.getElementById('tier').value;
-            const quantity = generatedCodes.length;
-            const memberName = document.getElementById('memberName').value;
-
-            codeHistory.unshift({
-                tier,
-                quantity,
-                memberName: memberName || 'N/A',
-                timestamp: new Date().toISOString(),
-                codes: [...generatedCodes]
-            });
-
+const blob = new Blob([csv], { type: 'text/csv' });
+const url = window.URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `tap-in-unlock-codes-${tier}-${Date.now()}.csv`;
+a.click();
+window.URL.revokeObjectURL(url);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg> CSV exported successfully!');
+}
+function saveToHistory() {
+const tier = document.getElementById('tier').value;
+const quantity = generatedCodes.length;
+const memberName = document.getElementById('memberName').value;
+codeHistory.unshift({
+tier,
+quantity,
+memberName: memberName || 'N/A',
+timestamp: new Date().toISOString(),
+codes: [...generatedCodes]
+});
             // Keep only last 10 generations
-            if (codeHistory.length > 10) {
-                codeHistory = codeHistory.slice(0, 10);
-            }
-
+if (codeHistory.length > 10) {
+codeHistory = codeHistory.slice(0, 10);
+}
             // Save to localStorage
-            localStorage.setItem('tapInCodeHistory', JSON.stringify(codeHistory));
-            
+localStorage.setItem('tapInCodeHistory', JSON.stringify(codeHistory));
             // Display history
-            displayHistory();
-        }
-
-        function displayHistory() {
-            const historyDiv = document.getElementById('history');
-            const historyList = document.getElementById('historyList');
-
-            if (codeHistory.length === 0) {
-                historyDiv.classList.add('hidden');
-                return;
-            }
-
-            historyDiv.classList.remove('hidden');
-            historyList.innerHTML = '';
-
-            codeHistory.forEach((item, index) => {
-                const historyItem = document.createElement('div');
-                historyItem.className = 'flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200';
-                historyItem.innerHTML = `
-                    <div>
-                        <p class="font-semibold text-gray-800">
-                            ${getTierEmoji(item.tier)} ${item.tier} × ${item.quantity}
-                            ${item.memberName !== 'N/A' ? `<span class="text-gray-500 text-sm">→ ${item.memberName}</span>` : ''}
-                        </p>
-                        <p class="text-sm text-gray-500">${new Date(item.timestamp).toLocaleString()}</p>
-                    </div>
-                    <button 
-                        onclick="viewHistoryItem(${index})" 
-                        class="bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-2 rounded text-sm transition"
-                    >
-                        View Codes
-                    </button>
-                `;
-                historyList.appendChild(historyItem);
-            });
-        }
-
-        function viewHistoryItem(index) {
-            const item = codeHistory[index];
-            generatedCodes = item.codes;
-            
+displayHistory();
+}
+function displayHistory() {
+const historyDiv = document.getElementById('history');
+const historyList = document.getElementById('historyList');
+if (codeHistory.length === 0) {
+historyDiv.classList.add('hidden');
+return;
+}
+historyDiv.classList.remove('hidden');
+safeSetInnerHTML(historyList, '');
+codeHistory.forEach((item, index) => {
+const historyItem = document.createElement('div');
+historyItem.className = 'flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200';
+safeSetInnerHTML(historyItem, `
+<div>
+<p class="font-semibold text-gray-800">
+${getTierEmoji(item.tier)} ${item.tier} × ${item.quantity}
+${item.memberName !== 'N/A' ? `<span class="text-gray-500 text-sm">→ ${item.memberName}</span>` : ''}
+</p>
+<p class="text-sm text-gray-500">${new Date(item.timestamp).toLocaleString()}</p>
+</div>
+<button
+onclick="viewHistoryItem(${index})"
+class="bg-purple-100 hover:bg-purple-200 text-purple-700 px-4 py-2 rounded text-sm transition"
+aria-label="View codes">
+View Codes
+</button>
+`);
+historyList.appendChild(historyItem);
+});
+}
+function viewHistoryItem(index) {
+const item = codeHistory[index];
+generatedCodes = item.codes;
             // Update form
-            document.getElementById('tier').value = item.tier;
-            document.getElementById('memberName').value = item.memberName !== 'N/A' ? item.memberName : '';
-            
+document.getElementById('tier').value = item.tier;
+document.getElementById('memberName').value = item.memberName !== 'N/A' ? item.memberName : '';
             // Display
-            displayCodes();
-            document.getElementById('results').classList.remove('hidden');
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-        }
-
+displayCodes();
+document.getElementById('results').classList.remove('hidden');
+document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+}
         // Load history on page load
-        window.onload = function() {
-            const savedHistory = localStorage.getItem('tapInCodeHistory');
-            if (savedHistory) {
-                codeHistory = JSON.parse(savedHistory);
-                displayHistory();
-            }
-        };
-    </script>
-
-    <!-- Footer -->
-    <div class="text-center mt-12 text-gray-400 text-sm">
-        <p>🥋 Tap-In Gym Unlock Code Generator</p>
-        <p class="mt-2">Codes are randomly generated and unique. Keep a backup of exported CSVs.</p>
-    </div>
-
-
-    <!-- Performance Optimizer - Load First -->
+window.onload = function() {
+const savedHistory = localStorage.getItem('tapInCodeHistory');
+if (savedHistory) {
+codeHistory = JSON.parse(savedHistory);
+displayHistory();
+}
+};
+</script>
+<!-- Footer -->
+<div class="text-center mt-12 text-gray-400 text-sm">
+<p><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg> Tap-In Gym Unlock Code Generator</p>
+<p class="mt-2">Codes are randomly generated and unique. Keep a backup of exported CSVs.</p>
+</div>
+<!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.min.js"></script>
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.min.js"></script>
 <script src="js/storage-health.min.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>

@@ -1,363 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <title>QR Card Generator - TAP-IN</title>
-    <meta name="robots" content="noindex, nofollow">
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
-            min-height: 100vh;
-            padding: 2rem;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .generator-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        
-        .editor-panel {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-        }
-        
-        .preview-panel {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 2rem;
-            height: fit-content;
-        }
-        
-        h1 {
-            color: #1a365d;
-            margin-bottom: 2rem;
-            font-size: 28px;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        label {
-            display: block;
-            color: #1e293b;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            font-size: 14px;
-        }
-        
-        input, textarea {
-            width: 100%;
-            padding: 0.75rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 16px;
-            font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #7c3aed;
-        }
-        
-        textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-        
-        .button-group {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 1rem;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3);
-        }
-        
-        .btn-secondary {
-            background: #f1f5f9;
-            color: #1a365d;
-        }
-        
-        .card-preview {
-            background: white;
-            border: 3px solid #1a365d;
-            border-radius: 16px;
-            padding: 2rem;
-            text-align: center;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        
-        .qr-code {
-            margin: 1.5rem 0;
-            display: flex;
-            justify-content: center;
-        }
-        
-        #qrcode {
-            padding: 1rem;
-            background: white;
-            border-radius: 12px;
-        }
-        
-        .card-info {
-            text-align: left;
-            margin-top: 1.5rem;
-        }
-        
-        .card-info h2 {
-            color: #1a365d;
-            font-size: 24px;
-            margin-bottom: 0.5rem;
-        }
-        
-        .card-info p {
-            color: #64748b;
-            margin-bottom: 0.5rem;
-        }
-        
-        .password-prompt {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10000;
-        }
-        
-        .password-box {
-            background: white;
-            padding: 3rem;
-            border-radius: 16px;
-            text-align: center;
-            max-width: 400px;
-        }
-        
-        .password-box input {
-            margin: 1rem 0;
-            padding: 1rem;
-            font-size: 18px;
-        }
-        
-        @media (max-width: 968px) {
-            .generator-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .preview-panel {
-                position: relative;
-                top: 0;
-            }
-        }
-    </style>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#c62828">
-    <link rel="apple-touch-icon" href="/icon-192.png">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="TAP-IN">
-    <link rel="stylesheet" href="css/pwa-install-banner.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>QR Card Generator - TAP-IN</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+min-height: 100vh;
+padding: 2rem;
+}
+.container {
+max-width: 1200px;
+margin: 0 auto;
+}
+.generator-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 2rem;
+}
+.editor-panel {
+background: white;
+border-radius: 20px;
+padding: 2rem;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+.preview-panel {
+background: white;
+border-radius: 20px;
+padding: 2rem;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+position: sticky;
+top: 2rem;
+height: fit-content;
+}
+h1 {
+color: var(--bg-primary);
+margin-bottom: 2rem;
+font-size: 28px;
+}
+.form-group {
+margin-bottom: 1.5rem;
+}
+label {
+display: block;
+color: var(--bg-secondary);
+font-weight: 600;
+margin-bottom: 0.5rem;
+font-size: 14px;
+}
+input, textarea {
+width: 100%;
+padding: 0.75rem;
+border: 2px solid var(--border-light);
+border-radius: 8px;
+font-size: 16px;
+font-family: inherit;
+transition: border-color 0.2s;
+}
+input:focus, textarea:focus {
+outline: none;
+border-color: #7c3aed;
+}
+textarea {
+resize: vertical;
+min-height: 100px;
+}
+.button-group {
+display: flex;
+gap: 1rem;
+margin-top: 2rem;
+}
+.btn {
+flex: 1;
+padding: 1rem;
+border: none;
+border-radius: 12px;
+font-weight: 700;
+font-size: 16px;
+cursor: pointer;
+transition: all 0.2s;
+}
+.btn-primary {
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+color: white;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 20px rgba(26, 54, 93, 0.3);
+}
+.btn-secondary {
+background: #f1f5f9;
+color: var(--bg-primary);
+}
+.card-preview {
+background: white;
+border: 3px solid var(--bg-primary);
+border-radius: 16px;
+padding: 2rem;
+text-align: center;
+max-width: 400px;
+margin: 0 auto;
+}
+.qr-code {
+margin: 1.5rem 0;
+display: flex;
+justify-content: center;
+}
+#qrcode {
+padding: 1rem;
+background: white;
+border-radius: 12px;
+}
+.card-info {
+text-align: left;
+margin-top: 1.5rem;
+}
+.card-info h2 {
+color: var(--bg-primary);
+font-size: 24px;
+margin-bottom: 0.5rem;
+}
+.card-info p {
+color: var(--text-muted);
+margin-bottom: 0.5rem;
+}
+.password-prompt {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0, 0, 0, 0.9);
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 10000;
+}
+.password-box {
+background: white;
+padding: 3rem;
+border-radius: 16px;
+text-align: center;
+max-width: 400px;
+}
+.password-box input {
+margin: 1rem 0;
+padding: 1rem;
+font-size: 18px;
+}
+@media (max-width: 968px) {
+.generator-grid {
+grid-template-columns: 1fr;
+}
+.preview-panel {
+position: relative;
+top: 0;
+}
+}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAP-IN">
+<link rel="stylesheet" href="css/pwa-install-banner.css">
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="QR Card Generator - TAP-IN - TAP-IN Leadership Academy">
 </head>
 <body>
-    <!-- Password Protection -->
-    <div id="passwordPrompt" class="password-prompt">
-        <div class="password-box">
-            <h2 style="color: #1a365d; margin-bottom: 1rem;">🔒 Private Generator</h2>
-            <p style="color: #64748b; margin-bottom: 1.5rem;">This tool is password protected</p>
-            <input type="password" id="passwordInput" placeholder="Enter password" style="width: 100%; margin-bottom: 1rem;">
-            <button onclick="checkPassword()" class="btn btn-primary" style="width: 100%;">Access</button>
-            <p id="passwordError" style="color: #ef4444; margin-top: 1rem; display: none;">Incorrect password</p>
-        </div>
-    </div>
-    
-    <div class="container" id="mainContent" style="display: none;">
-        <div class="generator-grid">
-            <!-- Editor Panel -->
-            <div class="editor-panel">
-                <h1>🎨 QR Card Generator</h1>
-                
-                <div class="form-group">
-                    <label>First Name</label>
-                    <input type="text" id="firstName" value="Marco" placeholder="Marco">
-                </div>
-                
-                <div class="form-group">
-                    <label>Last Name</label>
-                    <input type="text" id="lastName" value="Koeniger" placeholder="Koeniger">
-                </div>
-                
-                <div class="form-group">
-                    <label>Job Title</label>
-                    <input type="text" id="jobTitle" value="Co-Founder - TAP-IN Leadership Academy" placeholder="Co-Founder - TAP-IN Leadership Academy">
-                </div>
-                
-                <div class="form-group">
-                    <label>Company</label>
-                    <input type="text" id="company" value="TAP-IN" placeholder="TAP-IN">
-                </div>
-                
-                <div class="form-group">
-                    <label>Phone</label>
-                    <input type="tel" id="phone" value="+43 XXX XXX XXXX" placeholder="+43 XXX XXX XXXX">
-                </div>
-                
-                <div class="form-group">
-                    <label>Email</label>
-                    <input type="email" id="email" value="marco@tap-in.com" placeholder="marco@tap-in.com">
-                </div>
-                
-                <div class="form-group">
-                    <label>Website</label>
-                    <input type="url" id="website" value="https://tap-in-platform.netlify.app" placeholder="https://tap-in-platform.netlify.app">
-                </div>
-                
-                <div class="form-group">
-                    <label>Bio (Optional)</label>
-                    <textarea id="bio" placeholder="Short bio...">Leadership development through embodied practice</textarea>
-                </div>
-                
-                <div class="button-group">
-                    <button onclick="generateCard()" class="btn btn-primary">Generate Card</button>
-                    <button onclick="downloadCard()" class="btn btn-secondary">Download PNG</button>
-                </div>
-                
-                <div style="margin-top: 2rem; padding: 1rem; background: #f8fafc; border-radius: 12px;">
-                    <p style="font-size: 14px; color: #64748b;">
-                        <strong>💡 Tip:</strong> Edit any fields above, then click "Generate Card" to update the preview and QR code.
-                    </p>
-                </div>
-            </div>
-            
-            <!-- Preview Panel -->
-            <div class="preview-panel">
-                <h2 style="color: #1a365d; margin-bottom: 1.5rem;">Card Preview</h2>
-                
-                <div id="cardPreview" class="card-preview">
-                    <div class="avatar" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700;" id="previewAvatar">
-                        MK
-                    </div>
-                    
-                    <div class="card-info">
-                        <h2 id="previewName">Marco Koeniger</h2>
-                        <p id="previewTitle">Co-Founder - TAP-IN Leadership Academy</p>
-                        <p id="previewCompany">TAP-IN</p>
-                    </div>
-                    
-                    <div class="qr-code">
-                        <div id="qrcode"></div>
-                    </div>
-                    
-                    <p style="font-size: 12px; color: #94a3b8; margin-top: 1rem;">
-                        Scan to save contact
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <script>
+<!-- Password Protection -->
+<div id="passwordPrompt" class="password-prompt">
+<div class="password-box">
+<h2 style="color: var(--bg-primary); margin-bottom: 1rem;">🔒 Private Generator</h2>
+<p style="color: var(--text-muted); margin-bottom: 1.5rem;">This tool is password protected</p>
+<input type="password" id="passwordInput" placeholder="Enter password" style="width: 100%; margin-bottom: 1rem;">
+<button onclick="checkPassword()" class="btn btn-primary" style="width: 100%;" aria-label="Primary action">Access</button>
+<p id="passwordError" style="color: var(--error); margin-top: 1rem; display: none;">Incorrect password</p>
+</div>
+</div>
+<div class="container" id="mainContent" style="display: none;">
+<div class="generator-grid">
+<!-- Editor Panel -->
+<div class="editor-panel">
+<h1>🎨 QR Card Generator</h1>
+<div class="form-group">
+<label>First Name</label>
+<input type="text" id="firstName" value="Marco" placeholder="Marco">
+</div>
+<div class="form-group">
+<label>Last Name</label>
+<input type="text" id="lastName" value="Koeniger" placeholder="Koeniger">
+</div>
+<div class="form-group">
+<label>Job Title</label>
+<input type="text" id="jobTitle" value="Co-Founder - TAP-IN Leadership Academy" placeholder="Co-Founder - TAP-IN Leadership Academy">
+</div>
+<div class="form-group">
+<label>Company</label>
+<input type="text" id="company" value="TAP-IN" placeholder="TAP-IN">
+</div>
+<div class="form-group">
+<label>Phone</label>
+<input type="tel" id="phone" value="+43 XXX XXX XXXX" placeholder="+43 XXX XXX XXXX">
+</div>
+<div class="form-group">
+<label>Email</label>
+<input type="email" id="email" value="marco@tap-in.com" placeholder="marco@tap-in.com">
+</div>
+<div class="form-group">
+<label>Website</label>
+<input type="url" id="website" value="https://tap-in-platform.netlify.app" placeholder="https://tap-in-platform.netlify.app">
+</div>
+<div class="form-group">
+<label>Bio (Optional)</label>
+<textarea id="bio" placeholder="Short bio...">Leadership development through embodied practice</textarea>
+</div>
+<div class="button-group">
+<button onclick="generateCard()" class="btn btn-primary" aria-label="Primary action">Generate Card</button>
+<button onclick="downloadCard()" class="btn btn-secondary" aria-label="Secondary action">Download PNG</button>
+</div>
+<div style="margin-top: 2rem; padding: 1rem; background: var(--text-primary); border-radius: 12px;">
+<p style="font-size: 14px; color: var(--text-muted);">
+<strong><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-light-bulb"></use></svg> Tip:</strong> Edit any fields above, then click "Generate Card" to update the preview and QR code.
+</p>
+</div>
+</div>
+<!-- Preview Panel -->
+<div class="preview-panel">
+<h2 style="color: var(--bg-primary); margin-bottom: 1.5rem;">Card Preview</h2>
+<div id="cardPreview" class="card-preview">
+<div class="avatar" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; color: white; font-size: 36px; font-weight: 700;" id="previewAvatar">
+MK
+</div>
+<div class="card-info">
+<h2 id="previewName">Marco Koeniger</h2>
+<p id="previewTitle">Co-Founder - TAP-IN Leadership Academy</p>
+<p id="previewCompany">TAP-IN</p>
+</div>
+<div class="qr-code">
+<div id="qrcode"></div>
+</div>
+<p style="font-size: 12px; color: var(--text-secondary); margin-top: 1rem;">
+Scan to save contact
+</p>
+</div>
+</div>
+</div>
+</div>
+<script>
         // Password protection
-        const CORRECT_PASSWORD = "TAPIN2024"; // Change this!
-        
-        function checkPassword() {
-            const input = document.getElementById('passwordInput').value;
-            const errorEl = document.getElementById('passwordError');
-            
-            if (input === CORRECT_PASSWORD) {
-                document.getElementById('passwordPrompt').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                generateQRCode(); // Initial generation
-            } else {
-                errorEl.style.display = 'block';
-                document.getElementById('passwordInput').value = '';
-                document.getElementById('passwordInput').focus();
-            }
-        }
-        
+const CORRECT_PASSWORD = "TAPIN2024"; // Change this!
+function checkPassword() {
+const input = document.getElementById('passwordInput').value;
+const errorEl = document.getElementById('passwordError');
+if (input === CORRECT_PASSWORD) {
+document.getElementById('passwordPrompt').style.display = 'none';
+document.getElementById('mainContent').style.display = 'block';
+generateQRCode(); // Initial generation
+} else {
+errorEl.style.display = 'block';
+document.getElementById('passwordInput').value = '';
+document.getElementById('passwordInput').focus();
+}
+}
         // Allow Enter key
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-        
-        function getInputValue(id) {
-            return document.getElementById(id).value.trim();
-        }
-        
-        function generateQRCode() {
-            const firstName = getInputValue('firstName');
-            const lastName = getInputValue('lastName');
-            const email = getInputValue('email');
-            const phone = getInputValue('phone');
-            const website = getInputValue('website');
-            const jobTitle = getInputValue('jobTitle');
-            const company = getInputValue('company');
-            
+document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+if (e.key === 'Enter') {
+checkPassword();
+}
+});
+function getInputValue(id) {
+return document.getElementById(id).value.trim();
+}
+function generateQRCode() {
+const firstName = getInputValue('firstName');
+const lastName = getInputValue('lastName');
+const email = getInputValue('email');
+const phone = getInputValue('phone');
+const website = getInputValue('website');
+const jobTitle = getInputValue('jobTitle');
+const company = getInputValue('company');
             // Create vCard data for QR code
-            const vcard = `BEGIN:VCARD
+const vcard = `BEGIN:VCARD
 VERSION:3.0
 FN:${firstName} ${lastName}
 N:${lastName};${firstName};;;
@@ -367,106 +320,93 @@ TEL;TYPE=CELL:${phone}
 EMAIL:${email}
 URL:${website}
 END:VCARD`;
-            
             // Generate QR code
-            QRCode.toCanvas(document.getElementById('qrcode'), vcard, {
-                width: 200,
-                margin: 2,
-                color: {
-                    dark: '#1a365d',
-                    light: '#ffffff'
-                }
-            }, function (error) {
-                if (error) {
+QRCode.toCanvas(document.getElementById('qrcode'), vcard, {
+width: 200,
+margin: 2,
+color: {
+dark: 'var(--bg-primary)',
+light: 'var(--belt-white)'
+}
+}, function (error) {
+if (error) {
                     console.error('QR generation error:', error);
-                }
-            });
-        }
-        
-        function updatePreview() {
-            const firstName = getInputValue('firstName');
-            const lastName = getInputValue('lastName');
-            const jobTitle = getInputValue('jobTitle');
-            const company = getInputValue('company');
-            
+}
+});
+}
+function updatePreview() {
+const firstName = getInputValue('firstName');
+const lastName = getInputValue('lastName');
+const jobTitle = getInputValue('jobTitle');
+const company = getInputValue('company');
             // Update preview
-            document.getElementById('previewName').textContent = `${firstName} ${lastName}`;
-            document.getElementById('previewTitle').textContent = jobTitle;
-            document.getElementById('previewCompany').textContent = company;
-            
+document.getElementById('previewName').textContent = `${firstName} ${lastName}`;
+document.getElementById('previewTitle').textContent = jobTitle;
+document.getElementById('previewCompany').textContent = company;
             // Update avatar initials
-            const initials = (firstName[0] || '') + (lastName[0] || '');
-            document.getElementById('previewAvatar').textContent = initials.toUpperCase();
-        }
-        
-        function generateCard() {
-            updatePreview();
-            generateQRCode();
-        }
-        
-        async function downloadCard() {
-            const cardElement = document.getElementById('cardPreview');
-            
-            try {
-                const canvas = await html2canvas(cardElement, {
-                    backgroundColor: '#ffffff',
-                    scale: 2,
-                    logging: false
-                });
-                
-                const link = document.createElement('a');
-                const firstName = getInputValue('firstName');
-                const lastName = getInputValue('lastName');
-                link.download = `${firstName}_${lastName}_contact_card.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            } catch (error) {
+const initials = (firstName[0] || '') + (lastName[0] || '');
+document.getElementById('previewAvatar').textContent = initials.toUpperCase();
+}
+function generateCard() {
+updatePreview();
+generateQRCode();
+}
+async function downloadCard() {
+const cardElement = document.getElementById('cardPreview');
+try {
+const canvas = await html2canvas(cardElement, {
+backgroundColor: 'var(--belt-white)',
+scale: 2,
+logging: false
+});
+const link = document.createElement('a');
+const firstName = getInputValue('firstName');
+const lastName = getInputValue('lastName');
+link.download = `${firstName}_${lastName}_contact_card.png`;
+link.href = canvas.toDataURL('image/png');
+link.click();
+} catch (error) {
                 console.error('Download error:', error);
-                alert('Error generating image. Please try again.');
-            }
-        }
-        
+alert('Error generating image. Please try again.');
+}
+}
         // Auto-update preview on input change
-        ['firstName', 'lastName', 'jobTitle', 'company', 'phone', 'email', 'website'].forEach(id => {
-            document.getElementById(id).addEventListener('input', updatePreview);
-        });
-        
+['firstName', 'lastName', 'jobTitle', 'company', 'phone', 'email', 'website'].forEach(id => {
+document.getElementById(id).addEventListener('input', updatePreview);
+});
         // Generate on load (after password)
-        window.generateCard = generateCard;
-        window.downloadCard = downloadCard;
-        window.checkPassword = checkPassword;
-    </script>
-    
-    <!-- Core Scripts -->
-    <script src="js/keyboard-navigation.js"></script>
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered:', registration.scope);
-                        
+window.generateCard = generateCard;
+window.downloadCard = downloadCard;
+window.checkPassword = checkPassword;
+</script>
+<!-- Core Scripts -->
+<script src="js/keyboard-navigation.js"></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
                         // Check for updates
-                        registration.addEventListener('updatefound', function() {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     // New service worker available
                                     console.log('New service worker available');
-                                }
-                            });
-                        });
-                    })
-                    .catch(function(error) {
+}
+});
+});
+})
+.catch(function(error) {
                         // Silent fail - not critical
-                    });
-            });
-        }
-    </script>
-    <script src="js/pwa-install-prompt.js"></script>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>

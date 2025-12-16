@@ -1,125 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-  <title>Energy Tracker</title>
-  <style>
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f9fb; color: #1a365d; margin: 0; }
-    .container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; padding: 32px; }
-    h1 { margin-bottom: 18px; }
-    .section { margin-bottom: 28px; }
-    label { display: block; margin-bottom: 8px; }
-    input[type=number] { width: 60px; padding: 6px; border-radius: 6px; border: 1px solid #c7d3ea; }
-    textarea { width: 100%; min-height: 40px; border-radius: 6px; border: 1px solid #c7d3ea; padding: 8px; }
-    button { background: #1a365d; color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-size: 1em; cursor: pointer; margin-top: 12px; }
-    button:hover { background: #274472; }
-    table { width: 100%; border-collapse: collapse; margin-top: 18px; }
-    th, td { border: 1px solid #e3eaf6; padding: 8px; text-align: center; }
-    th { background: #e3eaf6; }
-    .suggestion { background: #f1f5fa; border-radius: 8px; padding: 14px; margin-top: 18px; }
-  </style>
-  <script>
-    function saveEntry() {
-      const date = document.getElementById('date').value;
-      const energy = document.getElementById('energy').value;
-      const mood = document.getElementById('mood').value;
-      const note = document.getElementById('note').value;
-      if (!date || !energy || !mood) { alert('Please fill all fields.'); return; }
-      let data = JSON.parse(localStorage.getItem('energyTracker') || '{}');
-      data[date] = { energy, mood, note };
-      localStorage.setItem('energyTracker', JSON.stringify(data));
-      renderTable();
-    }
-    function renderTable() {
-      let data = JSON.parse(localStorage.getItem('energyTracker') || '{}');
-      let dates = Object.keys(data).sort().slice(-7);
-      let rows = dates.map(d => `<tr><td>${d}</td><td>${data[d].energy}</td><td>${data[d].mood}</td><td>${data[d].note||''}</td></tr>`).join('');
-      document.getElementById('energyTable').innerHTML = rows || '<tr><td colspan="4">No entries yet.</td></tr>';
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Energy Tracker</title>
+<script src="/js/core/dom.js" type="module"></script>
+<style>
+body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f9fb; color: var(--bg-primary); margin: 0; }
+.container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px #0001; padding: 32px; }
+h1 { margin-bottom: 18px; }
+.section { margin-bottom: 28px; }
+label { display: block; margin-bottom: 8px; }
+input[type=number] { width: 60px; padding: 6px; border-radius: 6px; border: 1px solid #c7d3ea; }
+textarea { width: 100%; min-height: 40px; border-radius: 6px; border: 1px solid #c7d3ea; padding: 8px; }
+button { background: var(--bg-primary); color: #fff; border: none; border-radius: 6px; padding: 8px 18px; font-size: 1em; cursor: pointer; margin-top: 12px; }
+button:hover { background: #274472; }
+table { width: 100%; border-collapse: collapse; margin-top: 18px; }
+th, td { border: 1px solid #e3eaf6; padding: 8px; text-align: center; }
+th { background: #e3eaf6; }
+.suggestion { background: #f1f5fa; border-radius: 8px; padding: 14px; margin-top: 18px; }
+</style>
+<script>
+function saveEntry() {
+const date = document.getElementById('date').value;
+const energy = document.getElementById('energy').value;
+const mood = document.getElementById('mood').value;
+const note = document.getElementById('note').value;
+if (!date || !energy || !mood) { alert('Please fill all fields.'); return; }
+let data = JSON.parse(localStorage.getItem('energyTracker') || '{}');
+data[date] = { energy, mood, note };
+localStorage.setItem('energyTracker', JSON.stringify(data));
+renderTable();
+}
+function renderTable() {
+let data = JSON.parse(localStorage.getItem('energyTracker') || '{}');
+let dates = Object.keys(data).sort().slice(-7);
+let rows = dates.map(d => `<tr><td>${d}</td><td>${data[d].energy}</td><td>${data[d].mood}</td><td>${data[d].note||''}</td></tr>`).join('');
+safeSetInnerHTML(document.getElementById('energyTable'), rows || '<tr><td colspan="4">No entries yet.</td></tr>');
       // Suggestion logic
-      if (dates.length) {
-        let avg = dates.reduce((s, d) => s + Number(data[d].energy), 0) / dates.length;
-        let suggestion = '';
-        if (avg < 5) suggestion = 'Your average energy is low. Try: earlier bedtime, a 10-min walk at lunch, or a 2-min breathing break every 2 hours.';
-        else if (avg < 7) suggestion = 'Your energy is moderate. To boost it: add a morning stretch, drink more water, or take a tech-free break.';
-        else suggestion = 'Great energy! Keep it up with regular movement and short recovery breaks.';
-        document.getElementById('suggestion').innerText = suggestion;
-      } else {
-        document.getElementById('suggestion').innerText = 'Enter your energy for a few days to get personalized suggestions.';
-      }
-    }
-    window.onload = function() {
-      document.getElementById('date').valueAsDate = new Date();
-      renderTable();
-    }
-  </script>
+if (dates.length) {
+let avg = dates.reduce((s, d) => s + Number(data[d].energy), 0) / dates.length;
+let suggestion = '';
+if (avg < 5) suggestion = 'Your average energy is low. Try: earlier bedtime, a 10-min walk at lunch, or a 2-min breathing break every 2 hours.';
+else if (avg < 7) suggestion = 'Your energy is moderate. To boost it: add a morning stretch, drink more water, or take a tech-free break.';
+else suggestion = 'Great energy! Keep it up with regular movement and short recovery breaks.';
+document.getElementById('suggestion').innerText = suggestion;
+} else {
+document.getElementById('suggestion').innerText = 'Enter your energy for a few days to get personalized suggestions.';
+}
+}
+window.onload = function() {
+document.getElementById('date').valueAsDate = new Date();
+renderTable();
+}
+</script>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Energy Tracker - TAP-IN Leadership Academy">
 </head>
 <body>
-  <div class="container">
-    <a href="index.html" style="color:#1a365d;text-decoration:none;font-weight:500;">← Back to Module</a>
-    <h1>Energy Tracker</h1>
-    <div class="section">
-      <form onsubmit="saveEntry(); return false;">
-        <label for="date">Date:</label>
-        <input type="date" id="date" required>
-        <label for="energy">Energy (1-10):</label>
-        <input type="number" id="energy" min="1" max="10" required>
-        <label for="mood">Mood (1-10):</label>
-        <input type="number" id="mood" min="1" max="10" required>
-        <label for="note">Notes (optional):</label>
-        <textarea id="note" placeholder="What helped or hurt your energy?"></textarea>
-        <button type="submit">Save Entry</button>
-      </form>
-    </div>
-    <div class="section">
-      <h2>Last 7 Days</h2>
-      <table>
-        <tr><th>Date</th><th>Energy</th><th>Mood</th><th>Notes</th></tr>
-        <tbody id="energyTable"></tbody>
-      </table>
-    </div>
-    <div class="suggestion" id="suggestion"></div>
-    <div class="section">
-      <h2>How to Improve Your Energy</h2>
-      <ul>
-        <li>Go to bed 30 minutes earlier for a week.</li>
-        <li>Take a 10-minute walk outdoors at lunch.</li>
-        <li>Try a 2-minute breathing or stretch break every 2 hours.</li>
-        <li>Drink a glass of water first thing in the morning.</li>
-        <li>Limit phone or screen time 1 hour before bed.</li>
-        <li>Notice which people or activities boost or drain your energy—adjust accordingly.</li>
-      </ul>
-    </div>
-  </div>
-
-    <!-- Performance Optimizer - Load First -->
+<div class="container">
+<a href="index.html" style="color:var(--bg-primary);text-decoration:none;font-weight:500;">← Back to Module</a>
+<h1>Energy Tracker</h1>
+<div class="section">
+<form onsubmit="saveEntry(); return false;">
+<label for="date">Date:</label>
+<input type="date" id="date" required>
+<label for="energy">Energy (1-10):</label>
+<input type="number" id="energy" min="1" max="10" required>
+<label for="mood">Mood (1-10):</label>
+<input type="number" id="mood" min="1" max="10" required>
+<label for="note">Notes (optional):</label>
+<textarea id="note" placeholder="What helped or hurt your energy?"></textarea>
+<button type="submit" aria-label="Action">Save Entry</button>
+</form>
+</div>
+<div class="section">
+<h2>Last 7 Days</h2>
+<table>
+<tr><th>Date</th><th>Energy</th><th>Mood</th><th>Notes</th></tr>
+<tbody id="energyTable"></tbody>
+</table>
+</div>
+<div class="suggestion" id="suggestion"></div>
+<div class="section">
+<h2>How to Improve Your Energy</h2>
+<ul>
+<li>Go to bed 30 minutes earlier for a week.</li>
+<li>Take a 10-minute walk outdoors at lunch.</li>
+<li>Try a 2-minute breathing or stretch break every 2 hours.</li>
+<li>Drink a glass of water first thing in the morning.</li>
+<li>Limit phone or screen time 1 hour before bed.</li>
+<li>Notice which people or activities boost or drain your energy—adjust accordingly.</li>
+</ul>
+</div>
+</div>
+<!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.min.js"></script>
 <!-- TAP-IN Utilities -->
 <script src="../../js/shared-utilities.js"></script>
 <script src="../../js/global-error-handler.js"></script>
 <script src="../../js/storage-health.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>

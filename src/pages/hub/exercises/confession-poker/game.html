@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Confession Poker - Multiplayer Trust Game</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Firebase for Multi-Device Mode -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+from { transform: translateX(-100%); }
+to { transform: translateX(0); }
+}
+@keyframes pulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.05); }
+}
+@keyframes shake {
+0%, 100% { transform: translateX(0); }
+25% { transform: translateX(-10px); }
+75% { transform: translateX(10px); }
+}
+@keyframes bounce {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-20px); }
+}
+.fade-in { animation: fadeIn 0.5s ease-out; }
+.slide-in { animation: slideIn 0.3s ease-out; }
+.pulse-animation { animation: pulse 2s infinite; }
+.shake-animation { animation: shake 0.5s ease-in-out; }
+.bounce-animation { animation: bounce 1s infinite; }
+.card-flip {
+perspective: 1000px;
+}
+.card-flip-inner {
+position: relative;
+width: 100%;
+height: 100%;
+transition: transform 0.6s;
+transform-style: preserve-3d;
+}
+.card-flip.flipped .card-flip-inner {
+transform: rotateY(180deg);
+}
+.card-front, .card-back {
+position: absolute;
+width: 100%;
+height: 100%;
+backface-visibility: hidden;
+}
+.card-back {
+transform: rotateY(180deg);
+}
+</style>
+<style>
+        /* Responsive Design */
+@media (max-width: 768px) {
+body { padding: 10px !important; }
+.container { max-width: 100% !important; padding: 10px !important; }
+h1 { font-size: 24px !important; }
+h2 { font-size: 20px !important; }
+button { padding: 12px 20px !important; font-size: 14px !important; }
+.card, .game-card { padding: 20px !important; }
+}
+@media (max-width: 480px) {
+body { padding: 5px !important; }
+h1 { font-size: 20px !important; }
+button { padding: 10px 16px !important; font-size: 12px !important; }
+}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAP-IN">
+<link rel="stylesheet" href="css/pwa-install-banner.css">
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Confession Poker - Multiplayer Trust Game - TAP-IN Leadership Academy">
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 min-h-screen">
+<a href="#main-content" class="skip-link" style="position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden;">
+Skip to main content
+</a>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+        // Confession Card Database - 52 CARDS
+const CONFESSION_CARDS = [
+            // White Belt - Vulnerability (10 cards)
+{ id: 1, text: "I once blamed someone else for my mistake at work", category: "white", intensity: 2 },
+{ id: 2, text: "I've pretended to be busy to avoid helping someone", category: "white", intensity: 1 },
+{ id: 3, text: "I've gossiped about a teammate behind their back", category: "white", intensity: 3 },
+{ id: 4, text: "I took credit for an idea that wasn't entirely mine", category: "white", intensity: 4 },
+{ id: 5, text: "I've lied about reading an important email/document", category: "white", intensity: 2 },
+{ id: 6, text: "I called in sick when I wasn't actually sick", category: "white", intensity: 2 },
+{ id: 7, text: "I've judged someone based on their appearance", category: "white", intensity: 3 },
+{ id: 8, text: "I pretended to understand something when I was completely lost", category: "white", intensity: 2 },
+{ id: 9, text: "I've bad-mouthed a previous employer in an interview", category: "white", intensity: 3 },
+{ id: 10, text: "I've taken office supplies home without permission", category: "white", intensity: 1 },
+            // Blue Belt - Conflict (10 cards)
+{ id: 11, text: "I avoided a difficult conversation for over a month", category: "blue", intensity: 2 },
+{ id: 12, text: "I agreed to something in a meeting then complained about it later", category: "blue", intensity: 3 },
+{ id: 13, text: "I've stayed silent when I disagreed with a bad decision", category: "blue", intensity: 3 },
+{ id: 14, text: "I sent a passive-aggressive email instead of talking directly", category: "blue", intensity: 2 },
+{ id: 15, text: "I've ended a friendship by ghosting instead of having a conversation", category: "blue", intensity: 4 },
+{ id: 16, text: "I've cc'd someone's boss on an email to make them look bad", category: "blue", intensity: 4 },
+{ id: 17, text: "I ignored someone's feedback because I didn't like them", category: "blue", intensity: 3 },
+{ id: 18, text: "I've left a toxic work environment without giving honest exit feedback", category: "blue", intensity: 2 },
+{ id: 19, text: "I complained about someone to others instead of addressing them directly", category: "blue", intensity: 3 },
+{ id: 20, text: "I've avoided eye contact with someone to dodge a conversation", category: "blue", intensity: 1 },
+            // Purple Belt - Commitment (12 cards)
+{ id: 21, text: "I said 'yes' to a commitment knowing I wouldn't follow through", category: "purple", intensity: 3 },
+{ id: 22, text: "I've quit something I committed to when it got hard", category: "purple", intensity: 3 },
+{ id: 23, text: "I made a promise to someone and completely forgot about it", category: "purple", intensity: 2 },
+{ id: 24, text: "I've been 'too busy' for something I actually just didn't prioritize", category: "purple", intensity: 2 },
+{ id: 25, text: "I abandoned a team project before it was finished", category: "purple", intensity: 4 },
+{ id: 26, text: "I've ghosted on a volunteer commitment", category: "purple", intensity: 3 },
+{ id: 27, text: "I committed to a deadline I knew was impossible", category: "purple", intensity: 3 },
+{ id: 28, text: "I've cancelled plans at the last minute for no good reason", category: "purple", intensity: 2 },
+{ id: 29, text: "I've half-assed something I committed to doing well", category: "purple", intensity: 3 },
+{ id: 30, text: "I joined a committee/group then never showed up", category: "purple", intensity: 3 },
+{ id: 31, text: "I've broken a New Year's resolution by January 15th", category: "purple", intensity: 1 },
+{ id: 32, text: "I committed to learning something then gave up after one week", category: "purple", intensity: 2 },
+            // Brown Belt - Accountability (10 cards)
+{ id: 33, text: "I knew someone was underperforming but didn't say anything", category: "brown", intensity: 3 },
+{ id: 34, text: "I've let someone take the blame for a shared mistake", category: "brown", intensity: 4 },
+{ id: 35, text: "I didn't hold myself to the same standards I expect from others", category: "brown", intensity: 3 },
+{ id: 36, text: "I made an excuse instead of admitting I dropped the ball", category: "brown", intensity: 2 },
+{ id: 37, text: "I've ignored a team value or rule when it was inconvenient", category: "brown", intensity: 3 },
+{ id: 38, text: "I knew someone was violating policy but stayed silent", category: "brown", intensity: 4 },
+{ id: 39, text: "I've given someone a good review they didn't deserve to avoid conflict", category: "brown", intensity: 4 },
+{ id: 40, text: "I watched someone struggle and didn't offer help", category: "brown", intensity: 2 },
+{ id: 41, text: "I've covered for someone's poor performance out of friendship", category: "brown", intensity: 3 },
+{ id: 42, text: "I didn't speak up when I saw unethical behavior", category: "brown", intensity: 5 },
+            // Black Belt - Results (10 cards)
+{ id: 43, text: "I prioritized looking good over achieving actual results", category: "black", intensity: 3 },
+{ id: 44, text: "I've protected my status instead of doing what was best for the team", category: "black", intensity: 4 },
+{ id: 45, text: "I took a shortcut that hurt long-term results for short-term wins", category: "black", intensity: 3 },
+{ id: 46, text: "I've celebrated individual success while the team was failing", category: "black", intensity: 4 },
+{ id: 47, text: "I knew we were heading toward failure but didn't speak up", category: "black", intensity: 5 },
+{ id: 48, text: "I've competed with my own teammates instead of collaborating", category: "black", intensity: 3 },
+{ id: 49, text: "I sandbagged my goals to make them easier to hit", category: "black", intensity: 3 },
+{ id: 50, text: "I've hoarded information to maintain my importance", category: "black", intensity: 4 },
+{ id: 51, text: "I let a customer fail because helping them wasn't in my KPIs", category: "black", intensity: 5 },
+{ id: 52, text: "I've optimized for my bonus over what was right for the business", category: "black", intensity: 4 },
+];
+        // Firebase Configuration - Using a public demo database
+        // REPLACE WITH YOUR OWN FIREBASE CONFIG FOR PRODUCTION
+    // ============================================
+    // PRODUCTION BACKEND CONFIG
+    // ============================================
+    // TODO: Replace demo config with production:
+    // 1. Option A: Use Supabase Real-time (recommended)
+    //    - See PRODUCTION-GAME-BACKEND-SETUP.md
+    // 2. Option B: Use Production Firebase
+    //    - Create Firebase project
+    //    - Get production keys
+    //    - Replace config below
+    // ============================================
+const firebaseConfig = {
+apiKey: "AIzaSyBvK_vZ3vXj5k5L0Qp6X9K5Z6Yq8L0A5B0",
+authDomain: "demo-confession-poker.firebaseapp.com",
+databaseURL: "https://demo-confession-poker-default-rtdb.firebaseio.com",
+projectId: "demo-confession-poker"
+};
+        // Initialize Firebase
+let firebaseApp = null;
+try {
+if (!firebase.apps.length) {
+firebaseApp = firebase.initializeApp(firebaseConfig);
+}
+} catch (error) {
+            console.log('i Using localStorage mode:', error);
+}
+        // Game Room Manager
+class GameRoom {
+constructor(roomCode, multiDevice = false) {
+this.roomCode = roomCode;
+this.multiDevice = multiDevice && firebaseApp !== null;
+this.storageKey = `confession-poker-${roomCode}`;
+if (this.multiDevice) {
+this.dbRef = firebase.database().ref(`rooms/${roomCode}`);
+}
+}
+async getState() {
+if (this.multiDevice) {
+const snapshot = await this.dbRef.once('value');
+return snapshot.val();
+}
+const data = localStorage.getItem(this.storageKey);
+return data ? JSON.parse(data) : null;
+}
+async setState(state) {
+if (this.multiDevice) {
+await this.dbRef.set(state);
+} else {
+localStorage.setItem(this.storageKey, JSON.stringify(state));
+window.dispatchEvent(new Event('storage'));
+}
+}
+subscribe(callback) {
+if (this.multiDevice) {
+this.dbRef.on('value', (snapshot) => {
+callback(snapshot.val());
+});
+return () => this.dbRef.off('value');
+} else {
+const handler = () => {
+const data = localStorage.getItem(this.storageKey);
+callback(data ? JSON.parse(data) : null);
+};
+window.addEventListener('storage', handler);
+return () => window.removeEventListener('storage', handler);
+}
+}
+}
+        // Main App Component
+function ConfessionPoker() {
+            // State
+const [screen, setScreen] = useState('mode-select'); // mode-select, lobby, game, reveal, end
+const [gameMode, setGameMode] = useState(null); // pass-play, multi-device
+const [roomCode, setRoomCode] = useState('');
+const [myName, setMyName] = useState('');
+const [players, setPlayers] = useState([]);
+const [currentPlayerIndex, setCurrentPlayerIndex] = useState(0);
+const [currentCard, setCurrentCard] = useState(null);
+const [activePlayerRating, setActivePlayerRating] = useState(null);
+const [guesses, setGuesses] = useState({});
+const [scores, setScores] = useState({});
+const [round, setRound] = useState(0);
+const [usedCards, setUsedCards] = useState([]);
+const [showReveal, setShowReveal] = useState(false);
+const [challengeActive, setChallengeActive] = useState(false);
+const [challengeVotes, setChallengeVotes] = useState({});
+const roomRef = useRef(null);
+            // Sync with room
+useEffect(() => {
+if (!roomCode || screen === 'mode-select') return;
+const room = new GameRoom(roomCode, gameMode === 'multi-device');
+roomRef.current = room;
+const unsubscribe = room.subscribe((state) => {
+if (state) {
+setPlayers(state.players || []);
+setCurrentPlayerIndex(state.currentPlayerIndex || 0);
+setCurrentCard(state.currentCard || null);
+setActivePlayerRating(state.activePlayerRating || null);
+setGuesses(state.guesses || {});
+setScores(state.scores || {});
+setRound(state.round || 0);
+setUsedCards(state.usedCards || []);
+if (state.screen) setScreen(state.screen);
+}
+});
+                // Initialize room if needed
+room.getState().then(state => {
+if (!state) {
+room.setState({
+players: [],
+currentPlayerIndex: 0,
+scores: {},
+round: 0,
+usedCards: [],
+screen: 'lobby'
+});
+}
+});
+return unsubscribe;
+}, [roomCode, gameMode]);
+            // Helper: Update room state
+const updateRoom = async (updates) => {
+if (!roomRef.current) return;
+const state = await roomRef.current.getState();
+await roomRef.current.setState({ ...state, ...updates });
+};
+            // Mode selection
+const selectMode = (mode) => {
+setGameMode(mode);
+setScreen('lobby');
+const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+setRoomCode(code);
+};
+            // Join room
+const joinRoom = (code, name) => {
+setRoomCode(code);
+setMyName(name);
+setGameMode('multi-device');
+setScreen('lobby');
+};
+            // Add player
+const addPlayer = async (name) => {
+if (!name.trim() || !roomRef.current) return;
+const state = await roomRef.current.getState();
+if (state.players.some(p => p.name === name)) {
+alert('Name already taken!');
+return;
+}
+const newPlayer = { name, id: Date.now() };
+await updateRoom({
+players: [...state.players, newPlayer],
+scores: { ...state.scores, [name]: 0 }
+});
+setMyName(name);
+};
+            // Start game
+const startGame = async () => {
+const state = await roomRef.current.getState();
+if (state.players.length < 3) {
+alert('Need at least 3 players!');
+return;
+}
+await updateRoom({
+screen: 'game',
+round: 1,
+currentPlayerIndex: 0
+});
+};
+            // Draw card
+const drawCard = async () => {
+const state = await roomRef.current.getState();
+const available = CONFESSION_CARDS.filter(c => !state.usedCards.includes(c.id));
+if (available.length === 0) {
+alert('All cards used!');
+await updateRoom({ screen: 'end' });
+return;
+}
+const card = available[Math.floor(Math.random() * available.length)];
+await updateRoom({
+currentCard: card,
+usedCards: [...state.usedCards, card.id],
+activePlayerRating: null,
+guesses: {}
+});
+};
+            // Submit rating
+const submitRating = async (rating) => {
+await updateRoom({ activePlayerRating: rating });
+};
+            // Submit guess
+const submitGuess = async (guess) => {
+const state = await roomRef.current.getState();
+await updateRoom({
+guesses: { ...state.guesses, [myName]: guess }
+});
+};
+            // Reveal results
+const revealResults = async () => {
+setShowReveal(true);
+const state = await roomRef.current.getState();
+const newScores = { ...state.scores };
+Object.entries(state.guesses).forEach(([name, guess]) => {
+const diff = Math.abs(guess - state.activePlayerRating);
+const points = diff === 0 ? 3 : diff === 1 ? 2 : diff === 2 ? 1 : 0;
+newScores[name] = (newScores[name] || 0) + points;
+});
+setTimeout(async () => {
+setShowReveal(false);
+await updateRoom({ scores: newScores });
+nextPlayer();
+}, 3000);
+};
+            // Next player
+const nextPlayer = async () => {
+const state = await roomRef.current.getState();
+const nextIndex = (state.currentPlayerIndex + 1) % state.players.length;
+const newRound = nextIndex === 0 ? state.round + 1 : state.round;
+if (newRound > 5) {
+await updateRoom({ screen: 'end' });
+return;
+}
+await updateRoom({
+currentPlayerIndex: nextIndex,
+currentCard: null,
+activePlayerRating: null,
+guesses: {},
+round: newRound
+});
+};
+            // Challenge
+const initiateChallenge = () => {
+setChallengeActive(true);
+setChallengeVotes({});
+};
+const voteChallenge = async (vote) => {
+const newVotes = { ...challengeVotes, [myName]: vote };
+setChallengeVotes(newVotes);
+if (Object.keys(newVotes).length === players.length - 1) {
+const state = await roomRef.current.getState();
+const believeCount = Object.values(newVotes).filter(v => v === 'believe').length;
+const challengeCount = Object.values(newVotes).filter(v => v === 'challenge').length;
+const newScores = { ...state.scores };
+const activePlayer = state.players[state.currentPlayerIndex].name;
+if (challengeCount > believeCount) {
+newScores[activePlayer] = Math.max(0, (newScores[activePlayer] || 0) - 5);
+} else {
+Object.entries(newVotes).forEach(([name, v]) => {
+if (v === 'challenge') {
+newScores[name] = Math.max(0, (newScores[name] || 0) - 2);
+}
+});
+}
+await updateRoom({ scores: newScores });
+setChallengeActive(false);
+}
+};
+            // Reset
+const resetGame = async () => {
+if (roomRef.current) {
+await roomRef.current.setState({
+players: [],
+currentPlayerIndex: 0,
+scores: {},
+round: 0,
+usedCards: [],
+screen: 'lobby'
+});
+}
+setScreen('mode-select');
+setGameMode(null);
+setMyName('');
+setRoomCode('');
+};
+            // Get current player
+const currentPlayer = players[currentPlayerIndex];
+const isActivePlayer = currentPlayer?.name === myName;
+const allGuessed = Object.keys(guesses).length === players.length - 1;
+            // Render Mode Select
+if (screen === 'mode-select') {
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-2xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20 fade-in">
+<h1 className="text-6xl font-bold text-white mb-4 text-center">
+🃏 Confession Poker
+</h1>
+<p className="text-white/80 text-center mb-12 text-lg">
+Build trust through vulnerability and empathy
+</p>
+<div className="space-y-6">
+<button
+onClick={() = aria-label="className="w-full bg-gradient-to-r from-purple-50"> selectMode('pass-play')}
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-6 rounded-2xl font-bold text-xl hover:shadow-2xl transform hover:scale-105 transition"
+>
+<div className="text-3xl mb-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg></div>
+Pass & Play
+<div className="text-sm font-normal opacity-80 mt-2">
+One device, take turns
+</div>
+</button>
+<button
+onClick={() = aria-label="className="w-full bg-gradient-to-r from-blue-500"> selectMode('multi-device')}
+className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-8 py-6 rounded-2xl font-bold text-xl hover:shadow-2xl transform hover:scale-105 transition"
+>
+<div className="text-3xl mb-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-globe-alt"></use></svg></div>
+Multi-Device
+<div className="text-sm font-normal opacity-80 mt-2">
+Everyone on their own phone
+</div>
+</button>
+{gameMode === null && (
+<div className="border-t border-white/20 pt-6 mt-6">
+<input
+type="text"
+placeholder="Or enter room code to join"
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-blue-500 mb-3"
+onKeyPress={(e) => {
+if (e.key === 'Enter' && e.target.value) {
+const code = e.target.value.toUpperCase();
+const name = prompt('Enter your name:');
+if (name) joinRoom(code, name);
+}
+}}
+/>
+</div>
+)}
+</div>
+</div>
+</div>
+</div>
+);
+}
+            // Render Lobby
+if (screen === 'lobby') {
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-2xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 fade-in">
+<div className="text-center mb-8">
+<h2 className="text-3xl font-bold text-white mb-2">Game Lobby</h2>
+<div className="inline-block bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-lg px-6 py-3 border border-purple-500/50">
+<p className="text-white/60 text-sm">Room Code</p>
+<p className="text-4xl font-mono font-bold text-white tracking-wider">{roomCode}</p>
+</div>
+<p className="text-white/60 text-sm mt-4">
+Mode: {gameMode === 'pass-play' ? '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg> Pass & Play' : '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-globe-alt"></use></svg> Multi-Device'}
+</p>
+</div>
+{!myName ? (
+<div className="mb-8">
+<input
+type="text"
+placeholder="Enter your name"
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
+onKeyPress={(e) => {
+if (e.key === 'Enter') {
+addPlayer(e.target.value);
+e.target.value = '';
+}
+}}
+/>
+</div>
+) : (
+<>
+<div className="mb-6">
+<h3 className="text-white font-bold mb-4">
+Players ({players.length}/8)
+</h3>
+<div className="space-y-2">
+{players.map((player, i) => (
+<div
+key={player.id}
+className="bg-white/5 rounded-lg p-3 flex items-center justify-between slide-in"
+>
+<span className="text-white font-medium">
+{player.name}
+{player.name === myName && (
+<span className="ml-2 text-purple-400 text-sm">(You)</span>
+)}
+</span>
+<span className="text-green-400 text-sm"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg> Ready</span>
+</div>
+))}
+</div>
+</div>
+{players.length >= 3 && players[0]?.name === myName && (
+<button
+onClick={startGame}
+className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition pulse-animation"
+aria-label="Start game">
+Start Game
+</button>
+)}
+{players.length < 3 && (
+<p className="text-white/60 text-center">
+Need {3 - players.length} more player(s) to start
+</p>
+)}
+</>
+)}
+<button
+onClick={() = aria-label="setScreen('mode-select');
+setGameMode(null);
+setM"> {
+setScreen('mode-select');
+setGameMode(null);
+setMyName('');
+}}
+className="w-full mt-4 text-white/60 hover:text-white transition"
+>
+← Back
+</button>
+</div>
+</div>
+</div>
+);
+}
+            // Render Game
+if (screen === 'game') {
+return (
+<div className="min-h-screen p-4 md:p-8">
+<div className="max-w-6xl mx-auto fade-in">
+                            {/* Header */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 shadow-2xl border border-white/20">
+<div className="flex flex-col md:flex-row justify-between items-center gap-4">
+<div>
+<h2 className="text-2xl font-bold text-white">Round {round}/5</h2>
+<p className="text-white/60">Room: {roomCode}</p>
+</div>
+<div className="text-center md:text-right">
+<p className="text-white/60 text-sm">Active Player</p>
+<p className="text-2xl font-bold text-purple-400">{currentPlayer?.name}</p>
+</div>
+</div>
+</div>
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Main Area */}
+<div className="lg:col-span-2">
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20 min-h-[400px] flex flex-col justify-center">
+{!currentCard ? (
+isActivePlayer ? (
+<button
+onClick={drawCard}
+className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-6 rounded-2xl font-bold text-2xl hover:shadow-lg transform hover:scale-105 transition mx-auto pulse-animation"
+aria-label="Draw Card">
+Draw Card
+</button>
+) : (
+<p className="text-white/60 text-center text-xl">
+Waiting for {currentPlayer?.name} to draw...
+</p>
+)
+) : (
+<div className="space-y-6">
+<div className="text-center">
+<span className={`inline-block px-4 py-2 rounded-full text-sm font-bold ${
+currentCard.category === 'white' ? 'bg-gray-400' :
+currentCard.category === 'blue' ? 'bg-blue-500' :
+currentCard.category === 'purple' ? 'bg-purple-500' :
+currentCard.category === 'brown' ? 'bg-amber-700' :
+'bg-gray-900'
+} text-white`}>
+{currentCard.category.toUpperCase()} BELT
+</span>
+</div>
+<p className="text-2xl md:text-3xl text-white text-center font-medium leading-relaxed px-4">
+"{currentCard.text}"
+</p>
+{isActivePlayer && activePlayerRating === null && (
+<div className="space-y-4">
+<p className="text-white text-center">Rate your honesty:</p>
+<div className="flex gap-2 md:gap-4 justify-center flex-wrap">
+{[1, 2, 3, 4, 5].map(rating => (
+<button
+key={rating}
+onClick={() = aria-label="className="w-14 h-14 md:w-16 md:h-16 bg-white/10"> submitRating(rating)}
+className="w-14 h-14 md:w-16 md:h-16 bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl text-white font-bold text-xl md:text-2xl transition transform hover:scale-110"
+>
+{rating}
+</button>
+))}
+</div>
+<p className="text-white/60 text-center text-sm">
+1 = Never | 5 = Absolutely
+</p>
+</div>
+)}
+{!isActivePlayer && activePlayerRating !== null && guesses[myName] === undefined && (
+<div className="space-y-4">
+<p className="text-white text-center">Guess {currentPlayer?.name}'s rating:</p>
+<div className="flex gap-2 md:gap-4 justify-center flex-wrap">
+{[1, 2, 3, 4, 5].map(guess => (
+<button
+key={guess}
+onClick={() = aria-label="className="w-14 h-14 md:w-16 md:h-16 bg-white/10"> submitGuess(guess)}
+className="w-14 h-14 md:w-16 md:h-16 bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl text-white font-bold text-xl md:text-2xl transition transform hover:scale-110"
+>
+{guess}
+</button>
+))}
+</div>
+</div>
+)}
+{guesses[myName] !== undefined && !allGuessed && (
+<p className="text-green-400 text-center text-lg">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg> Your guess submitted! Waiting for others...
+</p>
+)}
+{activePlayerRating !== null && allGuessed && isActivePlayer && (
+<button
+onClick={revealResults}
+className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition mx-auto block"
+aria-label="Reveal Results">
+Reveal Results
+</button>
+)}
+</div>
+)}
+</div>
+                                    {/* Challenge Button */}
+{currentCard && activePlayerRating !== null && !isActivePlayer && !challengeActive && (
+<button
+onClick={initiateChallenge}
+className="w-full mt-4 bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transform hover:scale-105 transition"
+aria-label="🚨 Challenge This Rating">
+🚨 Challenge This Rating
+</button>
+)}
+</div>
+                                {/* Scoreboard */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
+<h3 className="text-xl font-bold text-white mb-4">Trust Points</h3>
+<div className="space-y-3">
+{players
+.sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0))
+.map((player, i) => (
+<div
+key={player.id}
+className={`p-3 rounded-lg ${
+player.name === currentPlayer?.name
+? 'bg-purple-500/30 border border-purple-500'
+: 'bg-white/5'
+}`}
+>
+<div className="flex justify-between items-center">
+<div>
+<span className="text-white font-medium">
+{i + 1}. {player.name}
+</span>
+{player.name === myName && (
+<span className="ml-2 text-purple-400 text-xs">(You)</span>
+)}
+{guesses[player.name] !== undefined && player.name !== currentPlayer?.name && (
+<span className="ml-2 text-green-400 text-xs"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg></span>
+)}
+</div>
+<span className="text-2xl font-bold text-purple-400">
+{scores[player.name] || 0}
+</span>
+</div>
+</div>
+))}
+</div>
+<button
+onClick={resetGame}
+className="w-full mt-6 text-white/60 hover:text-white text-sm transition"
+aria-label="End Game">
+End Game
+</button>
+</div>
+</div>
+</div>
+                        {/* Reveal Modal */}
+{showReveal && (
+<div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 fade-in">
+<div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-8 md:p-12 max-w-2xl w-full shadow-2xl">
+<h2 className="text-3xl md:text-4xl font-bold text-white mb-8 text-center">Results!</h2>
+<div className="bg-white/20 rounded-2xl p-8 mb-8">
+<p className="text-white/80 text-center mb-4">
+{currentPlayer?.name}'s True Rating:
+</p>
+<p className="text-7xl md:text-8xl font-bold text-white text-center bounce-animation">
+{activePlayerRating}
+</p>
+</div>
+<div className="space-y-3">
+{Object.entries(guesses).map(([name, guess]) => {
+const diff = Math.abs(guess - activePlayerRating);
+const points = diff === 0 ? 3 : diff === 1 ? 2 : diff === 2 ? 1 : 0;
+return (
+<div key={name} className="bg-white/10 rounded-lg p-4 flex justify-between items-center">
+<div>
+<span className="text-white font-medium">{name}</span>
+<span className="text-white/60 ml-2">guessed {guess}</span>
+</div>
+<span className={`font-bold text-lg ${
+points === 3 ? 'text-green-400' :
+points === 2 ? 'text-yellow-400' :
+points === 1 ? 'text-orange-400' :
+'text-red-400'
+}`}>
++{points} pts
+</span>
+</div>
+);
+})}
+</div>
+</div>
+</div>
+)}
+                        {/* Challenge Modal */}
+{challengeActive && (
+<div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4 fade-in">
+<div className="bg-gradient-to-br from-red-600 to-orange-600 rounded-3xl p-8 md:p-12 max-w-2xl w-full shadow-2xl shake-animation">
+<h2 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center">
+🚨 CHALLENGE!
+</h2>
+<p className="text-white/90 text-center mb-8 text-lg">
+Do you believe {currentPlayer?.name}'s rating of {activePlayerRating}?
+</p>
+{challengeVotes[myName] === undefined ? (
+<div className="flex gap-4 flex-col md:flex-row">
+<button
+onClick={() = aria-label="className="flex-1 bg-green-500 text-white px-8 py"> voteChallenge('believe')}
+className="flex-1 bg-green-500 text-white px-8 py-6 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+>
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-check"></use></svg> Believe It
+</button>
+<button
+onClick={() = aria-label="className="flex-1 bg-red-700 text-white px-8 py-6"> voteChallenge('challenge')}
+className="flex-1 bg-red-700 text-white px-8 py-6 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+>
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-x-mark"></use></svg> Challenge!
+</button>
+</div>
+) : (
+<div className="text-center">
+<p className="text-white text-xl">Vote submitted!</p>
+<p className="text-white/60 mt-4">
+{Object.keys(challengeVotes).length} / {players.length - 1} votes
+</p>
+</div>
+)}
+</div>
+</div>
+)}
+</div>
+);
+}
+            // Render End Game
+if (screen === 'end') {
+const sortedPlayers = [...players].sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0));
+const winner = sortedPlayers[0];
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-4xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 shadow-2xl border border-white/20 fade-in">
+<div className="text-center mb-8">
+<h1 className="text-6xl md:text-7xl mb-4"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../../icons/sprite.svg#icon-icon-trophy"></use></svg></h1>
+<h2 className="text-4xl md:text-5xl font-bold text-white mb-8">Game Over!</h2>
+<div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl p-8 mb-8 border border-purple-500/50">
+<p className="text-white/80 mb-2">Winner</p>
+<p className="text-4xl md:text-5xl font-bold text-white">{winner?.name}</p>
+<p className="text-3xl text-purple-400 mt-4">{scores[winner?.name]} Trust Points</p>
+</div>
+</div>
+<div className="space-y-3 mb-8">
+<h3 className="text-2xl font-bold text-white text-center mb-4">Final Standings</h3>
+{sortedPlayers.map((player, i) => (
+<div key={player.id} className="bg-white/5 rounded-lg p-4 flex justify-between items-center">
+<div className="flex items-center gap-4">
+<span className="text-2xl md:text-3xl font-bold text-white/40">#{i + 1}</span>
+<span className="text-lg md:text-xl font-medium text-white">{player.name}</span>
+</div>
+<span className="text-2xl font-bold text-purple-400">
+{scores[player.name] || 0}
+</span>
+</div>
+))}
+</div>
+<button
+onClick={resetGame}
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+aria-label="Play Again">
+Play Again
+</button>
+</div>
+</div>
+</div>
+);
+}
+return null;
+}
+        // Render App
+ReactDOM.render(<ConfessionPoker />, document.getElementById('root'));
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>

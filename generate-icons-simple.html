@@ -1,174 +1,163 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <title>PWA Icon Generator - TAP-IN</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            max-width: 900px;
-            margin: 50px auto;
-            padding: 20px;
-            background: #f5f5f5;
-        }
-        h1 { color: #c62828; }
-        .icon-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        .icon-item {
-            text-align: center;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        canvas {
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 8px;
-        }
-        button {
-            background: #c62828;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin: 10px 5px;
-        }
-        button:hover { background: #b71c1c; }
-        .download-all {
-            background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%);
-            font-size: 18px;
-            padding: 15px 30px;
-            margin: 20px 0;
-        }
-        .info {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>PWA Icon Generator - TAP-IN</title>
+<style>
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+max-width: 900px;
+margin: 50px auto;
+padding: 20px;
+background: #f5f5f5;
+}
+h1 { color: #c62828; }
+.icon-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 20px;
+margin: 30px 0;
+}
+.icon-item {
+text-align: center;
+background: white;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+canvas {
+border: 1px solid #ddd;
+background: white;
+border-radius: 8px;
+}
+button {
+background: #c62828;
+color: white;
+border: none;
+padding: 12px 24px;
+font-size: 16px;
+border-radius: 8px;
+cursor: pointer;
+margin: 10px 5px;
+}
+button:hover { background: #b71c1c; }
+.download-all {
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+font-size: 18px;
+padding: 15px 30px;
+margin: 20px 0;
+}
+.info {
+background: white;
+padding: 20px;
+border-radius: 8px;
+margin: 20px 0;
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="PWA Icon Generator - TAP-IN - TAP-IN Leadership Academy">
 </head>
 <body>
-    <h1>🎨 TAP-IN PWA Icon Generator</h1>
-    
-    <div class="info">
-        <p><strong>Instructions:</strong></p>
-        <ol>
-            <li>Click "Generate All Icons" below</li>
-            <li>Icons will download automatically</li>
-            <li>Save all icons to your project root directory</li>
-        </ol>
-    </div>
-
-    <div style="text-align: center;">
-        <button class="download-all" onclick="generateAllIcons()">Generate All Icons</button>
-    </div>
-
-    <div class="icon-grid" id="icon-grid"></div>
-
-    <script>
-        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
-        const bgColor = '#c62828'; // Brick red
-        const textColor = '#ffffff'; // White
-
-        function createIcon(size) {
-            const canvas = document.createElement('canvas');
-            canvas.width = size;
-            canvas.height = size;
-            const ctx = canvas.getContext('2d');
-
+<h1>🎨 TAP-IN PWA Icon Generator</h1>
+<div class="info">
+<p><strong>Instructions:</strong></p>
+<ol>
+<li>Click "Generate All Icons" below</li>
+<li>Icons will download automatically</li>
+<li>Save all icons to your project root directory</li>
+</ol>
+</div>
+<div style="text-align: center;">
+<button class="download-all" onclick="generateAllIcons()" aria-label="Action">Generate All Icons</button>
+</div>
+<div class="icon-grid" id="icon-grid"></div>
+<script>
+const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+const bgColor = '#c62828'; // Brick red
+const textColor = 'var(--belt-white)'; // White
+function createIcon(size) {
+const canvas = document.createElement('canvas');
+canvas.width = size;
+canvas.height = size;
+const ctx = canvas.getContext('2d');
             // Background
-            ctx.fillStyle = bgColor;
-            ctx.fillRect(0, 0, size, size);
-
+ctx.fillStyle = bgColor;
+ctx.fillRect(0, 0, size, size);
             // Text
-            ctx.fillStyle = textColor;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-
-            if (size >= 128) {
+ctx.fillStyle = textColor;
+ctx.textAlign = 'center';
+ctx.textBaseline = 'middle';
+if (size >= 128) {
                 // Two lines for larger icons
-                ctx.font = `bold ${Math.floor(size * 0.2)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
-                ctx.fillText('TAP', size / 2, size / 2 - size * 0.08);
-                ctx.fillText('IN', size / 2, size / 2 + size * 0.08);
-            } else {
+ctx.font = `bold ${Math.floor(size * 0.2)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+ctx.fillText('TAP', size / 2, size / 2 - size * 0.08);
+ctx.fillText('IN', size / 2, size / 2 + size * 0.08);
+} else {
                 // Single line for smaller icons
-                ctx.font = `bold ${Math.floor(size * 0.35)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
-                ctx.fillText('TAP', size / 2, size / 2);
-            }
-
-            return canvas;
-        }
-
-        function downloadIcon(size) {
-            const canvas = createIcon(size);
-            canvas.toBlob(blob => {
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `icon-${size}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-            });
-        }
-
-        function generateAllIcons() {
-            const button = event.target;
-            button.disabled = true;
-            button.textContent = 'Generating...';
-            
-            let delay = 0;
-            sizes.forEach(size => {
-                setTimeout(() => {
-                    downloadIcon(size);
-                }, delay);
-                delay += 300; // Stagger downloads
-            });
-
-            setTimeout(() => {
-                button.disabled = false;
-                button.textContent = '✅ All Icons Generated!';
-                alert(`✅ Generated ${sizes.length} icons!\n\nThey should be in your Downloads folder.\nMove them to your project root.`);
-            }, delay + 500);
-        }
-
+ctx.font = `bold ${Math.floor(size * 0.35)}px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif`;
+ctx.fillText('TAP', size / 2, size / 2);
+}
+return canvas;
+}
+function downloadIcon(size) {
+const canvas = createIcon(size);
+canvas.toBlob(blob => {
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = `icon-${size}.png`;
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+});
+}
+function generateAllIcons() {
+const button = event.target;
+button.disabled = true;
+button.textContent = 'Generating...';
+let delay = 0;
+sizes.forEach(size => {
+setTimeout(() => {
+downloadIcon(size);
+}, delay);
+delay += 300; // Stagger downloads
+});
+setTimeout(() => {
+button.disabled = false;
+button.textContent = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> All Icons Generated!';
+alert(`<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Generated ${sizes.length} icons!\n\nThey should be in your Downloads folder.\nMove them to your project root.`);
+}, delay + 500);
+}
         // Show previews
-        sizes.forEach(size => {
-            const item = document.createElement('div');
-            item.className = 'icon-item';
-            const canvas = createIcon(size);
-            item.appendChild(canvas);
-            item.innerHTML += `<p style="margin-top: 10px; font-size: 12px; color: #666;">${size}×${size}px</p>`;
-            document.getElementById('icon-grid').appendChild(item);
-        });
-    </script>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+sizes.forEach(size => {
+const item = document.createElement('div');
+item.className = 'icon-item';
+const canvas = createIcon(size);
+item.appendChild(canvas);
+item.innerHTML += `<p style="margin-top: 10px; font-size: 12px; color: #666;">${size}×${size}px</p>`;
+document.getElementById('icon-grid').appendChild(item);
+});
+</script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>
-

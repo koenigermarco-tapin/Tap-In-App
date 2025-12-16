@@ -1,497 +1,456 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<head>    <meta name="description" content="TAP-IN Leadership Academy: Leadership development that actually sticks.">
 
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <title>Admin Dashboard - TAP-IN Analytics</title>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); 
-            min-height: 100vh; 
-            padding: 20px; 
-            color: #333; 
-        }
-        .container { 
-            max-width: 1400px; 
-            margin: 0 auto; 
-            background: white; 
-            border-radius: 20px; 
-            padding: 40px; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
-        }
-        .header { 
-            text-align: center; 
-            margin-bottom: 40px; 
-            padding-bottom: 30px; 
-            border-bottom: 3px solid #f0f0f0; 
-        }
-        .header h1 { color: #a93226; font-size: 2.5em; margin-bottom: 15px; }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-        .stat-card {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 25px;
-            border-radius: 15px;
-            border-left: 4px solid #a93226;
-        }
-        .stat-card h3 { color: #666; font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; }
-        .stat-card .value { color: #a93226; font-size: 2.5em; font-weight: bold; }
-        .filters {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-        }
-        .filters h3 { margin-bottom: 20px; color: #333; }
-        .filter-row {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        .filter-group {
-            flex: 1;
-            min-width: 200px;
-        }
-        .filter-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #666; }
-        .filter-group input, .filter-group select {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-        .btn {
-            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-right: 10px;
-        }
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(169, 50, 38, 0.4); }
-        .btn-secondary {
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-        }
-        .btn-tertiary {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-        }
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        .data-table th {
-            background: linear-gradient(135deg, #a93226 0%, #7a241b 100%);
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 600;
-        }
-        .data-table td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .data-table tr:hover {
-            background: #f8f9fa;
-        }
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-        .chart-container {
-            margin: 30px 0;
-            padding: 25px;
-            background: #f8f9fa;
-            border-radius: 15px;
-        }
-        .export-section {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 30px;
-            text-align: center;
-        }
-        .password-gate {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        .password-modal {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-        }
-        .password-modal h2 { color: #a93226; margin-bottom: 20px; }
-        .password-modal input {
-            width: 100%;
-            padding: 15px;
-            margin: 20px 0;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1.1em;
-        }
-    </style>
-    <link rel="stylesheet" href="css/accessibility.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Admin Dashboard - TAP-IN Analytics</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+min-height: 100vh;
+padding: 20px;
+color: #333;
+}
+.container {
+max-width: 1400px;
+margin: 0 auto;
+background: white;
+border-radius: 20px;
+padding: 40px;
+box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+}
+.header {
+text-align: center;
+margin-bottom: 40px;
+padding-bottom: 30px;
+border-bottom: 3px solid #f0f0f0;
+}
+.header h1 { color: var(--tap-red); font-size: 2.5em; margin-bottom: 15px; }
+.stats-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+gap: 20px;
+margin-bottom: 40px;
+}
+.stat-card {
+background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+padding: 25px;
+border-radius: 15px;
+border-left: 4px solid var(--tap-red);
+}
+.stat-card h3 { color: #666; font-size: 0.9em; margin-bottom: 10px; text-transform: uppercase; }
+.stat-card .value { color: var(--tap-red); font-size: 2.5em; font-weight: bold; }
+.filters {
+background: #f8f9fa;
+padding: 25px;
+border-radius: 15px;
+margin-bottom: 30px;
+}
+.filters h3 { margin-bottom: 20px; color: #333; }
+.filter-row {
+display: flex;
+gap: 15px;
+flex-wrap: wrap;
+margin-bottom: 15px;
+}
+.filter-group {
+flex: 1;
+min-width: 200px;
+}
+.filter-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #666; }
+.filter-group input, .filter-group select {
+width: 100%;
+padding: 10px;
+border: 2px solid #e0e0e0;
+border-radius: 8px;
+font-size: 1em;
+}
+.btn {
+background: linear-gradient(135deg, var(--tap-red) 0%, #7a241b 100%);
+color: white;
+border: none;
+padding: 12px 30px;
+border-radius: 10px;
+font-size: 1.1em;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s;
+margin-right: 10px;
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(169, 50, 38, 0.4); }
+.btn-secondary {
+background: linear-gradient(135deg, var(--tap-green) 0%, #059669 100%);
+}
+.btn-tertiary {
+background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+}
+.data-table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 20px;
+background: white;
+border-radius: 10px;
+overflow: hidden;
+box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+.data-table th {
+background: linear-gradient(135deg, var(--tap-red) 0%, #7a241b 100%);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: 600;
+}
+.data-table td {
+padding: 12px 15px;
+border-bottom: 1px solid #f0f0f0;
+}
+.data-table tr:hover {
+background: #f8f9fa;
+}
+.loading {
+text-align: center;
+padding: 40px;
+color: #666;
+}
+.chart-container {
+margin: 30px 0;
+padding: 25px;
+background: #f8f9fa;
+border-radius: 15px;
+}
+.export-section {
+background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+padding: 25px;
+border-radius: 15px;
+margin-top: 30px;
+text-align: center;
+}
+.password-gate {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(0,0,0,0.9);
+display: flex;
+align-items: center;
+justify-content: center;
+z-index: 9999;
+}
+.password-modal {
+background: white;
+padding: 40px;
+border-radius: 20px;
+text-align: center;
+max-width: 400px;
+}
+.password-modal h2 { color: var(--tap-red); margin-bottom: 20px; }
+.password-modal input {
+width: 100%;
+padding: 15px;
+margin: 20px 0;
+border: 2px solid #e0e0e0;
+border-radius: 10px;
+font-size: 1.1em;
+}
+</style>
+<link rel="stylesheet" href="css/accessibility.css">
 
 <body>
-    <!-- Skip Links for Accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <a href="#navigation" class="skip-link">Skip to navigation</a>
-
-    <!-- Password Gate -->
-    <div id="passwordGate" class="password-gate">
-        <div class="password-modal">
-            <h2>🔐 Admin Access</h2>
-            <p style="color: #666; margin-bottom: 20px;">Enter admin password to view analytics</p>
-            <input type="password" id="passwordInput" placeholder="Enter password" />
-            <button class="btn" onclick="checkPassword()">Unlock Dashboard</button>
-            <p id="passwordError" style="color: #dc2626; margin-top: 15px; display: none;">Incorrect password</p>
-        </div>
-    </div>
-
-    <div class="container" id="mainContent" style="display: none;">
-        <div class="header">
-            <h1>📊 TAP-IN Analytics Dashboard</h1>
-            <p style="color: #666;">Real-time assessment data and insights</p>
-        </div>
-
-        <!-- Stats Grid -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>Total Assessments</h3>
-                <div class="value" id="totalAssessments">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>Team Dynamics</h3>
-                <div class="value" id="teamCount">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>Leadership</h3>
-                <div class="value" id="leadershipCount">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>Mental Health</h3>
-                <div class="value" id="mentalHealthCount">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>Work-Life Balance</h3>
-                <div class="value" id="workLifeCount">-</div>
-            </div>
-            <div class="stat-card">
-                <h3>This Week</h3>
-                <div class="value" id="thisWeekCount">-</div>
-            </div>
-        </div>
-
-        <!-- Filters -->
-        <div class="filters">
-            <h3>🔍 Filter Data</h3>
-            <div class="filter-row">
-                <div class="filter-group">
-                    <label>Assessment Type</label>
-                    <select id="assessmentFilter">
-                        <option value="all">All Assessments</option>
-                        <option value="team-dynamics">Team Dynamics</option>
-                        <option value="leadership-style">Leadership Style</option>
-                        <option value="worker-type">Worker Type</option>
-                        <option value="mental-health">Mental Health</option>
-                        <option value="work-life-balance">Work-Life Balance</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Date From</label>
-                    <input type="date" id="dateFrom" />
-                </div>
-                <div class="filter-group">
-                    <label>Date To</label>
-                    <input type="date" id="dateTo" />
-                </div>
-            </div>
-            <button class="btn" onclick="applyFilters()">Apply Filters</button>
-            <button class="btn btn-secondary" onclick="resetFilters()">Reset</button>
-        </div>
-
-        <!-- Data Table -->
-        <div id="dataTableContainer">
-            <h3 style="margin-bottom: 20px;">Recent Submissions</h3>
-            <div class="loading" id="loading">Loading data...</div>
-            <table class="data-table" id="dataTable" style="display: none;">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Type</th>
-                        <th>Score</th>
-                        <th>Level</th>
-                        <th>Language</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody"></tbody>
-            </table>
-        </div>
-
-        <!-- Export Section -->
-        <div class="export-section">
-            <h3 style="margin-bottom: 20px;">📥 Export All Data</h3>
-            <p style="color: #666; margin-bottom: 20px;">Download complete dataset for external analysis</p>
-            <button class="btn btn-secondary" onclick="exportAllToCSV()">📄 Export as CSV</button>
-            <button class="btn btn-tertiary" onclick="exportAllToExcel()">📊 Export as Excel</button>
-            <button class="btn" onclick="exportAllToJSON()">💾 Export as JSON</button>
-        </div>
-    </div>
-
-    <script>
+<!-- Skip Links for Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<a href="#navigation" class="skip-link">Skip to navigation</a>
+<!-- Password Gate -->
+<div id="passwordGate" class="password-gate">
+<div class="password-modal">
+<h2>🔐 Admin Access</h2>
+<p style="color: #666; margin-bottom: 20px;">Enter admin password to view analytics</p>
+<input type="password" id="passwordInput" placeholder="Enter password" />
+<button class="btn" onclick="checkPassword()" aria-label="Action">Unlock Dashboard</button>
+<p id="passwordError" style="color: #dc2626; margin-top: 15px; display: none;">Incorrect password</p>
+</div>
+</div>
+<div class="container" id="mainContent" style="display: none;">
+<div class="header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> TAP-IN Analytics Dashboard</h1>
+<p style="color: #666;">Real-time assessment data and insights</p>
+</div>
+<!-- Stats Grid -->
+<div class="stats-grid">
+<div class="stat-card">
+<h3>Total Assessments</h3>
+<div class="value" id="totalAssessments">-</div>
+</div>
+<div class="stat-card">
+<h3>Team Dynamics</h3>
+<div class="value" id="teamCount">-</div>
+</div>
+<div class="stat-card">
+<h3>Leadership</h3>
+<div class="value" id="leadershipCount">-</div>
+</div>
+<div class="stat-card">
+<h3>Mental Health</h3>
+<div class="value" id="mentalHealthCount">-</div>
+</div>
+<div class="stat-card">
+<h3>Work-Life Balance</h3>
+<div class="value" id="workLifeCount">-</div>
+</div>
+<div class="stat-card">
+<h3>This Week</h3>
+<div class="value" id="thisWeekCount">-</div>
+</div>
+</div>
+<!-- Filters -->
+<div class="filters">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-magnifying-glass"></use></svg> Filter Data</h3>
+<div class="filter-row">
+<div class="filter-group">
+<label>Assessment Type</label>
+<select id="assessmentFilter">
+<option value="all">All Assessments</option>
+<option value="team-dynamics">Team Dynamics</option>
+<option value="leadership-style">Leadership Style</option>
+<option value="worker-type">Worker Type</option>
+<option value="mental-health">Mental Health</option>
+<option value="work-life-balance">Work-Life Balance</option>
+</select>
+</div>
+<div class="filter-group">
+<label>Date From</label>
+<input type="date" id="dateFrom" />
+</div>
+<div class="filter-group">
+<label>Date To</label>
+<input type="date" id="dateTo" />
+</div>
+</div>
+<button class="btn" onclick="applyFilters()" aria-label="Action">Apply Filters</button>
+<button class="btn btn-secondary" onclick="resetFilters()" aria-label="Secondary action">Reset</button>
+</div>
+<!-- Data Table -->
+<div id="dataTableContainer">
+<h3 style="margin-bottom: 20px;">Recent Submissions</h3>
+<div class="loading" id="loading">Loading data...</div>
+<table class="data-table" id="dataTable" style="display: none;">
+<thead>
+<tr>
+<th>Date</th>
+<th>Type</th>
+<th>Score</th>
+<th>Level</th>
+<th>Language</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+<!-- Export Section -->
+<div class="export-section">
+<h3 style="margin-bottom: 20px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Export All Data</h3>
+<p style="color: #666; margin-bottom: 20px;">Download complete dataset for external analysis</p>
+<button class="btn btn-secondary" onclick="exportAllToCSV()" aria-label="Secondary action">📄 Export as CSV</button>
+<button class="btn btn-tertiary" onclick="exportAllToExcel()" aria-label="Secondary action"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Export as Excel</button>
+<button class="btn" onclick="exportAllToJSON()" aria-label="Action"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Export as JSON</button>
+</div>
+</div>
+<script>
         // Admin password (in production, use environment variable or backend auth)
-        const ADMIN_PASSWORD = 'tapin2025'; // Change this!
-
-        let allData = [];
-        let filteredData = [];
-
-        function checkPassword() {
-            const password = document.getElementById('passwordInput').value;
-            if (password === ADMIN_PASSWORD) {
-                document.getElementById('passwordGate').style.display = 'none';
-                document.getElementById('mainContent').style.display = 'block';
-                loadData();
-            } else {
-                document.getElementById('passwordError').style.display = 'block';
-            }
-        }
-
+const ADMIN_PASSWORD = 'tapin2025'; // Change this!
+let allData = [];
+let filteredData = [];
+function checkPassword() {
+const password = document.getElementById('passwordInput').value;
+if (password === ADMIN_PASSWORD) {
+document.getElementById('passwordGate').style.display = 'none';
+document.getElementById('mainContent').style.display = 'block';
+loadData();
+} else {
+document.getElementById('passwordError').style.display = 'block';
+}
+}
         // Allow Enter key to submit password
-        document.getElementById('passwordInput')?.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') checkPassword();
-        });
-
-        async function loadData() {
+document.getElementById('passwordInput')?.addEventListener('keypress', (e) => {
+if (e.key === 'Enter') checkPassword();
+});
+async function loadData() {
             // Load from localStorage (client-side storage)
-            const localData = JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
-            
+const localData = JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
             // In production, fetch from your backend:
             // const response = await fetch('/.netlify/functions/get-all-assessments');
             // const serverData = await response.json();
-            
-            allData = localData; // or combine: [...localData, ...serverData]
-            filteredData = allData;
-            
-            updateStats();
-            renderTable();
-            
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('dataTable').style.display = 'table';
-        }
-
-        function updateStats() {
-            const total = allData.length;
-            const teamDynamics = allData.filter(d => d.assessmentType === 'team-dynamics').length;
-            const leadership = allData.filter(d => d.assessmentType === 'leadership-style').length;
-            const mentalHealth = allData.filter(d => d.assessmentType === 'mental-health').length;
-            const workLife = allData.filter(d => d.assessmentType === 'work-life-balance').length;
-            
-            const oneWeekAgo = new Date();
-            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-            const thisWeek = allData.filter(d => new Date(d.timestamp) > oneWeekAgo).length;
-            
-            document.getElementById('totalAssessments').textContent = total;
-            document.getElementById('teamCount').textContent = teamDynamics;
-            document.getElementById('leadershipCount').textContent = leadership;
-            document.getElementById('mentalHealthCount').textContent = mentalHealth;
-            document.getElementById('workLifeCount').textContent = workLife;
-            document.getElementById('thisWeekCount').textContent = thisWeek;
-        }
-
-        function renderTable() {
-            const tbody = document.getElementById('tableBody');
-            tbody.innerHTML = '';
-            
-            filteredData.slice(0, 100).forEach((item, index) => {
-                const row = tbody.insertRow();
-                row.innerHTML = `
-                    <td>${new Date(item.timestamp).toLocaleString()}</td>
-                    <td>${formatAssessmentType(item.assessmentType)}</td>
-                    <td><strong>${item.totalScore || item.score || 'N/A'}</strong></td>
-                    <td>${item.levelText || '-'}</td>
-                    <td>${item.language || '-'}</td>
-                    <td>
-                        <button onclick="viewDetails(${index})" style="padding: 5px 15px; border: none; background: #a93226; color: white; border-radius: 5px; cursor: pointer;">View</button>
-                    </td>
-                `;
-            });
-        }
-
-        function formatAssessmentType(type) {
-            const types = {
-                'team-dynamics': '🤝 Team Dynamics',
-                'leadership-style': '👑 Leadership',
-                'worker-type': '⚡ Worker Type',
-                'mental-health': '🧠 Mental Health',
-                'work-life-balance': '⚖️ Work-Life'
-            };
-            return types[type] || type;
-        }
-
-        function applyFilters() {
-            const typeFilter = document.getElementById('assessmentFilter').value;
-            const dateFrom = document.getElementById('dateFrom').value;
-            const dateTo = document.getElementById('dateTo').value;
-            
-            filteredData = allData.filter(item => {
-                if (typeFilter !== 'all' && item.assessmentType !== typeFilter) return false;
-                if (dateFrom && new Date(item.timestamp) < new Date(dateFrom)) return false;
-                if (dateTo && new Date(item.timestamp) > new Date(dateTo)) return false;
-                return true;
-            });
-            
-            renderTable();
-        }
-
-        function resetFilters() {
-            document.getElementById('assessmentFilter').value = 'all';
-            document.getElementById('dateFrom').value = '';
-            document.getElementById('dateTo').value = '';
-            filteredData = allData;
-            renderTable();
-        }
-
-        function viewDetails(index) {
-            const item = filteredData[index];
-            alert(JSON.stringify(item, null, 2));
+allData = localData; // or combine: [...localData, ...serverData]
+filteredData = allData;
+updateStats();
+renderTable();
+document.getElementById('loading').style.display = 'none';
+document.getElementById('dataTable').style.display = 'table';
+}
+function updateStats() {
+const total = allData.length;
+const teamDynamics = allData.filter(d => d.assessmentType === 'team-dynamics').length;
+const leadership = allData.filter(d => d.assessmentType === 'leadership-style').length;
+const mentalHealth = allData.filter(d => d.assessmentType === 'mental-health').length;
+const workLife = allData.filter(d => d.assessmentType === 'work-life-balance').length;
+const oneWeekAgo = new Date();
+oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+const thisWeek = allData.filter(d => new Date(d.timestamp) > oneWeekAgo).length;
+document.getElementById('totalAssessments').textContent = total;
+document.getElementById('teamCount').textContent = teamDynamics;
+document.getElementById('leadershipCount').textContent = leadership;
+document.getElementById('mentalHealthCount').textContent = mentalHealth;
+document.getElementById('workLifeCount').textContent = workLife;
+document.getElementById('thisWeekCount').textContent = thisWeek;
+}
+function renderTable() {
+const tbody = document.getElementById('tableBody');
+safeSetInnerHTML(tbody, '');
+filteredData.slice(0, 100).forEach((item, index) => {
+const row = tbody.insertRow();
+safeSetInnerHTML(row, `
+<td>${new Date(item.timestamp).toLocaleString()}</td>
+<td>${formatAssessmentType(item.assessmentType)}</td>
+<td><strong>${item.totalScore || item.score || 'N/A'}</strong></td>
+<td>${item.levelText || '-'}</td>
+<td>${item.language || '-'}</td>
+<td>
+<button onclick="viewDetails(${index})" style="padding: 5px 15px); border: none; background: var(--tap-red); color: white; border-radius: 5px; cursor: pointer;" aria-label="Action">View</button>
+</td>
+`;
+});
+}
+function formatAssessmentType(type) {
+const types = {
+'team-dynamics': '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-hand-raised"></use></svg> Team Dynamics',
+'leadership-style': '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg> Leadership',
+'worker-type': '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-bolt"></use></svg> Worker Type',
+'mental-health': '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-academic-cap"></use></svg> Mental Health',
+'work-life-balance': '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-scale"></use></svg> Work-Life'
+};
+return types[type] || type;
+}
+function applyFilters() {
+const typeFilter = document.getElementById('assessmentFilter').value;
+const dateFrom = document.getElementById('dateFrom').value;
+const dateTo = document.getElementById('dateTo').value;
+filteredData = allData.filter(item => {
+if (typeFilter !== 'all' && item.assessmentType !== typeFilter) return false;
+if (dateFrom && new Date(item.timestamp) < new Date(dateFrom)) return false;
+if (dateTo && new Date(item.timestamp) > new Date(dateTo)) return false;
+return true;
+});
+renderTable();
+}
+function resetFilters() {
+document.getElementById('assessmentFilter').value = 'all';
+document.getElementById('dateFrom').value = '';
+document.getElementById('dateTo').value = '';
+filteredData = allData;
+renderTable();
+}
+function viewDetails(index) {
+const item = filteredData[index];
+alert(JSON.stringify(item, null, 2));
             // In production, show a modal with detailed view
-        }
-
-        function exportAllToCSV() {
-            const csv = convertDataToCSV(filteredData);
-            downloadFile(csv, 'tapin-assessments-' + Date.now() + '.csv', 'text/csv');
-        }
-
-        function exportAllToExcel() {
-            const ws = XLSX.utils.json_to_sheet(filteredData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "All Assessments");
-            XLSX.writeFile(wb, 'tapin-assessments-' + Date.now() + '.xlsx');
-        }
-
-        function exportAllToJSON() {
-            const json = JSON.stringify(filteredData, null, 2);
-            downloadFile(json, 'tapin-assessments-' + Date.now() + '.json', 'application/json');
-        }
-
-        function convertDataToCSV(data) {
-            if (data.length === 0) return '';
-            
-            const headers = Object.keys(data[0]);
-            let csv = headers.join(',') + '\n';
-            
-            data.forEach(row => {
-                const values = headers.map(header => {
-                    let value = row[header];
-                    if (typeof value === 'object') value = JSON.stringify(value);
-                    value = String(value).replace(/"/g, '""');
-                    return `"${value}"`;
-                });
-                csv += values.join(',') + '\n';
-            });
-            
-            return csv;
-        }
-
-        function downloadFile(content, filename, mimeType) {
-            const blob = new Blob([content], { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement('a');
-            link.href = url;
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            URL.revokeObjectURL(url);
-        }
-    </script>
-
-    <!-- Performance Optimizer - Load First -->
+}
+function exportAllToCSV() {
+const csv = convertDataToCSV(filteredData);
+downloadFile(csv, 'tapin-assessments-' + Date.now() + '.csv', 'text/csv');
+}
+function exportAllToExcel() {
+const ws = XLSX.utils.json_to_sheet(filteredData);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, "All Assessments");
+XLSX.writeFile(wb, 'tapin-assessments-' + Date.now() + '.xlsx');
+}
+function exportAllToJSON() {
+const json = JSON.stringify(filteredData, null, 2);
+downloadFile(json, 'tapin-assessments-' + Date.now() + '.json', 'application/json');
+}
+function convertDataToCSV(data) {
+if (data.length === 0) return '';
+const headers = Object.keys(data[0]);
+let csv = headers.join(',') + '\n';
+data.forEach(row => {
+const values = headers.map(header => {
+let value = row[header];
+if (typeof value === 'object') value = JSON.stringify(value);
+value = String(value).replace(/"/g, '""');
+return `"${value}"`;
+});
+csv += values.join(',') + '\n';
+});
+return csv;
+}
+function downloadFile(content, filename, mimeType) {
+const blob = new Blob([content], { type: mimeType });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = filename;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+URL.revokeObjectURL(url);
+}
+</script>
+<!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.min.js"></script>
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.min.js"></script>
 <script src="js/storage-health.min.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-    <script src="js/keyboard-navigation.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<script src="js/keyboard-navigation.js" defer></script>
 
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered:', registration.scope);
-                        
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
                         // Check for updates
-                        registration.addEventListener('updatefound', function() {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     // New service worker available
                                     console.log('New service worker available');
-                                }
-                            });
-                        });
-                    })
-                    .catch(function(error) {
+}
+});
+});
+})
+.catch(function(error) {
                         // Silent fail - not critical
-                    });
-            });
-        }
-    </script>
-    <script src="js/pwa-install-prompt.js"></script>
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
 </html>
-
-    <!-- Focus Management for Accessibility -->
-    <script src="js/focus-management.js" defer></script>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- Focus Management for Accessibility -->
+<script src="js/focus-management.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>

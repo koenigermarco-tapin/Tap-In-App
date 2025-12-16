@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="THE GYM - Your Personal Leadership Development Journey">
+<title>THE GYM | TAP-IN</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+/*
+  COMPLETE GYM DASHBOARD - WHITE BELT VIEW
+  Progressive sections that unlock as user advances
+*/
+
+:root {
+  /* Base Dark Theme */
+  --bg-base: #0a0a12;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a24;
+  --bg-card-hover: #22222e;
+  --border-subtle: #2a2a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+  --text-muted: #6a6a7a;
+  
+  /* Stripe Colors - Always White */
+  --stripe-color: #ffffff;
+  --stripe-bg: #1a1a1a;
+  --stripe-inactive: rgba(255, 255, 255, 0.15);
+  
+  /* Team/Hub Color */
+  --team-green: #00ff88;
+  --team-green-dim: rgba(0, 255, 136, 0.1);
+  
+  /* Current Belt - White */
+  --belt-glow: rgba(245, 245, 245, 0.08);
+  --belt-accent: #f5f5f5;
+  --belt-accent-dim: rgba(245, 245, 245, 0.15);
+  --belt-text-on: #0a0a12;
+  --ambient-top: rgba(245, 245, 245, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Ambient Glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60vh;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, var(--ambient-top) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.gym-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(10, 10, 18, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.gym-logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.gym-logo-accent { opacity: 0.5; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.stat-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+.streak-pill { color: #f59e0b; }
+.xp-pill { color: var(--belt-accent); }
+
+.belt-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.belt-stripe-visual {
+  display: flex;
+  gap: 3px;
+  background: var(--stripe-bg);
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.stripe-line {
+  width: 3px;
+  height: 12px;
+  background: var(--stripe-color);
+  border-radius: 1px;
+  opacity: 0.25;
+}
+
+.stripe-line.active { opacity: 1; }
+
+/* ============================================================================
+   MAIN LAYOUT
+   ============================================================================ */
+
+.gym-main {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Two column layout on desktop */
+.gym-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .gym-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ============================================================================
+   SECTION STYLES
+   ============================================================================ */
+
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+/* ============================================================================
+   BELT HERO CARD
+   ============================================================================ */
+
+.belt-hero {
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+  border: 1px solid var(--belt-accent-dim);
+  border-radius: 20px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.belt-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, var(--belt-glow) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.belt-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.belt-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--belt-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.belt-icon {
+  width: 20px;
+  height: 5px;
+  background: var(--belt-accent);
+  border-radius: 3px;
+}
+
+.belt-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.belt-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Stripe Progress */
+.stripe-progress-box {
+  background: var(--stripe-bg);
+  border-radius: 8px;
+  padding: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.stripe-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stripe-progress-label {
+  font-size: 0.7rem;
+  color: #6a6a7a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stripe-progress-count {
+  font-size: 0.75rem;
+  color: var(--stripe-color);
+  font-weight: 600;
+}
+
+.stripe-progress {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.stripe-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--stripe-inactive);
+  border-radius: 4px;
+}
+
+.stripe-bar.completed { background: var(--stripe-color); }
+.stripe-bar.current { background: linear-gradient(90deg, var(--stripe-color) 50%, var(--stripe-inactive) 50%); }
+
+/* Stats Row */
+.belt-stats {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-bottom: 1.25rem;
+}
+
+.belt-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--belt-accent);
+}
+
+.belt-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+/* CTA */
+.belt-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.belt-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--belt-accent-dim);
+}
+
+.belt-cta-label {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.belt-cta-title {
+  font-size: 0.95rem;
+}
+
+/* ============================================================================
+   TODAY'S PRACTICE
+   ============================================================================ */
+
+.practice-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.practice-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.practice-item:last-child { border-bottom: none; }
+.practice-item:hover { background: var(--bg-card-hover); }
+
+.practice-item.completed { opacity: 0.5; }
+
+.practice-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.practice-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.practice-icon.morning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.practice-icon.lesson { background: var(--belt-accent-dim); color: var(--belt-accent); }
+.practice-icon.evening { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
+.practice-content { flex: 1; }
+
+.practice-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.practice-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.practice-status {
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.practice-status.done {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.practice-status.active {
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+}
+
+.practice-status.pending {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   STRIPE JOURNEY CARDS
+   ============================================================================ */
+
+.stripes-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .stripes-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stripe-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.stripe-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--belt-accent-dim);
+}
+
+.stripe-card.completed {
+  border-color: var(--belt-accent-dim);
+}
+
+.stripe-card.current {
+  border-color: var(--belt-accent);
+  box-shadow: 0 0 20px var(--belt-glow);
+}
+
+.stripe-card.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stripe-card.locked:hover {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.stripe-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 2px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin: 0 auto 0.5rem;
+}
+
+.stripe-card.completed .stripe-num {
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+  border-color: var(--belt-accent);
+}
+
+.stripe-card.current .stripe-num {
+  border-color: var(--belt-accent);
+  color: var(--belt-accent);
+}
+
+.stripe-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.stripe-lessons {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ============================================================================
+   QUICK TOOLS (White Belt gets limited)
+   ============================================================================ */
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.tool-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.tool-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--belt-accent-dim);
+}
+
+.tool-card.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tool-card.locked:hover {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.tool-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tool-icon.white { background: var(--belt-accent-dim); color: var(--belt-accent); }
+.tool-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.tool-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.tool-icon.green { background: var(--team-green-dim); color: var(--team-green); }
+
+.tool-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tool-unlock {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   DAILY REFLECTION / JOURNAL PREVIEW
+   ============================================================================ */
+
+.reflection-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.reflection-prompt {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.reflection-input {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: none;
+  min-height: 80px;
+}
+
+.reflection-input::placeholder {
+  color: var(--text-muted);
+}
+
+.reflection-input:focus {
+  outline: none;
+  border-color: var(--belt-accent-dim);
+}
+
+/* ============================================================================
+   MOTIVATION QUOTE
+   ============================================================================ */
+
+.quote-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.quote-icon {
+  font-size: 2rem;
+  opacity: 0.1;
+  position: absolute;
+  top: 0.5rem;
+  left: 1rem;
+}
+
+.quote-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 0.75rem;
+}
+
+.quote-author {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   NEXT BELT TEASER
+   ============================================================================ */
+
+.next-belt-teaser {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.next-belt-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.next-belt-visual {
+  width: 24px;
+  height: 6px;
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+.next-belt-content { flex: 1; }
+
+.next-belt-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.next-belt-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.next-belt-unlock {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.next-belt-progress {
+  width: 60px;
+  text-align: right;
+}
+
+.next-belt-percent {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+/* ============================================================================
+   LOCKED TEAM TEASER
+   ============================================================================ */
+
+.team-teaser {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, var(--bg-card) 100%);
+  border: 1px dashed rgba(0, 255, 136, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.team-teaser-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--team-green-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.team-teaser-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--team-green);
+}
+
+.team-teaser-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--team-green);
+  margin-bottom: 0.5rem;
+}
+
+.team-teaser-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.team-teaser-unlock {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.team-teaser-unlock svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============================================================================
+   RECENT ACTIVITY (Shows once user has some progress)
+   ============================================================================ */
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--belt-accent);
+  flex-shrink: 0;
+}
+
+.activity-text {
+  flex: 1;
+  color: var(--text-secondary);
+}
+
+.activity-text strong {
+  color: var(--text-primary);
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+</style>
+</head>
+
+<body data-belt="white">
+
+<!-- ============================================================================
+     HEADER
+     ============================================================================ -->
+<header class="gym-header">
+  <a href="../../index.html" class="gym-logo">
+    TAP-IN <span class="gym-logo-accent">THE GYM</span>
+  </a>
+  
+  <div class="header-right">
+    <div class="stat-pill streak-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z"/></svg>
+      3
+    </div>
+    
+    <div class="stat-pill xp-pill">
+      450 XP
+    </div>
+    
+    <div class="belt-badge">
+      <div class="belt-stripe-visual">
+        <div class="stripe-line active"></div>
+        <div class="stripe-line"></div>
+        <div class="stripe-line"></div>
+        <div class="stripe-line"></div>
+      </div>
+      White Belt
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================================
+     MAIN CONTENT
+     ============================================================================ -->
+<main class="gym-main">
+  <div class="gym-grid">
+    
+    <!-- ====================================================================
+         LEFT COLUMN - Main Journey
+         ==================================================================== -->
+    <div class="left-column">
+      
+      <!-- BELT HERO CARD -->
+      <section class="belt-hero">
+        <div class="belt-hero-content">
+          <div class="belt-label">
+            <span class="belt-icon"></span>
+            White Belt
+          </div>
+          <h1 class="belt-title">Know Thyself</h1>
+          <p class="belt-subtitle">Building Self-Awareness & Personal Foundation</p>
+          
+          <div class="stripe-progress-box">
+            <div class="stripe-progress-header">
+              <span class="stripe-progress-label">Stripe Progress</span>
+              <span class="stripe-progress-count">1 of 4</span>
+            </div>
+            <div class="stripe-progress">
+              <div class="stripe-bar completed"></div>
+              <div class="stripe-bar current"></div>
+              <div class="stripe-bar"></div>
+              <div class="stripe-bar"></div>
+            </div>
+          </div>
+          
+          <div class="belt-stats">
+            <div>
+              <div class="belt-stat-value">5/20</div>
+              <div class="belt-stat-label">Lessons</div>
+            </div>
+            <div>
+              <div class="belt-stat-value">25%</div>
+              <div class="belt-stat-label">Complete</div>
+            </div>
+            <div>
+              <div class="belt-stat-value">3</div>
+              <div class="belt-stat-label">Day Streak</div>
+            </div>
+          </div>
+          
+          <a href="white-belt-stripe2-gamified.html" class="belt-cta">
+            <div>
+              <div class="belt-cta-label">Continue Training</div>
+              <div class="belt-cta-title">Stripe 2: Vulnerability</div>
+            </div>
+            <span>→</span>
+          </a>
+        </div>
+      </section>
+      
+      <!-- STRIPE JOURNEY -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Your White Belt Journey
+        </h2>
+        <div class="stripes-row">
+          <div class="stripe-card completed">
+            <div class="stripe-num">✓</div>
+            <div class="stripe-name">Self-Awareness</div>
+            <div class="stripe-lessons">5/5 lessons</div>
+          </div>
+          <div class="stripe-card current">
+            <div class="stripe-num">2</div>
+            <div class="stripe-name">Vulnerability</div>
+            <div class="stripe-lessons">2/5 lessons</div>
+          </div>
+          <div class="stripe-card locked">
+            <div class="stripe-num">3</div>
+            <div class="stripe-name">Self-Trust</div>
+            <div class="stripe-lessons">0/5 lessons</div>
+          </div>
+          <div class="stripe-card locked">
+            <div class="stripe-num">4</div>
+            <div class="stripe-name">Inner Coach</div>
+            <div class="stripe-lessons">0/5 lessons</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- DAILY REFLECTION -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+          Daily Reflection
+        </h2>
+        <div class="reflection-card">
+          <p class="reflection-prompt">"What is one assumption you made today that might not be true?"</p>
+          <textarea class="reflection-input" placeholder="Take a moment to reflect..."></textarea>
+        </div>
+      </section>
+      
+      <!-- NEXT BELT TEASER -->
+      <section style="margin-top: 1.5rem;">
+        <div class="next-belt-teaser">
+          <div class="next-belt-icon">
+            <div class="next-belt-visual"></div>
+          </div>
+          <div class="next-belt-content">
+            <div class="next-belt-label">Coming Next</div>
+            <div class="next-belt-title">Blue Belt: Healthy Conflict</div>
+            <div class="next-belt-unlock">Complete White Belt to unlock</div>
+          </div>
+          <div class="next-belt-progress">
+            <div class="next-belt-percent">25%</div>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+    
+    <!-- ====================================================================
+         RIGHT COLUMN - Secondary Content
+         ==================================================================== -->
+    <div class="right-column">
+      
+      <!-- TODAY'S PRACTICE -->
+      <section>
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Today's Practice
+        </h2>
+        <div class="practice-card">
+          <div class="practice-item completed">
+            <div class="practice-icon morning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+            </div>
+            <div class="practice-content">
+              <div class="practice-title">Morning Intention</div>
+              <div class="practice-meta">Set your focus • 2 min</div>
+            </div>
+            <span class="practice-status done">Done</span>
+          </div>
+          
+          <div class="practice-item">
+            <div class="practice-icon lesson">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </div>
+            <div class="practice-content">
+              <div class="practice-title">Vulnerability Lesson 3</div>
+              <div class="practice-meta">Embracing discomfort • 8 min</div>
+            </div>
+            <span class="practice-status active">Start</span>
+          </div>
+          
+          <div class="practice-item">
+            <div class="practice-icon evening">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+            </div>
+            <div class="practice-content">
+              <div class="practice-title">Evening Reflection</div>
+              <div class="practice-meta">Process your day • 3 min</div>
+            </div>
+            <span class="practice-status pending">Later</span>
+          </div>
+        </div>
+      </section>
+      
+      <!-- QUICK TOOLS -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+          Quick Tools
+        </h2>
+        <div class="tools-grid">
+          <div class="tool-card">
+            <div class="tool-icon white">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+            </div>
+            <div class="tool-name">My Profile</div>
+          </div>
+          
+          <div class="tool-card">
+            <div class="tool-icon white">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+            </div>
+            <div class="tool-name">Journal</div>
+          </div>
+          
+          <div class="tool-card locked">
+            <div class="tool-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg>
+            </div>
+            <div class="tool-name">Conflict Cards</div>
+            <div class="tool-unlock">Blue Belt</div>
+          </div>
+          
+          <div class="tool-card locked">
+            <div class="tool-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+            </div>
+            <div class="tool-name">Team Hub</div>
+            <div class="tool-unlock">Blue Belt</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- MOTIVATION -->
+      <section style="margin-top: 1.5rem;">
+        <div class="quote-card">
+          <span class="quote-icon">"</span>
+          <p class="quote-text">The first and greatest victory is to conquer yourself.</p>
+          <p class="quote-author">— Plato</p>
+        </div>
+      </section>
+      
+      <!-- TEAM TEASER -->
+      <section style="margin-top: 1.5rem;">
+        <div class="team-teaser">
+          <div class="team-teaser-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+          </div>
+          <h3 class="team-teaser-title">THE HUB</h3>
+          <p class="team-teaser-desc">Team tools unlock once you've mastered yourself</p>
+          <div class="team-teaser-unlock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+            Unlocks at Blue Belt
+          </div>
+        </div>
+      </section>
+      
+      <!-- RECENT ACTIVITY -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+          Recent Activity
+        </h2>
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div class="activity-text">Completed <strong>Vulnerability Lesson 2</strong></div>
+            <div class="activity-time">2h ago</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div class="activity-text">Earned <strong>50 XP</strong></div>
+            <div class="activity-time">2h ago</div>
+          </div>
+          <div class="activity-item">
+            <div class="activity-dot"></div>
+            <div class="activity-text">Completed <strong>Stripe 1: Self-Awareness</strong></div>
+            <div class="activity-time">Yesterday</div>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+    
+  </div>
+</main>
+
+</body>
+</html>

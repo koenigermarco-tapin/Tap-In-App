@@ -1,143 +1,114 @@
+<meta name="description" content="TAP-IN Leadership Academy: Leadership development that actually sticks.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <!-- TAP OUT BUTTON COMPONENT -->
 <!-- Use in: All Gym belt stripe lesson pages -->
 <!-- Purpose: Quick escape back to Gym home -->
-
 <style>
 .tap-out-btn {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    
-    background: linear-gradient(135deg, #1a1d2e 0%, #2d3556 100%);
-    color: white;
-    
-    padding: 1rem 1.5rem;
-    border: 2px solid rgba(239, 68, 68, 0.3);
-    border-radius: 8px;
-    
-    font-weight: 600;
-    font-size: 0.95rem;
-    
-    cursor: pointer;
-    z-index: 1000;
-    
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    
-    transition: all 0.2s ease;
-    
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+position: fixed;
+bottom: 2rem;
+right: 2rem;
+background: linear-gradient(135deg, #1a1d2e 0%, #2d3556 100%);
+color: white;
+padding: 1rem 1.5rem;
+border: 2px solid rgba(239, 68, 68, 0.3);
+border-radius: 8px;
+font-weight: 600;
+font-size: 0.95rem;
+cursor: pointer;
+z-index: 1000;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+gap: 0.5rem;
 }
-
 .tap-out-btn:hover {
-    border-color: rgba(239, 68, 68, 0.6);
-    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
-    transform: translateY(-2px);
+border-color: rgba(239, 68, 68, 0.6);
+box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
+transform: translateY(-2px);
 }
-
 .tap-out-btn:active {
-    transform: translateY(0);
+transform: translateY(0);
 }
-
 .tap-icon {
-    font-size: 1.2rem;
+font-size: 1.2rem;
 }
-
 /* Mobile optimization */
 @media (max-width: 768px) {
-    .tap-out-btn {
-        bottom: 1rem;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        
-        padding: 0.875rem 1.25rem;
-        font-size: 0.9rem;
-    }
-    
-    .tap-out-btn:hover {
-        transform: translateX(-50%) translateY(-2px);
-    }
-    
-    .tap-out-btn:active {
-        transform: translateX(-50%);
-    }
+.tap-out-btn {
+bottom: 1rem;
+left: 50%;
+right: auto;
+transform: translateX(-50%);
+padding: 0.875rem 1.25rem;
+font-size: 0.9rem;
+}
+.tap-out-btn:hover {
+transform: translateX(-50%) translateY(-2px);
+}
+.tap-out-btn:active {
+transform: translateX(-50%);
+}
 }
 </style>
-
-<button class="tap-out-btn" id="tapOutBtn">
-    <span class="tap-icon">🥋</span>
-    <span class="tap-text">TAP OUT</span>
+<button class="tap-out-btn" id="tapOutBtn" aria-label="Tapoutbtn">
+<span class="tap-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg></span>
+<span class="tap-text">TAP OUT</span>
 </button>
-
 <script>
 (function() {
-    const tapOutBtn = document.getElementById('tapOutBtn');
-    
+const tapOutBtn = document.getElementById('tapOutBtn');
     // Get lesson info (should be set by parent page)
-    const lessonId = document.body.dataset.lessonId || window.location.pathname.split('/').pop().replace('.html', '');
-    const isGerman = lessonId.includes('-de') || window.location.pathname.includes('-de.html');
-    
+const lessonId = document.body.dataset.lessonId || window.location.pathname.split('/').pop().replace('.html', '');
+const isGerman = lessonId.includes('-de') || window.location.pathname.includes('-de.html');
     // Update button text for German
-    if (isGerman) {
-        document.querySelector('.tap-text').textContent = 'ABBRECHEN';
-    }
-    
-    tapOutBtn.addEventListener('click', function() {
-        tapOut();
-    });
-    
+if (isGerman) {
+document.querySelector('.tap-text').textContent = 'ABBRECHEN';
+}
+tapOutBtn.addEventListener('click', function() {
+tapOut();
+});
     // ESC key support
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            tapOut();
-        }
-    });
-    
-    function tapOut() {
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape') {
+tapOut();
+}
+});
+function tapOut() {
         // Get current progress
-        const currentSlide = parseInt(document.body.dataset.currentSlide || '1');
-        const totalSlides = parseInt(document.body.dataset.totalSlides || '10');
-        const isComplete = currentSlide >= totalSlides;
-        
+const currentSlide = parseInt(document.body.dataset.currentSlide || '1');
+const totalSlides = parseInt(document.body.dataset.totalSlides || '10');
+const isComplete = currentSlide >= totalSlides;
         // Confirm if lesson not complete
-        if (!isComplete) {
-            const message = isGerman 
-                ? 'Du hast die Lektion noch nicht abgeschlossen. Trotzdem zurück zum Gym?'
-                : 'You haven\'t completed this lesson yet. Return to Gym anyway?';
-                
-            const confirmed = confirm(message);
-            if (!confirmed) return;
-        }
-        
+if (!isComplete) {
+const message = isGerman
+? 'Du hast die Lektion noch nicht abgeschlossen. Trotzdem zurück zum Gym?'
+: 'You haven\'t completed this lesson yet. Return to Gym anyway?';
+const confirmed = confirm(message);
+if (!confirmed) return;
+}
         // Save progress
-        saveProgress(lessonId, currentSlide, totalSlides);
-        
+saveProgress(lessonId, currentSlide, totalSlides);
         // Return to Gym
-        const gymUrl = isGerman ? 'gym-home-FOCUSED-de.html' : 'gym-home-FOCUSED.html';
-        window.location.href = gymUrl;
-    }
-    
-    function saveProgress(lessonId, currentSlide, totalSlides) {
-        const progress = {
-            lessonId: lessonId,
-            currentSlide: currentSlide,
-            totalSlides: totalSlides,
-            percentage: Math.round((currentSlide / totalSlides) * 100),
-            lastAccessed: new Date().toISOString()
-        };
-        
-        localStorage.setItem(`lesson_${lessonId}`, JSON.stringify(progress));
-        
+const gymUrl = isGerman ? 'gym-home-FOCUSED-de.html' : 'gym-home-FOCUSED.html';
+window.location.href = gymUrl;
+}
+function saveProgress(lessonId, currentSlide, totalSlides) {
+const progress = {
+lessonId: lessonId,
+currentSlide: currentSlide,
+totalSlides: totalSlides,
+percentage: Math.round((currentSlide / totalSlides) * 100),
+lastAccessed: new Date().toISOString()
+};
+localStorage.setItem(`lesson_${lessonId}`, JSON.stringify(progress));
         // Also save to global progress array
-        const allProgress = JSON.parse(localStorage.getItem('allLessonProgress') || '{}');
-        allProgress[lessonId] = progress;
-        localStorage.setItem('allLessonProgress', JSON.stringify(allProgress));
-    }
+const allProgress = JSON.parse(localStorage.getItem('allLessonProgress') || '{}');
+allProgress[lessonId] = progress;
+localStorage.setItem('allLessonProgress', JSON.stringify(allProgress));
+}
 })();
 </script>
-
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>

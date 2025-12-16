@@ -1,2141 +1,1510 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>THE GYM | TAP-IN Personal Development</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --primary-navy: #1a365d;
-            --navy-light: #2d4a7c;
-            --navy-dark: #0f2744;
-            --accent-red: #b91c1c;
-            --accent-gold: #f6e05e;
-            --success-green: #38a169;
-            --warning-orange: #dd6b20;
-            --bg-dark: #0a0a0a;
-            --bg-card: #141414;
-            --bg-card-hover: #1a1a1a;
-            --border-subtle: #2d2d2d;
-            --text-white: #ffffff;
-            --text-muted: #a0aec0;
-            --text-dim: #718096;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-dark);
-            color: var(--text-white);
-            min-height: 100vh;
-            line-height: 1.6;
-        }
-
-        /* Top Navigation */
-        .top-nav {
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--text-white);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .logo span {
-            color: var(--accent-gold);
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-
-        .streak-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .xp-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--border-subtle);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.9rem;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--navy-light) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        /* Main Container */
-        .main-container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 2rem;
-        }
-
-        /* Welcome Section */
-        .welcome-section {
-            margin-bottom: 2rem;
-        }
-
-        .welcome-greeting {
-            font-size: 1.75rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        .welcome-date {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
-
-        /* Grid Layout */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 380px;
-            gap: 2rem;
-        }
-
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .sidebar {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-        }
-
-        /* Card Base */
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.2s;
-        }
-
-        .card:hover {
-            border-color: #3d3d3d;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .card-title {
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--text-white);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .card-action {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-        }
-
-        .card-action:hover {
-            color: var(--text-white);
-        }
-
-        /* Belt Progress Card */
-        .belt-progress-card {
-            background: linear-gradient(135deg, var(--primary-navy) 0%, var(--navy-dark) 100%);
-            border: none;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .belt-progress-card::before {
-            content: '🥋';
-            position: absolute;
-            right: -20px;
-            bottom: -20px;
-            font-size: 120px;
-            opacity: 0.1;
-        }
-
-        .belt-current {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .belt-icon-large {
-            width: 60px;
-            height: 60px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
-
-        .belt-info h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.25rem;
-        }
-
-        .belt-info p {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.9rem;
-        }
-
-        .belt-progress-bar {
-            background: rgba(255,255,255,0.1);
-            height: 12px;
-            border-radius: 6px;
-            margin-bottom: 0.75rem;
-            overflow: hidden;
-        }
-
-        .belt-progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--accent-gold) 0%, #ecc94b 100%);
-            border-radius: 6px;
-            transition: width 0.5s ease;
-        }
-
-        .belt-progress-stats {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .belt-path {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 1.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .belt-step {
-            text-align: center;
-            flex: 1;
-        }
-
-        .belt-dot {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            margin: 0 auto 0.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-        }
-
-        .belt-dot.active {
-            background: var(--accent-gold);
-            color: var(--bg-dark);
-        }
-
-        .belt-dot.completed {
-            background: var(--success-green);
-        }
-
-        .belt-step-label {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .belt-step-label.active {
-            color: var(--accent-gold);
-            font-weight: 600;
-        }
-
-        /* Daily Practice Card */
-        .daily-practice-card {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            border: 1px solid #2d3748;
-        }
-
-        .practice-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            margin-bottom: 0.75rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .practice-item:hover {
-            background: rgba(255,255,255,0.06);
-        }
-
-        .practice-item:last-child {
-            margin-bottom: 0;
-        }
-
-        .practice-icon {
-            width: 48px;
-            height: 48px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .practice-icon.completed {
-            background: var(--success-green);
-        }
-
-        .practice-info {
-            flex: 1;
-        }
-
-        .practice-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .practice-meta {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .practice-action {
-            padding: 0.5rem 1rem;
-            background: var(--primary-navy);
-            border: none;
-            border-radius: 8px;
-            color: white;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .practice-action:hover {
-            background: var(--navy-light);
-        }
-
-        .practice-action.done {
-            background: var(--success-green);
-        }
-
-        /* Training Modules */
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .module-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .module-card:hover {
-            border-color: var(--primary-navy);
-            transform: translateY(-2px);
-        }
-
-        .module-card.locked {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .module-card.locked:hover {
-            transform: none;
-            border-color: var(--border-subtle);
-        }
-
-        .module-icon {
-            font-size: 2rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .module-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .module-progress {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-            margin-bottom: 0.75rem;
-        }
-
-        .module-bar {
-            height: 4px;
-            background: var(--border-subtle);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-
-        .module-bar-fill {
-            height: 100%;
-            background: var(--success-green);
-            border-radius: 2px;
-        }
-
-        .module-lock {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            font-size: 1rem;
-        }
-
-        /* Open Mat Section */
-        .open-mat-section {
-            margin-top: 1rem;
-        }
-
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .section-subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }
-
-        .open-mat-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-
-        .open-mat-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 16px;
-            padding: 1.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .open-mat-card:hover {
-            border-color: var(--primary-navy);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        .open-mat-card.featured {
-            border-color: var(--accent-gold);
-        }
-
-        .open-mat-badge {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .open-mat-badge.new {
-            background: var(--accent-red);
-        }
-
-        .open-mat-badge.popular {
-            background: var(--accent-gold);
-            color: var(--bg-dark);
-        }
-
-        .open-mat-badge.quick {
-            background: var(--success-green);
-        }
-
-        .open-mat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .open-mat-title {
-            font-weight: 700;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .open-mat-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .open-mat-meta {
-            display: flex;
-            gap: 1rem;
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-
-        .open-mat-meta span {
-            display: flex;
-            align-items: center;
-            gap: 0.25rem;
-        }
-
-        /* Team Assessments Section */
-        .team-assessments-card {
-            background: linear-gradient(135deg, var(--primary-navy) 0%, #2d4a7c 100%);
-            border: 2px solid var(--navy-light);
-            margin-top: 1.5rem;
-        }
-
-        .team-assessments-card .card-header {
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            padding-bottom: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .team-assessments-card .card-title {
-            font-size: 1.25rem;
-            color: white;
-        }
-
-        .team-assessments-card .card-subtitle {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-        }
-
-        .team-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-
-        .team-assessment-card {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            padding: 1.25rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-        }
-
-        .team-assessment-card:hover {
-            background: rgba(255,255,255,0.15);
-            border-color: var(--accent-gold);
-            transform: translateY(-2px);
-        }
-
-        .team-assessment-icon {
-            font-size: 2rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .team-assessment-title {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: white;
-        }
-
-        .team-assessment-desc {
-            font-size: 0.85rem;
-            color: rgba(255,255,255,0.8);
-            line-height: 1.5;
-            margin-bottom: 0.75rem;
-        }
-
-        .team-assessment-actions {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .team-btn {
-            flex: 1;
-            padding: 0.5rem 0.75rem;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-            text-align: center;
-        }
-
-        .team-btn-primary {
-            background: var(--accent-red);
-            color: white;
-        }
-
-        .team-btn-primary:hover {
-            background: #991b1b;
-        }
-
-        .team-btn-secondary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        .team-btn-secondary:hover {
-            background: rgba(255,255,255,0.3);
-        }
-
-        .team-stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.75rem;
-            color: rgba(255,255,255,0.6);
-            margin-top: 0.5rem;
-        }
-
-        /* Toolbox Section */
-        .toolbox-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1rem;
-            margin-top: 2rem;
-        }
-
-        .tool-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-subtle);
-            border-radius: 12px;
-            padding: 1.25rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .tool-card:hover {
-            border-color: var(--primary-navy);
-            background: var(--bg-card-hover);
-        }
-
-        .tool-icon {
-            font-size: 2rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .tool-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .tool-desc {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        /* Sidebar Cards */
-        .quote-card {
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            border-left: 4px solid var(--accent-red);
-        }
-
-        .quote-text {
-            font-style: italic;
-            font-size: 1rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-        }
-
-        .quote-author {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        .refresh-quote {
-            display: block;
-            margin-top: 1rem;
-            padding: 0.5rem;
-            background: rgba(255,255,255,0.05);
-            border: none;
-            border-radius: 6px;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-        }
-
-        .refresh-quote:hover {
-            background: rgba(255,255,255,0.1);
-            color: var(--text-white);
-        }
-
-        /* Recent Activity */
-        .activity-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 8px;
-        }
-
-        .activity-icon {
-            width: 36px;
-            height: 36px;
-            background: var(--border-subtle);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-        }
-
-        .activity-info {
-            flex: 1;
-        }
-
-        .activity-title {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .activity-time {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
-
-        .activity-xp {
-            font-size: 0.8rem;
-            color: var(--accent-gold);
-            font-weight: 600;
-        }
-
-        /* Assessments Card */
-        .assessment-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .assessment-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0.75rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .assessment-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .assessment-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .assessment-icon {
-            font-size: 1.25rem;
-        }
-
-        .assessment-name {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-
-        .assessment-status {
-            font-size: 0.75rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-        }
-
-        .assessment-status.completed {
-            background: rgba(56, 161, 105, 0.2);
-            color: var(--success-green);
-        }
-
-        .assessment-status.available {
-            background: rgba(26, 54, 93, 0.3);
-            color: var(--text-muted);
-        }
-
-        /* Weekly Challenge */
-        .challenge-card {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d1f1f 100%);
-            border: 1px solid #4a3030;
-        }
-
-        .challenge-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .challenge-badge {
-            background: var(--accent-red);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .challenge-timer {
-            font-size: 0.8rem;
-            color: var(--text-muted);
-        }
-
-        .challenge-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .challenge-desc {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-
-        .challenge-progress {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .challenge-bar {
-            flex: 1;
-            height: 8px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .challenge-bar-fill {
-            height: 100%;
-            background: var(--accent-red);
-            border-radius: 4px;
-        }
-
-        .challenge-count {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-        }
-
-        /* Library Section */
-        .library-tabs {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .library-tab {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            border: 1px solid var(--border-subtle);
-            border-radius: 20px;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .library-tab:hover {
-            border-color: var(--primary-navy);
-        }
-
-        .library-tab.active {
-            background: var(--primary-navy);
-            border-color: var(--primary-navy);
-            color: white;
-        }
-
-        .library-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .library-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .library-item:hover {
-            background: rgba(255,255,255,0.05);
-        }
-
-        .library-thumb {
-            width: 60px;
-            height: 60px;
-            background: var(--border-subtle);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-        }
-
-        .library-info h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .library-info p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .library-info .duration {
-            font-size: 0.7rem;
-            color: var(--text-dim);
-            margin-top: 0.25rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .dashboard-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .sidebar {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
-            }
-
-            .open-mat-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .team-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .toolbox-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-container {
-                padding: 1rem;
-            }
-
-            .top-nav {
-                padding: 1rem;
-            }
-
-            .nav-right {
-                gap: 0.75rem;
-            }
-
-            .streak-badge, .xp-badge {
-                padding: 0.4rem 0.75rem;
-                font-size: 0.8rem;
-            }
-
-            .modules-grid,
-            .open-mat-grid,
-            .library-grid,
-            .team-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .toolbox-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .sidebar {
-                grid-template-columns: 1fr;
-            }
-
-            .belt-path {
-                flex-wrap: wrap;
-                gap: 0.5rem;
-            }
-
-            .belt-step {
-                flex: 0 0 18%;
-            }
-        }
-    </style>
-    
-    <!-- Gamification System -->
-    <script src="js/gamification.js"></script>
-    <script src="js/gym-dashboard-init.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="DAS GYM - Deine persönliche Führungsentwicklungsreise">
+<title>DAS GYM | TAP-IN</title>
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Gamification CSS -->
+<link rel="stylesheet" href="../../css/gamification-v10.css">
+
+<style>
+/*
+  COMPLETE GYM DASHBOARD - DYNAMIC V10 DARK THEME
+  Automatically adapts to user's current belt level
+*/
+
+:root {
+  /* Base Dark Theme */
+  --bg-base: #0a0a12;
+  --bg-secondary: #12121a;
+  --bg-card: #1a1a24;
+  --bg-card-hover: #22222e;
+  --border-subtle: #2a2a3a;
+  --text-primary: #ffffff;
+  --text-secondary: #a0a0b0;
+  --text-muted: #6a6a7a;
+  
+  /* Stripe Colors - Dynamic */
+  --stripe-color: #ffffff;
+  --stripe-bg: #1a1a1a;
+  --stripe-inactive: rgba(255, 255, 255, 0.15);
+  
+  /* Team/Hub Color */
+  --team-green: #00ff88;
+  --team-green-dim: rgba(0, 255, 136, 0.1);
+  
+  /* Current Belt - Dynamic (defaults to White) */
+  --belt-glow: rgba(245, 245, 245, 0.08);
+  --belt-accent: #f5f5f5;
+  --belt-accent-dim: rgba(245, 245, 245, 0.15);
+  --belt-text-on: #0a0a12;
+  --ambient-top: rgba(245, 245, 245, 0.05);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+  position: relative;
+}
+
+/* Ambient Glow */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60vh;
+  background: radial-gradient(ellipse 80% 50% at 50% 0%, var(--ambient-top) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================================
+   HEADER
+   ============================================================================ */
+
+.gym-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-subtle);
+  background: rgba(10, 10, 18, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+.gym-logo {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.gym-logo-accent { opacity: 0.5; }
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  padding: 0.4rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.stat-pill svg {
+  width: 14px;
+  height: 14px;
+}
+
+.streak-pill { color: #f59e0b; }
+.xp-pill { color: var(--belt-accent); }
+
+.belt-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.belt-stripe-visual {
+  display: flex;
+  gap: 3px;
+  background: var(--stripe-bg);
+  padding: 4px 6px;
+  border-radius: 4px;
+}
+
+.stripe-line {
+  width: 3px;
+  height: 12px;
+  background: var(--stripe-color);
+  border-radius: 1px;
+  opacity: 0.25;
+}
+
+.stripe-line.active { opacity: 1; }
+
+/* ============================================================================
+   MAIN LAYOUT
+   ============================================================================ */
+
+.gym-main {
+  position: relative;
+  z-index: 10;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* Two column layout on desktop */
+.gym-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .gym-grid {
+    grid-template-columns: 2fr 1fr;
+  }
+  
+  .full-width {
+    grid-column: 1 / -1;
+  }
+}
+
+/* ============================================================================
+   SECTION STYLES
+   ============================================================================ */
+
+.section-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.6;
+}
+
+/* ============================================================================
+   BELT HERO CARD
+   ============================================================================ */
+
+.belt-hero {
+  background: linear-gradient(135deg, var(--bg-card) 0%, rgba(26, 26, 36, 0.8) 100%);
+  border: 1px solid var(--belt-accent-dim);
+  border-radius: 20px;
+  padding: 1.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.belt-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 50% 50%, var(--belt-glow) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.belt-hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.belt-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--belt-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.belt-icon {
+  width: 20px;
+  height: 5px;
+  background: var(--belt-accent);
+  border-radius: 3px;
+}
+
+.belt-title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.25rem;
+}
+
+.belt-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Streifen-Fortschritt */
+.stripe-progress-box {
+  background: var(--stripe-bg);
+  border-radius: 8px;
+  padding: 0.875rem;
+  margin-bottom: 1.25rem;
+}
+
+.stripe-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stripe-progress-label {
+  font-size: 0.7rem;
+  color: #6a6a7a;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stripe-progress-count {
+  font-size: 0.75rem;
+  color: var(--stripe-color);
+  font-weight: 600;
+}
+
+.stripe-progress {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.stripe-bar {
+  flex: 1;
+  height: 8px;
+  background: var(--stripe-inactive);
+  border-radius: 4px;
+}
+
+.stripe-bar.completed { background: var(--stripe-color); }
+.stripe-bar.current { background: linear-gradient(90deg, var(--stripe-color) 50%, var(--stripe-inactive) 50%); }
+
+/* Stats Row */
+.belt-stats {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-subtle);
+  margin-bottom: 1.25rem;
+}
+
+.belt-stat-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--belt-accent);
+}
+
+.belt-stat-label {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+/* CTA */
+.belt-cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.belt-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px var(--belt-accent-dim);
+}
+
+.belt-cta-label {
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+
+.belt-cta-title {
+  font-size: 0.95rem;
+}
+
+/* ============================================================================
+   TODAY'S PRACTICE
+   ============================================================================ */
+
+.practice-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.practice-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.practice-item:last-child { border-bottom: none; }
+.practice-item:hover { background: var(--bg-card-hover); }
+
+.practice-item.completed { opacity: 0.5; }
+
+.practice-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.practice-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.practice-icon.morning { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+.practice-icon.lesson { background: var(--belt-accent-dim); color: var(--belt-accent); }
+.practice-icon.evening { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
+.practice-content { flex: 1; }
+
+.practice-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.practice-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.practice-status {
+  padding: 0.35rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.practice-status.done {
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+}
+
+.practice-status.active {
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+}
+
+.practice-status.pending {
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+}
+
+/* ============================================================================
+   STRIPE JOURNEY CARDS
+   ============================================================================ */
+
+.stripes-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+@media (max-width: 640px) {
+  .stripes-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.stripe-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem;
+  text-align: center;
+  transition: all 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.stripe-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--belt-accent-dim);
+}
+
+.stripe-card.completed {
+  border-color: var(--belt-accent-dim);
+}
+
+.stripe-card.current {
+  border-color: var(--belt-accent);
+  box-shadow: 0 0 20px var(--belt-glow);
+}
+
+.stripe-card.locked {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.stripe-card.locked:hover {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.stripe-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--bg-base);
+  border: 2px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  margin: 0 auto 0.5rem;
+}
+
+.stripe-card.completed .stripe-num {
+  background: var(--belt-accent);
+  color: var(--belt-text-on);
+  border-color: var(--belt-accent);
+}
+
+.stripe-card.current .stripe-num {
+  border-color: var(--belt-accent);
+  color: var(--belt-accent);
+}
+
+.stripe-name {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.stripe-lessons {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+/* ============================================================================
+   QUICK TOOLS
+   ============================================================================ */
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.tool-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.tool-card:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--belt-accent-dim);
+}
+
+.tool-card.locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.tool-card.locked:hover {
+  background: var(--bg-card);
+  border-color: var(--border-subtle);
+}
+
+.tool-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.tool-icon.white { background: var(--belt-accent-dim); color: var(--belt-accent); }
+.tool-icon.blue { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+.tool-icon.purple { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+.tool-icon.green { background: var(--team-green-dim); color: var(--team-green); }
+
+.tool-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.tool-unlock {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   DAILY REFLECTION
+   ============================================================================ */
+
+.reflection-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.reflection-prompt {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.reflection-input {
+  width: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  padding: 0.75rem;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  resize: none;
+  min-height: 80px;
+}
+
+.reflection-input::placeholder {
+  color: var(--text-muted);
+}
+
+.reflection-input:focus {
+  outline: none;
+  border-color: var(--belt-accent-dim);
+}
+
+/* ============================================================================
+   MOTIVATION QUOTE
+   ============================================================================ */
+
+.quote-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  position: relative;
+}
+
+.quote-icon {
+  font-size: 2rem;
+  opacity: 0.1;
+  position: absolute;
+  top: 0.5rem;
+  left: 1rem;
+}
+
+.quote-text {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-bottom: 0.75rem;
+}
+
+.quote-author {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================================
+   NEXT BELT TEASER
+   ============================================================================ */
+
+.next-belt-teaser {
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: 12px;
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.next-belt-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(59, 130, 246, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.next-belt-visual {
+  width: 24px;
+  height: 6px;
+  background: #3b82f6;
+  border-radius: 3px;
+}
+
+.next-belt-content { flex: 1; }
+
+.next-belt-label {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.next-belt-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.next-belt-unlock {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.next-belt-progress {
+  width: 60px;
+  text-align: right;
+}
+
+.next-belt-percent {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3b82f6;
+}
+
+/* ============================================================================
+   LOCKED TEAM TEASER
+   ============================================================================ */
+
+.team-teaser {
+  background: linear-gradient(135deg, rgba(0, 255, 136, 0.05) 0%, var(--bg-card) 100%);
+  border: 1px dashed rgba(0, 255, 136, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.team-teaser-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--team-green-dim);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+}
+
+.team-teaser-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--team-green);
+}
+
+.team-teaser-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--team-green);
+  margin-bottom: 0.5rem;
+}
+
+.team-teaser-desc {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+
+.team-teaser-unlock {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.team-teaser-unlock svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ============================================================================
+   RECENT ACTIVITY
+   ============================================================================ */
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  background: var(--bg-card);
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.activity-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--belt-accent);
+  flex-shrink: 0;
+}
+
+.activity-text {
+  flex: 1;
+  color: var(--text-secondary);
+}
+
+.activity-text strong {
+  color: var(--text-primary);
+}
+
+.activity-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+</style>
 </head>
-<body>
-    <!-- Top Navigation -->
-    <nav class="top-nav">
-        <div class="logo">
-            🥋 TAP-IN <span>GYM</span>
-        </div>
-        <div class="nav-right">
-            <div class="streak-badge">
-                🔥 12 Day Streak
-            </div>
-            <div class="xp-badge">
-                ⭐ 847 XP
-            </div>
-            <div class="user-avatar">M</div>
-        </div>
-    </nav>
 
-    <!-- Main Container -->
-    <div class="main-container">
-        <!-- Welcome Section -->
-        <div class="welcome-section">
-            <h1 class="welcome-greeting">Willkommen back, Marco 👋</h1>
-            <p class="welcome-date">Monday, November 25, 2024 • Weißgurt Training</p>
-        </div>
+<body data-belt="white">
 
-        <!-- Dashboard Grid -->
-        <div class="dashboard-grid">
-            <!-- Main Content -->
-            <div class="main-content">
-                <!-- Gurt Fortschritt Card -->
-                <div class="card Gurt-Fortschritt-card">
-                    <div class="Gurt-current">
-                        <div class="Gurt-icon-large">🤍</div>
-                        <div class="belt-info">
-                            <h2>Weißgurt</h2>
-                            <p>Foundation von Self-Awareness</p>
-                        </div>
-                    </div>
-                    <div class="belt-progress-bar">
-                        <div class="belt-progress-fill" style="width: 45%"></div>
-                    </div>
-                    <div class="belt-progress-stats">
-                        <span>45% Complete</span>
-                        <span>520 / 1000 XP to Blue Belt</span>
-                    </div>
-                    <div class="belt-path">
-                        <div class="belt-step">
-                            <div class="belt-dot completed">✓</div>
-                            <div class="belt-step-label">Assessment</div>
-                        </div>
-                        <div class="belt-step">
-                            <div class="belt-dot completed">✓</div>
-                            <div class="belt-step-label">Self-Aware</div>
-                        </div>
-                        <div class="belt-step">
-                            <div class="belt-dot active">3</div>
-                            <div class="belt-step-label active">Trust</div>
-                        </div>
-                        <div class="belt-step">
-                            <div class="belt-dot">4</div>
-                            <div class="belt-step-label">Journaling</div>
-                        </div>
-                        <div class="belt-step">
-                            <div class="belt-dot">5</div>
-                            <div class="belt-step-label">Final</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Daily Practice -->
-                <div class="card daily-practice-card">
-                    <div class="card-header">
-                        <div class="card-title">☀️ Heute's Üben</div>
-                        <span style="color: var(--text-muted); font-size: 0.85rem;">2 of 3 complete</span>
-                    </div>
-                    <div class="practice-item">
-                        <div class="practice-icon completed">✓</div>
-                        <div class="practice-info">
-                            <div class="practice-title">Morning Intention</div>
-                            <div class="practice-meta">Set your focus for the day • 2 min</div>
-                        </div>
-                        <button class="practice-action done">Done</button>
-                    </div>
-                    <div class="practice-item">
-                        <div class="practice-icon completed">✓</div>
-                        <div class="practice-info">
-                            <div class="practice-title">Trust Modul: Lektion 3</div>
-                            <div class="practice-meta">Building Trust With Yourself • 8 min</div>
-                        </div>
-                        <button class="practice-action done">Done</button>
-                    </div>
-                    <div class="practice-item" onclick="alert('Opening Evening Reflection...')">
-                        <div class="practice-icon">🌙</div>
-                        <div class="practice-info">
-                            <div class="practice-title">Evening Reflexion</div>
-                            <div class="practice-meta">Process your day • 3 min</div>
-                        </div>
-                        <button class="practice-action">Starten</button>
-                    </div>
-                </div>
-
-                <!-- Training Modules -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📚 Weißgurt Modules</div>
-                        <a href="#" class="card-action">Anzeigen Alle →</a>
-                    </div>
-                    <div class="modules-grid">
-                        <div class="module-card">
-                            <div class="module-icon">🧠</div>
-                            <div class="module-title">Self-Awareness</div>
-                            <div class="module-progress">5/5 Lessons Complete</div>
-                            <div class="module-bar">
-                                <div class="module-bar-fill" style="width: 100%"></div>
-                            </div>
-                        </div>
-                        <div class="module-card">
-                            <div class="module-icon">💪</div>
-                            <div class="module-title">Vulnerability as Strength</div>
-                            <div class="module-progress">4/5 Lessons Complete</div>
-                            <div class="module-bar">
-                                <div class="module-bar-fill" style="width: 80%"></div>
-                            </div>
-                        </div>
-                        <div class="module-card">
-                            <div class="module-icon">🔓</div>
-                            <div class="module-title">Building Self-Trust</div>
-                            <div class="module-progress">3/7 Lessons Complete</div>
-                            <div class="module-bar">
-                                <div class="module-bar-fill" style="width: 43%"></div>
-                            </div>
-                        </div>
-                        <div class="module-card">
-                            <div class="module-icon">📝</div>
-                            <div class="module-title">Journaling Üben</div>
-                            <div class="module-progress">0/5 Lessons Complete</div>
-                            <div class="module-bar">
-                                <div class="module-bar-fill" style="width: 0%"></div>
-                            </div>
-                        </div>
-                        <div class="module-card locked">
-                            <div class="module-icon">🎯</div>
-                            <div class="module-title">Inner Critic vs Coach</div>
-                            <div class="module-progress">Locked</div>
-                            <div class="module-bar"></div>
-                            <span class="module-lock">🔒</span>
-                        </div>
-                        <div class="module-card locked">
-                            <div class="module-icon">🏆</div>
-                            <div class="module-title">Weißgurt Final</div>
-                            <div class="module-progress">Locked</div>
-                            <div class="module-bar"></div>
-                            <span class="module-lock">🔒</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Open Mat Section -->
-                <div class="open-mat-section">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">🥋 Öffnen Mat</h2>
-                            <p class="section-subtitle">Extra training, deep dives, and discovery</p>
-                        </div>
-                        <a href="#" class="card-action">Browse Alle →</a>
-                    </div>
-                    <div class="open-mat-grid">
-                        <div class="open-mat-card featured">
-                            <span class="open-mat-badge new">New</span>
-                            <div class="open-mat-icon">🎙️</div>
-                            <div class="open-mat-title">The Inner Game von Leadership</div>
-                            <div class="open-mat-desc">Why your self-talk determines your ceiling. Based on Timothy Gallwey's research.</div>
-                            <div class="open-mat-meta">
-                                <span>📖 Article</span>
-                                <span>⏱️ 8 min</span>
-                                <span>⭐ +25 XP</span>
-                            </div>
-                        </div>
-                        <div class="open-mat-card">
-                            <span class="open-mat-badge popular">Popular</span>
-                            <div class="open-mat-icon">🧘</div>
-                            <div class="open-mat-title">Box Breathing for Pressure</div>
-                            <div class="open-mat-desc">The Navy SEAL technique for staying calm when everything's on fire.</div>
-                            <div class="open-mat-meta">
-                                <span>🎥 Exercise</span>
-                                <span>⏱️ 5 min</span>
-                                <span>⭐ +15 XP</span>
-                            </div>
-                        </div>
-                        <div class="open-mat-card">
-                            <span class="open-mat-badge quick">Quick Win</span>
-                            <div class="open-mat-icon">💭</div>
-                            <div class="open-mat-title">Reframe in 60 Seconds</div>
-                            <div class="open-mat-desc">A micro-practice for shifting perspective when you're stuck.</div>
-                            <div class="open-mat-meta">
-                                <span>⚡ Micro</span>
-                                <span>⏱️ 1 min</span>
-                                <span>⭐ +10 XP</span>
-                            </div>
-                        </div>
-                        <div class="open-mat-card">
-                            <div class="open-mat-icon">📊</div>
-                            <div class="open-mat-title">Energy Mapping Übung</div>
-                            <div class="open-mat-desc">Track your energy for a week and discover your hidden patterns.</div>
-                            <div class="open-mat-meta">
-                                <span>📝 Worksheet</span>
-                                <span>⏱️ 15 min</span>
-                                <span>⭐ +40 XP</span>
-                            </div>
-                        </div>
-                        <div class="open-mat-card">
-                            <div class="open-mat-icon">🎬</div>
-                            <div class="open-mat-title">Jiu-Jitsu Philosophy</div>
-                            <div class="open-mat-desc">How the gentle art teaches us to lead without force.</div>
-                            <div class="open-mat-meta">
-                                <span>🎥 Video</span>
-                                <span>⏱️ 12 min</span>
-                                <span>⭐ +30 XP</span>
-                            </div>
-                        </div>
-                        <div class="open-mat-card">
-                            <div class="open-mat-icon">🧪</div>
-                            <div class="open-mat-title">Weekly Experiment Lab</div>
-                            <div class="open-mat-desc">This week: Say "I don't know" at least once per day.</div>
-                            <div class="open-mat-meta">
-                                <span>🔬 Experiment</span>
-                                <span>⏱️ 7 days</span>
-                                <span>⭐ +100 XP</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Belt Progression Section -->
-                <div class="open-mat-section">
-                    <div class="section-header">
-                        <div>
-                            <h2 class="section-title">🥋 Gurt Progression</h2>
-                            <p class="section-subtitle">Fortsetzen Dein leadership development journey</p>
-                        </div>
-                    </div>
-                    <div class="open-mat-grid">
-                        <div class="open-mat-card featured" id="purple-belt-card">
-                            <span class="open-mat-badge new">New</span>
-                            <div class="open-mat-icon">🟣</div>
-                            <div class="open-mat-title">Lilagurt: Team Alignment</div>
-                            <div class="open-mat-desc">From personal mastery to collective excellence. Transform communication skills into team results.</div>
-                            <div class="open-mat-meta">
-                                <span>📚 4 Stripes</span>
-                                <span>⏱️ 6-8 weeks</span>
-                                <span>⭐ Advanced</span>
-                            </div>
-                            <div class="belt-progress-bar" style="width: 100%; background: #e2e8f0; border-radius: 8px; height: 8px; margin: 1rem 0; overflow: hidden;">
-                                <div id="purple-progress-fill" style="height: 100%; background: linear-gradient(135deg, #581c87 0%, #7c3aed 100%); width: 0%; transition: width 0.5s;"></div>
-                            </div>
-                            <div id="purple-progress-text" style="font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem;">0% Complete</div>
-                            <button class="practice-action" onclick="window.location.href='purple-belt.html'" style="margin-top: 0.5rem; width: 100%;">Starten Lilagurt →</button>
-                        </div>
-                        <div class="open-mat-card featured" id="brown-belt-card">
-                            <span class="open-mat-badge new">New</span>
-                            <div class="open-mat-icon">🟤</div>
-                            <div class="open-mat-title">Braungurt: Systems & Strategy</div>
-                            <div class="open-mat-desc">Master organizational systems, culture design, and strategic leadership thinking.</div>
-                            <div class="open-mat-meta">
-                                <span>📚 4 Stripes</span>
-                                <span>⏱️ 8-10 weeks</span>
-                                <span>⭐ Expert</span>
-                            </div>
-                            <div class="belt-progress-bar" style="width: 100%; background: #e2e8f0; border-radius: 8px; height: 8px; margin: 1rem 0; overflow: hidden;">
-                                <div id="brown-progress-fill" style="height: 100%; background: linear-gradient(135deg, #78350f 0%, #92400e 100%); width: 0%; transition: width 0.5s;"></div>
-                            </div>
-                            <div id="brown-progress-text" style="font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem;">0% Complete</div>
-                            <button class="practice-action" onclick="window.location.href='brown-belt.html'" style="margin-top: 0.5rem; width: 100%;">Starten Braungurt →</button>
-                        </div>
-                        <div class="open-mat-card featured" id="black-belt-card">
-                            <span class="open-mat-badge new">New</span>
-                            <div class="open-mat-icon">⬛</div>
-                            <div class="open-mat-title">Schwarzgurt: Mastery & Integration</div>
-                            <div class="open-mat-desc">The final journey: Integration, Teaching, Philosophy, and Legacy. Where the real learning begins.</div>
-                            <div class="open-mat-meta">
-                                <span>📚 4 Stripes</span>
-                                <span>⏱️ 10+ weeks</span>
-                                <span>⭐ Mastery</span>
-                            </div>
-                            <div class="belt-progress-bar" style="width: 100%; background: #e2e8f0; border-radius: 8px; height: 8px; margin: 1rem 0; overflow: hidden;">
-                                <div id="black-progress-fill" style="height: 100%; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); width: 0%; transition: width 0.5s;"></div>
-                            </div>
-                            <div id="black-progress-text" style="font-size: 0.9rem; color: #64748b; margin-bottom: 0.5rem;">0% Complete</div>
-                            <button class="practice-action" onclick="window.location.href='black-belt.html'" style="margin-top: 0.5rem; width: 100%;">Starten Schwarzgurt →</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Team Assessments Card -->
-                <div class="card team-assessments-card">
-                    <div class="card-header">
-                        <div>
-                            <div class="card-title">👥 Team Assessments</div>
-                            <div class="card-subtitle">Send assessments to candidates, team members, or run team-wide diagnostics</div>
-                        </div>
-                    </div>
-                    <div class="team-grid">
-                        <div class="team-assessment-card">
-                            <div class="team-assessment-icon">🧭</div>
-                            <div class="team-assessment-title">Worker Tippe Assessment</div>
-                            <div class="team-assessment-desc">Understand how someone works best: Maker, Manager, or Mechanic</div>
-                            <div class="team-stat">
-                                <span>⏱️ 8-10 min</span>
-                                <span>📊 Individual</span>
-                            </div>
-                            <div class="team-assessment-actions">
-                                <button class="team-btn team-btn-primary" onclick="window.location.href='worker-type-assessment.html'">Take Assessment</button>
-                                <button class="team-btn team-btn-secondary" onclick="alert('Share link: ' + window.location.origin + '/worker-type-assessment.html')">📤 Teilen</button>
-                            </div>
-                        </div>
-                        
-                        <div class="team-assessment-card">
-                            <div class="team-assessment-icon">🎯</div>
-                            <div class="team-assessment-title">Team Dynamics Scan</div>
-                            <div class="team-assessment-desc">Enhanced team assessment based on Lencioni's 5 Dysfunctions framework</div>
-                            <div class="team-stat">
-                                <span>⏱️ 12-15 min</span>
-                                <span>👥 Team-wide</span>
-                            </div>
-                            <div class="team-assessment-actions">
-                                <button class="team-btn team-btn-primary" onclick="window.location.href='team-assessment-enhanced-v2.html'">Starten Team Scan</button>
-                                <button class="team-btn team-btn-secondary" onclick="alert('Share link: ' + window.location.origin + '/team-assessment-enhanced-v2.html')">📤 Teilen</button>
-                            </div>
-                        </div>
-                        
-                        <div class="team-assessment-card">
-                            <div class="team-assessment-icon">🎯</div>
-                            <div class="team-assessment-title">Abschließen Team Profil</div>
-                            <div class="team-assessment-desc">4D assessment: Worker Type + Team Dynamic + Impact Type + Communication Style</div>
-                            <div class="team-stat">
-                                <span>⏱️ 10-12 min</span>
-                                <span>🌟 Multi-Dimensional</span>
-                            </div>
-                            <div class="team-assessment-actions">
-                                <button class="team-btn team-btn-primary" onclick="window.location.href='team-profile-complete.html'">Discover My Profil</button>
-                                <button class="team-btn team-btn-secondary" onclick="alert('Share link: ' + window.location.origin + '/team-profile-complete.html')">📤 Teilen</button>
-                            </div>
-                        </div>
-                        
-                        <div class="team-assessment-card">
-                            <div class="team-assessment-icon">🔬</div>
-                            <div class="team-assessment-title">Leadership Profil</div>
-                            <div class="team-assessment-desc">Combined assessment for hiring or development - see the full picture</div>
-                            <div class="team-stat">
-                                <span>⏱️ 20-25 min</span>
-                                <span>🎯 Comprehensive</span>
-                            </div>
-                            <div class="team-assessment-actions">
-                                <button class="team-btn team-btn-primary" onclick="window.location.href='combined-leadership-profile.html'">Full Profil</button>
-                                <button class="team-btn team-btn-secondary" onclick="alert('Share link: ' + window.location.origin + '/combined-leadership-profile.html')">📤 Teilen</button>
-                            </div>
-                        </div>
-                        
-                        <div class="team-assessment-card" style="background: linear-gradient(135deg, rgba(168, 85, 247, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%); border: 2px solid rgba(168, 85, 247, 0.3);">
-                            <div class="team-assessment-icon">🔍</div>
-                            <div class="team-assessment-title">Team Composition Analyzer</div>
-                            <div class="team-assessment-desc">Manager tool: Visualize your team's profile mix and identify gaps or strengths</div>
-                            <div class="team-stat">
-                                <span>👔 Manager Tool</span>
-                                <span>📊 Team Analysis</span>
-                            </div>
-                            <div class="team-assessment-actions">
-                                <button class="team-btn team-btn-primary" onclick="window.location.href='team-composition-analyzer.html'">Analyze Team</button>
-                                <button class="team-btn team-btn-secondary" onclick="alert('Share link: ' + window.location.origin + '/team-composition-analyzer.html')">📤 Teilen</button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.1);">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-size: 0.9rem; color: rgba(255,255,255,0.9); font-weight: 600; margin-bottom: 0.25rem;">💼 For Organizations</div>
-                                <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">Bulk send, track completion, export results, and get team insights dashboard</div>
-                            </div>
-                            <button class="team-btn team-btn-secondary" style="flex: 0 0 auto; padding: 0.75rem 1.5rem;" onclick="alert('Contact us for organization features')">Lernen Mehr →</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Toolbox -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">🧰 Dein Toolbox</div>
-                        <a href="#" class="card-action">See Alle Tools →</a>
-                    </div>
-                    <div class="toolbox-grid">
-                        <div class="tool-card">
-                            <div class="tool-icon">📓</div>
-                            <div class="tool-name">Journal</div>
-                            <div class="tool-desc">Free-write anytime</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">🎯</div>
-                            <div class="tool-name">Goal Tracker</div>
-                            <div class="tool-desc">3 active goals</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">📊</div>
-                            <div class="tool-name">Mood Log</div>
-                            <div class="tool-desc">28 day history</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">🧘</div>
-                            <div class="tool-name">Breathing</div>
-                            <div class="tool-desc">Guided exercises</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">⏱️</div>
-                            <div class="tool-name">Focus Timer</div>
-                            <div class="tool-desc">Pomodoro mode</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">🎲</div>
-                            <div class="tool-name">Random Prompt</div>
-                            <div class="tool-desc">Surprise reflection</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">📈</div>
-                            <div class="tool-name">Progress Report</div>
-                            <div class="tool-desc">Weekly insights</div>
-                        </div>
-                        <div class="tool-card">
-                            <div class="tool-icon">🤖</div>
-                            <div class="tool-name">AI Coach</div>
-                            <div class="tool-desc">Ask anything</div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Resource Library -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📚 Resource Library</div>
-                        <a href="#" class="card-action">Browse Alle →</a>
-                    </div>
-                    <div class="library-tabs">
-                        <button class="library-tab active">Alle</button>
-                        <button class="library-tab">Videos</button>
-                        <button class="library-tab">Articles</button>
-                        <button class="library-tab">Worksheets</button>
-                        <button class="library-tab">Audio</button>
-                    </div>
-                    <div class="library-grid">
-                        <div class="library-item">
-                            <div class="library-thumb">🎥</div>
-                            <div class="library-info">
-                                <h4>5 Dysfunctions Deep Dive</h4>
-                                <p>Patrick Lencioni's framework explained</p>
-                                <span class="duration">Video • 18 min</span>
-                            </div>
-                        </div>
-                        <div class="library-item">
-                            <div class="library-thumb">📖</div>
-                            <div class="library-info">
-                                <h4>Google's Project Aristotle</h4>
-                                <p>Was makes teams successful</p>
-                                <span class="duration">Article • 10 min read</span>
-                            </div>
-                        </div>
-                        <div class="library-item">
-                            <div class="library-thumb">📝</div>
-                            <div class="library-info">
-                                <h4>Values Discovery Worksheet</h4>
-                                <p>Clarify Was truly matters</p>
-                                <span class="duration">Worksheet • 20 min</span>
-                            </div>
-                        </div>
-                        <div class="library-item">
-                            <div class="library-thumb">🎧</div>
-                            <div class="library-info">
-                                <h4>Stoic Morning Meditation</h4>
-                                <p>Starten Dein day grounded</p>
-                                <span class="duration">Audio • 7 min</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <!-- Quote Card -->
-                <div class="card quote-card">
-                    <div class="quote-text">"The obstacle is the way. Was stands in the path becomes the path."</div>
-                    <div class="quote-author">— Marcus Aurelius</div>
-                    <button class="refresh-quote" onclick="refreshQuote()">↻ Neu Quote</button>
-                </div>
-
-                <!-- Weekly Challenge -->
-                <div class="card challenge-card">
-                    <div class="challenge-header">
-                        <span class="challenge-badge">Weekly Challenge</span>
-                        <span class="challenge-timer">4 days left</span>
-                    </div>
-                    <div class="challenge-title">🔥 7 Tage von Vulnerability</div>
-                    <div class="challenge-desc">Share one honest thing about yourself with someone each day this week.</div>
-                    <div class="challenge-progress">
-                        <div class="challenge-bar">
-                            <div class="challenge-bar-fill" style="width: 43%"></div>
-                        </div>
-                        <span class="challenge-count">3/7</span>
-                    </div>
-                </div>
-
-                <!-- Assessments -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📋 Assessments</div>
-                    </div>
-                    <div class="assessment-list">
-                        <div class="assessment-item">
-                            <div class="assessment-left">
-                                <span class="assessment-icon">🥋</span>
-                                <span class="assessment-name">Belt Assessment</span>
-                            </div>
-                            <span class="assessment-status completed">✓ Done</span>
-                        </div>
-                        <div class="assessment-item">
-                            <div class="assessment-left">
-                                <span class="assessment-icon">⚡</span>
-                                <span class="assessment-name">Worker Type</span>
-                            </div>
-                            <span class="assessment-status completed">✓ Done</span>
-                        </div>
-                        <div class="assessment-item">
-                            <div class="assessment-left">
-                                <span class="assessment-icon">❤️</span>
-                                <span class="assessment-name">Mental Health</span>
-                            </div>
-                            <span class="assessment-status available">Take Now</span>
-                        </div>
-                        <div class="assessment-item">
-                            <div class="assessment-left">
-                                <span class="assessment-icon">⚖️</span>
-                                <span class="assessment-name">Work-Life Balance</span>
-                            </div>
-                            <span class="assessment-status available">Take Now</span>
-                        </div>
-                        <div class="assessment-item">
-                            <div class="assessment-left">
-                                <span class="assessment-icon">👥</span>
-                                <span class="assessment-name">Team Dynamics</span>
-                            </div>
-                            <span class="assessment-status available">Take Now</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Recent Activity -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">⚡ Recent Activity</div>
-                    </div>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <div class="activity-icon">✅</div>
-                            <div class="activity-info">
-                                <div class="activity-title">Abgeschlossen Morning Intention</div>
-                                <div class="activity-time">Today, 7:32 AM</div>
-                            </div>
-                            <span class="activity-xp">+10 XP</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">📖</div>
-                            <div class="activity-info">
-                                <div class="activity-title">Trust Lektion 3 Abschließen</div>
-                                <div class="activity-time">Today, 8:15 AM</div>
-                            </div>
-                            <span class="activity-xp">+25 XP</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">🔥</div>
-                            <div class="activity-info">
-                                <div class="activity-title">12-Day Streak!</div>
-                                <div class="activity-time">Yesterday</div>
-                            </div>
-                            <span class="activity-xp">+50 XP</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">🌙</div>
-                            <div class="activity-info">
-                                <div class="activity-title">Evening Reflexion</div>
-                                <div class="activity-time">Yesterday, 9:45 PM</div>
-                            </div>
-                            <span class="activity-xp">+10 XP</span>
-                        </div>
-                        <div class="activity-item">
-                            <div class="activity-icon">🎯</div>
-                            <div class="activity-info">
-                                <div class="activity-title">Weekly Challenge: Day 3</div>
-                                <div class="activity-time">Yesterday</div>
-                            </div>
-                            <span class="activity-xp">+15 XP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Quick Stats - Dynamic -->
-                <div class="card">
-                    <div class="card-header">
-                        <div class="card-title">📊 Dein Stats</div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                            <div style="font-size: 1.75rem; font-weight: 700; color: var(--accent-gold);" id="streakCount">0</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Day Streak 🔥</div>
-                        </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                            <div style="font-size: 1.75rem; font-weight: 700; color: var(--success-green);" id="totalXP">0</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Total XP ⚡</div>
-                        </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                            <div style="font-size: 1.75rem; font-weight: 700; color: var(--primary-navy);" id="modulesComplete">0</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Modules Done</div>
-                        </div>
-                        <div style="text-align: center; padding: 1rem; background: rgba(255,255,255,0.02); border-radius: 8px;">
-                            <div style="font-size: 1.75rem; font-weight: 700;" id="badgesEarned">0</div>
-                            <div style="font-size: 0.75rem; color: var(--text-muted);">Badges Earned 🏆</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<!-- ============================================================================
+     HEADER
+     ============================================================================ -->
+<header class="gym-header">
+  <a href="../../index.html" class="gym-logo">
+    TAP-IN <span class="gym-logo-accent">DAS GYM</span>
+  </a>
+  
+  <div class="header-right">
+    <div class="stat-pill streak-pill" id="streak-pill">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z"/><path d="M12 18a3.75 3.75 0 00.495-7.467 5.99 5.99 0 00-1.925 3.546 5.974 5.974 0 01-2.133-1.001A3.75 3.75 0 0012 18z"/></svg>
+      <span id="streak-count">0</span>
     </div>
+    
+    <div class="stat-pill xp-pill" id="xp-pill">
+      <span id="xp-count">0</span> XP
+    </div>
+    
+    <div class="belt-badge" id="belt-badge">
+      <div class="belt-stripe-visual" id="belt-stripe-visual">
+        <div class="stripe-line"></div>
+        <div class="stripe-line"></div>
+        <div class="stripe-line"></div>
+        <div class="stripe-line"></div>
+      </div>
+      <span id="belt-name">Weißgurt</span>
+    </div>
+  </div>
+</header>
 
-    <script>
-        // Quotes array
-        const quotes = [
-            { text: "The obstacle is the way. What stands in the path becomes the path.", author: "Marcus Aurelius" },
-            { text: "We suffer more in imagination than in reality.", author: "Seneca" },
-            { text: "No man is free who is not master of himself.", author: "Epictetus" },
-            { text: "The best time to plant a tree was 20 years ago. The second best time is now.", author: "Chinese Proverb" },
-            { text: "You have power over your mind, not outside events. Realize this, and you will find strength.", author: "Marcus Aurelius" },
-            { text: "A black belt is a white belt who never quit.", author: "Brazilian Proverb" },
-            { text: "In the middle of difficulty lies opportunity.", author: "Albert Einstein" },
-            { text: "The only way out is through.", author: "Robert Frost" },
-            { text: "What lies behind us and what lies before us are tiny matters compared to what lies within us.", author: "Ralph Waldo Emerson" },
-            { text: "Be the change you wish to see in the world.", author: "Mahatma Gandhi" },
-            { text: "Fall seven times, stand up eight.", author: "Japanese Proverb" },
-            { text: "The man who moves a mountain begins by carrying away small stones.", author: "Confucius" }
-        ];
+<!-- ============================================================================
+     MAIN CONTENT
+     ============================================================================ -->
+<main class="gym-main">
+  <div class="gym-grid">
+    
+    <!-- ====================================================================
+         LEFT COLUMN - Main Journey
+         ==================================================================== -->
+    <div class="left-column">
+      
+      <!-- BELT HERO CARD -->
+      <section class="belt-hero">
+        <div class="belt-hero-content">
+          <div class="belt-label" id="belt-label">
+            <span class="belt-icon"></span>
+            <span id="belt-label-text">Weißgurt</span>
+          </div>
+          <h1 class="belt-title" id="belt-title">Know Thyself</h1>
+          <p class="belt-subtitle" id="belt-subtitle">Building Self-Awareness & Personal Foundation</p>
+          
+          <div class="stripe-progress-box">
+            <div class="stripe-progress-header">
+              <span class="stripe-progress-label">Streifen-Fortschritt</span>
+              <span class="stripe-progress-count" id="stripe-progress-count">0 of 4</span>
+            </div>
+            <div class="stripe-progress" id="stripe-progress">
+              <div class="stripe-bar"></div>
+              <div class="stripe-bar"></div>
+              <div class="stripe-bar"></div>
+              <div class="stripe-bar"></div>
+            </div>
+          </div>
+          
+          <div class="belt-stats">
+            <div>
+              <div class="belt-stat-value" id="lessons-stat">0/20</div>
+              <div class="belt-stat-label">Lektionen</div>
+            </div>
+            <div>
+              <div class="belt-stat-value" id="complete-stat">0%</div>
+              <div class="belt-stat-label">Abgeschlossen</div>
+            </div>
+            <div>
+              <div class="belt-stat-value" id="streak-stat">0</div>
+              <div class="belt-stat-label">Tage-Serie</div>
+            </div>
+          </div>
+          
+          <a href="#" class="belt-cta" id="belt-cta">
+            <div>
+              <div class="belt-cta-label">Training fortsetzen</div>
+              <div class="belt-cta-title" id="belt-cta-title">Stripe 1: Getting Startened</div>
+            </div>
+            <span>→</span>
+          </a>
+        </div>
+      </section>
+      
+      <!-- STRIPE JOURNEY -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span id="journey-title">Deine Weißgurt-Reise</span>
+        </h2>
+        <div class="stripes-row" id="stripes-row">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+      
+      <!-- DAILY REFLECTION -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"/></svg>
+          Tägliche Reflexion
+        </h2>
+        <div class="reflection-card">
+          <p class="reflection-prompt" id="reflection-prompt">"What is one assumption you made today that might not be true?"</p>
+          <textarea class="reflection-input" placeholder="Nimm dir einen Moment zum Nachdenken..." id="reflection-input"></textarea>
+        </div>
+      </section>
+      
+      <!-- NEXT BELT TEASER -->
+      <section style="margin-top: 1.5rem;" id="next-belt-section">
+        <div class="next-belt-teaser">
+          <div class="next-belt-icon">
+            <div class="next-belt-visual"></div>
+          </div>
+          <div class="next-belt-content">
+            <div class="next-belt-label">Als Nächstes</div>
+            <div class="next-belt-title" id="next-belt-title">Blaugurt: Healthy Conflict</div>
+            <div class="next-belt-unlock" id="next-belt-unlock">Schließe den Weißgurt ab, um freizuschalten</div>
+          </div>
+          <div class="next-belt-progress">
+            <div class="next-belt-percent" id="next-belt-percent">0%</div>
+          </div>
+        </div>
+      </section>
+      
+    </div>
+    
+    <!-- ====================================================================
+         RIGHT COLUMN - Secondary Content
+         ==================================================================== -->
+    <div class="right-column">
+      
+      <!-- TODAY'S PRACTICE -->
+      <section>
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          Heutige Praxis
+        </h2>
+        <div class="practice-card">
+          <div class="practice-item completed" id="practice-morning">
+            <div class="practice-icon morning">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/></svg>
+            </div>
+            <div class="practice-content">
+              <div class="practice-title">Morgenintention</div>
+              <div class="practice-meta">Setze deinen Fokus • 2 Min</div>
+            </div>
+            <span class="practice-status done">Erledigt</span>
+          </div>
+          
+          <div class="practice-item" id="practice-lesson">
+            <div class="practice-icon lesson">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"/></svg>
+            </div>
+            <div class="practice-content">
+              <div class="practice-title" id="practice-lesson-title">Getting Startened</div>
+              <div class="practice-meta" id="practice-lesson-meta">Your next lesson • 8 min</div>
+            </div>
+            <span class="practice-status active">Starten</span>
+          </div>
+          
+          <div class="practice-item" id="practice-evening">
+            <div class="practice-icon evening">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/></svg>
+            </div>
+            <div class="practice-content">
+              <div class="practice-title">Evening Reflection</div>
+              <div class="practice-meta">Process your day • 3 min</div>
+            </div>
+            <span class="practice-status pending">Später</span>
+          </div>
+        </div>
+      </section>
+      
+      <!-- QUICK TOOLS -->
+      <section style="margin-top: 1.5rem;">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17L17.25 21A2.652 2.652 0 0021 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 11-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 004.486-6.336l-3.276 3.277a3.004 3.004 0 01-2.25-2.25l3.276-3.276a4.5 4.5 0 00-6.336 4.486c.091 1.076-.071 2.264-.904 2.95l-.102.085m-1.745 1.437L5.909 7.5H4.5L2.25 3.75l1.5-1.5L7.5 4.5v1.409l4.26 4.26m-1.745 1.437l1.745-1.437m6.615 8.206L15.75 15.75M4.867 19.125h.008v.008h-.008v-.008z"/></svg>
+          Schnellwerkzeuge
+        </h2>
+        <div class="tools-grid">
+          <div class="tool-card" onclick="window.location.href='../../index.html'">
+            <div class="tool-icon white">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+            </div>
+            <div class="tool-name">Mein Profil</div>
+          </div>
+          
+          <div class="tool-card" onclick="alert('Tagebuch feature coming soon!')">
+            <div class="tool-icon white">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 002.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25zM6.75 12h.008v.008H6.75V12zm0 3h.008v.008H6.75V15zm0 3h.008v.008H6.75V18z"/></svg>
+            </div>
+            <div class="tool-name">Tagebuch</div>
+          </div>
+          
+          <div class="tool-card locked" id="tool-conflict">
+            <div class="tool-icon blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"/></svg>
+            </div>
+            <div class="tool-name">Konfliktkarten</div>
+            <div class="tool-unlock">Blaugurt</div>
+          </div>
+          
+          <div class="tool-card locked" id="tool-hub">
+            <div class="tool-icon green">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+            </div>
+            <div class="tool-name">Team Hub</div>
+            <div class="tool-unlock">Blaugurt</div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- MOTIVATION -->
+      <section style="margin-top: 1.5rem;">
+        <div class="quote-card">
+          <span class="quote-icon">"</span>
+          <p class="quote-text" id="quote-text">The first and greatest victory is to conquer yourself.</p>
+          <p class="quote-author" id="quote-author">— Plato</p>
+        </div>
+      </section>
+      
+      <!-- TEAM TEASER -->
+      <section style="margin-top: 1.5rem;" id="team-teaser-section">
+        <div class="team-teaser">
+          <div class="team-teaser-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z"/></svg>
+          </div>
+          <h3 class="team-teaser-title">DER HUB</h3>
+          <p class="team-teaser-desc">Team-Tools werden freigeschaltet, sobald du dich selbst gemeistert hast</p>
+          <div class="team-teaser-unlock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z"/></svg>
+            <span id="team-unlock-text">Freigeschaltet bei Blaugurt</span>
+          </div>
+        </div>
+      </section>
+      
+      <!-- RECENT ACTIVITY -->
+      <section style="margin-top: 1.5rem;" id="activity-section">
+        <h2 class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"/></svg>
+          Letzte Aktivität
+        </h2>
+        <div class="activity-list" id="activity-list">
+          <!-- Dynamically populated -->
+        </div>
+      </section>
+      
+    </div>
+    
+  </div>
+</main>
 
-        function refreshQuote() {
-            const quoteCard = document.querySelector('.quote-card');
-            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-            quoteCard.querySelector('.quote-text').textContent = `"${randomQuote.text}"`;
-            quoteCard.querySelector('.quote-author').textContent = `— ${randomQuote.author}`;
-        }
+<!-- Gamification Script -->
+<script src="../../js/gamification-v10.js"></script>
 
-        // Library tabs
-        document.querySelectorAll('.library-tab').forEach(tab => {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.library-tab').forEach(t => t.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
+<script>
+// ============================================================================
+// DYNAMIC GYM DASHBOARD - Detects current belt/stripe and updates UI
+// ============================================================================
 
-        // Tool cards click
-        document.querySelectorAll('.tool-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const toolName = this.querySelector('.tool-name').textContent;
-                alert(`Opening ${toolName}...`);
-            });
-        });
+// Belt configurations
+const BELTS = {
+  white: {
+    name: 'Weißgurt',
+    title: 'Know Thyself',
+    subtitle: 'Building Self-Awareness & Personal Foundation',
+    stripeNames: ['Self-Awareness', 'Vulnerability', 'Self-Trust', 'Inner Coach'],
+    nextBelt: 'blue',
+    nextBeltName: 'Blaugurt: Healthy Conflict',
+    nextBeltUnlock: 'Schließe den Weißgurt ab, um freizuschalten',
+    colors: {
+      accent: '#f5f5f5',
+      glow: 'rgba(245, 245, 245, 0.08)',
+      dim: 'rgba(245, 245, 245, 0.15)',
+      textOn: '#0a0a12',
+      ambient: 'rgba(245, 245, 245, 0.05)'
+    }
+  },
+  blue: {
+    name: 'Blaugurt',
+    title: 'Healthy Conflict',
+    subtitle: 'Master Difficult Conversations & Team Dynamics',
+    stripeNames: ['Conflict Foundations', 'Productive Disagreement', 'Conflict Navigation', 'Conflict Mastery'],
+    nextBelt: 'purple',
+    nextBeltName: 'Lila-Gurt: Commitment',
+    nextBeltUnlock: 'Schließe den Blaugurt ab, um freizuschalten',
+    colors: {
+      accent: '#3b82f6',
+      glow: 'rgba(59, 130, 246, 0.08)',
+      dim: 'rgba(59, 130, 246, 0.15)',
+      textOn: '#ffffff',
+      ambient: 'rgba(59, 130, 246, 0.05)'
+    }
+  },
+  purple: {
+    name: 'Lila-Gurt',
+    title: 'Commitment',
+    subtitle: 'Drive Clarity, Buy-In & Accountability',
+    stripeNames: ['Decision Foundations', 'Alignment & Buy-In', 'Clarity & Direction', 'Commitment Mastery'],
+    nextBelt: 'brown',
+    nextBeltName: 'Braungurt: Accountability',
+    nextBeltUnlock: 'Schließe den Lila-Gurt ab, um freizuschalten',
+    colors: {
+      accent: '#8b5cf6',
+      glow: 'rgba(139, 92, 246, 0.08)',
+      dim: 'rgba(139, 92, 246, 0.15)',
+      textOn: '#ffffff',
+      ambient: 'rgba(139, 92, 246, 0.05)'
+    }
+  },
+  brown: {
+    name: 'Braungurt',
+    title: 'Accountability',
+    subtitle: 'Build Systems for High Performance',
+    stripeNames: ['Accountability Foundations', 'Peer Accountability', 'Standards & Ownership', 'Accountability Mastery'],
+    nextBelt: 'black',
+    nextBeltName: 'Schwarzgurt: Results Focus',
+    nextBeltUnlock: 'Schließe den Braungurt ab, um freizuschalten',
+    colors: {
+      accent: '#92400e',
+      glow: 'rgba(146, 64, 14, 0.08)',
+      dim: 'rgba(146, 64, 14, 0.15)',
+      textOn: '#ffffff',
+      ambient: 'rgba(146, 64, 14, 0.05)'
+    }
+  },
+  black: {
+    name: 'Schwarzgurt',
+    title: 'Results Focus',
+    subtitle: 'Mastery, Legacy & Sustained Excellence',
+    stripeNames: ['Results Orientation', 'Team Goals Over Ego', 'Metrics & Measurement', 'Results Mastery'],
+    nextBelt: null,
+    nextBeltName: 'Meisterschaft erreicht!',
+    nextBeltUnlock: 'You\'ve reached the pinnacle',
+    colors: {
+      accent: '#1f2937',
+      glow: 'rgba(31, 41, 55, 0.08)',
+      dim: 'rgba(31, 41, 55, 0.15)',
+      textOn: '#ffffff',
+      ambient: 'rgba(31, 41, 55, 0.05)'
+    }
+  }
+};
 
-        // Open Mat cards click
-        document.querySelectorAll('.open-mat-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const title = this.querySelector('.open-mat-title').textContent;
-                alert(`Opening: ${title}`);
-            });
-        });
-
-        // Module cards click
-        document.querySelectorAll('.module-card:not(.locked)').forEach(card => {
-            card.addEventListener('click', function() {
-                const title = this.querySelector('.module-title').textContent;
-                alert(`Opening module: ${title}`);
-            });
-        });
-
-        // Assessment items click
-        document.querySelectorAll('.assessment-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const name = this.querySelector('.assessment-name').textContent;
-                const status = this.querySelector('.assessment-status');
-                if (status.classList.contains('available')) {
-                    alert(`Starting ${name} Assessment...`);
-                } else {
-                    alert(`Viewing ${name} Results...`);
-                }
-            });
-        });
-
-        // Library items click
-        document.querySelectorAll('.library-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const title = this.querySelector('h4').textContent;
-                alert(`Opening: ${title}`);
-            });
-        });
-
-        // Simulate real-time date
-        function updateDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            const dateStr = now.toLocaleDateString('en-US', options);
-            document.querySelector('.welcome-date').textContent = `${dateStr} • White Belt Training`;
-        }
-        updateDate();
-
-        // Dynamic Belt Progress Tracking
-        function updateBeltProgress() {
-            const belts = [
-                { name: 'purple', color: 'Purple', stripes: 4 },
-                { name: 'brown', color: 'Brown', stripes: 4 },
-                { name: 'black', color: 'Black', stripes: 4 }
-            ];
-
-            belts.forEach(belt => {
-                let completedStripes = 0;
-                
-                // Count completed stripes
-                for (let i = 1; i <= belt.stripes; i++) {
-                    const key = `${belt.name}BeltStripe${i}Complete`;
-                    if (localStorage.getItem(key) === 'true') {
-                        completedStripes++;
-                    }
-                }
-
-                // Calculate percentage
-                const percentage = (completedStripes / belt.stripes) * 100;
-                
-                // Update progress bar
-                const fillElement = document.getElementById(`${belt.name}-progress-fill`);
-                const textElement = document.getElementById(`${belt.name}-progress-text`);
-                const cardElement = document.getElementById(`${belt.name}-belt-card`);
-                const badgeElement = cardElement?.querySelector('.open-mat-badge');
-                
-                if (fillElement) {
-                    fillElement.style.width = `${percentage}%`;
-                }
-                
-                if (textElement) {
-                    if (percentage === 100) {
-                        textElement.textContent = `✅ ${belt.color} Belt Complete!`;
-                        textElement.style.color = '#38a169';
-                        textElement.style.fontWeight = '600';
-                        if (badgeElement) {
-                            badgeElement.textContent = 'Complete';
-                            badgeElement.style.background = 'linear-gradient(135deg, #38a169 0%, #2f855a 100%)';
-                        }
-                    } else if (percentage > 0) {
-                        textElement.textContent = `${Math.round(percentage)}% Complete (${completedStripes}/${belt.stripes} stripes)`;
-                        if (badgeElement) {
-                            badgeElement.textContent = 'In Progress';
-                            badgeElement.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-                        }
-                    } else {
-                        textElement.textContent = '0% Complete';
-                    }
-                }
-            });
-
-            // Check for entire program completion
-            if (localStorage.getItem('entireProgramComplete') === 'true') {
-            }
-        }
-
-        // Run on page load
-        updateBeltProgress();
-
-        // ============================================
-        // GAMIFICATION SYSTEM - XP, Streaks, Badges
-        // ============================================
-
-        // XP Configuration
-        const XP_VALUES = {
-            stripeComplete: 50,      // Complete a stripe module
-            assessmentComplete: 100, // Complete an assessment
-            openMatComplete: 25,     // Complete an open mat exercise
-            dailyLogin: 10,          // Login bonus
-            weekStreak: 50,          // 7-day streak bonus
-            beltComplete: 250        // Complete entire belt
+// Get user's current progress from localStorage
+function getCurrentBeltStripe() {
+  const belts = ['white', 'blue', 'purple', 'brown', 'black'];
+  
+  // Check both old format (whiteBeltStripe1Abgeschlossen) and new format (userProgress)
+  const userProgress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+  
+  for (let i = 0; i < belts.length; i++) {
+    const belt = belts[i];
+    for (let stripe = 1; stripe <= 4; stripe++) {
+      // Check new format first
+      const newKey = `${belt}-stripe${stripe}`;
+      const isAbgeschlossenNew = userProgress[newKey]?.completed === true;
+      
+      // Check old format
+      const oldKey = `${belt.charAt(0).toUpperCase() + belt.slice(1)}BeltStripe${stripe}Abgeschlossen`;
+      const isAbgeschlossenOld = localStorage.getItem(oldKey) === 'true';
+      
+      if (!isAbgeschlossenNew && !isAbgeschlossenOld) {
+        // Found first incomplete stripe
+        return {
+          belt: belt,
+          beltName: BELTS[belt].name,
+          stripe: stripe,
+          completedInBelt: stripe - 1,
+          totalInBelt: 4
         };
+      }
+    }
+  }
+  
+  // All belts complete - return black belt, stripe 4
+  return {
+    belt: 'black',
+    beltName: 'Schwarzgurt',
+    stripe: 4,
+    completedInBelt: 4,
+    totalInBelt: 4
+  };
+}
 
-        // Initialize or get gamification data
-        function getGamificationData() {
-            const defaultData = {
-                totalXP: 0,
-                level: 1,
-                badges: [],
-                lastVisit: null,
-                streakCount: 0,
-                modulesComplete: 0,
-                assessmentsComplete: 0,
-                history: []
-            };
-            
-            const stored = localStorage.getItem('tapinGamification');
-            if (stored) {
-                try {
-                    return { ...defaultData, ...JSON.parse(stored) };
-                } catch (e) {
-                    return defaultData;
-                }
-            }
-            return defaultData;
-        }
+// Get gamification stats
+function getGamificationStats() {
+  const totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+  
+  // Calculate streak (simplified - check last active date)
+  const lastActive = localStorage.getItem('lastActiveDate');
+  const today = new Date().toDateString();
+  let currentStreak = 0;
+  
+  if (lastActive === today) {
+    // Already logged in today, get stored streak
+    currentStreak = parseInt(localStorage.getItem('currentStreak') || '0');
+  } else if (lastActive) {
+    // Check if yesterday
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    if (lastActive === yesterday.toDateString()) {
+      currentStreak = parseInt(localStorage.getItem('currentStreak') || '0') + 1;
+    } else {
+      currentStreak = 1; // Streak broken, start over
+    }
+  } else {
+    currentStreak = 1; // First time
+  }
+  
+  // Update streak
+  localStorage.setItem('currentStreak', currentStreak.toString());
+  localStorage.setItem('lastActiveDate', today);
+  
+  return {
+    totalXP: totalXP,
+    currentStreak: currentStreak
+  };
+}
 
-        function saveGamificationData(data) {
-            localStorage.setItem('tapinGamification', JSON.stringify(data));
-        }
+// Update belt colors dynamically
+function updateBeltColors(belt) {
+  const colors = BELTS[belt].colors;
+  document.documentElement.style.setProperty('--belt-accent', colors.accent);
+  document.documentElement.style.setProperty('--belt-glow', colors.glow);
+  document.documentElement.style.setProperty('--belt-accent-dim', colors.dim);
+  document.documentElement.style.setProperty('--belt-text-on', colors.textOn);
+  document.documentElement.style.setProperty('--ambient-top', colors.ambient);
+}
 
-        // Award XP function
-        function awardXP(amount, reason) {
-            const data = getGamificationData();
-            data.totalXP += amount;
-            data.history.push({
-                amount,
-                reason,
-                timestamp: new Date().toISOString()
-            });
-            saveGamificationData(data);
-            updateGamificationDisplay();
-            
-            // Check for level up
-            const newLevel = Math.floor(data.totalXP / 500) + 1;
-            if (newLevel > data.level) {
-                data.level = newLevel;
-                saveGamificationData(data);
-                showLevelUpNotification(newLevel);
-            }
-        }
+// Update belt content
+function updateBeltContent(current) {
+  const beltInfo = BELTS[current.belt];
+  
+  // Update belt label and title
+  document.getElementById('belt-label-text').textContent = beltInfo.name;
+  document.getElementById('belt-title').textContent = beltInfo.title;
+  document.getElementById('belt-subtitle').textContent = beltInfo.subtitle;
+  document.getElementById('belt-name').textContent = beltInfo.name;
+  document.getElementById('journey-title').textContent = `Deine ${beltInfo.name}-Reise`;
+  
+  // Update stripe progress
+  document.getElementById('stripe-progress-count').textContent = `${current.completedInBelt} von 4`;
+  
+  // Update stripe bars
+  const stripeBars = document.querySelectorAll('.stripe-bar');
+  stripeBars.forEach((bar, index) => {
+    bar.classList.remove('completed', 'current');
+    if (index < current.completedInBelt) {
+      bar.classList.add('completed');
+    } else if (index === current.completedInBelt) {
+      bar.classList.add('current');
+    }
+  });
+  
+  // Update header stripe visual
+  const stripeLines = document.querySelectorAll('.stripe-line');
+  stripeLines.forEach((line, index) => {
+    line.classList.remove('active');
+    if (index < current.completedInBelt) {
+      line.classList.add('active');
+    }
+  });
+  
+  // Update belt CTA
+  const nextStripe = current.stripe;
+  const ctaLink = document.getElementById('belt-cta');
+  ctaLink.href = `${current.belt}-belt-stripe${nextStripe}-gamified-de.html`;
+  ctaLink.querySelector('#belt-cta-title').textContent = `Streifen ${nextStripe}: ${beltInfo.stripeNames[nextStripe - 1]}`;
+  
+  // Update practice lesson
+  document.getElementById('practice-lesson-title').textContent = `${beltInfo.stripeNames[nextStripe - 1]} Lektion 1`;
+  document.getElementById('practice-lesson').onclick = () => {
+    window.location.href = `${current.belt}-belt-stripe${nextStripe}-gamified-de.html`;
+  };
+}
 
-        // Check and update streak
-        function updateStreak() {
-            const data = getGamificationData();
-            const today = new Date().toDateString();
-            const lastVisit = data.lastVisit ? new Date(data.lastVisit).toDateString() : null;
-            
-            if (lastVisit === today) {
-                // Already visited today
-                return data.streakCount;
-            }
-            
-            const yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            const yesterdayStr = yesterday.toDateString();
-            
-            if (lastVisit === yesterdayStr) {
-                // Continuing streak
-                data.streakCount += 1;
-                awardXP(XP_VALUES.dailyLogin, 'Daily login bonus 🔥');
-                
-                // Week streak bonus
-                if (data.streakCount % 7 === 0) {
-                    awardXP(XP_VALUES.weekStreak, `${data.streakCount}-day streak bonus! 🏆`);
-                    awardBadge(`streak_${data.streakCount}`, `${data.streakCount} Day Warrior`, `Maintained ${data.streakCount} consecutive days`);
-                }
-            } else if (lastVisit !== null) {
-                // Streak broken
-                data.streakCount = 1;
-                awardXP(XP_VALUES.dailyLogin, 'Daily login bonus');
-            } else {
-                // First visit
-                data.streakCount = 1;
-                awardXP(XP_VALUES.dailyLogin, 'First visit! 🎉');
-            }
-            
-            data.lastVisit = new Date().toISOString();
-            saveGamificationData(data);
-            return data.streakCount;
-        }
+// Render stripe cards
+function renderStripeCards(current) {
+  const beltInfo = BELTS[current.belt];
+  const container = document.getElementById('stripes-row');
+  container.innerHTML = '';
+  
+  for (let i = 1; i <= 4; i++) {
+    const isAbgeschlossend = i < current.stripe;
+    const isCurrent = i === current.stripe;
+    const isLocked = i > current.stripe;
+    
+    const card = document.createElement('div');
+    card.className = `stripe-card ${isAbgeschlossend ? 'completed' : isCurrent ? 'current' : 'locked'}`;
+    
+    if (!isLocked) {
+      card.onclick = () => {
+        window.location.href = `${current.belt}-belt-stripe${i}-gamified-de.html`;
+      };
+    }
+    
+    card.innerHTML = `
+      <div class="stripe-num">${isAbgeschlossend ? '✓' : i}</div>
+      <div class="stripe-name">${beltInfo.stripeNames[i - 1]}</div>
+      <div class="stripe-lessons">${isAbgeschlossend ? '5/5' : isCurrent ? '0/5' : '0/5'} lessons</div>
+    `;
+    
+    container.appendChild(card);
+  }
+}
 
-        // Badge system
-        function awardBadge(badgeId, badgeName, badgeDesc) {
-            const data = getGamificationData();
-            
-            // Check if already has badge
-            if (data.badges.find(b => b.id === badgeId)) {
-                return false;
-            }
-            
-            data.badges.push({
-                id: badgeId,
-                name: badgeName,
-                description: badgeDesc,
-                earnedDate: new Date().toISOString()
-            });
-            
-            saveGamificationData(data);
-            showBadgeNotification(badgeName, badgeDesc);
-            return true;
-        }
+// Update stats
+function updateStats(current) {
+  const stats = getGamificationStats();
+  
+  // Update header
+  document.getElementById('streak-count').textContent = stats.currentStreak;
+  document.getElementById('xp-count').textContent = stats.totalXP;
+  
+  // Update belt stats (simplified - assume 5 lessons per stripe)
+  const totalLektionen = current.completedInBelt * 5;
+  document.getElementById('lessons-stat').textContent = `${totalLektionen}/20`;
+  
+  const percentAbgeschlossen = Math.round((current.completedInBelt / 4) * 100);
+  document.getElementById('complete-stat').textContent = `${percentAbgeschlossen}%`;
+  
+  document.getElementById('streak-stat').textContent = stats.currentStreak;
+}
 
-        // Count completed modules
-        function countCompletedModules() {
-            let count = 0;
-            const belts = ['white', 'blue', 'purple', 'brown', 'black'];
-            
-            belts.forEach(belt => {
-                for (let i = 1; i <= 4; i++) {
-                    const key = `${belt}BeltStripe${i}Complete`;
-                    if (localStorage.getItem(key) === 'true') {
-                        count++;
-                    }
-                }
-            });
-            
-            return count;
-        }
+// Update next belt teaser
+function updateNextBeltTeaser(current) {
+  const beltInfo = BELTS[current.belt];
+  
+  if (beltInfo.nextBelt) {
+    const nextBeltInfo = BELTS[beltInfo.nextBelt];
+    document.getElementById('next-belt-title').textContent = nextBeltInfo.nextBeltName;
+    document.getElementById('next-belt-unlock').textContent = beltInfo.nextBeltUnlock;
+    
+    // Update next belt icon color
+    const nextBeltIcon = document.querySelector('.next-belt-icon');
+    const nextBeltVisual = document.querySelector('.next-belt-visual');
+    if (nextBeltInfo.colors) {
+      nextBeltIcon.style.background = nextBeltInfo.colors.dim;
+      nextBeltVisual.style.background = nextBeltInfo.colors.accent;
+      document.getElementById('next-belt-title').style.color = nextBeltInfo.colors.accent;
+      document.getElementById('next-belt-percent').style.color = nextBeltInfo.colors.accent;
+    }
+    
+    // Calculate progress to next belt
+    const percentAbgeschlossen = Math.round((current.completedInBelt / 4) * 100);
+    document.getElementById('next-belt-percent').textContent = `${percentAbgeschlossen}%`;
+  } else {
+    // Black belt - hide next belt section or show completion message
+    document.getElementById('next-belt-section').style.display = 'none';
+  }
+}
 
-        // Update all gamification displays
-        function updateGamificationDisplay() {
-            const data = getGamificationData();
-            
-            // Update streak
-            const streak = updateStreak();
-            document.getElementById('streakCount').textContent = streak;
-            
-            // Update XP
-            document.getElementById('totalXP').textContent = data.totalXP.toLocaleString();
-            
-            // Update modules complete
-            const modulesComplete = countCompletedModules();
-            data.modulesComplete = modulesComplete;
-            saveGamificationData(data);
-            document.getElementById('modulesComplete').textContent = modulesComplete;
-            
-            // Update badges
-            document.getElementById('badgesEarned').textContent = data.badges.length;
-            
-            // Update XP badge in nav (if it exists)
-            const xpBadge = document.querySelector('.xp-badge');
-            if (xpBadge) {
-                // Use safe DOM manipulation
-                if (typeof safeSetInnerHTML !== 'undefined') {
-                    safeSetInnerHTML(xpBadge, `⚡ ${data.totalXP.toLocaleString()} XP`);
-                } else {
-                    xpBadge.textContent = `⚡ ${data.totalXP.toLocaleString()} XP`;
-                }
-            }
-        }
+// Update tool unlocks
+function updateToolUnlocks(current) {
+  const beltsEarned = JSON.parse(localStorage.getItem('beltsEarned') || '[]');
+  const hasBlueBelt = beltsEarned.includes('blue') || current.belt !== 'white';
+  
+  // Unlock tools if blue belt or higher
+  if (hasBlueBelt) {
+    document.getElementById('tool-conflict').classList.remove('locked');
+    document.getElementById('tool-hub').classList.remove('locked');
+    document.getElementById('tool-conflict').onclick = () => alert('Konfliktkarten coming soon!');
+    document.getElementById('tool-hub').onclick = () => window.location.href = '../hub/hub-home-BUSINESS.html';
+  }
+  
+  // Show/hide team teaser
+  if (hasBlueBelt) {
+    document.getElementById('team-teaser-section').style.display = 'none';
+  }
+}
 
-        // Show level up notification
-        function showLevelUpNotification(level) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                background: linear-gradient(135deg, var(--accent-gold) 0%, #ecc94b 100%);
-                color: var(--bg-dark);
-                padding: 3rem;
-                border-radius: 20px;
-                box-shadow: 0 20px 60px rgba(246, 224, 94, 0.5);
-                z-index: 10000;
-                text-align: center;
-                animation: scaleIn 0.5s ease;
-            `;
-            // Use safe DOM manipulation
-            const levelUpHTML = `
-                <div style="font-size: 4rem; margin-bottom: 1rem;">🎉</div>
-                <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem;">LEVEL UP!</h2>
-                <p style="font-size: 1.5rem; font-weight: 600;">Du reached Level ${level}</p>
-            `;
-            if (typeof safeSetInnerHTML !== 'undefined') {
-                safeSetInnerHTML(notification, levelUpHTML);
-            } else {
-                notification.innerHTML = levelUpHTML.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/on\w+\s*=/gi, 'data-blocked=');
-            }
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'scaleOut 0.5s ease';
-                setTimeout(() => notification.remove(), 500);
-            }, 3000);
-        }
+// Update recent activity
+function updateRecentActivity() {
+  const container = document.getElementById('activity-list');
+  container.innerHTML = '';
+  
+  // Get recent completions from localStorage
+  const userProgress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+  const activities = [];
+  
+  // Check for recent stripe completions
+  Object.keys(userProgress).forEach(key => {
+    if (userProgress[key].completed) {
+      const completedAt = new Date(userProgress[key].completedAt);
+      const now = new Date();
+      const hoursAgo = Math.floor((now - completedAt) / (1000 * 60 * 60));
+      
+      if (hoursAgo < 48) { // Show activities from last 48 hours
+        const beltStripe = key.replace('-stripe', ' Stripe ');
+        activities.push({
+          text: `Abgeschlossend <strong>${beltStripe}</strong>`,
+          time: hoursAgo < 1 ? 'Just now' : hoursAgo === 1 ? '1h ago' : `${hoursAgo}h ago`
+        });
+      }
+    }
+  });
+  
+  // Add XP earned activity
+  const totalXP = parseInt(localStorage.getItem('totalXP') || '0');
+  if (totalXP > 0) {
+    activities.push({
+      text: `Earned <strong>${totalXP} XP</strong>`,
+      time: 'Total'
+    });
+  }
+  
+  // Show up to 3 activities
+  activities.slice(0, 3).forEach(activity => {
+    const item = document.createElement('div');
+    item.className = 'activity-item';
+    item.innerHTML = `
+      <div class="activity-dot"></div>
+      <div class="activity-text">${activity.text}</div>
+      <div class="activity-time">${activity.time}</div>
+    `;
+    container.appendChild(item);
+  });
+  
+  // Hide section if no activities
+  if (activities.length === 0) {
+    document.getElementById('activity-section').style.display = 'none';
+  }
+}
 
-        // Show badge notification
-        function showBadgeNotification(badgeName, badgeDesc) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 100px;
-                right: 20px;
-                background: linear-gradient(135deg, var(--primary-navy) 0%, var(--navy-light) 100%);
-                color: white;
-                padding: 1.5rem;
-                border-radius: 12px;
-                box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-                z-index: 10000;
-                max-width: 350px;
-                animation: slideInRight 0.5s ease;
-            `;
-            // Use safe DOM manipulation
-            const badgeHTML = `
-                <div style="display: flex; gap: 1rem; align-items: center;">
-                    <div style="font-size: 2.5rem;">🏆</div>
-                    <div>
-                        <div style="font-weight: 700; font-size: 1.1rem; margin-bottom: 0.25rem;">Badge Unlocked!</div>
-                        <div style="font-weight: 600; color: var(--accent-gold);">${badgeName}</div>
-                        <div style="font-size: 0.85rem; opacity: 0.9; margin-top: 0.25rem;">${badgeDesc}</div>
-                    </div>
-                </div>
-            `;
-            if (typeof safeSetInnerHTML !== 'undefined') {
-                safeSetInnerHTML(notification, badgeHTML);
-            } else {
-                notification.innerHTML = badgeHTML.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '').replace(/on\w+\s*=/gi, 'data-blocked=');
-            }
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.5s ease';
-                setTimeout(() => notification.remove(), 500);
-            }, 4000);
-        }
+// Random quote
+const QUOTES = [
+  { text: 'The first and greatest victory is to conquer yourself.', author: 'Plato' },
+  { text: 'The obstacle is the way. What stands in the path becomes the path.', author: 'Marcus Aurelius' },
+  { text: 'We suffer more in imagination than in reality.', author: 'Seneca' },
+  { text: 'A black belt is a white belt who never quit.', author: 'Brazilian Proverb' },
+  { text: 'The only way out is through.', author: 'Robert Frost' }
+];
 
-        // Add animations to head
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes scaleIn {
-                from { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-                to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            }
-            @keyframes scaleOut {
-                from { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-                to { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-            }
-            @keyframes slideInRight {
-                from { transform: translateX(400px); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-            @keyframes slideOutRight {
-                from { transform: translateX(0); opacity: 1; }
-                to { transform: translateX(400px); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
+function updateQuote() {
+  const quote = QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  document.getElementById('quote-text').textContent = quote.text;
+  document.getElementById('quote-author').textContent = `— ${quote.author}`;
+}
 
-        // Initialize gamification on page load
-        updateGamificationDisplay();
+// Initialize dashboard
+function initializeDashboard() {
+  // Get current belt/stripe
+  const current = getCurrentBeltStripe();
+  
+  // Update belt colors
+  updateBeltColors(current.belt);
+  document.body.setAttribute('data-belt', current.belt);
+  
+  // Update all content
+  updateBeltContent(current);
+  renderStripeCards(current);
+  updateStats(current);
+  updateNextBeltTeaser(current);
+  updateToolUnlocks(current);
+  updateRecentActivity();
+  updateQuote();
+  
+  // Update practice items
+  document.getElementById('practice-morning').onclick = () => alert('Morgenintention coming soon!');
+  document.getElementById('practice-evening').onclick = () => alert('Evening Reflection coming soon!');
+}
 
-        // Expose functions globally for other pages to award XP
-        window.tapinGamification = {
-            awardXP,
-            awardBadge,
-            getGamificationData,
-            XP_VALUES
-        };
-    </script>
-<!-- TAP-IN Utilities -->
-<script src="../js/shared-utilities.js"></script>
-<script src="../js/global-error-handler.js"></script>
-<script src="../js/storage-health.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', initializeDashboard);
 
+// Refresh quote on click
+document.querySelector('.quote-card').addEventListener('click', updateQuote);
+</script>
 
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>

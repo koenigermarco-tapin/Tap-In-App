@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <title>📅 Calendar Integration - TAP-IN</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #a93226 0%, #7a2419 100%);
+            border-radius: 15px;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .section h2 {
+            color: #a93226;
+            margin-bottom: 20px;
+        }
+        .reminder-card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #a93226;
+        }
+        .reminder-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .reminder-title {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        .reminder-date {
+            opacity: 0.7;
+            font-size: 0.9em;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #a93226 0%, #7a2419 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1em;
+            margin: 10px 10px 10px 0;
+            display: inline-block;
+            text-decoration: none;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(169, 50, 38, 0.4);
+        }
+        .btn.secondary {
+            background: linear-gradient(135deg, #555 0%, #333 100%);
+        }
+        .btn.small {
+            padding: 8px 16px;
+            font-size: 0.9em;
+        }
+        .interval-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .interval-card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .interval-card:hover {
+            background: rgba(169, 50, 38, 0.2);
+            border-color: #a93226;
+        }
+        .interval-card.selected {
+            background: rgba(169, 50, 38, 0.3);
+            border-color: #a93226;
+        }
+        .interval-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin: 20px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="time"],
+        select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            color: white;
+            font-size: 1em;
+        }
+        .upcoming-reminders {
+            margin: 20px 0;
+        }
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: none;
+        }
+        .message.success {
+            background: rgba(34, 197, 94, 0.2);
+            border: 1px solid #22c55e;
+        }
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+    </style>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#c62828">
+    <link rel="apple-touch-icon" href="/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="TAP-IN">
+    <link rel="stylesheet" href="css/pwa-install-banner.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📅 Calendar Integration</h1>
+            <p>Schedule assessment reminders and team check-ins</p>
+        </div>
+
+        <div id="successMessage" class="message success"></div>
+
+        <!-- Quick Actions -->
+        <div class="section">
+            <h2>⚡ Quick Reminders</h2>
+            <p style="opacity: 0.8; margin-bottom: 20px;">Generate calendar events for your assessment schedule</p>
+            
+            <div class="interval-options">
+                <div class="interval-card" onclick="createReminder(30)">
+                    <div class="interval-icon">📆</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">30 Days</div>
+                    <div style="opacity: 0.7; font-size: 0.85em;">Monthly check-in</div>
+                </div>
+                <div class="interval-card" onclick="createReminder(60)">
+                    <div class="interval-icon">📅</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">60 Days</div>
+                    <div style="opacity: 0.7; font-size: 0.85em;">Quarterly review</div>
+                </div>
+                <div class="interval-card" onclick="createReminder(90)">
+                    <div class="interval-icon">🗓️</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">90 Days</div>
+                    <div style="opacity: 0.7; font-size: 0.85em;">Progress assessment</div>
+                </div>
+                <div class="interval-card" onclick="createReminder(180)">
+                    <div class="interval-icon">📊</div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">6 Months</div>
+                    <div style="opacity: 0.7; font-size: 0.85em;">Deep dive review</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Schedule -->
+        <div class="section">
+            <h2>🎯 Custom Reminder</h2>
+            
+            <div class="form-group">
+                <label>Reminder Title</label>
+                <input type="text" id="customTitle" placeholder="TAP-IN Leadership Assessment" value="TAP-IN Leadership Assessment">
+            </div>
+
+            <div class="schedule-grid">
+                <div class="form-group">
+                    <label>Date</label>
+                    <input type="date" id="customDate">
+                </div>
+                <div class="form-group">
+                    <label>Time</label>
+                    <input type="time" id="customTime" value="09:00">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <select id="customDuration">
+                    <option value="15">15 minutes</option>
+                    <option value="30" selected>30 minutes</option>
+                    <option value="45">45 minutes</option>
+                    <option value="60">1 hour</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Description (optional)</label>
+                <input type="text" id="customDescription" placeholder="Complete quarterly leadership assessment and review progress">
+            </div>
+
+            <button class="btn" onclick="createCustomReminder()">📅 Create Custom Reminder</button>
+        </div>
+
+        <!-- Team Assessment Schedule -->
+        <div class="section">
+            <h2>👥 Team Assessment Schedule</h2>
+            <p style="opacity: 0.8; margin-bottom: 20px;">Generate calendar invites for your entire team</p>
+            
+            <div class="form-group">
+                <label>Team Name</label>
+                <input type="text" id="teamName" placeholder="Product Team Alpha">
+            </div>
+
+            <div class="schedule-grid">
+                <div class="form-group">
+                    <label>First Assessment Date</label>
+                    <input type="date" id="teamStartDate">
+                </div>
+                <div class="form-group">
+                    <label>Frequency</label>
+                    <select id="teamFrequency">
+                        <option value="14">Every 2 weeks</option>
+                        <option value="30" selected>Monthly</option>
+                        <option value="60">Every 2 months</option>
+                        <option value="90">Quarterly</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Number of Sessions</label>
+                <select id="teamSessions">
+                    <option value="3">3 sessions</option>
+                    <option value="4" selected>4 sessions</option>
+                    <option value="6">6 sessions</option>
+                    <option value="12">12 sessions (1 year)</option>
+                </select>
+            </div>
+
+            <button class="btn" onclick="createTeamSchedule()">📅 Generate Team Schedule</button>
+        </div>
+
+        <!-- Upcoming Reminders -->
+        <div class="section">
+            <h2>⏰ Your Upcoming Reminders</h2>
+            <div id="upcomingReminders" class="upcoming-reminders">
+                <p style="opacity: 0.7;">No reminders scheduled. Create one above!</p>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/dashboard.html" class="back-link">← Back to Dashboard</a>
+        </div>
+    </div>
+
+    <script>
+        function createReminder(daysFromNow) {
+            const date = new Date();
+            date.setDate(date.getDate() + daysFromNow);
+            
+            const event = {
+                title: `TAP-IN Leadership Assessment - ${daysFromNow} Day Check-in`,
+                date: date,
+                duration: 30,
+                description: `Complete your ${daysFromNow}-day leadership assessment to track your progress and growth.`
+            };
+
+            downloadICS(event);
+            saveReminder(event);
+            showMessage(`✅ ${daysFromNow}-day reminder created! Check your downloads folder.`);
+        }
+
+        function createCustomReminder() {
+            const title = document.getElementById('customTitle').value;
+            const dateStr = document.getElementById('customDate').value;
+            const timeStr = document.getElementById('customTime').value;
+            const duration = parseInt(document.getElementById('customDuration').value);
+            const description = document.getElementById('customDescription').value;
+
+            if (!title || !dateStr) {
+                alert('Please fill in title and date');
+                return;
+            }
+
+            const date = new Date(`${dateStr}T${timeStr}`);
+            
+            const event = {
+                title,
+                date,
+                duration,
+                description
+            };
+
+            downloadICS(event);
+            saveReminder(event);
+            showMessage(`✅ Custom reminder created for ${date.toLocaleDateString()}!`);
+        }
+
+        function createTeamSchedule() {
+            const teamName = document.getElementById('teamName').value || 'Team';
+            const startDateStr = document.getElementById('teamStartDate').value;
+            const frequency = parseInt(document.getElementById('teamFrequency').value);
+            const sessions = parseInt(document.getElementById('teamSessions').value);
+
+            if (!startDateStr) {
+                alert('Please select a start date');
+                return;
+            }
+
+            const events = [];
+            let currentDate = new Date(startDateStr + 'T09:00');
+
+            for (let i = 0; i < sessions; i++) {
+                events.push({
+                    title: `${teamName} - Assessment Session ${i + 1}/${sessions}`,
+                    date: new Date(currentDate),
+                    duration: 45,
+                    description: `Team leadership assessment session ${i + 1} of ${sessions}. Please complete your individual assessment before this meeting.`
+                });
+                
+                currentDate.setDate(currentDate.getDate() + frequency);
+            }
+
+            // Create multiple ICS file
+            downloadMultipleICS(events, teamName);
+            events.forEach(event => saveReminder(event));
+            showMessage(`✅ Created ${sessions} team assessment reminders!`);
+        }
+
+        function downloadICS(event) {
+            const ics = generateICS(event);
+            const blob = new Blob([ics], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tap-in-reminder-${event.date.toISOString().split('T')[0]}.ics`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadMultipleICS(events, teamName) {
+            let ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TAP-IN//Leadership Assessments//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:${teamName} Assessment Schedule
+X-WR-TIMEZONE:UTC
+`;
+
+            events.forEach(event => {
+                ics += generateICSEvent(event);
+            });
+
+            ics += 'END:VCALENDAR';
+
+            const blob = new Blob([ics], { type: 'text/calendar' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${teamName.toLowerCase().replace(/\s+/g, '-')}-schedule.ics`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function generateICS(event) {
+            return `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//TAP-IN//Leadership Assessments//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+${generateICSEvent(event)}END:VCALENDAR`;
+        }
+
+        function generateICSEvent(event) {
+            const start = formatICSDate(event.date);
+            const end = formatICSDate(new Date(event.date.getTime() + event.duration * 60000));
+            const now = formatICSDate(new Date());
+            
+            return `BEGIN:VEVENT
+UID:${Date.now()}-${Math.random().toString(36).substr(2, 9)}@tap-in.app
+DTSTAMP:${now}
+DTSTART:${start}
+DTEND:${end}
+SUMMARY:${event.title}
+DESCRIPTION:${event.description || 'TAP-IN Leadership Assessment reminder'}
+LOCATION:https://tap-in.app
+STATUS:CONFIRMED
+SEQUENCE:0
+BEGIN:VALARM
+TRIGGER:-PT15M
+DESCRIPTION:Reminder
+ACTION:DISPLAY
+END:VALARM
+END:VEVENT
+`;
+        }
+
+        function formatICSDate(date) {
+            const pad = (n) => n < 10 ? '0' + n : n;
+            return date.getUTCFullYear() +
+                pad(date.getUTCMonth() + 1) +
+                pad(date.getUTCDate()) + 'T' +
+                pad(date.getUTCHours()) +
+                pad(date.getUTCMinutes()) +
+                pad(date.getUTCSeconds()) + 'Z';
+        }
+
+        function saveReminder(event) {
+            const reminders = JSON.parse(localStorage.getItem('tap-in-reminders') || '[]');
+            reminders.push({
+                ...event,
+                date: event.date.toISOString(),
+                createdAt: new Date().toISOString()
+            });
+            localStorage.setItem('tap-in-reminders', JSON.stringify(reminders));
+            displayReminders();
+        }
+
+        function displayReminders() {
+            const reminders = JSON.parse(localStorage.getItem('tap-in-reminders') || '[]');
+            const now = new Date();
+            
+            const upcoming = reminders
+                .filter(r => new Date(r.date) > now)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const container = document.getElementById('upcomingReminders');
+            
+            if (upcoming.length === 0) {
+                container.innerHTML = '<p style="opacity: 0.7;">No upcoming reminders.</p>';
+                return;
+            }
+
+            container.innerHTML = upcoming.map((reminder, index) => {
+                const date = new Date(reminder.date);
+                const daysUntil = Math.ceil((date - now) / (1000 * 60 * 60 * 24));
+                
+                return `
+                    <div class="reminder-card">
+                        <div class="reminder-header">
+                            <div class="reminder-title">${reminder.title}</div>
+                            <button class="btn small secondary" onclick="deleteReminder(${index})">Delete</button>
+                        </div>
+                        <div class="reminder-date">
+                            📅 ${date.toLocaleDateString()} at ${date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                            <span style="margin-left: 10px; color: #a93226;">(in ${daysUntil} days)</span>
+                        </div>
+                        ${reminder.description ? `<div style="opacity: 0.8; margin-top: 10px; font-size: 0.9em;">${reminder.description}</div>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteReminder(index) {
+            const reminders = JSON.parse(localStorage.getItem('tap-in-reminders') || '[]');
+            reminders.splice(index, 1);
+            localStorage.setItem('tap-in-reminders', JSON.stringify(reminders));
+            displayReminders();
+            showMessage('Reminder deleted');
+        }
+
+        function showMessage(text) {
+            const messageEl = document.getElementById('successMessage');
+            messageEl.textContent = text;
+            messageEl.style.display = 'block';
+            setTimeout(() => {
+                messageEl.style.display = 'none';
+            }, 5000);
+        }
+
+        // Set default dates
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        document.getElementById('customDate').value = tomorrow.toISOString().split('T')[0];
+        document.getElementById('teamStartDate').value = tomorrow.toISOString().split('T')[0];
+
+        // Initialize
+        displayReminders();
+    </script>
+
+    <!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.min.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        // Silent fail - not critical
+                    });
+            });
+        }
+    </script>
+    <script src="js/pwa-install-prompt.js"></script>
+
+    <!-- Screen Reader Enhancements for Accessibility -->
+    <script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>

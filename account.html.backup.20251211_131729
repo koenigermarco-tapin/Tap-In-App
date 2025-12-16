@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <!-- Performance: Resource Hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+
+    <title>Account | TAP-IN</title>
+    
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth-system.min.js"></script>
+    <script src="js/enhanced-avatar-system.min.js" defer></script>
+    <script src="js/coins-system.min.js" defer></script>
+    <script src="js/avatar-system.min.js" defer></script>
+    
+    <link rel="stylesheet" href="avatar-styles.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            margin-bottom: 2rem;
+        }
+        
+        h1 {
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            margin-bottom: 2rem;
+        }
+        
+        .backup-code-section {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .code-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            margin-bottom: 1rem;
+        }
+        
+        .code {
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+            word-break: break-all;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 12px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover { transform: translateY(-2px); }
+        .btn-primary { background: #3b82f6; color: white; }
+        .btn-success { background: #10b981; color: white; }
+        .btn-secondary { background: #64748b; color: white; }
+        
+        .warning {
+            color: #dc2626;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #fee2e2;
+            border-radius: 8px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .stat-card {
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-top: 2rem;
+        }
+        
+        .back-link:hover { text-decoration: underline; }
+        
+        /* Avatar Styles */
+        .user-avatar-container {
+            background: linear-gradient(135deg, #1a365d 0%, #2d4a7c 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        }
+        
+        .belt.white-belt { fill: #FFFFFF !important; }
+        .belt.blue-belt { fill: #1e40af !important; }
+        .belt.purple-belt { fill: #7c3aed !important; }
+        .belt.brown-belt { fill: #92400e !important; }
+        .belt.black-belt { fill: #1f2937 !important; }
+    </style>
+    <link rel="stylesheet" href="css/accessibility.css">
+
+<body>
+    <!-- Skip Links for Accessibility -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <a href="#navigation" class="skip-link">Skip to navigation</a>
+
+    <div class="container">
+        <div class="card">
+            <h1>🔐 Your Account</h1>
+            <p class="subtitle">Manage your anonymous account and backup code</p>
+            
+            <!-- Avatar Display Section -->
+            <div class="profile-grid">
+                <div class="card" style="margin: 0;">
+                    <h3 style="color: #1e293b; margin-bottom: 1rem;">👤 Your Avatar</h3>
+                    <div id="avatarContainer" style="text-align: center; margin: 1rem 0;">
+                        <!-- Avatar will be rendered here -->
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <a href="shop.html" class="btn btn-primary" style="display: inline-block; text-decoration: none;">
+                            🛒 Customize Avatar
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Coins & Conversion Section -->
+                <div class="card" style="margin: 0;">
+                    <h3 style="color: #1e293b; margin-bottom: 1rem;">🪙 Coins & XP</h3>
+                    
+                    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <span style="color: #64748b; font-size: 0.9rem;">Current Balance</span>
+                            <span style="font-size: 2rem; font-weight: 700; color: #f59e0b;" id="coinsBalance">0</span>
+                        </div>
+                        
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="color: #64748b; font-size: 0.9rem;">Available XP</span>
+                            <span style="font-size: 1.2rem; font-weight: 600; color: #1e293b;" id="availableXP">0</span>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #fef3c7; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <div style="font-size: 0.85rem; color: #92400e; margin-bottom: 0.5rem;">
+                            💡 Exchange Rate: 100 XP = 80 Coins (0.8 rate)
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <label style="display: block; color: #64748b; font-size: 0.9rem; margin-bottom: 0.5rem;">
+                            Convert XP to Coins
+                        </label>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <input type="number" id="xpToConvert" min="100" step="100" 
+                                   placeholder="Min: 100 XP" 
+                                   style="flex: 1; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 1rem;">
+                            <button class="btn btn-success" onclick="convertXP()">
+                                Convert
+                            </button>
+                        </div>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #64748b;">
+                            You'll get: <span id="coinsPreview" style="font-weight: 600; color: #f59e0b;">0</span> 🪙
+                        </div>
+                        <div id="convertMessage" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <a href="shop.html" class="btn btn-secondary" style="display: inline-block; text-decoration: none;">
+                            🛍️ Visit Shop
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="backup-code-section">
+                <div class="code-label">Your Backup Code</div>
+                <div class="code" id="backupCodeDisplay">Loading...</div>
+                
+                <p style="color: #64748b; font-size: 0.9rem; margin-top: 1rem;">
+                    Save this code to restore your progress on any device
+                </p>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="copyCode()">
+                        📋 Copy Code
+                    </button>
+                    <button class="btn btn-success" onclick="downloadCode()">
+                        💾 Download
+                    </button>
+                </div>
+                
+                <div class="warning">
+                    ⚠️ Keep this code safe! It's the ONLY way to restore your progress.
+                </div>
+            </div>
+            
+            <h3 style="margin-bottom: 1rem; color: #1e293b;">Account Stats</h3>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">User ID</div>
+                    <div class="stat-value" style="font-size: 0.9rem; word-break: break-all;" id="userId">-</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Total XP</div>
+                    <div class="stat-value" id="totalXP">0</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Current Belt</div>
+                    <div class="stat-value" id="currentBelt">White</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-label">Coins</div>
+                    <div class="stat-value" id="coinsDisplay">0</div>
+                </div>
+            </div>
+        </div>
+        
+        <a href="gym-dashboard.html" class="back-link">← Back to Dashboard</a>
+    </div>
+    
+    <script>
+        async function loadAccountData() {
+            // Wait for auth to initialize
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Display backup code
+            const backupCode = window.tapInAuth.getBackupCode();
+            document.getElementById('backupCodeDisplay').textContent = backupCode || 'Not available';
+            
+            // Display user ID
+            const userId = window.tapInAuth.getUserId();
+            document.getElementById('userId').textContent = userId ? userId.substring(0, 8) + '...' : 'Not available';
+            
+            // Load progress from cloud
+            const progress = await window.tapInAuth.loadProgress();
+            if (progress) {
+                document.getElementById('totalXP').textContent = progress.total_xp.toLocaleString();
+                document.getElementById('currentBelt').textContent = progress.current_belt;
+            } else {
+                // Fallback to localStorage
+                const xp = localStorage.getItem('totalXP') || '0';
+                const belt = localStorage.getItem('currentBelt') || 'White';
+                document.getElementById('totalXP').textContent = parseInt(xp).toLocaleString();
+                document.getElementById('currentBelt').textContent = belt;
+            }
+            
+            // Update coins display
+            updateCoinsDisplay();
+            
+            // Update coins in stats
+            if (window.CoinsSystem) {
+                const coins = window.CoinsSystem.getCoins();
+                document.getElementById('coinsDisplay').textContent = coins.toLocaleString();
+            }
+        }
+        
+        function copyCode() {
+            const code = window.tapInAuth.getBackupCode();
+            if (code) {
+                navigator.clipboard.writeText(code);
+                alert('✅ Backup code copied to clipboard!');
+            }
+        }
+        
+        function downloadCode() {
+            const code = window.tapInAuth.getBackupCode();
+            if (code) {
+                const text = `TAP-IN Leadership Academy - Backup Code\n\n${code}\n\nKeep this code safe! You need it to restore your progress on any device.\n\nWebsite: https://tap-in-academy.com`;
+                const blob = new Blob([text], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'tap-in-backup-code.txt';
+                a.click();
+                URL.revokeObjectURL(url);
+                alert('✅ Backup code downloaded!');
+            }
+        }
+        
+        // Load Avatar
+        function loadAvatar() {
+            // Create avatar container HTML
+            const avatarHTML = `
+                <div class="user-avatar-container" style="max-width: 100%;">
+                    <div class="avatar-character">
+                        <svg viewBox="0 0 200 300" class="martial-artist" style="width: 150px; height: 225px; filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));">
+                            <!-- Head -->
+                            <circle cx="100" cy="50" r="30" fill="#f0d9b5" class="head" id="avatarHead"/>
+                            
+                            <!-- Body (Gi/Uniform) -->
+                            <rect x="70" y="80" width="60" height="80" fill="white" class="gi-top" id="avatarGi"/>
+                            
+                            <!-- Belt (color changes based on rank) -->
+                            <rect x="60" y="130" width="80" height="15" fill="#FFFFFF" class="belt" id="userBelt"/>
+                            
+                            <!-- Arms -->
+                            <line x1="70" y1="90" x2="40" y2="120" stroke="white" stroke-width="8" class="arm-left"/>
+                            <line x1="130" y1="90" x2="160" y2="120" stroke="white" stroke-width="8" class="arm-right"/>
+                            
+                            <!-- Legs -->
+                            <rect x="75" y="160" width="20" height="60" fill="white" class="leg-left"/>
+                            <rect x="105" y="160" width="20" height="60" fill="white" class="leg-right"/>
+                            
+                            <!-- Feet -->
+                            <ellipse cx="85" cy="225" rx="15" ry="8" fill="#333" class="foot-left"/>
+                            <ellipse cx="115" cy="225" rx="15" ry="8" fill="#333" class="foot-right"/>
+                        </svg>
+                    </div>
+                    <div class="avatar-stats" style="background: white; border-radius: 12px; padding: 16px; margin-top: 16px;">
+                        <div class="stat-row" style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="font-size: 20px; margin-right: 12px;">🥋</span>
+                            <span style="font-size: 16px; font-weight: 600; color: #1a365d;" id="avatarBeltName">White Belt</span>
+                        </div>
+                        <div class="stat-row" style="display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid #e5e7eb;">
+                            <span style="font-size: 20px; margin-right: 12px;">⚡</span>
+                            <span style="font-size: 16px; font-weight: 600; color: #1a365d;" id="avatarXP">0 / 100 XP</span>
+                        </div>
+                        <div class="stat-row" style="display: flex; align-items: center; padding: 8px 0;">
+                            <span style="font-size: 20px; margin-right: 12px;">📊</span>
+                            <span style="font-size: 16px; font-weight: 600; color: #1a365d;" id="avatarLevel">Level 1: Beginner</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('avatarContainer').innerHTML = avatarHTML;
+            
+            // Initialize avatar system after DOM is ready
+            setTimeout(() => {
+                if (window.AVATAR_SYSTEM) {
+                    window.AVATAR_SYSTEM.init();
+                }
+                if (window.EnhancedAvatarSystem) {
+                    applyAvatarCustomization();
+                }
+            }, 500);
+        }
+        
+        // Apply avatar customization
+        function applyAvatarCustomization() {
+            if (!window.EnhancedAvatarSystem) return;
+            
+            const settings = window.EnhancedAvatarSystem.getSettings();
+            
+            // Apply skin color
+            const head = document.getElementById('avatarHead');
+            if (head && settings.skinColor) {
+                head.setAttribute('fill', settings.skinColor);
+            }
+            
+            // Apply Gi color
+            const gi = document.getElementById('avatarGi');
+            if (gi && settings.customGiColor) {
+                gi.setAttribute('fill', settings.customGiColor);
+            }
+        }
+        
+        // Update coins display
+        function updateCoinsDisplay() {
+            if (window.CoinsSystem) {
+                const coins = window.CoinsSystem.getCoins();
+                document.getElementById('coinsBalance').textContent = coins.toLocaleString();
+            }
+            
+            const xp = parseInt(localStorage.getItem('totalXP') || '0');
+            document.getElementById('availableXP').textContent = xp.toLocaleString();
+            
+            // Update conversion preview
+            updateConversionPreview();
+        }
+        
+        // Update conversion preview
+        function updateConversionPreview() {
+            const xpInput = document.getElementById('xpToConvert');
+            if (!xpInput || !window.CoinsSystem) return;
+            
+            const xpAmount = parseInt(xpInput.value) || 0;
+            if (xpAmount >= 100) {
+                const coins = window.CoinsSystem.getConversionPreview(xpAmount);
+                document.getElementById('coinsPreview').textContent = coins || 0;
+            } else {
+                document.getElementById('coinsPreview').textContent = 0;
+            }
+        }
+        
+        // Convert XP to Coins
+        function convertXP() {
+            if (!window.CoinsSystem) {
+                alert('Coins system not loaded');
+                return;
+            }
+            
+            const xpInput = document.getElementById('xpToConvert');
+            const xpAmount = parseInt(xpInput.value) || 0;
+            
+            if (xpAmount < 100) {
+                document.getElementById('convertMessage').textContent = '❌ Minimum conversion is 100 XP';
+                document.getElementById('convertMessage').style.color = '#ef4444';
+                return;
+            }
+            
+            const result = window.CoinsSystem.convertXPToCoins(xpAmount);
+            
+            if (result.success) {
+                document.getElementById('convertMessage').textContent = 
+                    `✅ Converted ${xpAmount} XP to ${result.coinsEarned} coins!`;
+                document.getElementById('convertMessage').style.color = '#10b981';
+                xpInput.value = '';
+                updateCoinsDisplay();
+                loadAccountData(); // Refresh XP display
+                
+                // Confetti
+                if (window.confetti) {
+                    confetti({ particleCount: 100, spread: 70 });
+                }
+            } else {
+                document.getElementById('convertMessage').textContent = `❌ ${result.error}`;
+                document.getElementById('convertMessage').style.color = '#ef4444';
+            }
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAccountData();
+            loadAvatar();
+            updateCoinsDisplay();
+            
+            // Listen for XP conversion input
+            const xpInput = document.getElementById('xpToConvert');
+            if (xpInput) {
+                xpInput.addEventListener('input', updateConversionPreview);
+            }
+        });
+    </script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+    <!-- TAP-IN Core Modules -->
+    <script src="js/language-switcher.min.js"></script>
+    <script src="js/meta-tags-manager.js"></script>
+    <script src="js/achievement-badges.js"></script>
+    <script src="js/structured-data.js"></script>
+
+    <script src="js/keyboard-navigation.js" defer></script>
+
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registered:', registration.scope);
+                        
+                        // Check for updates
+                        registration.addEventListener('updatefound', function() {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', function() {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+                                }
+                            });
+                        });
+                    })
+                    .catch(function(error) {
+                        // Silent fail - not critical
+                    });
+            });
+        }
+    </script>
+    <script src="js/pwa-install-prompt.js"></script>
+</html>
+
+
+
+    <!-- Screen Reader Enhancements for Accessibility -->
+    <script src="js/screen-reader-enhancements.js" defer></script>

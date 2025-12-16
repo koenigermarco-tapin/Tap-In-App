@@ -1,1160 +1,1004 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <meta name="theme-color" content="#2d2d2d">
-    <title>Work-Life-Balance Assessment - TAP-IN</title>
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); min-height: 100vh; padding: 20px; color: #333; }
-        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
-        .header { text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 3px solid #f0f0f0; }
-        .header h1 { color: #1a365d; font-size: 2.3em; margin-bottom: 15px; }
-        .header .subtitle { color: #666; font-size: 1.1em; margin-bottom: 10px; }
-        .header .duration { color: #999; font-size: 0.9em; font-style: italic; }
-        
-        .progress-bar { position: sticky; top: 10px; background: white; padding: 15px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        .progress-text { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 8px; }
-        .progress-fill { height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
-        .progress-fill-bar { background: linear-gradient(90deg, #1a365d 0%, #c9513f 100%); height: 100%; width: 0%; transition: width 0.3s ease; }
-        
-        .section-header { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; }
-        .section-header h3 { font-size: 1.2em; margin-bottom: 5px; }
-        .section-header .section-desc { font-size: 0.9em; opacity: 0.95; font-style: italic; }
-        
-        .carousel-container { position: relative; }
-        .question-card { background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 20px; }
-        .question-number { color: #1a365d; font-weight: bold; font-size: 0.9em; margin-bottom: 10px; }
-        .question-text { font-size: 1.2em; color: #333; margin-bottom: 25px; font-weight: 500; line-height: 1.5; }
-        
-        .scale-options { display: flex; justify-content: space-between; align-items: flex-end; gap: 2px; flex-wrap: nowrap; height: 140px; position: relative; background: linear-gradient(to top right, rgba(169, 50, 38, 0.1) 0%, rgba(169, 50, 38, 0.05) 50%, transparent 50%); border-radius: 8px; padding: 5px; cursor: pointer; user-select: none; }
-        .scale-option { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; background: linear-gradient(135deg, rgba(169, 50, 38, 0.15) 0%, rgba(169, 50, 38, 0.1) 100%); border: 2px solid transparent; border-radius: 6px; transition: all 0.15s ease; position: relative; z-index: 1; }
-        .scale-option:nth-child(1) { height: 50px; opacity: 0.15; }
-        .scale-option:nth-child(2) { height: 70px; opacity: 0.35; }
-        .scale-option:nth-child(3) { height: 90px; opacity: 0.55; }
-        .scale-option:nth-child(4) { height: 110px; opacity: 0.75; }
-        .scale-option:nth-child(5) { height: 130px; opacity: 0.85; }
-        .scale-option span { font-size: 1.3em; font-weight: bold; color: #333; margin-bottom: 5px; }
-        .scale-option small { font-size: 0.75em; color: #666; text-align: center; }
-        .scale-option:hover { transform: scale(1.05); border-color: #1a365d; }
-        .scale-option.active, .scale-option.selected { background: linear-gradient(135deg, #1a365d 0%, #c9513f 100%); color: white; border-color: #0f1f3d; box-shadow: 0 2px 8px rgba(169, 50, 38, 0.4); }
-        .scale-option.active ~ .scale-option { background: linear-gradient(135deg, rgba(169, 50, 38, 0.15) 0%, rgba(169, 50, 38, 0.1) 100%); color: #333; }
-        .scale-option.active span, .scale-option.selected span { color: white; }
-        .scale-option.active small, .scale-option.selected small { color: rgba(255,255,255,0.9); }
-        .scale-option.active ~ .scale-option span { color: #333; }
-        .scale-option.active ~ .scale-option small { color: #666; }
-        
-        .insight-card { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid #1a365d; padding: 20px; margin: 20px 0; border-radius: 10px; animation: slideIn 0.4s ease; }
-        .insight-icon { font-size: 2rem; margin-bottom: 10px; }
-        .insight-title { color: #1a365d; font-size: 1.1em; font-weight: bold; margin-bottom: 12px; }
-        .insight-content { color: #555; line-height: 1.7; margin-bottom: 12px; }
-        .insight-quote { font-style: italic; color: #666; font-size: 0.95em; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 6px; border-left: 3px solid #1a365d; }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .nav-buttons { display: flex; gap: 15px; justify-content: space-between; margin-top: 25px; }
-        .btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; transition: all 0.2s; font-weight: 600; }
-        .btn-secondary { background: #e0e0e0; color: #333; }
-        .btn-secondary:hover { background: #d0d0d0; }
-        .btn-primary { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; }
-        .btn-primary:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(169, 50, 38, 0.4); }
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        
-        .results-container { display: none; }
-        .results-container.active { display: block; }
-        .overall-score { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; }
-        .score-number { font-size: 4em; font-weight: bold; margin-bottom: 10px; }
-        .score-label { font-size: 1.3em; opacity: 0.95; }
-        .score-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
-        .category-score { background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #1a365d; }
-        .category-score h4 { color: #1a365d; margin-bottom: 10px; }
-        .category-score .score { font-size: 2em; color: #333; font-weight: bold; margin-bottom: 8px; }
-        .category-score .label { color: #666; font-size: 0.9em; }
-        .cta-box { background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
-        .cta-box h3 { font-size: 1.6em; margin-bottom: 15px; }
-        .cta-box p { font-size: 1em; margin-bottom: 20px; opacity: 0.95; }
-        .cta-btn { background: white; color: #1a365d; padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; transition: all 0.2s; }
-        .cta-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,255,255,0.3); }
-        
-        @media (max-width: 768px) {
-            .container { padding: 25px; }
-            .header h1 { font-size: 2em; }
-            .score-categories { grid-template-columns: 1fr; }
-        }
-        .achievement-toast{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,#4a7c9c 0%,#3d6680 100%);color:white;padding:20px 25px;border-radius:12px;box-shadow:0 8px 32px rgba(102,126,234,0.4);z-index:10000;min-width:300px;animation:slideInRight 0.5s ease-out;}.achievement-toast.show{display:block;}@keyframes slideInRight{from{transform:translateX(400px);opacity:0;}to{transform:translateX(0);opacity:1;}}.achievement-icon{font-size:2.5em;margin-bottom:10px;}.achievement-title{font-size:1.2em;font-weight:700;margin-bottom:5px;}.achievement-desc{font-size:0.9em;opacity:0.95;}.confetti{position:fixed;width:10px;height:10px;background:#4a7c9c;z-index:9999;}.xp-bar{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:white;padding:15px 25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;min-width:320px;text-align:center;}.xp-bar .level{font-weight:700;color:#1a365d;margin-bottom:8px;font-size:0.95em;}.progress-container{background:#e2e8f0;border-radius:10px;height:12px;overflow:hidden;margin-bottom:8px;}.progress-fill{background:linear-gradient(90deg,#4a7c9c 0%,#3d6680 100%);height:100%;border-radius:10px;transition:width 0.3s ease;}.xp-text{font-size:0.85em;color:#64748b;font-weight:600;}.achievements-section{margin-top:40px;padding:30px;background:linear-gradient(135deg,#f8fafc 0%,#e2e8f0 100%);border-radius:15px;}.achievements-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:20px;}.badge{background:white;padding:25px;border-radius:12px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform 0.2s;}.badge:hover{transform:translateY(-5px);}.badge.unlocked{border:2px solid #4a7c9c;}.badge.locked{opacity:0.4;border:2px solid #cbd5e1;}.badge-icon{font-size:3em;margin-bottom:10px;}.badge-name{font-weight:700;color:#1a365d;margin-bottom:5px;}.badge-desc{font-size:0.85em;color:#64748b;}.streak-badge{position:fixed;top:20px;left:20px;background:white;padding:12px 20px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;display:flex;align-items:center;gap:10px;}.streak-badge .fire{font-size:1.5em;}.streak-badge .streak-text{font-weight:700;color:#1a365d;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<meta name="theme-color" content="#2d2d2d">
+<title>Work-Life-Balance Assessment - TAP-IN</title>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); min-height: 100vh; padding: 20px; color: #333; }
+.container { max-width: 800px; margin: 0 auto; background: white; border-radius: 20px; padding: 40px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+.header { text-align: center; margin-bottom: 30px; padding-bottom: 25px; border-bottom: 3px solid #f0f0f0; }
+.header h1 { color: var(--bg-primary); font-size: 2.3em; margin-bottom: 15px; }
+.header .subtitle { color: #666; font-size: 1.1em; margin-bottom: 10px; }
+.header .duration { color: #999; font-size: 0.9em; font-style: italic; }
+.progress-bar { position: sticky; top: 10px; background: white; padding: 15px; border-radius: 10px; margin-bottom: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
+.progress-text { text-align: center; color: #666; font-size: 0.9em; margin-bottom: 8px; }
+.progress-fill { height: 8px; background: #e0e0e0; border-radius: 10px; overflow: hidden; }
+.progress-fill-bar { background: linear-gradient(90deg, var(--bg-primary) 0%, #c9513f 100%); height: 100%; width: 0%; transition: width 0.3s ease; }
+.section-header { background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%); color: white; padding: 15px 20px; border-radius: 10px; margin-bottom: 20px; }
+.section-header h3 { font-size: 1.2em; margin-bottom: 5px; }
+.section-header .section-desc { font-size: 0.9em; opacity: 0.95; font-style: italic; }
+.carousel-container { position: relative; }
+.question-card { background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 20px; }
+.question-number { color: var(--bg-primary); font-weight: bold; font-size: 0.9em; margin-bottom: 10px; }
+.question-text { font-size: 1.2em; color: #333; margin-bottom: 25px; font-weight: 500; line-height: 1.5; }
+.scale-options { display: flex; justify-content: space-between; align-items: flex-end; gap: 2px; flex-wrap: nowrap; height: 140px; position: relative; background: linear-gradient(to top right, rgba(169, 50, 38, 0.1) 0%, rgba(169, 50, 38, 0.05) 50%, transparent 50%); border-radius: 8px; padding: 5px; cursor: pointer; user-select: none; }
+.scale-option { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; background: linear-gradient(135deg, rgba(169, 50, 38, 0.15) 0%, rgba(169, 50, 38, 0.1) 100%); border: 2px solid transparent; border-radius: 6px; transition: all 0.15s ease; position: relative; z-index: 1; }
+.scale-option:nth-child(1) { height: 50px; opacity: 0.15; }
+.scale-option:nth-child(2) { height: 70px; opacity: 0.35; }
+.scale-option:nth-child(3) { height: 90px; opacity: 0.55; }
+.scale-option:nth-child(4) { height: 110px; opacity: 0.75; }
+.scale-option:nth-child(5) { height: 130px; opacity: 0.85; }
+.scale-option span { font-size: 1.3em; font-weight: bold; color: #333; margin-bottom: 5px; }
+.scale-option small { font-size: 0.75em; color: #666; text-align: center; }
+.scale-option:hover { transform: scale(1.05); border-color: var(--bg-primary); }
+.scale-option.active, .scale-option.selected { background: linear-gradient(135deg, var(--bg-primary) 0%, #c9513f 100%); color: white; border-color: #0f1f3d; box-shadow: 0 2px 8px rgba(169, 50, 38, 0.4); }
+.scale-option.active ~ .scale-option { background: linear-gradient(135deg, rgba(169, 50, 38, 0.15) 0%, rgba(169, 50, 38, 0.1) 100%); color: #333; }
+.scale-option.active span, .scale-option.selected span { color: white; }
+.scale-option.active small, .scale-option.selected small { color: rgba(255,255,255,0.9); }
+.scale-option.active ~ .scale-option span { color: #333; }
+.scale-option.active ~ .scale-option small { color: #666; }
+.insight-card { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-left: 4px solid var(--bg-primary); padding: 20px; margin: 20px 0; border-radius: 10px; animation: slideIn 0.4s ease; }
+.insight-icon { font-size: 2rem; margin-bottom: 10px; }
+.insight-title { color: var(--bg-primary); font-size: 1.1em; font-weight: bold; margin-bottom: 12px; }
+.insight-content { color: #555; line-height: 1.7; margin-bottom: 12px; }
+.insight-quote { font-style: italic; color: #666; font-size: 0.95em; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 6px; border-left: 3px solid var(--bg-primary); }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+.nav-buttons { display: flex; gap: 15px; justify-content: space-between; margin-top: 25px; }
+.btn { padding: 12px 30px; border: none; border-radius: 8px; font-size: 1em; cursor: pointer; transition: all 0.2s; font-weight: 600; }
+.btn-secondary { background: #e0e0e0; color: #333; }
+.btn-secondary:hover { background: #d0d0d0; }
+.btn-primary { background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%); color: white; }
+.btn-primary:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(169, 50, 38, 0.4); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.results-container { display: none; }
+.results-container.active { display: block; }
+.overall-score { background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%); color: white; border-radius: 20px; padding: 40px; text-align: center; margin-bottom: 30px; }
+.score-number { font-size: 4em; font-weight: bold; margin-bottom: 10px; }
+.score-label { font-size: 1.3em; opacity: 0.95; }
+.score-categories { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin: 30px 0; }
+.category-score { background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid var(--bg-primary); }
+.category-score h4 { color: var(--bg-primary); margin-bottom: 10px; }
+.category-score .score { font-size: 2em; color: #333; font-weight: bold; margin-bottom: 8px; }
+.category-score .label { color: #666; font-size: 0.9em; }
+.cta-box { background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%); color: white; border-radius: 15px; padding: 30px; text-align: center; margin-top: 30px; }
+.cta-box h3 { font-size: 1.6em; margin-bottom: 15px; }
+.cta-box p { font-size: 1em; margin-bottom: 20px; opacity: 0.95; }
+.cta-btn { background: white; color: var(--bg-primary); padding: 15px 30px; border-radius: 10px; text-decoration: none; font-weight: bold; display: inline-block; transition: all 0.2s; }
+.cta-btn:hover { transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,255,255,0.3); }
+@media (max-width: 768px) {
+.container { padding: 25px; }
+.header h1 { font-size: 2em; }
+.score-categories { grid-template-columns: 1fr; }
+}
+.achievement-toast{position:fixed;top:80px;right:20px;background:linear-gradient(135deg,var(--tap-blue) 0%,#3d6680 100%);color:white;padding:20px 25px;border-radius:12px;box-shadow:0 8px 32px rgba(102,126,234,0.4);z-index:10000;min-width:300px;animation:slideInRight 0.5s ease-out;}.achievement-toast.show{display:block;}@keyframes slideInRight{from{transform:translateX(400px);opacity:0;}to{transform:translateX(0);opacity:1;}}.achievement-icon{font-size:2.5em;margin-bottom:10px;}.achievement-title{font-size:1.2em;font-weight:700;margin-bottom:5px;}.achievement-desc{font-size:0.9em;opacity:0.95;}.confetti{position:fixed;width:10px;height:10px;background:var(--tap-blue);z-index:9999;}.xp-bar{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:white;padding:15px 25px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;min-width:320px;text-align:center;}.xp-bar .level{font-weight:700;color:var(--bg-primary);margin-bottom:8px;font-size:0.95em;}.progress-container{background:var(--border-light);border-radius:10px;height:12px;overflow:hidden;margin-bottom:8px;}.progress-fill{background:linear-gradient(90deg,var(--tap-blue) 0%,#3d6680 100%);height:100%;border-radius:10px;transition:width 0.3s ease;}.xp-text{font-size:0.85em;color:var(--text-muted);font-weight:600;}.achievements-section{margin-top:40px;padding:30px;background:linear-gradient(135deg,var(--text-primary) 0%,var(--border-light) 100%);border-radius:15px;}.achievements-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;margin-top:20px;}.badge{background:white;padding:25px;border-radius:12px;text-align:center;box-shadow:0 4px 15px rgba(0,0,0,0.1);transition:transform 0.2s;}.badge:hover{transform:translateY(-5px);}.badge.unlocked{border:2px solid var(--tap-blue);}.badge.locked{opacity:0.4;border:2px solid #cbd5e1;}.badge-icon{font-size:3em;margin-bottom:10px;}.badge-name{font-weight:700;color:var(--bg-primary);margin-bottom:5px;}.badge-desc{font-size:0.85em;color:var(--text-muted);}.streak-badge{position:fixed;top:20px;left:20px;background:white;padding:12px 20px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.15);z-index:1000;display:flex;align-items:center;gap:10px;}.streak-badge .fire{font-size:1.5em;}.streak-badge .streak-text{font-weight:700;color:var(--bg-primary);}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Work-Life-Balance Assessment - TAP-IN - TAP-IN Leadership Academy">
 </head>
 <body>
-    <div class="xp-bar" id="xpBar" style="display:none;">
-        <div class="level">Level 1: Balance Explorer</div>
-        <div class="progress-container">
-            <div class="progress-fill" style="width: 0%"></div>
-        </div>
-        <div class="xp-text">0 / 100 XP</div>
-    </div>
-    <div class="streak-badge" id="streakBadge" style="display:none;">
-        <div class="fire">🔥</div>
-        <div class="streak-text"><span id="streakCount">0</span> Tage Serie</div>
-    </div>
-    <div class="achievement-toast" id="achievementToast" style="display:none;">
-        <div class="achievement-icon" id="toastIcon">🏆</div>
-        <div class="achievement-title" id="toastTitle">Achievement freigeschaltet!</div>
-        <div class="achievement-desc" id="toastDesc">Du hast ein neues Abzeichen verdient</div>
-    </div>
-    <!-- Language Switcher -->
-    <div style="position:fixed;top:16px;right:16px;z-index:1200;">
-        <div style="background:white;border-radius:999px;padding:8px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);font-size:0.95em;">
-            <a href="work-life-balance-carousel.de.html" style="color:#333;text-decoration:none;font-weight:700;margin-right:10px;">EN</a>
-            <a href="work-life-balance-carousel.de.html" style="color:#1a365d;text-decoration:none;font-weight:700;border-left:1px solid #eee;padding-left:10px;margin-left:10px;">DE</a>
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Assessment Form -->
-        <div id="assessmentForm">
-            <div class="header">
-                <h1>⚖️ Work-Life-Balance Assessment</h1>
-                <p class="subtitle">Entdecke dein nachhaltiges Leistungsprofil</p>
-                <p class="duration">⏱️ 5 Minuten • 20 Fragen</p>
-            </div>
-
-            <!-- Intro Section (shows before Q1) -->
-            <div id="introSection" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid #1a365d;">
-                <h3 style="color: #333; margin-bottom: 15px;">⚖️ Warum Work-Life-Balance wichtig ist</h3>
-                <p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
-                    Forschung zeigt, dass Führungskräfte mit hoher Work-Life-Balance <strong>23% produktiver</strong> sind, <strong>40% bessere Entscheidungen</strong> treffen und ihre Teams <strong>31% höheres Engagement</strong> zeigen. Es geht nicht darum, weniger zu tun—sondern nachhaltig zu performen.
-                </p>
-                <button onclick="startAssessment()" style="background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(169, 50, 38, 0.3); display: block; margin: 20px auto 0; width: auto;">
-                    Assessment starten →
-                </button>
-            </div>
-
-            <div class="progress-bar" style="display: none;">
-                <div class="progress-text"><span id="currentSection">Energiemanagement</span> • Frage <span id="currentQ">1</span> von 20</div>
-                <div class="progress-fill">
-                    <div class="progress-fill-bar" id="progressBar"></div>
-                </div>
-            </div>
-
-            <div id="questionContainer" style="display: none;"></div>
-
-            <div class="nav-buttons" style="display: none;">
-                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>← Zurück</button>
-                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Weiter →</button>
-            </div>
-        </div>
-
-        <!-- Results Container -->
-        <div id="resultsContainer" class="results-container">
-            <div class="header">
-                <h1>🎯 Dein Work-Life-Balance Profil</h1>
-            </div>
-
-            <div class="overall-score">
-                <div class="score-number" id="totalScore">0</div>
-                <div class="score-label" id="overallLabel">Berechne...</div>
-            </div>
-
-            <div class="score-categories" id="categoryScores"></div>
-
-            <div class="cta-box">
-                <h3>Bereit, deine Balance zu transformieren?</h3>
-                <p>Tritt TAP-INs Führungsprogramm bei für personalisiertes Coaching und nachhaltige Leistungsstrategien.</p>
-                <a href="#" class="cta-btn">Buche deine kostenlose Beratung</a>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        const questions = [
+<div class="xp-bar" id="xpBar" style="display:none;">
+<div class="level">Level 1: Balance Explorer</div>
+<div class="progress-container">
+<div class="progress-fill" style="width: 0%"></div>
+</div>
+<div class="xp-text">0 / 100 XP</div>
+</div>
+<div class="streak-badge" id="streakBadge" style="display:none;">
+<div class="fire"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-fire"></use></svg></div>
+<div class="streak-text"><span id="streakCount">0</span> Tage Serie</div>
+</div>
+<div class="achievement-toast" id="achievementToast" style="display:none;">
+<div class="achievement-icon" id="toastIcon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg></div>
+<div class="achievement-title" id="toastTitle">Achievement freigeschaltet!</div>
+<div class="achievement-desc" id="toastDesc">Du hast ein neues Abzeichen verdient</div>
+</div>
+<!-- Language Switcher -->
+<div style="position:fixed;top:16px;right:16px;z-index:1200;">
+<div style="background:white;border-radius:999px;padding:8px 12px;box-shadow:0 6px 20px rgba(0,0,0,0.15);font-size:0.95em;">
+<a href="work-life-balance-carousel.de.html" style="color:#333;text-decoration:none;font-weight:700;margin-right:10px;">EN</a>
+<a href="work-life-balance-carousel.de.html" style="color:var(--bg-primary);text-decoration:none;font-weight:700;border-left:1px solid #eee;padding-left:10px;margin-left:10px;">DE</a>
+</div>
+</div>
+<div class="container">
+<!-- Assessment Form -->
+<div id="assessmentForm">
+<div class="header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-scale"></use></svg> Work-Life-Balance Assessment</h1>
+<p class="subtitle">Entdecke dein nachhaltiges Leistungsprofil</p>
+<p class="duration">⏱️ 5 Minuten • 20 Fragen</p>
+</div>
+<!-- Intro Section (shows before Q1) -->
+<div id="introSection" style="background: #f8f9fa; padding: 25px; border-radius: 12px; margin-bottom: 30px; border-left: 4px solid var(--bg-primary);">
+<h3 style="color: #333; margin-bottom: 15px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-scale"></use></svg> Warum Work-Life-Balance wichtig ist</h3>
+<p style="color: #666; line-height: 1.7; margin-bottom: 20px;">
+Forschung zeigt, dass Führungskräfte mit hoher Work-Life-Balance <strong>23% produktiver</strong> sind, <strong>40% bessere Entscheidungen</strong> treffen und ihre Teams <strong>31% höheres Engagement</strong> zeigen. Es geht nicht darum, weniger zu tun—sondern nachhaltig zu performen.
+</p>
+<button onclick="startAssessment()" style="background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(169, 50, 38, 0.3); display: block; margin: 20px auto 0; width: auto;" aria-label="Start">
+Assessment starten →
+</button>
+</div>
+<div class="progress-bar" style="display: none;">
+<div class="progress-text"><span id="currentSection">Energiemanagement</span> • Frage <span id="currentQ">1</span> von 20</div>
+<div class="progress-fill">
+<div class="progress-fill-bar" id="progressBar"></div>
+</div>
+</div>
+<div id="questionContainer" style="display: none;"></div>
+<div class="nav-buttons" style="display: none;">
+<button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled aria-label="Previous">← Zurück</button>
+<button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled aria-label="Next">Weiter →</button>
+</div>
+</div>
+<!-- Results Container -->
+<div id="resultsContainer" class="results-container">
+<div class="header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Dein Work-Life-Balance Profil</h1>
+</div>
+<div class="overall-score">
+<div class="score-number" id="totalScore">0</div>
+<div class="score-label" id="overallLabel">Berechne...</div>
+</div>
+<div class="score-categories" id="categoryScores"></div>
+<div class="cta-box">
+<h3>Bereit, deine Balance zu transformieren?</h3>
+<p>Tritt TAP-INs Führungsprogramm bei für personalisiertes Coaching und nachhaltige Leistungsstrategien.</p>
+<a href="#" class="cta-btn">Buche deine kostenlose Beratung</a>
+</div>
+</div>
+</div>
+<script>
+const questions = [
             // ENERGIEMANAGEMENT (4 questions)
-            {
-                section: 'Energiemanagement',
-                sectionDesc: 'Vitalität über den Tag aufrechterhalten',
-                question: 'Ich habe durchgängig Energie für Arbeit und Privatleben',
-                category: 'energy'
-            },
-            {
-                question: 'Ich wache erfrischt und bereit für den Tag auf',
-                category: 'energy'
-            },
-            {
-                question: 'Ich manage meine Energie über den Tag effektiv',
-                category: 'energy'
-            },
-            {
-                question: 'Ich vermeide Energietiefs oder Burnout-Phasen',
-                category: 'energy'
-            },
+{
+section: 'Energiemanagement',
+sectionDesc: 'Vitalität über den Tag aufrechterhalten',
+question: 'Ich habe durchgängig Energie für Arbeit und Privatleben',
+category: 'energy'
+},
+{
+question: 'Ich wache erfrischt und bereit für den Tag auf',
+category: 'energy'
+},
+{
+question: 'Ich manage meine Energie über den Tag effektiv',
+category: 'energy'
+},
+{
+question: 'Ich vermeide Energietiefs oder Burnout-Phasen',
+category: 'energy'
+},
             // GRENZEN SETZEN (4 questions)
-            {
-                section: 'Grenzen setzen',
-                sectionDesc: 'Persönliche Zeit und Raum schützen',
-                question: 'Ich schütze Zeit für Nicht-Arbeits-Aktivitäten, die mir wichtig sind',
-                category: 'boundaries'
-            },
-            {
-                question: 'Ich kann "Nein" zu Arbeitsanforderungen sagen, die mein Wohlbefinden gefährden',
-                category: 'boundaries'
-            },
-            {
-                question: 'Ich schalte außerhalb der Arbeitszeiten von der Arbeit ab',
-                category: 'boundaries'
-            },
-            {
-                question: 'Mein Arbeitsplan erlaubt persönliche Verpflichtungen',
-                category: 'boundaries'
-            },
+{
+section: 'Grenzen setzen',
+sectionDesc: 'Persönliche Zeit und Raum schützen',
+question: 'Ich schütze Zeit für Nicht-Arbeits-Aktivitäten, die mir wichtig sind',
+category: 'boundaries'
+},
+{
+question: 'Ich kann "Nein" zu Arbeitsanforderungen sagen, die mein Wohlbefinden gefährden',
+category: 'boundaries'
+},
+{
+question: 'Ich schalte außerhalb der Arbeitszeiten von der Arbeit ab',
+category: 'boundaries'
+},
+{
+question: 'Mein Arbeitsplan erlaubt persönliche Verpflichtungen',
+category: 'boundaries'
+},
             // ERHOLUNGSPRAKTIKEN (4 questions)
-            {
-                section: 'Erholungspraktiken',
-                sectionDesc: 'Wie effektiv du dich regenerierst',
-                question: 'Ich mache regelmäßig Pausen während meines Arbeitstages',
-                category: 'recovery'
-            },
-            {
-                question: 'Ich betreibe Aktivitäten, die mich aufladen (Sport, Hobbys, Ruhe)',
-                category: 'recovery'
-            },
-            {
-                question: 'Ich bekomme ausreichend qualitativ hochwertigen Schlaf',
-                category: 'recovery'
-            },
-            {
-                question: 'Ich nehme Urlaub und schalte wirklich ab',
-                category: 'recovery'
-            },
+{
+section: 'Erholungspraktiken',
+sectionDesc: 'Wie effektiv du dich regenerierst',
+question: 'Ich mache regelmäßig Pausen während meines Arbeitstages',
+category: 'recovery'
+},
+{
+question: 'Ich betreibe Aktivitäten, die mich aufladen (Sport, Hobbys, Ruhe)',
+category: 'recovery'
+},
+{
+question: 'Ich bekomme ausreichend qualitativ hochwertigen Schlaf',
+category: 'recovery'
+},
+{
+question: 'Ich nehme Urlaub und schalte wirklich ab',
+category: 'recovery'
+},
             // LEBENSINTEGRATION (4 questions)
-            {
-                section: 'Lebensintegration',
-                sectionDesc: 'Balance zwischen Arbeit, Beziehungen und Wachstum',
-                question: 'Ich pflege bedeutungsvolle Beziehungen außerhalb der Arbeit',
-                category: 'integration'
-            },
-            {
-                question: 'Ich verfolge regelmäßig persönliche Interessen und Hobbys',
-                category: 'integration'
-            },
-            {
-                question: 'Ich fühle mich in mehreren Lebensbereichen erfüllt (nicht nur Arbeit)',
-                category: 'integration'
-            },
-            {
-                question: 'Arbeit unterstützt meine gesamten Lebensziele, statt sie zu konsumieren',
-                category: 'integration'
-            },
+{
+section: 'Lebensintegration',
+sectionDesc: 'Balance zwischen Arbeit, Beziehungen und Wachstum',
+question: 'Ich pflege bedeutungsvolle Beziehungen außerhalb der Arbeit',
+category: 'integration'
+},
+{
+question: 'Ich verfolge regelmäßig persönliche Interessen und Hobbys',
+category: 'integration'
+},
+{
+question: 'Ich fühle mich in mehreren Lebensbereichen erfüllt (nicht nur Arbeit)',
+category: 'integration'
+},
+{
+question: 'Arbeit unterstützt meine gesamten Lebensziele, statt sie zu konsumieren',
+category: 'integration'
+},
             // NACHHALTIGE LEISTUNG (4 questions)
-            {
-                section: 'Nachhaltige Leistung',
-                sectionDesc: 'Langfristige Wirksamkeit ohne Burnout',
-                question: 'Ich kann hohe Leistung bringen, ohne mich zu erschöpfen',
-                category: 'performance'
-            },
-            {
-                question: 'Mein Arbeitstempo ist über Monate und Jahre nachhaltig',
-                category: 'performance'
-            },
-            {
-                question: 'Ich fühle mich motiviert und engagiert (nicht nur durchhaltend)',
-                category: 'performance'
-            },
-            {
-                question: 'Ich sehe meine Karriere als Marathon, nicht als Sprint',
-                category: 'performance'
-            }
-        ];
-
-        const insights = [
-            { icon: '⚡', title: 'Das Energie-Paradoxon', content: 'Forschung der Harvard Business Review zeigt: <strong>Führungskräfte, die Energiemanagement priorisieren, übertreffen jene, die einfach länger arbeiten, um 34%</strong>. Tony Schwartz (The Power of Full Engagement) fand heraus, dass Spitzenleister in 90-Minuten-Sprints arbeiten, gefolgt von Erneuerung.', quote: '"Energie, nicht Zeit, ist die fundamentale Währung hoher Leistung." - Tony Schwartz' },
-            { icon: '🌅', title: 'Morgenenergie zählt', content: '<strong>Neurowissenschaft</strong> zeigt: Willenskraft ist morgens am höchsten und nimmt über den Tag ab. Jeff Bezos plant seine wichtigsten Entscheidungen vor 10 Uhr. Dein morgendlicher Energiezustand bestimmt die Effektivität deines gesamten Tages.', quote: '"Ich mag es morgens zu trödeln... Ich hole mir Kaffee und lese Zeitungen. Meine Trödelzeit ist mir sehr wichtig." - Jeff Bezos' },
-            { icon: '🎯', title: 'Ultradiane Rhythmen', content: 'Dein Körper arbeitet in <strong>90-120 Minuten Energiezyklen</strong> (ultradiane Rhythmen). Durch diese natürlichen Tiefs durchzuarbeiten reduziert Effektivität um 60%. Elite-Athleten trainieren im Einklang mit diesen Zyklen - warum arbeiten wir nicht so?', quote: '"Der beste Weg, eine Idee zu haben, ist viele Ideen zu haben." - Linus Pauling (2x Nobelpreisträger, der Nachmittagsschläfchen hielt)' },
-            { icon: '🔋', title: 'Energieschulden summieren sich', content: 'Stanford-Forschung: <strong>Jede Stunde Schlafschuld reduziert kognitive Leistung um 25%</strong>. Eine Woche schlechtes Energiemanagement schafft ein Defizit, das 2-3 Wochen zur Erholung braucht. Energieschulden summieren sich wie finanzielle Schulden.', quote: '"Schlaf ist das Effektivste, was wir tun können, um Gehirn- und Körpergesundheit zurückzusetzen." - Dr. Matthew Walker, Neurowissenschaftler' },
-            
-            { icon: '🛡️', title: 'Brené Brown über Grenzen', content: '<strong>"Grenzen zu setzen bedeutet, den Mut zu haben, uns selbst zu lieben."</strong> Ihre Forschung zeigt: Menschen mit starken Grenzen haben höheres Selbstmitgefühl und weniger Burnout. Grenzen sind nicht egoistisch - sie sind Selbsterhaltung.', quote: '"Klar ist freundlich. Unklar ist unfreundlich." - Brené Brown' },
-            { icon: '📵', title: 'Der Disconnect-Vorteil', content: 'Ernst & Young Studie: <strong>Für jede 10 Stunden Urlaub verbesserten sich Leistungsbeurteilungen um 8%</strong>. Aber hier ist der Schlüssel: Nur jene, die VOLLSTÄNDIG abschalteten, sahen Vorteile. E-Mails im Urlaub checken eliminierte alle positiven Effekte.', quote: '"Du kannst nicht aus einer leeren Tasse gießen." - Alte Weisheit' },
-            { icon: '🎭', title: 'Rollenübergänge', content: 'Googles Forschung zu Hochleistern: Sie schaffen <strong>physische Rituale für Übergänge zwischen Arbeit und Privatleben</strong>. Ein 5-Minuten-Spaziergang, Kleidung wechseln oder eine Atemübung signalisiert dem Gehirn: "Arbeitsmodus AUS, Lebensmodus AN."', quote: '"Rituale sind die physische Verkörperung unserer Werte." - James Clear' },
-            { icon: '⏰', title: 'Der "Nein"-Muskel', content: 'Warren Buffett: <strong>"Der Unterschied zwischen erfolgreichen Menschen und wirklich erfolgreichen Menschen ist, dass wirklich erfolgreiche Menschen zu fast allem Nein sagen."</strong> Forschung zeigt: Hochleister schützen 60% ihrer Zeit als nicht verhandelbare Grenzen.', quote: '"Du musst entscheiden, was deine höchsten Prioritäten sind und den Mut haben, zu anderen Dingen Nein zu sagen." - Stephen Covey' },
-            
-            { icon: '💤', title: 'Schlaf ist nicht verhandelbar', content: 'Neurowissenschaftlicher Durchbruch: <strong>Schlaf beseitigt Gehirntoxine (Beta-Amyloid), die während der Wachstunden entstehen</strong>. Weniger als 7 Stunden für nur eine Woche beeinträchtigt Kognition wie betrunken zu sein. Jeff Bezos priorisiert 8 Stunden: "Ich denke besser, habe mehr Energie."', quote: '"Ich hätte lieber eine kleine Anzahl hochwertiger Entscheidungen als viele mittelmäßige." - Jeff Bezos über 8 Stunden Schlaf' },
-            { icon: '🏃‍♂️', title: 'Bewegung lädt dein Gehirn', content: 'Stanford-Studie: <strong>Gehen erhöht kreative Leistung um 60%</strong>. Steve Jobs hielt Spaziergangsmeetings. Bewegung nimmt keine Zeit von deiner Arbeit - sie multipliziert die Effektivität deiner Arbeitsstunden durch verbesserte Konzentration und Kreativität.', quote: '"Alle wahrhaft großen Gedanken werden beim Gehen gedacht." - Friedrich Nietzsche' },
-            { icon: '🧘', title: 'Erholung > Aktivität', content: 'Anders Ericsson (Deliberate Practice Forscher): <strong>Spitzenleister verbringen 15-25% ihrer Zeit mit aktiver Erholung</strong> - Meditation, Massage, Naturspaziergänge. Sie ruhen nicht nur, wenn müde; sie planen Erholung VOR Erschöpfung.', quote: '"Ruhe ist nicht Müßiggang, und manchmal auf dem Gras unter Bäumen zu liegen... ist keineswegs Zeitverschwendung." - John Lubbock' },
-            { icon: '🌴', title: 'Urlaubs-ROI', content: 'Project Time Off Studie: <strong>Mitarbeiter, die allen Urlaub nehmen, werden zu 6,5% eher befördert</strong>. Warum? Sie kehren mit frischen Perspektiven, stärkeren Beziehungen und erneuerter Energie zurück. Urlaub ist kein Luxus - er ist strategisch.', quote: '"Fast alles funktioniert wieder, wenn du es für ein paar Minuten aussteckst, einschließlich dir." - Anne Lamott' },
-            
-            { icon: '❤️', title: 'Beziehungen = Resilienz', content: 'Harvards 80-Jahres-Studie: <strong>Qualitätsbeziehungen sind der #1 Prädiktor für Glück und Langlebigkeit</strong> - stärker als Karriereerfolg, Reichtum oder Ruhm. Führungskräfte, die starke persönliche Beziehungen pflegen, handhaben Stress 40% besser.', quote: '"Die Qualität deiner Beziehungen bestimmt die Qualität deines Lebens." - Esther Perel' },
-            { icon: '🎨', title: 'Der Renaissance-Effekt', content: 'Cal Newport: <strong>Tiefe Nicht-Arbeits-Interessen machen dich BESSER bei der Arbeit, nicht schlechter</strong>. Steve Wozniak spielte Videospiele. Einstein spielte Geige. Ada Lovelace schrieb Poesie. Mehrere Identitäten schaffen kognitive Flexibilität und verhindern Burnout.', quote: '"Ich habe keine besonderen Talente. Ich bin nur leidenschaftlich neugierig." - Albert Einstein (der auch Geiger war)' },
-            { icon: '🌟', title: 'Leben jenseits des Lebenslaufs', content: 'David Brooks: <strong>"Es gibt Lebenslauf-Tugenden und Grabrede-Tugenden."</strong> Was werden Menschen bei deiner Beerdigung sagen? Forschung zeigt: Menschen, die Bedeutung verfolgen (nicht nur Erfolg), haben 30% weniger Angst und 50% höhere Lebenszufriedenheit.', quote: '"Das ungeprüfte Leben ist nicht lebenswert." - Sokrates' },
-            { icon: '🎯', title: 'Arbeit als Werkzeug, nicht Identität', content: 'Viktor Frankl: <strong>Arbeit sollte dem Leben dienen, es nicht konsumieren</strong>. Spitzenleister sehen Arbeit als EINEN Teil eines reichen Lebens - nicht ihre gesamte Identität. Wenn Arbeit dich definiert, wird Jobverlust oder Projektverlust zur existenziellen Krise.', quote: '"Wer ein Warum zum Leben hat, erträgt fast jedes Wie." - Friedrich Nietzsche (zitiert von Viktor Frankl)' },
-            
-            { icon: '🏔️', title: 'Marathon, nicht Sprint', content: 'Alex Honnold (Free Solo Kletterer): <strong>"Große Ziele erfordern Jahre konsistenter, moderater Anstrengung - nicht heroische Ausbrüche."</strong> Forschung an Olympioniken zeigt: Nachhaltiges Training schlägt intensive-dann-Burnout-Zyklen um 80%. Karriere dauert 40+ Jahre. Teile dir deine Kraft ein.', quote: '"Wir bezwingen nicht den Berg, sondern uns selbst." - Sir Edmund Hillary' },
-            { icon: '🔥', title: 'Burnout-Warnsignale', content: 'WHO definiert Burnout als <strong>Energieverlust, mentale Distanz zur Arbeit, reduzierte Effektivität</strong>. Wenn du "ausgebrannt" fühlst, hast du monatelang abgebaut. Prävention ist 10x einfacher als Erholung. Verfolge wöchentlich deine Energie.', quote: '"Du kannst nicht so fixiert darauf sein, wo du lieber wärst, dass du vergisst, das Beste aus dem zu machen, wo du bist." - Unbekannt' },
-            { icon: '💎', title: 'Engagement vs. Durchhalten', content: 'Gallup: Nur <strong>15% der Arbeitnehmer weltweit sind wirklich engagiert</strong>. Der Rest hält nur durch. Engagierte Arbeitnehmer haben 81% weniger Burnout, 43% weniger Stress. Engagement kommt von Autonomie, Meisterschaft und Sinn - nicht nur härter arbeiten.', quote: '"Menschen brennen nicht aus, weil sie hart arbeiten. Sie brennen aus, weil sie an Dingen arbeiten, die nicht wichtig sind." - Simon Sinek' },
-            { icon: '🌱', title: 'Nachhaltige Wachstumsmentalität', content: 'Carol Dweck: <strong>Wachstumsmentalität ist nicht "härter hustlen" - es ist strategische Verbesserung über Zeit</strong>. Spitzenleister werden täglich 1% besser, was zu 37-facher Verbesserung jährlich führt. Burnout-Kultur verwechselt Erschöpfung mit Wachstum. Echtes Wachstum ist nachhaltig.', quote: '"Werden ist besser als Sein." - Carol Dweck' }
-        ];
-
-        const sectionIntros = {
-            'Energiemanagement': `
-                <strong>Warum Energie wichtiger ist als Zeitmanagement:</strong> Harvard Business Review's 20-Jahres-Studie mit 20.000+ Führungskräften ergab, dass jene, die Energie (nicht nur Zeit) managen, ihre Kollegen in Führungseffektivität um 34% übertreffen. Tony Schwartz' Forschung bei The Energy Project bewies, dass <strong>Menschen darauf ausgelegt sind, zwischen Energieaufwand und Erholung zu pulsieren</strong> - Arbeit in 90-Minuten-Sprints gefolgt von Erholungspausen.
-                <br><br>
-                <strong>Die Neurowissenschaft:</strong> Dein präfrontaler Kortex (Entscheidungsfindung, Willenskraft, Fokus) verbraucht 20% der Körperglukose, obwohl er nur 2% des Körpergewichts ausmacht. Bei Erschöpfung sinkt die kognitive Leistung um 25% pro Stunde Schlafdefizit (Stanford Sleep Lab). Elite-Performer behandeln Energie als strategische Ressource, nicht als unendliche.
-                <br><br>
-                <strong>Fazit:</strong> Du kannst dich nicht aus einem Energiedefizit herausdenken. Jeff Bezos plant High-IQ-Entscheidungen vor 10 Uhr, wenn die Willenskraft am höchsten ist. Elon Musk gibt zu, dass seine schlechtesten Entscheidungen bei Erschöpfung getroffen wurden. Energiemanagement ist keine Soft Skills - es ist Leistungsoptimierung.
-            `,
-            'Grenzen setzen': `
-                <strong>Warum Grenzen = bessere Leistung:</strong> Ernst & Young's Studie mit 1.000+ Fachkräften ergab, dass <strong>für jeweils 10 Urlaubsstunden (mit vollständiger Abkopplung) die Leistungsbeurteilungen um 8% verbesserten</strong>. Aber E-Mails checken eliminierte alle Vorteile. Brené Browns 12-jährige Forschung zeigt, dass Menschen mit starken Grenzen 40% höheres Selbstmitgefühl und dramatisch weniger Burnout haben.
-                <br><br>
-                <strong>Das Paradox:</strong> Führungskräfte, die 60% ihrer Zeit als "nicht verhandelbar" schützen (Warren Buffett, Bill Gates, Tim Ferriss) erreichen MEHR als jene, die 24/7 verfügbar sind. Warum? Klare Grenzen erzwingen Priorisierung. Unbegrenzte Verfügbarkeit = diffuser Fokus = überall mittelmäßig.
-                <br><br>
-                <strong>Die Kosten der Durchlässigkeit:</strong> UC Irvine Forschung zeigt, dass es 23 Minuten dauert, nach einer Unterbrechung den Fokus wiederzuerlangen. Wenn du "immer verfügbar" bist, bist du nie vollständig präsent - weder bei der Arbeit noch zuhause. Google's Studie über Hochleister: Sie schaffen physische Rituale (Ortswechsel, Kleidung, Atmung), um zu signalisieren: "Arbeitsmodus AUS."
-            `,
-            'Erholungspraktiken': `
-                <strong>Warum Erholung = wenn Wachstum geschieht:</strong> Schlafforscher Matthew Walker (UC Berkeley) bewies, dass <strong>Schlaf Beta-Amyloid-Toxine aus deinem Gehirn entfernt</strong> - dieselben Proteine, die mit Alzheimer verbunden sind. Weniger als 7 Stunden für eine Woche beeinträchtigt die Kognition gleichwertig mit 0,10% Blutalkohol (gesetzlich betrunken). Jeff Bezos: "Ich priorisiere 8 Stunden. Ich treffe bessere Entscheidungen, habe mehr Energie."
-                <br><br>
-                <strong>Der Bewegungsvorteil:</strong> Stanford-Studie: Gehen erhöht die kreative Leistung um 60%. Bewegung stiehlt keine Zeit von der Arbeit - sie multipliziert die Effektivität. Steve Jobs hielt Walking Meetings ab. Nietzsche: "Alle wirklich großen Gedanken werden beim Gehen gedacht." Bewegung lädt die Batterie deines Gehirns auf.
-                <br><br>
-                <strong>Elite-Performer-Geheimnis:</strong> Anders Ericssons (Deliberate Practice Forscher) Erkenntnis: Top-Performer planen Erholung VOR Erschöpfung - verbringen 15-25% der Zeit mit aktiver Erholung (Meditation, Massage, Natur). Sie ruhen sich nicht aus, wenn sie müde sind; sie verhindern Erschöpfung. Project Time Off Studie: <strong>Mitarbeiter, die alle Urlaubstage nehmen, werden 6,5% eher befördert</strong>.
-            `,
-            'Lebensintegration': `
-                <strong>Warum mehrere Identitäten = Resilienz:</strong> Harvards 80-Jahres-Studie (längste jemals über Glück) fand heraus, dass <strong>Beziehungsqualität der #1 Prädiktor für Glück und Langlebigkeit ist</strong> - stärker als Karriereerfolg, Wohlstand oder IQ. Führungskräfte mit starken persönlichen Beziehungen gehen mit Arbeitsplatzstress 40% besser um (American Psychological Association).
-                <br><br>
-                <strong>Der Renaissance-Effekt:</strong> Cal Newports Forschung: Tiefe Nicht-Arbeits-Interessen machen dich BESSER bei der Arbeit. Steve Wozniak spielte Videospiele. Einstein spielte Geige. Ada Lovelace schrieb Gedichte. Mehrere Identitäten schaffen kognitive Flexibilität und verhindern katastrophales Denken. Wenn Arbeit = gesamte Identität, wird Jobverlust zur Existenzkrise.
-                <br><br>
-                <strong>Lebenslauf vs. Grabrede-Tugenden:</strong> David Brooks' Unterscheidung - was dich einstellt vs. was bei deiner Beerdigung gesagt wird. Forschung zeigt, dass Menschen, die Bedeutung (Beziehungen, Wachstum, Beitrag) neben Leistung verfolgen, 30% weniger Angst, 50% größere Lebenszufriedenheit haben - und ironischerweise bessere langfristige Karriereergebnisse.
-            `,
-            'Nachhaltige Leistung': `
-                <strong>Warum Marathons Sprints schlagen:</strong> Alex Honnold (Free Solo): "Große Ziele erfordern Jahre konsistenter, moderater Anstrengung - keine heroischen Ausbrüche." Olympisches Trainings-Forschung zeigt, <strong>nachhaltiges Tempo schlägt intensive-dann-Burnout-Zyklen um 80%</strong>. Deine Karriere sind 40+ Jahre. Jahrelanges Sprinten garantiert, dass du die Ziellinie nicht erreichst.
-                <br><br>
-                <strong>Burnout-Warnung:</strong> WHO definiert Burnout als Energieerschöpfung + mentale Distanz + reduzierte Effektivität. Wenn du dich "ausgebrannt" fühlst, bist du bereits seit 6+ Monaten im Abstieg. Christina Maslach (Burnout-Forscherin): Prävention ist 10x einfacher als Wiederherstellung. Verfolge Energie wöchentlich wie Finanzen.
-                <br><br>
-                <strong>Engagement vs. Schuften:</strong> Gallup: Nur 15% der Arbeitnehmer weltweit sind wirklich engagiert. Der Rest schuftet. Engagierte Arbeiter haben 81% weniger Burnout, 43% weniger Stress. Engagement kommt von Autonomie + Meisterschaft + Zweck (Dan Pink) - nicht härter schuften. Carol Dweck: "Growth Mindset ist nicht Hustle-Kultur. Es ist strategische tägliche 1%-Verbesserung, die sich zu 37-facher jährlicher Verbesserung zusammensetzt." Echtes Wachstum ist nachhaltig.
-            `
-        };
-
-        let currentQuestionIndex = 0;
-        let answers = {};
+{
+section: 'Nachhaltige Leistung',
+sectionDesc: 'Langfristige Wirksamkeit ohne Burnout',
+question: 'Ich kann hohe Leistung bringen, ohne mich zu erschöpfen',
+category: 'performance'
+},
+{
+question: 'Mein Arbeitstempo ist über Monate und Jahre nachhaltig',
+category: 'performance'
+},
+{
+question: 'Ich fühle mich motiviert und engagiert (nicht nur durchhaltend)',
+category: 'performance'
+},
+{
+question: 'Ich sehe meine Karriere als Marathon, nicht als Sprint',
+category: 'performance'
+}
+];
+const insights = [
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-bolt"></use></svg>', title: 'Das Energie-Paradoxon', content: 'Forschung der Harvard Business Review zeigt: <strong>Führungskräfte, die Energiemanagement priorisieren, übertreffen jene, die einfach länger arbeiten, um 34%</strong>. Tony Schwartz (The Power of Full Engagement) fand heraus, dass Spitzenleister in 90-Minuten-Sprints arbeiten, gefolgt von Erneuerung.', quote: '"Energie, nicht Zeit, ist die fundamentale Währung hoher Leistung." - Tony Schwartz' },
+{ icon: '🌅', title: 'Morgenenergie zählt', content: '<strong>Neurowissenschaft</strong> zeigt: Willenskraft ist morgens am höchsten und nimmt über den Tag ab. Jeff Bezos plant seine wichtigsten Entscheidungen vor 10 Uhr. Dein morgendlicher Energiezustand bestimmt die Effektivität deines gesamten Tages.', quote: '"Ich mag es morgens zu trödeln... Ich hole mir Kaffee und lese Zeitungen. Meine Trödelzeit ist mir sehr wichtig." - Jeff Bezos' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg>', title: 'Ultradiane Rhythmen', content: 'Dein Körper arbeitet in <strong>90-120 Minuten Energiezyklen</strong> (ultradiane Rhythmen). Durch diese natürlichen Tiefs durchzuarbeiten reduziert Effektivität um 60%. Elite-Athleten trainieren im Einklang mit diesen Zyklen - warum arbeiten wir nicht so?', quote: '"Der beste Weg, eine Idee zu haben, ist viele Ideen zu haben." - Linus Pauling (2x Nobelpreisträger, der Nachmittagsschläfchen hielt)' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-battery-100"></use></svg>', title: 'Energieschulden summieren sich', content: 'Stanford-Forschung: <strong>Jede Stunde Schlafschuld reduziert kognitive Leistung um 25%</strong>. Eine Woche schlechtes Energiemanagement schafft ein Defizit, das 2-3 Wochen zur Erholung braucht. Energieschulden summieren sich wie finanzielle Schulden.', quote: '"Schlaf ist das Effektivste, was wir tun können, um Gehirn- und Körpergesundheit zurückzusetzen." - Dr. Matthew Walker, Neurowissenschaftler' },
+{ icon: '🛡️', title: 'Brené Brown über Grenzen', content: '<strong>"Grenzen zu setzen bedeutet, den Mut zu haben, uns selbst zu lieben."</strong> Ihre Forschung zeigt: Menschen mit starken Grenzen haben höheres Selbstmitgefühl und weniger Burnout. Grenzen sind nicht egoistisch - sie sind Selbsterhaltung.', quote: '"Klar ist freundlich. Unklar ist unfreundlich." - Brené Brown' },
+{ icon: '📵', title: 'Der Disconnect-Vorteil', content: 'Ernst & Young Studie: <strong>Für jede 10 Stunden Urlaub verbesserten sich Leistungsbeurteilungen um 8%</strong>. Aber hier ist der Schlüssel: Nur jene, die VOLLSTÄNDIG abschalteten, sahen Vorteile. E-Mails im Urlaub checken eliminierte alle positiven Effekte.', quote: '"Du kannst nicht aus einer leeren Tasse gießen." - Alte Weisheit' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-face-frown"></use></svg>', title: 'Rollenübergänge', content: 'Googles Forschung zu Hochleistern: Sie schaffen <strong>physische Rituale für Übergänge zwischen Arbeit und Privatleben</strong>. Ein 5-Minuten-Spaziergang, Kleidung wechseln oder eine Atemübung signalisiert dem Gehirn: "Arbeitsmodus AUS, Lebensmodus AN."', quote: '"Rituale sind die physische Verkörperung unserer Werte." - James Clear' },
+{ icon: '⏰', title: 'Der "Nein"-Muskel', content: 'Warren Buffett: <strong>"Der Unterschied zwischen erfolgreichen Menschen und wirklich erfolgreichen Menschen ist, dass wirklich erfolgreiche Menschen zu fast allem Nein sagen."</strong> Forschung zeigt: Hochleister schützen 60% ihrer Zeit als nicht verhandelbare Grenzen.', quote: '"Du musst entscheiden, was deine höchsten Prioritäten sind und den Mut haben, zu anderen Dingen Nein zu sagen." - Stephen Covey' },
+{ icon: '💤', title: 'Schlaf ist nicht verhandelbar', content: 'Neurowissenschaftlicher Durchbruch: <strong>Schlaf beseitigt Gehirntoxine (Beta-Amyloid), die während der Wachstunden entstehen</strong>. Weniger als 7 Stunden für nur eine Woche beeinträchtigt Kognition wie betrunken zu sein. Jeff Bezos priorisiert 8 Stunden: "Ich denke besser, habe mehr Energie."', quote: '"Ich hätte lieber eine kleine Anzahl hochwertiger Entscheidungen als viele mittelmäßige." - Jeff Bezos über 8 Stunden Schlaf' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-bolt"></use></svg>‍♂️', title: 'Bewegung lädt dein Gehirn', content: 'Stanford-Studie: <strong>Gehen erhöht kreative Leistung um 60%</strong>. Steve Jobs hielt Spaziergangsmeetings. Bewegung nimmt keine Zeit von deiner Arbeit - sie multipliziert die Effektivität deiner Arbeitsstunden durch verbesserte Konzentration und Kreativität.', quote: '"Alle wahrhaft großen Gedanken werden beim Gehen gedacht." - Friedrich Nietzsche' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-user"></use></svg>', title: 'Erholung > Aktivität', content: 'Anders Ericsson (Deliberate Practice Forscher): <strong>Spitzenleister verbringen 15-25% ihrer Zeit mit aktiver Erholung</strong> - Meditation, Massage, Naturspaziergänge. Sie ruhen nicht nur, wenn müde; sie planen Erholung VOR Erschöpfung.', quote: '"Ruhe ist nicht Müßiggang, und manchmal auf dem Gras unter Bäumen zu liegen... ist keineswegs Zeitverschwendung." - John Lubbock' },
+{ icon: '🌴', title: 'Urlaubs-ROI', content: 'Project Time Off Studie: <strong>Mitarbeiter, die allen Urlaub nehmen, werden zu 6,5% eher befördert</strong>. Warum? Sie kehren mit frischen Perspektiven, stärkeren Beziehungen und erneuerter Energie zurück. Urlaub ist kein Luxus - er ist strategisch.', quote: '"Fast alles funktioniert wieder, wenn du es für ein paar Minuten aussteckst, einschließlich dir." - Anne Lamott' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-heart"></use></svg>', title: 'Beziehungen = Resilienz', content: 'Harvards 80-Jahres-Studie: <strong>Qualitätsbeziehungen sind der #1 Prädiktor für Glück und Langlebigkeit</strong> - stärker als Karriereerfolg, Reichtum oder Ruhm. Führungskräfte, die starke persönliche Beziehungen pflegen, handhaben Stress 40% besser.', quote: '"Die Qualität deiner Beziehungen bestimmt die Qualität deines Lebens." - Esther Perel' },
+{ icon: '🎨', title: 'Der Renaissance-Effekt', content: 'Cal Newport: <strong>Tiefe Nicht-Arbeits-Interessen machen dich BESSER bei der Arbeit, nicht schlechter</strong>. Steve Wozniak spielte Videospiele. Einstein spielte Geige. Ada Lovelace schrieb Poesie. Mehrere Identitäten schaffen kognitive Flexibilität und verhindern Burnout.', quote: '"Ich habe keine besonderen Talente. Ich bin nur leidenschaftlich neugierig." - Albert Einstein (der auch Geiger war)' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-star"></use></svg>', title: 'Leben jenseits des Lebenslaufs', content: 'David Brooks: <strong>"Es gibt Lebenslauf-Tugenden und Grabrede-Tugenden."</strong> Was werden Menschen bei deiner Beerdigung sagen? Forschung zeigt: Menschen, die Bedeutung verfolgen (nicht nur Erfolg), haben 30% weniger Angst und 50% höhere Lebenszufriedenheit.', quote: '"Das ungeprüfte Leben ist nicht lebenswert." - Sokrates' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg>', title: 'Arbeit als Werkzeug, nicht Identität', content: 'Viktor Frankl: <strong>Arbeit sollte dem Leben dienen, es nicht konsumieren</strong>. Spitzenleister sehen Arbeit als EINEN Teil eines reichen Lebens - nicht ihre gesamte Identität. Wenn Arbeit dich definiert, wird Jobverlust oder Projektverlust zur existenziellen Krise.', quote: '"Wer ein Warum zum Leben hat, erträgt fast jedes Wie." - Friedrich Nietzsche (zitiert von Viktor Frankl)' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg>', title: 'Marathon, nicht Sprint', content: 'Alex Honnold (Free Solo Kletterer): <strong>"Große Ziele erfordern Jahre konsistenter, moderater Anstrengung - nicht heroische Ausbrüche."</strong> Forschung an Olympioniken zeigt: Nachhaltiges Training schlägt intensive-dann-Burnout-Zyklen um 80%. Karriere dauert 40+ Jahre. Teile dir deine Kraft ein.', quote: '"Wir bezwingen nicht den Berg, sondern uns selbst." - Sir Edmund Hillary' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-fire"></use></svg>', title: 'Burnout-Warnsignale', content: 'WHO definiert Burnout als <strong>Energieverlust, mentale Distanz zur Arbeit, reduzierte Effektivität</strong>. Wenn du "ausgebrannt" fühlst, hast du monatelang abgebaut. Prävention ist 10x einfacher als Erholung. Verfolge wöchentlich deine Energie.', quote: '"Du kannst nicht so fixiert darauf sein, wo du lieber wärst, dass du vergisst, das Beste aus dem zu machen, wo du bist." - Unbekannt' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-sparkles"></use></svg>', title: 'Engagement vs. Durchhalten', content: 'Gallup: Nur <strong>15% der Arbeitnehmer weltweit sind wirklich engagiert</strong>. Der Rest hält nur durch. Engagierte Arbeitnehmer haben 81% weniger Burnout, 43% weniger Stress. Engagement kommt von Autonomie, Meisterschaft und Sinn - nicht nur härter arbeiten.', quote: '"Menschen brennen nicht aus, weil sie hart arbeiten. Sie brennen aus, weil sie an Dingen arbeiten, die nicht wichtig sind." - Simon Sinek' },
+{ icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-sparkles"></use></svg>', title: 'Nachhaltige Wachstumsmentalität', content: 'Carol Dweck: <strong>Wachstumsmentalität ist nicht "härter hustlen" - es ist strategische Verbesserung über Zeit</strong>. Spitzenleister werden täglich 1% besser, was zu 37-facher Verbesserung jährlich führt. Burnout-Kultur verwechselt Erschöpfung mit Wachstum. Echtes Wachstum ist nachhaltig.', quote: '"Werden ist besser als Sein." - Carol Dweck' }
+];
+const sectionIntros = {
+'Energiemanagement': `
+<strong>Warum Energie wichtiger ist als Zeitmanagement:</strong> Harvard Business Review's 20-Jahres-Studie mit 20.000+ Führungskräften ergab, dass jene, die Energie (nicht nur Zeit) managen, ihre Kollegen in Führungseffektivität um 34% übertreffen. Tony Schwartz' Forschung bei The Energy Project bewies, dass <strong>Menschen darauf ausgelegt sind, zwischen Energieaufwand und Erholung zu pulsieren</strong> - Arbeit in 90-Minuten-Sprints gefolgt von Erholungspausen.
+<br><br>
+<strong>Die Neurowissenschaft:</strong> Dein präfrontaler Kortex (Entscheidungsfindung, Willenskraft, Fokus) verbraucht 20% der Körperglukose, obwohl er nur 2% des Körpergewichts ausmacht. Bei Erschöpfung sinkt die kognitive Leistung um 25% pro Stunde Schlafdefizit (Stanford Sleep Lab). Elite-Performer behandeln Energie als strategische Ressource, nicht als unendliche.
+<br><br>
+<strong>Fazit:</strong> Du kannst dich nicht aus einem Energiedefizit herausdenken. Jeff Bezos plant High-IQ-Entscheidungen vor 10 Uhr, wenn die Willenskraft am höchsten ist. Elon Musk gibt zu, dass seine schlechtesten Entscheidungen bei Erschöpfung getroffen wurden. Energiemanagement ist keine Soft Skills - es ist Leistungsoptimierung.
+`,
+'Grenzen setzen': `
+<strong>Warum Grenzen = bessere Leistung:</strong> Ernst & Young's Studie mit 1.000+ Fachkräften ergab, dass <strong>für jeweils 10 Urlaubsstunden (mit vollständiger Abkopplung) die Leistungsbeurteilungen um 8% verbesserten</strong>. Aber E-Mails checken eliminierte alle Vorteile. Brené Browns 12-jährige Forschung zeigt, dass Menschen mit starken Grenzen 40% höheres Selbstmitgefühl und dramatisch weniger Burnout haben.
+<br><br>
+<strong>Das Paradox:</strong> Führungskräfte, die 60% ihrer Zeit als "nicht verhandelbar" schützen (Warren Buffett, Bill Gates, Tim Ferriss) erreichen MEHR als jene, die 24/7 verfügbar sind. Warum? Klare Grenzen erzwingen Priorisierung. Unbegrenzte Verfügbarkeit = diffuser Fokus = überall mittelmäßig.
+<br><br>
+<strong>Die Kosten der Durchlässigkeit:</strong> UC Irvine Forschung zeigt, dass es 23 Minuten dauert, nach einer Unterbrechung den Fokus wiederzuerlangen. Wenn du "immer verfügbar" bist, bist du nie vollständig präsent - weder bei der Arbeit noch zuhause. Google's Studie über Hochleister: Sie schaffen physische Rituale (Ortswechsel, Kleidung, Atmung), um zu signalisieren: "Arbeitsmodus AUS."
+`,
+'Erholungspraktiken': `
+<strong>Warum Erholung = wenn Wachstum geschieht:</strong> Schlafforscher Matthew Walker (UC Berkeley) bewies, dass <strong>Schlaf Beta-Amyloid-Toxine aus deinem Gehirn entfernt</strong> - dieselben Proteine, die mit Alzheimer verbunden sind. Weniger als 7 Stunden für eine Woche beeinträchtigt die Kognition gleichwertig mit 0,10% Blutalkohol (gesetzlich betrunken). Jeff Bezos: "Ich priorisiere 8 Stunden. Ich treffe bessere Entscheidungen, habe mehr Energie."
+<br><br>
+<strong>Der Bewegungsvorteil:</strong> Stanford-Studie: Gehen erhöht die kreative Leistung um 60%. Bewegung stiehlt keine Zeit von der Arbeit - sie multipliziert die Effektivität. Steve Jobs hielt Walking Meetings ab. Nietzsche: "Alle wirklich großen Gedanken werden beim Gehen gedacht." Bewegung lädt die Batterie deines Gehirns auf.
+<br><br>
+<strong>Elite-Performer-Geheimnis:</strong> Anders Ericssons (Deliberate Practice Forscher) Erkenntnis: Top-Performer planen Erholung VOR Erschöpfung - verbringen 15-25% der Zeit mit aktiver Erholung (Meditation, Massage, Natur). Sie ruhen sich nicht aus, wenn sie müde sind; sie verhindern Erschöpfung. Project Time Off Studie: <strong>Mitarbeiter, die alle Urlaubstage nehmen, werden 6,5% eher befördert</strong>.
+`,
+'Lebensintegration': `
+<strong>Warum mehrere Identitäten = Resilienz:</strong> Harvards 80-Jahres-Studie (längste jemals über Glück) fand heraus, dass <strong>Beziehungsqualität der #1 Prädiktor für Glück und Langlebigkeit ist</strong> - stärker als Karriereerfolg, Wohlstand oder IQ. Führungskräfte mit starken persönlichen Beziehungen gehen mit Arbeitsplatzstress 40% besser um (American Psychological Association).
+<br><br>
+<strong>Der Renaissance-Effekt:</strong> Cal Newports Forschung: Tiefe Nicht-Arbeits-Interessen machen dich BESSER bei der Arbeit. Steve Wozniak spielte Videospiele. Einstein spielte Geige. Ada Lovelace schrieb Gedichte. Mehrere Identitäten schaffen kognitive Flexibilität und verhindern katastrophales Denken. Wenn Arbeit = gesamte Identität, wird Jobverlust zur Existenzkrise.
+<br><br>
+<strong>Lebenslauf vs. Grabrede-Tugenden:</strong> David Brooks' Unterscheidung - was dich einstellt vs. was bei deiner Beerdigung gesagt wird. Forschung zeigt, dass Menschen, die Bedeutung (Beziehungen, Wachstum, Beitrag) neben Leistung verfolgen, 30% weniger Angst, 50% größere Lebenszufriedenheit haben - und ironischerweise bessere langfristige Karriereergebnisse.
+`,
+'Nachhaltige Leistung': `
+<strong>Warum Marathons Sprints schlagen:</strong> Alex Honnold (Free Solo): "Große Ziele erfordern Jahre konsistenter, moderater Anstrengung - keine heroischen Ausbrüche." Olympisches Trainings-Forschung zeigt, <strong>nachhaltiges Tempo schlägt intensive-dann-Burnout-Zyklen um 80%</strong>. Deine Karriere sind 40+ Jahre. Jahrelanges Sprinten garantiert, dass du die Ziellinie nicht erreichst.
+<br><br>
+<strong>Burnout-Warnung:</strong> WHO definiert Burnout als Energieerschöpfung + mentale Distanz + reduzierte Effektivität. Wenn du dich "ausgebrannt" fühlst, bist du bereits seit 6+ Monaten im Abstieg. Christina Maslach (Burnout-Forscherin): Prävention ist 10x einfacher als Wiederherstellung. Verfolge Energie wöchentlich wie Finanzen.
+<br><br>
+<strong>Engagement vs. Schuften:</strong> Gallup: Nur 15% der Arbeitnehmer weltweit sind wirklich engagiert. Der Rest schuftet. Engagierte Arbeiter haben 81% weniger Burnout, 43% weniger Stress. Engagement kommt von Autonomie + Meisterschaft + Zweck (Dan Pink) - nicht härter schuften. Carol Dweck: "Growth Mindset ist nicht Hustle-Kultur. Es ist strategische tägliche 1%-Verbesserung, die sich zu 37-facher jährlicher Verbesserung zusammensetzt." Echtes Wachstum ist nachhaltig.
+`
+};
+let currentQuestionIndex = 0;
+let answers = {};
                     // Progress Saving System
-                    const STORAGE_KEY = 'work-life-progress';
-                    
-                    function saveProgress() {
-                        const progressData = {
-                            currentQuestion,
-                            answers,
-                            timestamp: new Date().toISOString(),
-                            version: '3.0.0'
-                        };
-                        try {
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
-                        } catch (e) {
+const STORAGE_KEY = 'work-life-progress';
+function saveProgress() {
+const progressData = {
+currentQuestion,
+answers,
+timestamp: new Date().toISOString(),
+version: '3.0.0'
+};
+try {
+localStorage.setItem(STORAGE_KEY, JSON.stringify(progressData));
+} catch (e) {
                             console.log('Could not save progress');
-                        }
-                    }
-                    
-                    function loadProgress() {
-                        try {
-                            const saved = localStorage.getItem(STORAGE_KEY);
-                            if (saved) {
-                                const data = JSON.parse(saved);
-                                const savedDate = new Date(data.timestamp);
-                                const daysSince = (new Date() - savedDate) / (1000 * 60 * 60 * 24);
-                                if (daysSince < 7 && data.version === '3.0.0') {
-                                    return data;
-                                }
-                            }
-                        } catch (e) {
+}
+}
+function loadProgress() {
+try {
+const saved = localStorage.getItem(STORAGE_KEY);
+if (saved) {
+const data = JSON.parse(saved);
+const savedDate = new Date(data.timestamp);
+const daysSince = (new Date() - savedDate) / (1000 * 60 * 60 * 24);
+if (daysSince < 7 && data.version === '3.0.0') {
+return data;
+}
+}
+} catch (e) {
                             console.log('Could not load progress');
-                        }
-                        return null;
-                    }
-                    
-                    function clearProgress() {
-                        try {
-                            localStorage.removeItem(STORAGE_KEY);
-                        } catch (e) {}
-                    }
-                    
-                    function showResumePrompt() {
-                        const saved = loadProgress();
-                        if (!saved) return;
-                        
-                        const completedQuestions = Object.keys(saved.answers).length;
-                        const totalQuestions = 20;
-                        const percentage = Math.round((completedQuestions / totalQuestions) * 100);
-                        
-                        const resumeHTML = `
-                            <div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease;" id="resumeModal">
-                                <div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; text-align: center; animation: slideUp 0.3s ease;">
-                                    <div style="font-size: 3em; margin-bottom: 20px;">🎯</div>
-                                    <h2 style="color: #1a365d; margin-bottom: 15px;">Willkommen zurück!</h2>
-                                    <p style="color: #666; font-size: 1.1em; margin-bottom: 10px;">Du hast bereits <strong>${completedQuestions} of ${totalQuestions} questions</strong></p>
-                                    <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 20px; border-radius: 12px; margin: 20px 0;">
-                                        <div style="font-size: 2.5em; font-weight: bold; color: #1a365d; margin-bottom: 5px;">${percentage}%</div>
-                                        <div style="color: #666;">Fortschritt abgeschlossen</div>
-                                    </div>
-                                    <div style="display: flex; gap: 15px; margin-top: 25px;">
-                                        <button onclick="resumeAssessment()" style="flex: 1; background: linear-gradient(135deg, #1a365d 0%, #0f1f3d 100%); color: white; border: none; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;">
-                                            ▶️ Fortsetzen
-                                        </button>
-                                        <button onclick="startFresh()" style="flex: 1; background: white; color: #666; border: 2px solid #e0e0e0; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;">
-                                            🔄 Neu beginnen
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                        
-                        document.body.insertAdjacentHTML('beforeend', resumeHTML);
-                    }
-                    
-                    function resumeAssessment() {
-                        const saved = loadProgress();
-                        if (saved) {
-                            currentQuestion = saved.currentQuestion;
-                            answers = saved.answers;
-                            document.getElementById('resumeModal')?.remove();
-                            setTimeout(() => showResumePrompt(), 500);
-                    renderQuestion();
-                            updateProgress();
-                        }
-                    }
-                    
-                    function startFresh() {
-                        clearProgress();
-                        currentQuestion = 0;
-                        answers = {};
-                        document.getElementById('resumeModal')?.remove();
-                        renderQuestion();
-                        updateProgress();
-                    }
-                    
-
-        let isDragging = false;
-
-        function renderQuestion(index) {
-            const q = questions[index];
-            const container = document.getElementById('questionContainer');
-            
-            // Hide intro section after question 1
-            const introSection = document.getElementById('introSection');
-            if (introSection) {
-                introSection.style.display = index >= 1 ? 'none' : 'block';
-            }
-            
-            let html = '';
-            
-            if (q.section) {
-                html += `
-                    <div class="section-header">
-                        <h3>${q.section}</h3>
-                        <div class="section-desc">${q.sectionDesc}</div>
-                    </div>
-                `;
-                document.getElementById('currentSection').textContent = q.section;
-                
+}
+return null;
+}
+function clearProgress() {
+try {
+localStorage.removeItem(STORAGE_KEY);
+} catch (e) {}
+}
+function showResumePrompt() {
+const saved = loadProgress();
+if (!saved) return;
+const completedQuestions = Object.keys(saved.answers).length;
+const totalQuestions = 20;
+const percentage = Math.round((completedQuestions / totalQuestions) * 100);
+const resumeHTML = `
+<div style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease;" id="resumeModal">
+<div style="background: white; border-radius: 20px; padding: 40px; max-width: 500px; text-align: center; animation: slideUp 0.3s ease;">
+<div style="font-size: 3em; margin-bottom: 20px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg></div>
+<h2 style="color: var(--bg-primary); margin-bottom: 15px;">Willkommen zurück!</h2>
+<p style="color: #666; font-size: 1.1em; margin-bottom: 10px;">Du hast bereits <strong>${completedQuestions} of ${totalQuestions} questions</strong></p>
+<div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); padding: 20px; border-radius: 12px; margin: 20px 0;">
+<div style="font-size: 2.5em; font-weight: bold; color: var(--bg-primary); margin-bottom: 5px;">${percentage}%</div>
+<div style="color: #666;">Fortschritt abgeschlossen</div>
+</div>
+<div style="display: flex; gap: 15px; margin-top: 25px;">
+<button onclick="resumeAssessment()" style="flex: 1; background: linear-gradient(135deg, var(--bg-primary) 0%, #0f1f3d 100%); color: white; border: none; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;" aria-label="Continue">
+▶️ Fortsetzen
+</button>
+<button onclick="startFresh()" style="flex: 1; background: white; color: #666; border: 2px solid #e0e0e0; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;" aria-label="Start">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-path"></use></svg> Neu beginnen
+</button>
+</div>
+</div>
+</div>
+`;
+document.body.insertAdjacentHTML('beforeend', resumeHTML);
+}
+function resumeAssessment() {
+const saved = loadProgress();
+if (saved) {
+currentQuestion = saved.currentQuestion;
+answers = saved.answers;
+document.getElementById('resumeModal')?.remove();
+setTimeout(() => showResumePrompt(), 500);
+renderQuestion();
+updateProgress();
+}
+}
+function startFresh() {
+clearProgress();
+currentQuestion = 0;
+answers = {};
+document.getElementById('resumeModal')?.remove();
+renderQuestion();
+updateProgress();
+}
+let isDragging = false;
+let html = '';
+if (q.section) {
+html += `
+<div class="section-header">
+<h3>${q.section}</h3>
+<div class="section-desc">${q.sectionDesc}</div>
+</div>
+`;
+document.getElementById('currentSection').textContent = q.section;
                 // Show section intro paragraph at the start of each section
-                if (sectionIntros[q.section]) {
-                    html += `
-                        <div class="insight-card" style="margin-bottom: 25px;">
-                            <div class="insight-icon">💡</div>
-                            <div class="insight-title">Warum das wichtig ist</div>
-                            <div class="insight-content">${sectionIntros[q.section]}</div>
-                        </div>
-                    `;
-                }
-            }
-            
-            html += `
-                <div class="question-card">
-                    <div class="question-number">Frage ${index + 1} von 20</div>
-                    <div class="question-text">${q.question}</div>
-                    <div class="scale-options" id="scaleContainer">
-                        ${[1,2,3,4,5].map(val => `
-                            <div class="scale-option ${answers[index] === val ? 'selected' : ''}" data-value="${val}" onclick="selectOption(event, ${val})">
-                                <span>${val}</span>
-                                <small>${['Nie', 'Selten', 'Manchmal', 'Oft', 'Immer'][val-1]}</small>
-                            </div>
-                        `).join('')}
-                    </div>
-                    <div id="insightContainer"></div>
-                </div>
-            `;
-            
-            container.innerHTML = html;
-            container.innerHTML = html;
-            document.getElementById('currentQ').textContent = index + 1;
-            updateProgress();
-            setupDragHandlers();
-            
-            if (answers[index]) {
-                showInsight(insights[index]);
-            }
-        }
-
-        function setupDragHandlers() {
-            const scaleContainer = document.getElementById('scaleContainer');
-            
-            function handleInteraction(e) {
-                if (!scaleContainer) return;
-                const rect = scaleContainer.getBoundingClientRect();
-                const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
-                const relativeX = Math.max(0, Math.min(1, x / rect.width));
-                const value = Math.ceil(relativeX * 5) || 1;
-                selectOption(e, value);
-                updateSliderVisual(value);
-            }
-
-            scaleContainer.addEventListener('mousedown', (e) => {
-                isDragging = true;
-                handleInteraction(e);
-            });
-
-            scaleContainer.addEventListener('mousemove', (e) => {
-                if (isDragging) handleInteraction(e);
-            });
-
-            document.addEventListener('mouseup', () => {
-                isDragging = false;
-            });
-
-            scaleContainer.addEventListener('touchstart', (e) => {
-                isDragging = true;
-                handleInteraction(e);
-            }, { passive: false });
-
-            scaleContainer.addEventListener('touchmove', (e) => {
-                if (isDragging) {
-                    e.preventDefault();
-                    handleInteraction(e);
-                }
-            }, { passive: false });
-
-            scaleContainer.addEventListener('touchend', () => {
-                isDragging = false;
-            });
-        }
-
-        function updateSliderVisual(value) {
-            const options = document.querySelectorAll('.scale-option');
-            options.forEach((opt, idx) => {
-                if (idx < value) {
-                    opt.classList.add('active');
-                } else {
-                    opt.classList.remove('active');
-                }
-            });
-        }
-
-        function selectOption(e, value) {
-            e.stopPropagation();
-            answers[currentQuestionIndex] = value;
-            
-            document.querySelectorAll('.scale-option').forEach(opt => {
-                opt.classList.remove('selected');
-            });
-            const selectedOpt = document.querySelector(`[data-value="${value}"]`);
-            if (selectedOpt) {
-                selectedOpt.classList.add('selected');
-            }
-            
-            updateSliderVisual(value);
-            document.getElementById('nextBtn').disabled = false;
-            showInsight(insights[currentQuestionIndex]);
-        }
-
-        function showInsight(insight) {
-            const container = document.getElementById('insightContainer');
-            container.innerHTML = `
-                <div class="insight-card">
-                    <div class="insight-icon">${insight.icon}</div>
-                    <div class="insight-title">${insight.title}</div>
-                    <div class="insight-content">${insight.content}</div>
-                    <div class="insight-quote">${insight.quote}</div>
-                </div>
-            `;
-            container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
-
-        function nextQuestion() {
-            if (currentQuestionIndex < questions.length - 1) {
-                currentQuestionIndex++;
-                renderQuestion(currentQuestionIndex);
-                document.getElementById('prevBtn').disabled = false;
-                document.getElementById('nextBtn').disabled = !answers[currentQuestionIndex];
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-                showResults();
-            }
-        }
-
-        function prevQuestion() {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                renderQuestion(currentQuestionIndex);
-                document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
-                document.getElementById('nextBtn').disabled = false;
-                document.getElementById('nextBtn').textContent = 'Weiter →';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        }
-
-        function updateProgress() {
-            const answered = Object.keys(answers).length;
-            const progress = (answered / questions.length) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-            
-            if (currentQuestionIndex === questions.length - 1) {
-                document.getElementById('nextBtn').textContent = 'Ergebnisse zeigen 🎯';
-            }
-        }
-
-        function showResults() {
-                        clearProgress();
-            const scores = {
-                energy: 0,
-                boundaries: 0,
-                recovery: 0,
-                integration: 0,
-                performance: 0
-            };
-
-            questions.forEach((q, idx) => {
-                if (answers[idx]) {
-                    scores[q.category] += answers[idx];
-                }
-            });
-
-            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
-            const maxScore = 100;
-            const percentage = Math.round((totalScore / maxScore) * 100);
-
-            let overallLabel = '';
-            if (percentage >= 80) overallLabel = '🌟 Exzellente Balance - Nachhaltige Spitzenleistung';
-            else if (percentage >= 60) overallLabel = '✅ Gute Balance - Raum für Optimierung';
-            else if (percentage >= 40) overallLabel = '⚠️ Moderates Risiko - Handlungsbedarf';
-            else overallLabel = '🔴 Hohes Risiko - Sofortige Änderungen erforderlich';
-
-            document.getElementById('assessmentForm').style.display = 'none';
-            document.getElementById('resultsContainer').classList.add('active');
-            document.getElementById('totalScore').textContent = totalScore + '/' + maxScore;
-            document.getElementById('overallLabel').textContent = overallLabel;
-
-            const categoryLabels = {
-                energy: '⚡ Energiemanagement',
-                boundaries: '🛡️ Grenzen setzen',
-                recovery: '🔄 Erholungspraktiken',
-                integration: '🌟 Lebensintegration',
-                performance: '🏔️ Nachhaltige Leistung'
-            };
-
-            const categoryHTML = Object.keys(scores).map(cat => `
-                <div class="category-score">
-                    <h4>${categoryLabels[cat]}</h4>
-                    <div class="score">${scores[cat]}/20</div>
-                    <div class="label">${scores[cat] >= 16 ? 'Exzellent' : scores[cat] >= 12 ? 'Gut' : scores[cat] >= 8 ? 'Moderat' : 'Verbesserungsbedarf'}</div>
-                </div>
-            `).join('');
-
-            document.getElementById('categoryScores').innerHTML = categoryHTML;
-
+if (sectionIntros[q.section]) {
+html += `
+<div class="insight-card" style="margin-bottom: 25px;">
+<div class="insight-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<div class="insight-title">Warum das wichtig ist</div>
+<div class="insight-content">${sectionIntros[q.section]}</div>
+</div>
+`;
+}
+}
+html += `
+<div class="question-card">
+<div class="question-number">Frage ${index + 1} von 20</div>
+<div class="question-text">${q.question}</div>
+<div class="scale-options" id="scaleContainer">
+${[1,2,3,4,5].map(val => `
+<div class="scale-option ${answers[index] === val ? 'selected' : ''}" data-value="${val}" onclick="selectOption(event, ${val})">
+<span>${val}</span>
+<small>${['Nie', 'Selten', 'Manchmal', 'Oft', 'Immer'][val-1]}</small>
+</div>
+`).join('')}
+</div>
+<div id="insightContainer"></div>
+</div>
+`;
+safeSetInnerHTML(container, html);
+safeSetInnerHTML(container, html);
+document.getElementById('currentQ').textContent = index + 1;
+updateProgress();
+setupDragHandlers();
+if (answers[index]) {
+showInsight(insights[index]);
+}
+}
+function setupDragHandlers() {
+const scaleContainer = document.getElementById('scaleContainer');
+function handleInteraction(e) {
+if (!scaleContainer) return;
+const rect = scaleContainer.getBoundingClientRect();
+const x = (e.clientX || e.touches?.[0]?.clientX) - rect.left;
+const relativeX = Math.max(0, Math.min(1, x / rect.width));
+const value = Math.ceil(relativeX * 5) || 1;
+selectOption(e, value);
+updateSliderVisual(value);
+}
+scaleContainer.addEventListener('mousedown', (e) => {
+isDragging = true;
+handleInteraction(e);
+});
+scaleContainer.addEventListener('mousemove', (e) => {
+if (isDragging) handleInteraction(e);
+});
+document.addEventListener('mouseup', () => {
+isDragging = false;
+});
+scaleContainer.addEventListener('touchstart', (e) => {
+isDragging = true;
+handleInteraction(e);
+}, { passive: false });
+scaleContainer.addEventListener('touchmove', (e) => {
+if (isDragging) {
+e.preventDefault();
+handleInteraction(e);
+}
+}, { passive: false });
+scaleContainer.addEventListener('touchend', () => {
+isDragging = false;
+});
+}
+function updateSliderVisual(value) {
+const options = document.querySelectorAll('.scale-option');
+options.forEach((opt, idx) => {
+if (idx < value) {
+opt.classList.add('active');
+} else {
+opt.classList.remove('active');
+}
+});
+}
+);
+const selectedOpt = document.querySelector(`[data-value="${value}"]`);
+if (selectedOpt) {
+selectedOpt.classList.add('selected');
+}
+updateSliderVisual(value);
+document.getElementById('nextBtn').disabled = false;
+showInsight(insights[currentQuestionIndex]);
+}
+function showInsight(insight) {
+const container = document.getElementById('insightContainer');
+safeSetInnerHTML(container, `
+<div class="insight-card">
+<div class="insight-icon">${insight.icon}</div>
+<div class="insight-title">${insight.title}</div>
+<div class="insight-content">${insight.content}</div>
+<div class="insight-quote">${insight.quote}</div>
+</div>
+`);
+container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+function nextQuestion() {
+if (currentQuestionIndex < questions.length - 1) {
+currentQuestionIndex++;
+renderQuestion(currentQuestionIndex);
+document.getElementById('prevBtn').disabled = false;
+document.getElementById('nextBtn').disabled = !answers[currentQuestionIndex];
+window.scrollTo({ top: 0, behavior: 'smooth' });
+} else {
+showResults();
+}
+}
+function prevQuestion() {
+if (currentQuestionIndex > 0) {
+currentQuestionIndex--;
+renderQuestion(currentQuestionIndex);
+document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+document.getElementById('nextBtn').disabled = false;
+document.getElementById('nextBtn').textContent = 'Weiter →';
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+}
+}
+;
+questions.forEach((q, idx) => {
+if (answers[idx]) {
+scores[q.category] += answers[idx];
+}
+});
+const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+const maxScore = 100;
+const percentage = Math.round((totalScore / maxScore) * 100);
+let overallLabel = '';
+if (percentage >= 80) overallLabel = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-star"></use></svg> Exzellente Balance - Nachhaltige Spitzenleistung';
+else if (percentage >= 60) overallLabel = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg> Gute Balance - Raum für Optimierung';
+else if (percentage >= 40) overallLabel = '⚠️ Moderates Risiko - Handlungsbedarf';
+else overallLabel = '🔴 Hohes Risiko - Sofortige Änderungen erforderlich';
+document.getElementById('assessmentForm').style.display = 'none';
+document.getElementById('resultsContainer').classList.add('active');
+document.getElementById('totalScore').textContent = totalScore + '/' + maxScore;
+document.getElementById('overallLabel').textContent = overallLabel;
+const categoryLabels = {
+energy: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-bolt"></use></svg> Energiemanagement',
+boundaries: '🛡️ Grenzen setzen',
+recovery: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-path"></use></svg> Erholungspraktiken',
+integration: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-star"></use></svg> Lebensintegration',
+performance: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Nachhaltige Leistung'
+};
+const categoryHTML = Object.keys(scores).map(cat => `
+<div class="category-score">
+<h4>${categoryLabels[cat]}</h4>
+<div class="score">${scores[cat]}/20</div>
+<div class="label">${scores[cat] >= 16 ? 'Exzellent' : scores[cat] >= 12 ? 'Gut' : scores[cat] >= 8 ? 'Moderat' : 'Verbesserungsbedarf'}</div>
+</div>
+`).join('');
+safeSetInnerHTML(document.getElementById('categoryScores'), categoryHTML);
             // Add social sharing section
-            const socialHTML = `
-                <div style="background: linear-gradient(135deg, #4a7c9c 0%, #3d6680 100%); color: white; padding: 2rem; border-radius: 12px; margin: 2rem 0; text-align: center;">
-                    <h3 style="color: white; margin-bottom: 0.5rem;">📱 Teile deine Balance</h3>
-                    <p style="font-size: 0.95rem; margin-bottom: 1.5rem; opacity: 0.95;">Inspiriere andere</p>
-                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                        <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">LinkedIn</button>
-                        <button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">Twitter</button>
-                        <button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">📋 Link kopieren</button>
-                    </div>
-                    <div id="shareCanvas" style="margin: 1.5rem auto; max-width: 600px;"></div>
-                    <p style="font-size: 0.85rem; opacity: 0.8;">💡 Deine Reise kann andere inspirieren</p>
-                </div>
-            `;
-            document.getElementById("categoryScores").insertAdjacentHTML("afterend", socialHTML);
-            
+const socialHTML = `
+<div style="background: linear-gradient(135deg, var(--tap-blue) 0%, #3d6680 100%); color: white; padding: 2rem; border-radius: 12px; margin: 2rem 0; text-align: center;">
+<h3 style="color: white; margin-bottom: 0.5rem;"><svg class="hero-icon hero-icon-sm hero-icon-inline" style="stroke: white;"><use href="icons/sprite.svg#icon-sparkles"></use></svg> Teile deine Balance</h3>
+<p style="font-size: 0.95rem; margin-bottom: 1.5rem; opacity: 0.95;">Inspiriere andere</p>
+<div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
+<button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;" aria-label="Share">LinkedIn</button>
+<button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;" aria-label="Share">Twitter</button>
+<button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;" aria-label="Share"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-clipboard-document-list"></use></svg> Link kopieren</button>
+</div>
+<div id="shareCanvas" style="margin: 1.5rem auto; max-width: 600px;"></div>
+<p style="font-size: 0.85rem; opacity: 0.8;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-light-bulb"></use></svg> Deine Reise kann andere inspirieren</p>
+</div>
+`;
+document.getElementById("categoryScores").insertAdjacentHTML("afterend", socialHTML);
             // Initialize social sharing
-            const cleanLabel = overallLabel.replace(/[🌟✅⚠️🔴]/g, "").trim();
-            setTimeout(() => initializeSocialSharing(totalScore, percentage, cleanLabel), 500);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
+const cleanLabel = overallLabel.replace(/[<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-star"></use></svg><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check-circle"></use></svg>⚠️🔴]/g, "").trim();
+setTimeout(() => initializeSocialSharing(totalScore, percentage, cleanLabel), 500);
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
         // Initialize
-
         // Social Sharing Functions
-        let currentProfile = {};
-
-        function initializeSocialSharing(totalScore, percentage, levelText) {
-            currentProfile = { totalScore, percentage, levelText };
-            generateShareCard();
-        }
-
-        function generateShareCard() {
-            const canvas = document.createElement("canvas");
-            canvas.width = 1200;
-            canvas.height = 630;
-            const ctx = canvas.getContext("2d");
-
-            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-            gradient.addColorStop(0, "#1a365d");
-            gradient.addColorStop(1, "#0f1f3d");
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
-            for (let i = 0; i < 20; i++) ctx.fillRect(i * 60, 0, 30, canvas.height);
-
-            ctx.fillStyle = "white";
-            ctx.font = "bold 56px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
-            ctx.textAlign = "center";
-            ctx.fillText("Meine Work-Life-Balance:", canvas.width / 2, 180);
-            ctx.font = "bold 120px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
-            ctx.fillText(Math.round(currentProfile.percentage) + "%", canvas.width / 2, 330);
-            ctx.font = "bold 48px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
-            ctx.fillText(currentProfile.levelText, canvas.width / 2, 420);
-            ctx.font = "32px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
-            ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-            ctx.fillText("Wie nachhaltig ist DEIN Tempo?", canvas.width / 2, 550);
-
-            const shareCanvas = document.getElementById("shareCanvas");
-            if (shareCanvas) shareCanvas.innerHTML = `<img src="${canvas.toDataURL()}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card" loading="lazy">`;
-        }
-
-        function getShareText() {
-            return `Ich habe ${Math.round(currentProfile.percentage)}% bei der Work-Life-Balance-Bewertung erreicht - ${currentProfile.levelText}!
-
+let currentProfile = {};
+function initializeSocialSharing(totalScore, percentage, levelText) {
+currentProfile = { totalScore, percentage, levelText };
+generateShareCard();
+}
+function generateShareCard() {
+const canvas = document.createElement("canvas");
+canvas.width = 1200;
+canvas.height = 630;
+const ctx = canvas.getContext("2d");
+const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+gradient.addColorStop(0, "var(--bg-primary)");
+gradient.addColorStop(1, "#0f1f3d");
+ctx.fillStyle = gradient;
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+ctx.fillStyle = "rgba(255, 255, 255, 0.05)";
+for (let i = 0; i < 20; i++) ctx.fillRect(i * 60, 0, 30, canvas.height);
+ctx.fillStyle = "white";
+ctx.font = "bold 56px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
+ctx.textAlign = "center";
+ctx.fillText("Meine Work-Life-Balance:", canvas.width / 2, 180);
+ctx.font = "bold 120px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
+ctx.fillText(Math.round(currentProfile.percentage) + "%", canvas.width / 2, 330);
+ctx.font = "bold 48px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
+ctx.fillText(currentProfile.levelText, canvas.width / 2, 420);
+ctx.font = "32px -apple-system, BlinkMacSystemFont, \"Segoe UI\", Arial";
+ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+ctx.fillText("Wie nachhaltig ist DEIN Tempo?", canvas.width / 2, 550);
+const shareCanvas = document.getElementById("shareCanvas");
+if (shareCanvas) safeSetInnerHTML(shareCanvas, `<img src="${canvas.toDataURL()}" style="width: 100%); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card" loading="lazy">`;
+}
+function getShareText() {
+return `Ich habe ${Math.round(currentProfile.percentage)}% bei der Work-Life-Balance-Bewertung erreicht - ${currentProfile.levelText}!
 5 Dimensionen gemessen:
 • Energiemanagement
 • Grenzen setzen
 • Erholungspraktiken
 • Lebensintegration
 • Nachhaltige Leistung
-
 Kostenlose Bewertung, sofortige Erkenntnisse.
-
 Wie nachhaltig ist DEIN Tempo?`;
-        }
-
-        function shareToLinkedIn() {
-            const text = encodeURIComponent(getShareText());
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, "_blank");
-            if (typeof gtag !== "undefined") gtag("event", "share", { "event_category": "Social", "event_label": "LinkedIn_WorkLife_DE", "value": 1 });
-        }
-
-        function shareToTwitter() {
-            const text = encodeURIComponent(getShareText());
-            const url = encodeURIComponent(window.location.href);
-            window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=WorkLifeBalance,Führung`, "_blank");
-            if (typeof gtag !== "undefined") gtag("event", "share", { "event_category": "Social", "event_label": "Twitter_WorkLife_DE", "value": 1 });
-        }
-
-        function copyShareLink() {
-            const shareText = getShareText() + "\n\n" + window.location.href;
-            navigator.clipboard.writeText(shareText).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = "✓ Kopiert!";
-                btn.style.background = "#10b981";
-                setTimeout(() => { btn.textContent = originalText; btn.style.background = "rgba(255,255,255,0.2)"; }, 2000);
-                if (typeof gtag !== "undefined") gtag("event", "share", { "event_category": "Social", "event_label": "Copy_Link_WorkLife_DE", "value": 1 });
-            });
-        }
-
-        function startAssessment() {
-            document.getElementById('introSection').style.display = 'none';
-            document.querySelector('.progress-bar').style.display = 'block';
-            document.getElementById('questionContainer').style.display = 'block';
-            document.querySelector('.nav-buttons').style.display = 'flex';
-            renderQuestion(0);
-        }
-
+}
+function shareToLinkedIn() {
+const text = encodeURIComponent(getShareText());
+const url = encodeURIComponent(window.location.href);
+window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${url}&summary=${text}`, "_blank");
+if (typeof gtag !== "undefined") gtag("event", "share", { "event_category": "Social", "event_label": "LinkedIn_WorkLife_DE", "value": 1 });
+}
+function shareToTwitter() {
+const text = encodeURIComponent(getShareText());
+const url = encodeURIComponent(window.location.href);
+window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}&hashtags=WorkLifeBalance,Führung`, "_blank");
+if (typeof gtag !== "undefined") gtag("event", "share", { "event_category": "Social", "event_label": "Twitter_WorkLife_DE", "value": 1 });
+}
+function copyShareLink() {
+const shareText = getShareText() + "\n\n" + window.location.href;
+navigator.clipboard.writeText(shareText).then(() => {
+const btn = event.target;
+const originalText = btn.textContent;
+btn.textContent = "<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg> Kopiert!";
+btn.style.background = "var(--tap-green)";
+setTimeout(() => { btn.textContent = originalText; btn.style.background = "rgba(255,255,255,0.2)"; }, 2000);
+if (typeof gtag !== "undefined") gtag("event", "share", { "event_category": "Social", "event_label": "Copy_Link_WorkLife_DE", "value": 1 });
+});
+}
+function startAssessment() {
+document.getElementById('introSection').style.display = 'none';
+document.querySelector('.progress-bar').style.display = 'block';
+document.getElementById('questionContainer').style.display = 'block';
+document.querySelector('.nav-buttons').style.display = 'flex';
+renderQuestion(0);
+}
         // Nicht auto-initialisieren - warte auf Button-Klick
-    
     // Export Functions (Option 1: Client-Side CSV/XLSX)
-    function addExportButtons(data) {
-        const exportHTML = `
-            <div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #e0e0e0;">
-                <h3 style="color: #333; margin-bottom: 15px;">📊 Export Your Results</h3>
-                <p style="color: #666; margin-bottom: 20px;">Download your complete assessment results for analysis, reporting, or personal records.</p>
-                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <button onclick="exportToCSV()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
-                        📥 Download CSV
-                    </button>
-                    <button onclick="exportToExcel()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
-                        📊 Download Excel
-                    </button>
-                    <button onclick="exportToJSON()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
-                        💾 Download JSON
-                    </button>
-                </div>
-                <p style="color: #999; margin-top: 15px; font-size: 0.9em;">Your data stays private - all exports happen directly in your browser.</p>
-            </div>
-        `;
-        const resultContainer = document.getElementById('resultContent') || document.querySelector('.result-display') || document.querySelector('.results-container');
-        if (resultContainer) {
-            resultContainer.insertAdjacentHTML('beforeend', exportHTML);
-        }
-    }
-    
-    function exportToCSV() {
-        const data = gatherExportData();
-        const csv = convertToCSV(data);
-        downloadFile(csv, 'assessment-results-' + Date.now() + '.csv', 'text/csv');
-        trackExport('CSV');
-    }
-    
-    function exportToExcel() {
-        const data = gatherExportData();
-        const ws = XLSX.utils.json_to_sheet(data.details || [data]);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Assessment Results");
-        
+function addExportButtons(data) {
+const exportHTML = `
+<div style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 15px; padding: 30px; margin: 30px 0; text-align: center; border: 2px solid #e0e0e0;">
+<h3 style="color: #333; margin-bottom: 15px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Export Your Results</h3>
+<p style="color: #666; margin-bottom: 20px;">Download your complete assessment results for analysis, reporting, or personal records.</p>
+<div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+<button onclick="exportToCSV()" style="background: linear-gradient(135deg, var(--tap-green) 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" aria-label="<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Download CSV">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Download CSV
+</button>
+<button onclick="exportToExcel()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);" aria-label="<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Download Excel">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Download Excel
+</button>
+<button onclick="exportToJSON()" style="background: linear-gradient(135deg, var(--belt-purple) 0%, #7c3aed 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" aria-label="<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Download JSON">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Download JSON
+</button>
+</div>
+<p style="color: #999; margin-top: 15px; font-size: 0.9em;">Your data stays private - all exports happen directly in your browser.</p>
+</div>
+`;
+const resultContainer = document.getElementById('resultContent') || document.querySelector('.result-display') || document.querySelector('.results-container');
+if (resultContainer) {
+resultContainer.insertAdjacentHTML('beforeend', exportHTML);
+}
+}
+function exportToCSV() {
+const data = gatherExportData();
+const csv = convertToCSV(data);
+downloadFile(csv, 'assessment-results-' + Date.now() + '.csv', 'text/csv');
+trackExport('CSV');
+}
+function exportToExcel() {
+const data = gatherExportData();
+const ws = XLSX.utils.json_to_sheet(data.details || [data]);
+const wb = XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb, ws, "Assessment Results");
         // Add summary sheet if categories exist
-        if (data.categories && data.categories.length > 0) {
-            const summaryData = [{
-                'Assessment Date': data.timestamp,
-                'Overall Score': (data.totalScore || data.score) + '/' + (data.maxScore || 100),
-                'Level': data.levelText || data.type || ''
-            }];
-            data.categories.forEach(cat => {
-                summaryData[0][cat.name + ' Score'] = cat.score + '/' + cat.maxScore;
-            });
-            const summaryWs = XLSX.utils.json_to_sheet(summaryData);
-            XLSX.utils.book_append_sheet(wb, summaryWs, "Summary");
-        }
-        
-        XLSX.writeFile(wb, 'assessment-results-' + Date.now() + '.xlsx');
-        trackExport('Excel');
-    }
-    
-    function exportToJSON() {
-        const data = gatherExportData();
-        const json = JSON.stringify(data, null, 2);
-        downloadFile(json, 'assessment-results-' + Date.now() + '.json', 'application/json');
-        trackExport('JSON');
-    }
-    
-    function convertToCSV(data) {
-        let csv = (data.assessmentType || 'Assessment') + ' Results\n';
-        csv += `Date,${data.timestamp}
+if (data.categories && data.categories.length > 0) {
+const summaryData = [{
+'Assessment Date': data.timestamp,
+'Overall Score': (data.totalScore || data.score) + '/' + (data.maxScore || 100),
+'Level': data.levelText || data.type || ''
+}];
+data.categories.forEach(cat => {
+summaryData[0][cat.name + ' Score'] = cat.score + '/' + cat.maxScore;
+});
+const summaryWs = XLSX.utils.json_to_sheet(summaryData);
+XLSX.utils.book_append_sheet(wb, summaryWs, "Summary");
+}
+XLSX.writeFile(wb, 'assessment-results-' + Date.now() + '.xlsx');
+trackExport('Excel');
+}
+function exportToJSON() {
+const data = gatherExportData();
+const json = JSON.stringify(data, null, 2);
+downloadFile(json, 'assessment-results-' + Date.now() + '.json', 'application/json');
+trackExport('JSON');
+}
+function convertToCSV(data) {
+let csv = (data.assessmentType || 'Assessment') + ' Results\n';
+csv += `Date,${data.timestamp}
 `;
-        csv += `Score,${(data.totalScore || data.score)}/${(data.maxScore || 100)}
+csv += `Score,${(data.totalScore || data.score)}/${(data.maxScore || 100)}
 `;
-        csv += `Level,${data.levelText || data.type || ''}
+csv += `Level,${data.levelText || data.type || ''}
 `;
-        csv += '\n';
-        
-        if (data.categories && data.categories.length > 0) {
-            csv += 'Category Scores\n';
-            csv += 'Category,Score,Max,Percentage\n';
-            data.categories.forEach(cat => {
-                csv += `${cat.name},${cat.score},${cat.maxScore},${cat.percentage}%
+csv += '\n';
+if (data.categories && data.categories.length > 0) {
+csv += 'Category Scores\n';
+csv += 'Category,Score,Max,Percentage\n';
+data.categories.forEach(cat => {
+csv += `${cat.name},${cat.score},${cat.maxScore},${cat.percentage}%
 `;
-            });
-            csv += '\n';
-        }
-        
-        if (data.details && data.details.length > 0) {
-            csv += 'Detailed Responses\n';
-            const headers = Object.keys(data.details[0]);
-            csv += headers.join(',') + '\n';
-            data.details.forEach(row => {
-                const values = headers.map(h => {
-                    let v = row[h];
-                    if (typeof v === 'string') v = v.replace(/"/g, '""');
-                    return `"${v}"`;
-                });
-                csv += values.join(',') + '\n';
-            });
-        }
-        
-        return csv;
-    }
-    
-    function downloadFile(content, filename, mimeType) {
-        const blob = new Blob([content], { type: mimeType });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-    
-    function trackExport(format) {
-        if (typeof gtag !== 'undefined') {
-            gtag('event', 'export_data', {
-                'event_category': 'Data Export',
-                'event_label': format + '_Assessment',
-                'value': 1
-            });
-        }
-    }
-    
+});
+csv += '\n';
+}
+if (data.details && data.details.length > 0) {
+csv += 'Detailed Responses\n';
+const headers = Object.keys(data.details[0]);
+csv += headers.join(',') + '\n';
+data.details.forEach(row => {
+const values = headers.map(h => {
+let v = row[h];
+if (typeof v === 'string') v = v.replace(/"/g, '""');
+return `"${v}"`;
+});
+csv += values.join(',') + '\n';
+});
+}
+return csv;
+}
+function downloadFile(content, filename, mimeType) {
+const blob = new Blob([content], { type: mimeType });
+const url = URL.createObjectURL(blob);
+const link = document.createElement('a');
+link.href = url;
+link.download = filename;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+URL.revokeObjectURL(url);
+}
+function trackExport(format) {
+if (typeof gtag !== 'undefined') {
+gtag('event', 'export_data', {
+'event_category': 'Data Export',
+'event_label': format + '_Assessment',
+'value': 1
+});
+}
+}
     // Backend data collection (Google Sheets + Database)
-    async function saveAssessmentData(data) {
-        const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
-        
-        try {
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...data,
-                    userAgent: navigator.userAgent,
-                    language: navigator.language
-                })
-            });
-        } catch (error) {
+async function saveAssessmentData(data) {
+const GOOGLE_SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE';
+try {
+await fetch(GOOGLE_SCRIPT_URL, {
+method: 'POST',
+mode: 'no-cors',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+...data,
+userAgent: navigator.userAgent,
+language: navigator.language
+})
+});
+} catch (error) {
             console.log('Google Sheets not configured');
-        }
-        
-        try {
-            await fetch('/.netlify/functions/save-assessment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-        } catch (error) {
+}
+try {
+await fetch('/.netlify/functions/save-assessment', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(data)
+});
+} catch (error) {
             console.log('Database not configured');
-        }
-        
-        try {
-            const existing = JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
-            existing.push({ ...data, id: Date.now() });
-            if (existing.length > 10) existing.shift();
-            localStorage.setItem('tap-in-assessments', JSON.stringify(existing));
-        } catch (e) {}
-    }
-
+}
+try {
+const existing = JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
+existing.push({ ...data, id: Date.now() });
+if (existing.length > 10) existing.shift();
+localStorage.setItem('tap-in-assessments', JSON.stringify(existing));
+} catch (e) {}
+}
     // === GAMIFICATION SYSTEM ===
-    const GAMIFICATION = {
-        xp: 0,
-        level: 1,
-        xpPerQuestion: 8,
-        xpForCompletion: 100,
-        achievements: {
-            first_start: { name: 'Balance Explorer', icon: '🎯', desc: 'Work-Life-Balance-Assessment gestartet', unlocked: false, xp: 50 },
-            halfway: { name: 'Halbzeit-Held', icon: '💪', desc: 'Hälfte des Assessments abgeschlossen', unlocked: false, xp: 50 },
-            complete: { name: 'Work-Life-Balance-Champion', icon: '🏆', desc: 'Assessment abgeschlossen', unlocked: false, xp: 50 },
-            speed_demon: { name: 'Geschwindigkeitsdämon', icon: '⚡', desc: 'Unter 5 Minuten abgeschlossen', unlocked: false, xp: 50 }
-        },
-        
-        load() {
-            const saved = localStorage.getItem('tapinGamificationWLBDE');
-            if (saved) {
-                const data = JSON.parse(saved);
-                this.xp = data.xp || 0;
-                this.level = data.level || 1;
-                Object.keys(data.achievements || {}).forEach(key => {
-                    if (this.achievements[key]) this.achievements[key].unlocked = data.achievements[key].unlocked;
-                });
-            }
-        },
-        
-        save() {
-            localStorage.setItem('tapinGamificationWLBDE', JSON.stringify({
-                xp: this.xp,
-                level: this.level,
-                achievements: Object.fromEntries(Object.entries(this.achievements).map(([k,v]) => [k, {unlocked: v.unlocked}]))
-            }));
-        },
-        
-        addXP(amount) {
-            this.xp += amount;
-            this.updateXPBar();
-            this.checkLevelUp();
-            this.save();
-        },
-        
-        updateXPBar() {
-            const bar = document.getElementById('xpBar');
-            if (!bar) return;
-            bar.style.display = 'block';
-            const levelThresholds = [100, 200, 300, 500];
-            const currentThreshold = levelThresholds[this.level - 1] || 500;
-            const progress = Math.min((this.xp / currentThreshold) * 100, 100);
-            bar.querySelector('.progress-fill').style.width = progress + '%';
-            bar.querySelector('.level').textContent = `Level ${this.level}: ${this.getLevelName()}`;
-            bar.querySelector('.xp-text').textContent = `${this.xp} / ${currentThreshold} XP`;
-        },
-        
-        getLevelName() {
-            const names = ['Balance Explorer', 'Harmonie-Sucher', 'Integrations-Meister', 'Work-Life-Balance-Guru'];
-            return names[this.level - 1] || names[names.length - 1];
-        },
-        
-        checkLevelUp() {
-            const levelThresholds = [100, 200, 300, 500];
-            const currentThreshold = levelThresholds[this.level - 1];
-            if (this.xp >= currentThreshold && this.level < levelThresholds.length + 1) {
-                this.level++;
-                this.showAchievement('🎊', 'Level Up!', `Du bist jetzt ${this.getLevelName()}!`);
-                this.save();
-            }
-        },
-        
-        showAchievement(icon, title, desc) {
-            const toast = document.getElementById('achievementToast');
-            if (!toast) return;
-            document.getElementById('toastIcon').textContent = icon;
-            document.getElementById('toastTitle').textContent = title;
-            document.getElementById('toastDesc').textContent = desc;
-            toast.style.display = 'block';
-            toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.style.display = 'none', 500);
-            }, 4000);
-        },
-        
-        unlockAchievement(key) {
-            const achievement = this.achievements[key];
-            if (!achievement || achievement.unlocked) return;
-            achievement.unlocked = true;
-            this.addXP(achievement.xp);
-            this.showAchievement(achievement.icon, achievement.name, achievement.desc);
-            this.save();
-        },
-        
-        showStreak() {
-            const now = new Date();
-            const today = now.toDateString();
-            const lastVisit = localStorage.getItem('tapinLastVisitWLBDE');
-            let streak = parseInt(localStorage.getItem('tapinStreakWLBDE') || '0');
-            
-            if (lastVisit) {
-                const lastDate = new Date(lastVisit);
-                const diffTime = now - lastDate;
-                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-                
-                if (diffDays === 1) streak++;
-                else if (diffDays > 1) streak = 1;
-            } else {
-                streak = 1;
-            }
-            
-            localStorage.setItem('tapinStreakWLBDE', streak);
-            localStorage.setItem('tapinLastVisitWLBDE', today);
-            
-            const badge = document.getElementById('streakBadge');
-            if (badge) {
-                badge.style.display = 'flex';
-                document.getElementById('streakCount').textContent = streak;
-            }
-        }
-    };
-    
-    function celebrateCompletion() {
-        for (let i = 0; i < 100; i++) {
-            setTimeout(() => {
-                const confetti = document.createElement('div');
-                confetti.className = 'confetti';
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.background = ['#4a7c9c', '#3d6680', '#4a7c9c', '#4a7c9c'][Math.floor(Math.random() * 4)];
-                confetti.style.animation = `fall ${2 + Math.random() * 3}s linear`;
-                document.body.appendChild(confetti);
-                setTimeout(() => confetti.remove(), 5000);
-            }, i * 30);
-        }
-        const style = document.createElement('style');
-        style.textContent = '@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }';
-        document.head.appendChild(style);
-    }
-    
-    function addAchievementBadges() {
-        const resultsDiv = document.querySelector('.results-container') || document.querySelector('.container');
-        if (!resultsDiv) return;
-        
-        const achievementsHTML = `
-            <div class="achievements-section">
-                <h2 style="color:#1a365d;margin-bottom:10px;font-size:1.8em;">🏆 Deine Achievements</h2>
-                <p style="color:#64748b;margin-bottom:20px;">Sammle Abzeichen, indem du Assessments abschließt und Meilensteine erreichst!</p>
-                <div class="achievements-grid">
-                    ${Object.values(GAMIFICATION.achievements).map(a => `
-                        <div class="badge ${a.unlocked ? 'unlocked' : 'locked'}">
-                            <div class="badge-icon">${a.icon}</div>
-                            <div class="badge-name">${a.name}</div>
-                            <div class="badge-desc">${a.desc}</div>
-                            ${a.unlocked ? `<div style="color:#4a7c9c;font-weight:700;margin-top:8px;">+${a.xp} XP</div>` : '<div style="color:#94a3b8;margin-top:8px;">Gesperrt</div>'}
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-        resultsDiv.insertAdjacentHTML('beforeend', achievementsHTML);
-    }
-    
-    GAMIFICATION.load();
-    GAMIFICATION.showStreak();
-    GAMIFICATION.unlockAchievement('first_start');
-    window.assessmentStartTime = Date.now();
-    GAMIFICATION.updateXPBar();
-    
-    const originalNextQuestion = window.nextQuestion;
-    window.nextQuestion = function() {
-        const currentQ = window.currentQuestion || 0;
-        const totalQ = window.questions?.length || 20;
-        if (currentQ > 0 && currentQ < totalQ) {
-            GAMIFICATION.addXP(GAMIFICATION.xpPerQuestion);
-            if (currentQ === Math.floor(totalQ / 2)) {
-                GAMIFICATION.unlockAchievement('halfway');
-            }
-        }
-        if (originalNextQuestion) originalNextQuestion.apply(this, arguments);
-    };
-    
-    const originalShowResults = window.showResults;
-    window.showResults = function() {
-        if (originalShowResults) originalShowResults.apply(this, arguments);
-        
-        GAMIFICATION.addXP(GAMIFICATION.xpForCompletion);
-        GAMIFICATION.unlockAchievement('complete');
-        
-        const completionTime = (Date.now() - window.assessmentStartTime) / 1000;
-        if (completionTime < 300) {
-            GAMIFICATION.unlockAchievement('speed_demon');
-        }
-        
-        celebrateCompletion();
-        setTimeout(() => addAchievementBadges(), 500);
-    };
-
-    </script>
-
-    <!-- Performance Optimizer - Load First -->
+const GAMIFICATION = {
+xp: 0,
+level: 1,
+xpPerQuestion: 8,
+xpForCompletion: 100,
+achievements: {
+first_start: { name: 'Balance Explorer', icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg>', desc: 'Work-Life-Balance-Assessment gestartet', unlocked: false, xp: 50 },
+halfway: { name: 'Halbzeit-Held', icon: '💪', desc: 'Hälfte des Assessments abgeschlossen', unlocked: false, xp: 50 },
+complete: { name: 'Work-Life-Balance-Champion', icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg>', desc: 'Assessment abgeschlossen', unlocked: false, xp: 50 },
+speed_demon: { name: 'Geschwindigkeitsdämon', icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-bolt"></use></svg>', desc: 'Unter 5 Minuten abgeschlossen', unlocked: false, xp: 50 }
+},
+load() {
+const saved = localStorage.getItem('tapinGamificationWLBDE');
+if (saved) {
+const data = JSON.parse(saved);
+this.xp = data.xp || 0;
+this.level = data.level || 1;
+Object.keys(data.achievements || {}).forEach(key => {
+if (this.achievements[key]) this.achievements[key].unlocked = data.achievements[key].unlocked;
+});
+}
+},
+save() {
+localStorage.setItem('tapinGamificationWLBDE', JSON.stringify({
+xp: this.xp,
+level: this.level,
+achievements: Object.fromEntries(Object.entries(this.achievements).map(([k,v]) => [k, {unlocked: v.unlocked}]))
+}));
+},
+addXP(amount) {
+this.xp += amount;
+this.updateXPBar();
+this.checkLevelUp();
+this.save();
+},
+updateXPBar() {
+const bar = document.getElementById('xpBar');
+if (!bar) return;
+bar.style.display = 'block';
+const levelThresholds = [100, 200, 300, 500];
+const currentThreshold = levelThresholds[this.level - 1] || 500;
+const progress = Math.min((this.xp / currentThreshold) * 100, 100);
+bar.querySelector('.progress-fill').style.width = progress + '%';
+bar.querySelector('.level').textContent = `Level ${this.level}: ${this.getLevelName()}`;
+bar.querySelector('.xp-text').textContent = `${this.xp} / ${currentThreshold} XP`;
+},
+getLevelName() {
+const names = ['Balance Explorer', 'Harmonie-Sucher', 'Integrations-Meister', 'Work-Life-Balance-Guru'];
+return names[this.level - 1] || names[names.length - 1];
+},
+checkLevelUp() {
+const levelThresholds = [100, 200, 300, 500];
+const currentThreshold = levelThresholds[this.level - 1];
+if (this.xp >= currentThreshold && this.level < levelThresholds.length + 1) {
+this.level++;
+this.showAchievement('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-sparkles"></use></svg>', 'Level Up!', `Du bist jetzt ${this.getLevelName()}!`);
+this.save();
+}
+},
+showAchievement(icon, title, desc) {
+const toast = document.getElementById('achievementToast');
+if (!toast) return;
+document.getElementById('toastIcon').textContent = icon;
+document.getElementById('toastTitle').textContent = title;
+document.getElementById('toastDesc').textContent = desc;
+toast.style.display = 'block';
+toast.classList.add('show');
+setTimeout(() => {
+toast.classList.remove('show');
+setTimeout(() => toast.style.display = 'none', 500);
+}, 4000);
+},
+unlockAchievement(key) {
+const achievement = this.achievements[key];
+if (!achievement || achievement.unlocked) return;
+achievement.unlocked = true;
+this.addXP(achievement.xp);
+this.showAchievement(achievement.icon, achievement.name, achievement.desc);
+this.save();
+},
+showStreak() {
+const now = new Date();
+const today = now.toDateString();
+const lastVisit = localStorage.getItem('tapinLastVisitWLBDE');
+let streak = parseInt(localStorage.getItem('tapinStreakWLBDE') || '0');
+if (lastVisit) {
+const lastDate = new Date(lastVisit);
+const diffTime = now - lastDate;
+const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+if (diffDays === 1) streak++;
+else if (diffDays > 1) streak = 1;
+} else {
+streak = 1;
+}
+localStorage.setItem('tapinStreakWLBDE', streak);
+localStorage.setItem('tapinLastVisitWLBDE', today);
+const badge = document.getElementById('streakBadge');
+if (badge) {
+badge.style.display = 'flex';
+document.getElementById('streakCount').textContent = streak;
+}
+}
+};
+function celebrateCompletion() {
+for (let i = 0; i < 100; i++) {
+setTimeout(() => {
+const confetti = document.createElement('div');
+confetti.className = 'confetti';
+confetti.style.left = Math.random() * 100 + 'vw';
+confetti.style.background = ['var(--tap-blue)', '#3d6680', 'var(--tap-blue)', 'var(--tap-blue)'][Math.floor(Math.random() * 4)];
+confetti.style.animation = `fall ${2 + Math.random() * 3}s linear`;
+document.body.appendChild(confetti);
+setTimeout(() => confetti.remove(), 5000);
+}, i * 30);
+}
+const style = document.createElement('style');
+style.textContent = '@keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }';
+document.head.appendChild(style);
+}
+function addAchievementBadges() {
+const resultsDiv = document.querySelector('.results-container') || document.querySelector('.container');
+if (!resultsDiv) return;
+const achievementsHTML = `
+<div class="achievements-section">
+<h2 style="color:var(--bg-primary);margin-bottom:10px;font-size:1.8em;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-trophy"></use></svg> Deine Achievements</h2>
+<p style="color:var(--text-muted);margin-bottom:20px;">Sammle Abzeichen, indem du Assessments abschließt und Meilensteine erreichst!</p>
+<div class="achievements-grid">
+${Object.values(GAMIFICATION.achievements).map(a => `
+<div class="badge ${a.unlocked ? 'unlocked' : 'locked'}">
+<div class="badge-icon">${a.icon}</div>
+<div class="badge-name">${a.name}</div>
+<div class="badge-desc">${a.desc}</div>
+${a.unlocked ? `<div style="color:var(--tap-blue);font-weight:700;margin-top:8px;">+${a.xp} XP</div>` : '<div style="color:var(--text-secondary);margin-top:8px;">Gesperrt</div>'}
+</div>
+`).join('')}
+</div>
+</div>
+`;
+resultsDiv.insertAdjacentHTML('beforeend', achievementsHTML);
+}
+GAMIFICATION.load();
+GAMIFICATION.showStreak();
+GAMIFICATION.unlockAchievement('first_start');
+window.assessmentStartTime = Date.now();
+GAMIFICATION.updateXPBar();
+const originalNextQuestion = window.nextQuestion;
+window.nextQuestion = function() {
+const currentQ = window.currentQuestion || 0;
+const totalQ = window.questions?.length || 20;
+if (currentQ > 0 && currentQ < totalQ) {
+GAMIFICATION.addXP(GAMIFICATION.xpPerQuestion);
+if (currentQ === Math.floor(totalQ / 2)) {
+GAMIFICATION.unlockAchievement('halfway');
+}
+}
+if (originalNextQuestion) originalNextQuestion.apply(this, arguments);
+};
+const originalShowResults = window.showResults;
+window.showResults = function() {
+if (originalShowResults) originalShowResults.apply(this, arguments);
+GAMIFICATION.addXP(GAMIFICATION.xpForCompletion);
+GAMIFICATION.unlockAchievement('complete');
+const completionTime = (Date.now() - window.assessmentStartTime) / 1000;
+if (completionTime < 300) {
+GAMIFICATION.unlockAchievement('speed_demon');
+}
+celebrateCompletion();
+setTimeout(() => addAchievementBadges(), 500);
+};
+</script>
+<!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.min.js"></script>
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.min.js"></script>
 <script src="js/storage-health.min.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-
-    <!-- Focus Management for Accessibility -->
-    <script src="js/focus-management.js" defer></script>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Focus Management for Accessibility -->
+<script src="js/focus-management.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
 </body>
 </html>

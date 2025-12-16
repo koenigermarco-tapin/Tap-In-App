@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Goal Tracker | Tap-In</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: #1a1d2e;
+color: var(--border-light);
+font-family: Inter, -apple-system, sans-serif;
+min-height: 100vh;
+padding: 2rem;
+}
+.container {
+max-width: 900px;
+margin: 0 auto;
+}
+.nav-bar {
+margin-bottom: 2rem;
+}
+.back-btn {
+color: var(--text-secondary);
+text-decoration: none;
+font-size: 0.95rem;
+transition: color 0.2s ease;
+}
+.back-btn:hover { color: var(--belt-white); }
+.header {
+text-align: center;
+margin-bottom: 3rem;
+}
+.header h1 {
+font-size: 2.5rem;
+color: var(--tap-blue);
+margin-bottom: 0.5rem;
+}
+.header p {
+color: var(--text-secondary);
+font-size: 1.1rem;
+}
+.add-goal-section {
+background: #252940;
+border: 2px solid #3d4466;
+border-radius: 12px;
+padding: 2rem;
+margin-bottom: 2rem;
+}
+.add-goal-section h2 {
+color: var(--tap-blue);
+margin-bottom: 1.5rem;
+}
+.form-group {
+margin-bottom: 1.5rem;
+}
+.form-group label {
+display: block;
+color: var(--text-secondary);
+margin-bottom: 0.5rem;
+font-weight: 600;
+}
+input, select, textarea {
+width: 100%;
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 8px;
+color: var(--border-light);
+padding: 0.75rem;
+font-family: inherit;
+font-size: 1rem;
+}
+input:focus, select:focus, textarea:focus {
+outline: none;
+border-color: var(--tap-blue);
+}
+textarea {
+min-height: 80px;
+resize: vertical;
+}
+.add-btn {
+background: var(--tap-blue);
+color: white;
+border: none;
+padding: 1rem 2rem;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+width: 100%;
+transition: all 0.2s ease;
+}
+.add-btn:hover {
+background: #5a8cac;
+transform: translateY(-2px);
+}
+.goals-list {
+display: grid;
+gap: 1rem;
+}
+.goal-card {
+background: #252940;
+border: 2px solid #3d4466;
+border-left: 4px solid var(--tap-blue);
+border-radius: 12px;
+padding: 1.5rem;
+transition: all 0.2s ease;
+}
+.goal-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(74, 124, 156, 0.2);
+}
+.goal-card.completed {
+opacity: 0.6;
+border-left-color: var(--tap-green);
+}
+.goal-header {
+display: flex;
+justify-content: space-between;
+align-items: start;
+margin-bottom: 1rem;
+}
+.goal-title {
+color: var(--border-light);
+font-size: 1.2rem;
+font-weight: 600;
+flex: 1;
+}
+.goal-category {
+background: var(--tap-blue);
+color: white;
+padding: 0.25rem 0.75rem;
+border-radius: 4px;
+font-size: 0.75rem;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+.goal-description {
+color: var(--text-secondary);
+margin-bottom: 1rem;
+line-height: 1.6;
+}
+.goal-meta {
+display: flex;
+justify-content: space-between;
+align-items: center;
+padding-top: 1rem;
+border-top: 1px solid #3d4466;
+}
+.goal-date {
+color: var(--text-secondary);
+font-size: 0.85rem;
+}
+.goal-actions {
+display: flex;
+gap: 0.5rem;
+}
+.btn-small {
+background: #3d4466;
+color: white;
+border: none;
+padding: 0.5rem 1rem;
+border-radius: 6px;
+font-size: 0.85rem;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.btn-small:hover {
+background: #4d5476;
+}
+.btn-small.complete {
+background: var(--tap-green);
+}
+.btn-small.complete:hover {
+background: #059669;
+}
+.btn-small.delete {
+background: var(--error);
+}
+.btn-small.delete:hover {
+background: #dc2626;
+}
+@media (max-width: 768px) {
+body { padding: 1rem; }
+.goal-header { flex-direction: column; gap: 0.5rem; }
+.goal-actions { width: 100%; }
+.btn-small { flex: 1; }
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Goal Tracker | Tap-In - TAP-IN Leadership Academy">
+</head>
+<body>
+<div class="container">
+<div class="nav-bar">
+<a href="src/pages/gym/gym-home-FOCUSED.html" class="back-btn">← Back to Gym</a>
+</div>
+<div class="header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Goal Tracker</h1>
+<p>Set goals, track progress, achieve results</p>
+</div>
+<div class="add-goal-section">
+<h2>Create New Goal</h2>
+<div class="form-group">
+<label>Goal Title *</label>
+<input type="text" id="goalTitle" placeholder="e.g., Complete Blue Belt" required>
+</div>
+<div class="form-group">
+<label>Category</label>
+<select id="goalCategory">
+<option value="leadership">Leadership</option>
+<option value="skills">Skills</option>
+<option value="fitness">Fitness</option>
+<option value="personal">Personal</option>
+<option value="team">Team</option>
+</select>
+</div>
+<div class="form-group">
+<label>Description</label>
+<textarea id="goalDescription" placeholder="What does success look like?"></textarea>
+</div>
+<div class="form-group">
+<label>Target Date</label>
+<input type="date" id="goalDate">
+</div>
+<button class="add-btn" onclick="addGoal()" aria-label="Action">Add Goal (+10 XP)</button>
+</div>
+<div class="goals-list" id="goalsList"></div>
+</div>
+<script>
+function addGoal() {
+const title = document.getElementById('goalTitle').value.trim();
+if (!title) {
+alert('Please enter a goal title!');
+return;
+}
+const goal = {
+id: Date.now(),
+title: title,
+category: document.getElementById('goalCategory').value,
+description: document.getElementById('goalDescription').value,
+targetDate: document.getElementById('goalDate').value,
+createdAt: new Date().toISOString(),
+completed: false
+};
+      // Save to localStorage
+const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+goals.unshift(goal);
+localStorage.setItem('goals', JSON.stringify(goals));
+      // Award XP with enhanced gamification
+if (typeof TapInGamification !== 'undefined') {
+TapInGamification.awardXP(10, 'Goal Created');
+} else {
+        // Fallback for backward compatibility
+const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+localStorage.setItem('totalXP', currentXP + 10);
+}
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check-circle"></use></svg> Goal added! +10 XP');
+      // Reset form
+document.getElementById('goalTitle').value = '';
+document.getElementById('goalDescription').value = '';
+document.getElementById('goalDate').value = '';
+      // Reload list
+loadGoals();
+}
+function completeGoal(id) {
+const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+const goal = goals.find(g => g.id === id);
+if (goal) {
+goal.completed = true;
+goal.completedAt = new Date().toISOString();
+localStorage.setItem('goals', JSON.stringify(goals));
+        // Award XP with enhanced gamification
+if (typeof TapInGamification !== 'undefined') {
+TapInGamification.awardXP(25, 'Goal Completed');
+} else {
+          // Fallback for backward compatibility
+const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+localStorage.setItem('totalXP', currentXP + 25);
+}
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> Goal completed! +25 XP');
+loadGoals();
+}
+}
+function deleteGoal(id) {
+if (!confirm('Delete this goal?')) return;
+const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+const filtered = goals.filter(g => g.id !== id);
+localStorage.setItem('goals', JSON.stringify(filtered));
+loadGoals();
+}
+function loadGoals() {
+const goals = JSON.parse(localStorage.getItem('goals') || '[]');
+const container = document.getElementById('goalsList');
+if (goals.length === 0) {
+safeSetInnerHTML(container, `
+<div style="background: #252940); border: 2px dashed #3d4466; border-radius: 12px; padding: 3rem; text-align: center;">
+<p style="color: var(--text-secondary); font-size: 1.1rem;">No goals yet. Create your first goal above!</p>
+</div>
+`;
+return;
+}
+safeSetInnerHTML(container, goals.map(goal => `
+<div class="goal-card ${goal.completed ? 'completed' : ''}">
+<div class="goal-header">
+<div class="goal-title">${goal.completed ? '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check-circle"></use></svg> ' : ''}${goal.title}</div>
+<div class="goal-category">${goal.category}</div>
+</div>
+${goal.description ? `<div class="goal-description">${goal.description}</div>` : ''}
+<div class="goal-meta">
+<div class="goal-date">
+${goal.targetDate ? `Target: ${new Date(goal.targetDate).toLocaleDateString()}` : 'No deadline'}
+</div>
+<div class="goal-actions">
+${!goal.completed ?
+`<button class="btn-small complete" onclick="completeGoal(${goal.id})" aria-label="Complete">Complete</button>` :
+'<span style="color: var(--tap-green));"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Done</span>'}
+<button class="btn-small delete" onclick="deleteGoal(${goal.id})" aria-label="Action">Delete</button>
+</div>
+</div>
+</div>
+`).join('');
+}
+    // Load goals on page load
+loadGoals();
+</script>
+<!-- Enhanced Gamification System -->
+<script src="../../../js/gamification-enhanced.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="../../../js/shared-utilities.js"></script>
+<script src="../../../js/global-error-handler.min.js"></script>
+<script src="../../../js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="../../../js/meta-tags-manager.js"></script>
+<script src="../../../js/achievement-badges.js"></script>
+<script src="../../../js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="../../../js/screen-reader-enhancements.js" defer></script>
+
+    <!-- Navigation back to Gym -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
+        <a href="../../gym/gym-dashboard.html" style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 12px 20px; background: linear-gradient(135deg, #1a365d 0%, #7c3aed 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Gym
+        </a>
+    </div>
+
+</body>
+</html>

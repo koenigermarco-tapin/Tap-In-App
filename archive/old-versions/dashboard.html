@@ -349,6 +349,7 @@
             }
         }
     </style>
+    <script src="/js/core/dom.js" type="module"></script>
 </head>
 <body>
     <div class="container">
@@ -455,7 +456,7 @@
                         <label>Second Assessment:</label>
                         <select id="compareSelect2"></select>
                     </div>
-                    <button class="btn btn-primary" onclick="compareAssessments()">Compare</button>
+                    <button class="btn btn-primary" onclick="compareAssessments()" aria-label="Button">Compare</button>
                 </div>
                 <div id="comparisonResults"></div>
             </div>
@@ -562,13 +563,13 @@
 
             html += `
                     <div class="assessment-actions">
-                        <button class="btn btn-primary" onclick="retakeAssessment('${assessment.assessmentType}')">
+                        <button class="btn btn-primary" onclick="retakeAssessment('${assessment.assessmentType}')" aria-label="Button">
                             🔄 Retake Assessment
                         </button>
-                        <button class="btn btn-secondary" onclick="viewDetails(${index})">
+                        <button class="btn btn-secondary" onclick="viewDetails(${index})" aria-label="Button">
                             👁️ View Full Results
                         </button>
-                        <button class="btn btn-danger" onclick="deleteAssessment(${index})">
+                        <button class="btn btn-danger" onclick="deleteAssessment(${index})" aria-label="Button">
                             🗑️ Delete
                         </button>
                     </div>
@@ -840,18 +841,18 @@
             const historyContainer = document.getElementById('assessmentHistory');
             
             if (assessments.length === 0) {
-                historyContainer.innerHTML = `
+                safeSetInnerHTML(historyContainer, `
                     <div class="empty-state">
                         <div class="empty-state-icon">📭</div>
                         <h3>No Assessments Yet</h3>
                         <p>Take your first assessment to start tracking your progress!</p>
                         <a href="index.html" class="btn btn-primary">Take an Assessment</a>
                     </div>
-                `;
+                `);
             } else {
-                historyContainer.innerHTML = '<div class="assessment-grid">' +
+                safeSetInnerHTML(historyContainer, '<div class="assessment-grid">' +
                     assessments.map((a, i) => renderAssessmentCard(a, i, assessments)).join('') +
-                    '</div>';
+                    '</div>');
 
                 // Show comparison section if multiple assessments
                 if (assessments.length >= 2) {
@@ -874,8 +875,8 @@
                 return `<option value="${i}">${getAssessmentTitle(a.assessmentType)} - ${date}</option>`;
             }).join('');
 
-            select1.innerHTML = options;
-            select2.innerHTML = options;
+            safeSetInnerHTML(select1, options);
+            safeSetInnerHTML(select2, options);
             select2.selectedIndex = Math.min(1, assessments.length - 1);
         }
 
@@ -1048,7 +1049,7 @@
 
             // Display achievements
             const achievementsList = document.getElementById('achievementsList');
-            achievementsList.innerHTML = '';
+            safeSetInnerHTML(achievementsList, '');
 
             // Show all achievements (locked and unlocked)
             Object.values(window.Gamification.ACHIEVEMENTS).forEach(achievement => {
@@ -1064,8 +1065,8 @@
                     ${unlocked ? '' : 'opacity: 0.5; filter: grayscale(100%);'}
                 `;
                 
-                card.innerHTML = `
-                    <div style="font-size: 3em; margin-bottom: 10px;">${achievement.icon}</div>
+                safeSetInnerHTML(card, `
+                    <div style="font-size: 3em); margin-bottom: 10px;">${achievement.icon}</div>
                     <div style="font-weight: bold; margin-bottom: 5px;">${achievement.name}</div>
                     <div style="font-size: 0.85em; opacity: 0.8;">${achievement.description}</div>
                     <div style="margin-top: 10px; color: #ffc107; font-weight: bold;">${unlocked ? `+${achievement.points} pts` : '🔒 Locked'}</div>

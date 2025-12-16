@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<<<<<<< HEAD
+<title>Confession Poker - Vertrauensaufbau-Kartenspiel</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<!-- Firebase for Multi-Device Mode -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(20px); }
+to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideIn {
+from { transform: translateX(-100%); }
+to { transform: translateX(0); }
+}
+@keyframes pulse {
+0%, 100% { transform: scale(1); }
+50% { transform: scale(1.05); }
+}
+@keyframes shake {
+0%, 100% { transform: translateX(0); }
+25% { transform: translateX(-10px); }
+75% { transform: translateX(10px); }
+}
+.fade-in { animation: fadeIn 0.5s ease-out; }
+.slide-in { animation: slideIn 0.3s ease-out; }
+.pulse-animation { animation: pulse 2s infinite; }
+.shake-animation { animation: shake 0.5s ease-in-out; }
+.card-flip {
+perspective: 1000px;
+}
+.card-flip-inner {
+position: relative;
+width: 100%;
+height: 100%;
+transition: transform 0.6s;
+transform-style: preserve-3d;
+}
+.card-flip.flipped .card-flip-inner {
+transform: rotateY(180deg);
+}
+.card-front, .card-back {
+position: absolute;
+width: 100%;
+height: 100%;
+backface-visibility: hidden;
+}
+.card-back {
+transform: rotateY(180deg);
+}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAP-IN">
+<link rel="stylesheet" href="css/pwa-install-banner.css">
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 min-h-screen">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+        // Confession Card Database - EXPANDED TO 52 CARDS
+const CONFESSION_CARDS = [
+            // White Belt - Vulnerability (10 cards)
+{ id: 1, text: "Ich habe einmal jemand anderem die Schuld für meinen Fehler bei der Arbeit gegeben", category: "white", intensity: 2 },
+{ id: 2, text: "Ich habe so getan, als wäre ich beschäftigt, um jemandem nicht helfen zu müssen", category: "white", intensity: 1 },
+{ id: 3, text: "Ich habe über einen Teammitglied hinter seinem Rücken getratscht", category: "white", intensity: 3 },
+{ id: 4, text: "Ich habe Anerkennung für eine Idee bekommen, die nicht ganz meine war", category: "white", intensity: 4 },
+{ id: 5, text: "Ich habe gelogen, dass ich eine wichtige E-Mail/Dokument gelesen habe", category: "white", intensity: 2 },
+{ id: 6, text: "Ich habe mich krank gemeldet, obwohl ich nicht wirklich krank war", category: "white", intensity: 2 },
+{ id: 7, text: "Ich habe jemanden aufgrund seines Aussehens beurteilt", category: "white", intensity: 3 },
+{ id: 8, text: "Ich habe so getan, als würde ich etwas verstehen, obwohl ich völlig verloren war", category: "white", intensity: 2 },
+{ id: 9, text: "Ich habe in einem Interview schlecht über einen früheren Arbeitgeber gesprochen", category: "white", intensity: 3 },
+{ id: 10, text: "Ich habe Büromaterial ohne Erlaubnis mit nach Hause genommen", category: "white", intensity: 1 },
+            // Blue Belt - Conflict (10 cards)
+{ id: 11, text: "Ich habe ein schwieriges Gespräch über einen Monat lang vermieden", category: "blue", intensity: 2 },
+{ id: 12, text: "Ich habe in einem Meeting zugestimmt und mich später darüber beschwert", category: "blue", intensity: 3 },
+{ id: 13, text: "Ich habe geschwiegen, als ich mit einer schlechten Entscheidung nicht einverstanden war", category: "blue", intensity: 3 },
+{ id: 14, text: "Ich habe eine passiv-aggressive E-Mail geschickt, anstatt direkt zu sprechen", category: "blue", intensity: 2 },
+{ id: 15, text: "Ich habe eine Freundschaft beendet, indem ich geghostet habe, anstatt ein Gespräch zu führen", category: "blue", intensity: 4 },
+{ id: 16, text: "Ich habe jemandes Chef in eine E-Mail kopiert, um ihn schlecht aussehen zu lassen", category: "blue", intensity: 4 },
+{ id: 17, text: "Ich habe jemandes Feedback ignoriert, weil ich ihn nicht mochte", category: "blue", intensity: 3 },
+{ id: 18, text: "Ich habe eine toxische Arbeitsumgebung verlassen, ohne ehrliches Exit-Feedback zu geben", category: "blue", intensity: 2 },
+{ id: 19, text: "Ich habe mich bei anderen über jemanden beschwert, anstatt ihn direkt anzusprechen", category: "blue", intensity: 3 },
+{ id: 20, text: "Ich habe Blickkontakt vermieden, um ein Gespräch zu vermeiden", category: "blue", intensity: 1 },
+            // Purple Belt - Commitment (12 cards)
+{ id: 21, text: "Ich habe 'ja' zu einer Verpflichtung gesagt, obwohl ich wusste, dass ich sie nicht einhalten würde", category: "purple", intensity: 3 },
+{ id: 22, text: "Ich habe etwas aufgegeben, wozu ich mich verpflichtet habe, als es schwierig wurde", category: "purple", intensity: 3 },
+{ id: 23, text: "Ich habe jemandem ein Versprechen gegeben und es völlig vergessen", category: "purple", intensity: 2 },
+{ id: 24, text: "Ich war 'zu beschäftigt' für etwas, das ich eigentlich einfach nicht priorisiert habe", category: "purple", intensity: 2 },
+{ id: 25, text: "Ich habe ein Teamprojekt aufgegeben, bevor es fertig war", category: "purple", intensity: 4 },
+{ id: 26, text: "Ich habe eine Freiwilligenverpflichtung geghostet", category: "purple", intensity: 3 },
+{ id: 27, text: "Ich habe mich zu einem Termin verpflichtet, von dem ich wusste, dass er unmöglich war", category: "purple", intensity: 3 },
+{ id: 28, text: "Ich habe Pläne in letzter Minute ohne guten Grund abgesagt", category: "purple", intensity: 2 },
+{ id: 29, text: "Ich habe etwas halbherzig gemacht, wozu ich mich verpflichtet habe, es gut zu machen", category: "purple", intensity: 3 },
+{ id: 30, text: "Ich bin einem Ausschuss/Gruppe beigetreten und dann nie aufgetaucht", category: "purple", intensity: 3 },
+{ id: 31, text: "Ich habe einen Neujahrsvorsatz bis zum 15. Januar gebrochen", category: "purple", intensity: 1 },
+{ id: 32, text: "Ich habe mich verpflichtet, etwas zu lernen, und dann nach einer Woche aufgegeben", category: "purple", intensity: 2 },
+            // Brown Belt - Accountability (10 cards)
+{ id: 33, text: "Ich wusste, dass jemand unterdurchschnittlich leistete, habe aber nichts gesagt", category: "brown", intensity: 3 },
+{ id: 34, text: "Ich habe jemanden die Schuld für einen gemeinsamen Fehler übernehmen lassen", category: "brown", intensity: 4 },
+{ id: 35, text: "Ich habe mich nicht an die gleichen Standards gehalten, die ich von anderen erwarte", category: "brown", intensity: 3 },
+{ id: 36, text: "Ich habe eine Ausrede gemacht, anstatt zuzugeben, dass ich versagt habe", category: "brown", intensity: 2 },
+{ id: 37, text: "Ich habe einen Teamwert oder eine Regel ignoriert, wenn es unbequem war", category: "brown", intensity: 3 },
+{ id: 38, text: "Ich wusste, dass jemand die Richtlinie verletzte, habe aber geschwiegen", category: "brown", intensity: 4 },
+{ id: 39, text: "Ich habe jemandem eine gute Bewertung gegeben, die er nicht verdient hat, um Konflikte zu vermeiden", category: "brown", intensity: 4 },
+{ id: 40, text: "Ich habe zugesehen, wie jemand kämpfte, und habe keine Hilfe angeboten", category: "brown", intensity: 2 },
+{ id: 41, text: "Ich habe jemandes schlechte Leistung aus Freundschaft vertuscht", category: "brown", intensity: 3 },
+{ id: 42, text: "Ich habe nicht gesprochen, als ich unethisches Verhalten sah", category: "brown", intensity: 5 },
+            // Black Belt - Results (10 cards)
+{ id: 43, text: "Ich habe Priorität darauf gelegt, gut auszusehen, anstatt tatsächliche Ergebnisse zu erzielen", category: "black", intensity: 3 },
+{ id: 44, text: "Ich habe meinen Status geschützt, anstatt das zu tun, was für das Team am besten war", category: "black", intensity: 4 },
+{ id: 45, text: "Ich habe einen kurzfristigen Vorteil genommen, der langfristige Ergebnisse geschadet hat", category: "black", intensity: 3 },
+{ id: 46, text: "Ich habe individuellen Erfolg gefeiert, während das Team versagte", category: "black", intensity: 4 },
+{ id: 47, text: "Ich wusste, dass wir auf ein Scheitern zusteuerten, habe aber nicht gesprochen", category: "black", intensity: 5 },
+{ id: 48, text: "Ich habe mit meinen eigenen Teammitgliedern konkurriert, anstatt zusammenzuarbeiten", category: "black", intensity: 3 },
+{ id: 49, text: "Ich habe meine Ziele absichtlich niedrig angesetzt, um sie leichter zu erreichen", category: "black", intensity: 3 },
+{ id: 50, text: "Ich habe Informationen gehortet, um meine Wichtigkeit zu erhalten", category: "black", intensity: 4 },
+{ id: 51, text: "Ich habe einen Kunden scheitern lassen, weil ihnen zu helfen nicht in meinen KPIs war", category: "black", intensity: 5 },
+{ id: 52, text: "Ich habe für meinen Bonus optimiert, anstatt für das, was richtig für das Geschäft war", category: "black", intensity: 4 },
+];
+        // Simple WebSocket Mock (LocalStorage for single-device multiplayer)
+class GameRoom {
+constructor(roomCode) {
+this.roomCode = roomCode;
+this.storageKey = `confession-poker-${roomCode}`;
+}
+getState() {
+const data = localStorage.getItem(this.storageKey);
+return data ? JSON.parse(data) : null;
+}
+setState(state) {
+localStorage.setItem(this.storageKey, JSON.stringify(state));
+window.dispatchEvent(new Event('storage'));
+}
+subscribe(callback) {
+const handler = () => callback(this.getState());
+window.addEventListener('storage', handler);
+return () => window.removeEventListener('storage', handler);
+}
+}
+        // Main App Component
+function ConfessionPoker() {
+const [gameState, setGameState] = useState('lobby'); // lobby, playing, reveal, challenge, end
+const [players, setPlayers] = useState([]);
+const [currentPlayer, setCurrentPlayer] = useState(null);
+const [myPlayerName, setMyPlayerName] = useState('');
+const [roomCode, setRoomCode] = useState('');
+const [currentCard, setCurrentCard] = useState(null);
+const [activePlayerRating, setActivePlayerRating] = useState(null);
+const [playerGuesses, setPlayerGuesses] = useState({});
+const [scores, setScores] = useState({});
+const [round, setRound] = useState(0);
+const [challengeActive, setChallengeActive] = useState(false);
+const [challengeVotes, setChallengeVotes] = useState({});
+const [usedCards, setUsedCards] = useState([]);
+const [showReveal, setShowReveal] = useState(false);
+const roomRef = useRef(null);
+            // Initialize room
+useEffect(() => {
+if (roomCode && roomRef.current === null) {
+roomRef.current = new GameRoom(roomCode);
+const unsubscribe = roomRef.current.subscribe((state) => {
+if (state) {
+setPlayers(state.players || []);
+setCurrentPlayer(state.currentPlayer);
+setGameState(state.gameState || 'lobby');
+setCurrentCard(state.currentCard);
+setActivePlayerRating(state.activePlayerRating);
+setPlayerGuesses(state.playerGuesses || {});
+setScores(state.scores || {});
+setRound(state.round || 0);
+setUsedCards(state.usedCards || []);
+}
+});
+return unsubscribe;
+}
+}, [roomCode]);
+const createRoom = () => {
+const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+setRoomCode(code);
+const room = new GameRoom(code);
+room.setState({
+players: [],
+gameState: 'lobby',
+scores: {},
+round: 0,
+usedCards: []
+});
+};
+const joinRoom = (code) => {
+setRoomCode(code);
+};
+const addPlayer = (name) => {
+if (!name.trim()) return;
+const room = new GameRoom(roomCode);
+const state = room.getState();
+if (state.players.some(p => p.name === name)) {
+alert('Name bereits vergeben!');
+return;
+}
+const newPlayer = { name, trustPoints: 0, id: Date.now() };
+const updatedPlayers = [...state.players, newPlayer];
+room.setState({
+...state,
+players: updatedPlayers,
+scores: { ...state.scores, [name]: 0 }
+});
+setMyPlayerName(name);
+};
+const startGame = () => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+if (state.players.length < 3) {
+alert('Mindestens 3 Spieler erforderlich!');
+return;
+}
+room.setState({
+...state,
+gameState: 'playing',
+currentPlayer: state.players[0].name,
+round: 1
+});
+};
+const drawCard = () => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+const availableCards = CONFESSION_CARDS.filter(c => !state.usedCards.includes(c.id));
+if (availableCards.length === 0) {
+alert('Alle Karten verwendet! Spiel beendet!');
+endGame();
+return;
+}
+const randomCard = availableCards[Math.floor(Math.random() * availableCards.length)];
+room.setState({
+...state,
+currentCard: randomCard,
+usedCards: [...state.usedCards, randomCard.id],
+activePlayerRating: null,
+playerGuesses: {}
+});
+};
+const submitRating = (rating) => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+room.setState({
+...state,
+activePlayerRating: rating
+});
+};
+const submitGuess = (guess) => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+room.setState({
+...state,
+playerGuesses: {
+...state.playerGuesses,
+[myPlayerName]: guess
+}
+});
+};
+const revealResults = () => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+setShowReveal(true);
+                // Calculate scores
+const newScores = { ...state.scores };
+Object.entries(state.playerGuesses).forEach(([playerName, guess]) => {
+const diff = Math.abs(guess - state.activePlayerRating);
+const points = diff === 0 ? 3 : diff === 1 ? 2 : diff === 2 ? 1 : 0;
+newScores[playerName] = (newScores[playerName] || 0) + points;
+});
+setTimeout(() => {
+room.setState({
+...state,
+scores: newScores,
+gameState: 'playing'
+});
+setShowReveal(false);
+nextPlayer();
+}, 3000);
+};
+const nextPlayer = () => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+const currentIndex = state.players.findIndex(p => p.name === state.currentPlayer);
+const nextIndex = (currentIndex + 1) % state.players.length;
+const nextPlayerName = state.players[nextIndex].name;
+const newRound = nextIndex === 0 ? state.round + 1 : state.round;
+if (newRound > 5) {
+endGame();
+return;
+}
+room.setState({
+...state,
+currentPlayer: nextPlayerName,
+currentCard: null,
+activePlayerRating: null,
+playerGuesses: {},
+round: newRound
+});
+};
+const initiateChallenge = () => {
+setChallengeActive(true);
+setChallengeVotes({});
+};
+const submitChallengeVote = (vote) => {
+const newVotes = { ...challengeVotes, [myPlayerName]: vote };
+setChallengeVotes(newVotes);
+const totalVotes = Object.values(newVotes).length;
+if (totalVotes === players.length - 1) {
+resolveChallenge(newVotes);
+}
+};
+const resolveChallenge = (votes) => {
+const believeCount = Object.values(votes).filter(v => v === 'believe').length;
+const challengeCount = Object.values(votes).filter(v => v === 'challenge').length;
+const room = new GameRoom(roomCode);
+const state = room.getState();
+const newScores = { ...state.scores };
+if (challengeCount > believeCount) {
+                    // Challenge succeeds - active player loses points
+newScores[currentPlayer] = Math.max(0, (newScores[currentPlayer] || 0) - 5);
+alert(`Challenge succeeded! ${currentPlayer} loses 5 trust points.`);
+} else {
+                    // Challenge fails - challengers lose points
+Object.entries(votes).forEach(([playerName, vote]) => {
+if (vote === 'challenge') {
+newScores[playerName] = Math.max(0, (newScores[playerName] || 0) - 2);
+}
+});
+alert('Challenge failed! Challengers lose 2 trust points each.');
+}
+room.setState({
+...state,
+scores: newScores
+});
+setChallengeActive(false);
+setChallengeVotes({});
+};
+const endGame = () => {
+const room = new GameRoom(roomCode);
+const state = room.getState();
+room.setState({
+...state,
+gameState: 'end'
+});
+};
+const resetGame = () => {
+const room = new GameRoom(roomCode);
+room.setState({
+players: [],
+gameState: 'lobby',
+scores: {},
+round: 0,
+usedCards: [],
+currentCard: null,
+currentPlayer: null,
+activePlayerRating: null,
+playerGuesses: {}
+});
+setMyPlayerName('');
+};
+            // Render Functions
+const renderLobby = () => (
+<div className="fade-in max-w-2xl mx-auto">
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20">
+<h1 className="text-5xl font-bold text-white mb-4 text-center">
+🃏 Confession Poker
+</h1>
+<p className="text-white/80 text-center mb-8">
+Trust-Building Through Vulnerability
+</p>
+{!roomCode ? (
+<div className="space-y-4">
+<button
+onClick={createRoom}
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg transform hover:scale-105 transition"
+aria-label="Button">
+Create New Game
+</button>
+<div className="relative">
+<div className="absolute inset-0 flex items-center">
+<div className="w-full border-t border-white/20"></div>
+</div>
+<div className="relative flex justify-center text-sm">
+<span className="px-2 bg-transparent text-white/60">or</span>
+</div>
+</div>
+<input
+type="text"
+placeholder="Gib den Raumcode ein"
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
+onKeyPress={(e) => {
+if (e.key === 'Enter') {
+joinRoom(e.target.value.toUpperCase());
+}
+}}
+/>
+</div>
+) : (
+<div className="space-y-6">
+<div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-4 border border-purple-500/30">
+<p className="text-white/60 text-sm text-center mb-2">Raumcode</p>
+<p className="text-3xl font-mono font-bold text-white text-center tracking-wider">
+{roomCode}
+</p>
+</div>
+{!myPlayerName ? (
+<div>
+<input
+type="text"
+placeholder="Enter dein name"
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500"
+onKeyPress={(e) => {
+if (e.key === 'Enter') {
+addPlayer(e.target.value);
+e.target.value = '';
+}
+}}
+/>
+</div>
+) : (
+<div>
+<h3 className="text-white font-bold mb-4">
+Players ({players.length}/8)
+</h3>
+<div className="space-y-2 mb-6">
+{players.map((player, i) => (
+<div
+key={player.id}
+className="bg-white/5 rounded-lg p-3 flex items-center justify-between slide-in"
+style={{ animationDelay: `${i * 0.1}s` }}
+>
+<span className="text-white font-medium">
+{player.name}
+{player.name === myPlayerName && (
+<span className="ml-2 text-purple-400 text-sm">(Du)</span>
+)}
+</span>
+<span className="text-white/60 text-sm">Bereit</span>
+</div>
+))}
+</div>
+{players.length >= 3 && players[0]?.name === myPlayerName && (
+<button
+onClick={startGame}
+className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-lg hover:shadow-lg transform hover:scale-105 transition pulse-animation"
+aria-label="Button">
+Start Game
+</button>
+)}
+{players.length < 3 && (
+<p className="text-white/60 text-center text-sm">
+Waiting for {3 - players.length} more player(s)...
+</p>
+)}
+</div>
+)}
+</div>
+)}
+</div>
+</div>
+);
+const renderGame = () => {
+const isActivePlayer = currentPlayer === myPlayerName;
+const hasGuessed = playerGuesses[myPlayerName] !== undefined;
+const allGuessed = Object.keys(playerGuesses).length === players.length - 1;
+return (
+<div className="fade-in max-w-6xl mx-auto">
+                        {/* Header */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6 shadow-2xl border border-white/20">
+<div className="flex justify-between items-center">
+<div>
+<h2 className="text-2xl font-bold text-white">Round {round}</h2>
+<p className="text-white/60">Room: {roomCode}</p>
+</div>
+<div className="text-right">
+<p className="text-white/60 text-sm">Active Player</p>
+<p className="text-2xl font-bold text-purple-400">{currentPlayer}</p>
+</div>
+</div>
+</div>
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            {/* Main Card Area */}
+<div className="lg:col-span-2 space-y-6">
+                                {/* Confession Card */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 shadow-2xl border border-white/20 min-h-[400px] flex flex-col justify-center">
+{!currentCard ? (
+isActivePlayer ? (
+<button
+onClick={drawCard}
+className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-6 rounded-2xl font-bold text-2xl hover:shadow-lg transform hover:scale-105 transition mx-auto pulse-animation"
+aria-label="Button">
+Draw Confession Card
+</button>
+) : (
+<p className="text-white/60 text-center text-xl">
+Waiting for {currentPlayer} to draw a card...
+</p>
+)
+) : (
+<div className="space-y-8">
+<div className="text-center">
+<span className={`inline-block px-4 py-2 rounded-full text-sm font-bold ${
+currentCard.category === 'white' ? 'bg-gray-500' :
+currentCard.category === 'blue' ? 'bg-blue-500' :
+currentCard.category === 'purple' ? 'bg-purple-500' :
+currentCard.category === 'brown' ? 'bg-amber-700' :
+currentCard.category === 'black' ? 'bg-black' :
+'bg-red-500'
+} text-white`}>
+{currentCard.category.toUpperCase()} BELT
+</span>
+</div>
+<p className="text-3xl text-white text-center font-medium leading-relaxed">
+"{currentCard.text}"
+</p>
+{isActivePlayer && activePlayerRating === null && (
+<div className="space-y-4">
+<p className="text-white text-center">
+Rate dein honesty about this confession:
+</p>
+<div className="flex gap-4 justify-center">
+{[1, 2, 3, 4, 5].map(rating => (
+<button
+key={rating}
+onClick={() = aria-label="Button"> submitRating(rating)}
+className="w-16 h-16 bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl text-white font-bold text-2xl transition transform hover:scale-110"
+>
+{rating}
+</button>
+))}
+</div>
+<p className="text-white/60 text-center text-sm">
+1 = Never | 5 = Absolutely
+</p>
+</div>
+)}
+{!isActivePlayer && activePlayerRating !== null && !hasGuessed && (
+<div className="space-y-4">
+<p className="text-white text-center">
+Guess {currentPlayer}'s rating:
+</p>
+<div className="flex gap-4 justify-center">
+{[1, 2, 3, 4, 5].map(guess => (
+<button
+key={guess}
+onClick={() = aria-label="Button"> submitGuess(guess)}
+className="w-16 h-16 bg-white/10 hover:bg-white/20 border-2 border-white/30 rounded-xl text-white font-bold text-2xl transition transform hover:scale-110"
+>
+{guess}
+</button>
+))}
+</div>
+</div>
+)}
+{activePlayerRating !== null && allGuessed && (
+<button
+onClick={revealResults}
+className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition mx-auto block pulse-animation"
+aria-label="Button">
+Reveal Results
+</button>
+)}
+</div>
+)}
+</div>
+                                {/* Challenge Button */}
+{currentCard && activePlayerRating !== null && !isActivePlayer && (
+<button
+onClick={initiateChallenge}
+className="w-full bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-xl font-bold hover:shadow-lg transform hover:scale-105 transition"
+aria-label="Button">
+🚨 Challenge This Confession
+</button>
+)}
+</div>
+                            {/* Scoreboard */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 shadow-2xl border border-white/20">
+<h3 className="text-xl font-bold text-white mb-4">Trust Points</h3>
+<div className="space-y-3">
+{players
+.sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0))
+.map((player, i) => (
+<div
+key={player.id}
+className={`p-3 rounded-lg ${
+player.name === currentPlayer
+? 'bg-purple-500/30 border border-purple-500'
+: 'bg-white/5'
+}`}
+>
+<div className="flex justify-between items-center">
+<div>
+<span className="text-white font-medium">
+{i + 1}. {player.name}
+</span>
+{player.name === myPlayerName && (
+<span className="ml-2 text-purple-400 text-xs">(Du)</span>
+)}
+{hasGuessed && player.name !== currentPlayer && playerGuesses[player.name] && (
+<span className="ml-2 text-green-400 text-xs">✓</span>
+)}
+</div>
+<span className="text-2xl font-bold text-purple-400">
+{scores[player.name] || 0}
+</span>
+</div>
+</div>
+))}
+</div>
+</div>
+</div>
+</div>
+);
+};
+const renderReveal = () => (
+<div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 fade-in">
+<div className="bg-gradient-to-br from-purple-600 to-pink-600 rounded-3xl p-12 max-w-2xl shadow-2xl">
+<h2 className="text-4xl font-bold text-white mb-8 text-center">Results!</h2>
+<div className="bg-white/20 rounded-2xl p-8 mb-8">
+<p className="text-white/80 text-center mb-4">
+{currentPlayer}'s True Rating:
+</p>
+<p className="text-8xl font-bold text-white text-center">
+{activePlayerRating}
+</p>
+</div>
+<div className="space-y-4">
+{Object.entries(playerGuesses).map(([playerName, guess]) => {
+const diff = Math.abs(guess - activePlayerRating);
+const points = diff === 0 ? 3 : diff === 1 ? 2 : diff === 2 ? 1 : 0;
+return (
+<div key={playerName} className="bg-white/10 rounded-lg p-4 flex justify-between items-center">
+<div>
+<span className="text-white font-medium">{playerName}</span>
+<span className="text-white/60 ml-2">guessed {guess}</span>
+</div>
+<div className="text-right">
+<span className={`font-bold ${
+points === 3 ? 'text-green-400' :
+points === 2 ? 'text-yellow-400' :
+points === 1 ? 'text-orange-400' :
+'text-red-400'
+}`}>
++{points} points
+</span>
+</div>
+</div>
+);
+})}
+</div>
+</div>
+</div>
+);
+const renderChallenge = () => (
+<div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 fade-in">
+<div className="bg-gradient-to-br from-red-600 to-orange-600 rounded-3xl p-12 max-w-2xl shadow-2xl shake-animation">
+<h2 className="text-4xl font-bold text-white mb-4 text-center">
+🚨 CHALLENGE!
+</h2>
+<p className="text-white/90 text-center mb-8">
+Do du believe {currentPlayer}'s confession rating of {activePlayerRating}?
+</p>
+{!challengeVotes[myPlayerName] ? (
+<div className="flex gap-4">
+<button
+onClick={() = aria-label="Button"> submitChallengeVote('believe')}
+className="flex-1 bg-green-500 text-white px-8 py-6 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+>
+✓ Believe It
+</button>
+<button
+onClick={() = aria-label="Button"> submitChallengeVote('challenge')}
+className="flex-1 bg-red-500 text-white px-8 py-6 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+>
+✗ Challenge!
+</button>
+</div>
+) : (
+<div className="text-center">
+<p className="text-white text-xl">Vote submitted. Waiting for others...</p>
+<p className="text-white/60 mt-4">
+{Object.keys(challengeVotes).length} / {players.length - 1} votes
+</p>
+</div>
+)}
+</div>
+</div>
+);
+const renderEndGame = () => {
+const sortedPlayers = [...players].sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0));
+const winner = sortedPlayers[0];
+return (
+<div className="fade-in max-w-4xl mx-auto">
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-12 shadow-2xl border border-white/20 text-center">
+<h1 className="text-6xl font-bold text-white mb-4">🏆</h1>
+<h2 className="text-4xl font-bold text-white mb-8">Game Over!</h2>
+<div className="bg-gradient-to-r from-purple-500/30 to-pink-500/30 rounded-xl p-8 mb-8 border border-purple-500/50">
+<p className="text-white/80 mb-2">Winner</p>
+<p className="text-5xl font-bold text-white">{winner.name}</p>
+<p className="text-3xl text-purple-400 mt-4">{scores[winner.name]} Trust Points</p>
+</div>
+<div className="space-y-4 mb-8">
+<h3 className="text-2xl font-bold text-white mb-4">Final Standings</h3>
+{sortedPlayers.map((player, i) => (
+<div key={player.id} className="bg-white/5 rounded-lg p-4 flex justify-between items-center">
+<div className="flex items-center gap-4">
+<span className="text-3xl font-bold text-white/40">#{i + 1}</span>
+<span className="text-xl font-medium text-white">{player.name}</span>
+</div>
+<span className="text-2xl font-bold text-purple-400">
+{scores[player.name] || 0}
+</span>
+</div>
+))}
+</div>
+<button
+onClick={resetGame}
+className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-12 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+aria-label="Button">
+Play Again
+</button>
+</div>
+</div>
+);
+};
+return (
+<div className="min-h-screen p-8">
+{gameState === 'lobby' && renderLobby()}
+{gameState === 'playing' && renderGame()}
+{gameState === 'end' && renderEndGame()}
+{showReveal && renderReveal()}
+{challengeActive && renderChallenge()}
+</div>
+);
+}
+        // Render App
+ReactDOM.render(<ConfessionPoker />, document.getElementById('root'));
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="js/pwa-install-prompt.js"></script>
+</body>
+</html>
+=======
+<title>Confession Poker - Leadership Training Game | Tap-In</title>
+<meta name="description" content="Build psychological safety by rating and guessing workplace confessions. A free leadership training game from Tap-In Academy.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: 'Inter', sans-serif;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+min-height: 100vh;
+padding: 20px;
+}
+.container {
+max-width: 800px;
+margin: 0 auto;
+}
+.back-link {
+display: inline-block;
+color: white;
+text-decoration: none;
+font-weight: 600;
+margin-bottom: 20px;
+padding: 10px 20px;
+background: rgba(255, 255, 255, 0.2);
+border-radius: 10px;
+}
+.game-screen {
+display: none;
+}
+.game-screen.active {
+display: block;
+}
+        /* Setup Screen */
+.setup-card {
+background: white;
+border-radius: 20px;
+padding: 60px 40px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+text-align: center;
+}
+.game-logo {
+font-size: 80px;
+margin-bottom: 20px;
+}
+.game-title {
+font-size: 48px;
+font-weight: 800;
+color: var(--bg-primary);
+margin-bottom: 15px;
+}
+.game-subtitle {
+font-size: 18px;
+color: var(--text-muted);
+margin-bottom: 40px;
+}
+.input-group {
+margin-bottom: 30px;
+text-align: left;
+}
+.input-group label {
+display: block;
+font-weight: 600;
+color: var(--bg-primary);
+margin-bottom: 10px;
+font-size: 16px;
+}
+.input-group input {
+width: 100%;
+padding: 15px;
+border: 2px solid var(--border-light);
+border-radius: 10px;
+font-size: 16px;
+font-family: 'Inter', sans-serif;
+}
+.input-group input:focus {
+outline: none;
+border-color: #2563eb;
+}
+.player-tags {
+display: flex;
+flex-wrap: wrap;
+gap: 10px;
+margin-top: 15px;
+}
+.player-tag {
+background: #dbeafe;
+color: #1e40af;
+padding: 8px 16px;
+border-radius: 20px;
+font-weight: 600;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+.remove-player {
+cursor: pointer;
+font-weight: bold;
+color: #991b1b;
+}
+.btn {
+padding: 16px 40px;
+border: none;
+border-radius: 12px;
+font-size: 18px;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.btn-primary {
+background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+color: white;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 30px rgba(124, 58, 237, 0.4);
+}
+.btn-primary:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+}
+        /* Game Play Screen */
+.game-card {
+background: white;
+border-radius: 20px;
+padding: 40px;
+box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+.round-header {
+text-align: center;
+margin-bottom: 40px;
+}
+.round-number {
+font-size: 16px;
+color: var(--text-muted);
+font-weight: 600;
+margin-bottom: 10px;
+}
+.active-player {
+font-size: 32px;
+font-weight: 800;
+color: var(--bg-primary);
+}
+.confession-card {
+background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+border: 3px solid var(--warning);
+border-radius: 15px;
+padding: 40px;
+text-align: center;
+margin-bottom: 40px;
+}
+.confession-text {
+font-size: 24px;
+font-weight: 600;
+color: #78350f;
+line-height: 1.5;
+}
+.confession-hint {
+font-size: 14px;
+color: var(--belt-brown);
+margin-top: 15px;
+font-style: italic;
+}
+.rating-buttons {
+display: flex;
+gap: 15px;
+justify-content: center;
+margin-bottom: 30px;
+}
+.rating-btn {
+width: 80px;
+height: 80px;
+border-radius: 15px;
+border: 3px solid #cbd5e1;
+background: white;
+font-size: 32px;
+font-weight: 800;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.rating-btn:hover {
+transform: scale(1.1);
+border-color: #2563eb;
+background: #dbeafe;
+}
+.rating-btn.selected {
+background: #2563eb;
+color: white;
+border-color: #1e40af;
+}
+.guess-section {
+background: #f1f5f9;
+border-radius: 15px;
+padding: 30px;
+margin-bottom: 30px;
+}
+.guess-title {
+font-size: 20px;
+font-weight: 700;
+color: var(--bg-primary);
+margin-bottom: 20px;
+text-align: center;
+}
+.guess-grid {
+display: grid;
+gap: 15px;
+}
+.guess-row {
+display: grid;
+grid-template-columns: 1fr 2fr;
+align-items: center;
+background: white;
+padding: 15px 20px;
+border-radius: 10px;
+}
+.guess-name {
+font-weight: 600;
+color: var(--bg-primary);
+}
+.guess-buttons {
+display: flex;
+gap: 10px;
+justify-content: flex-end;
+}
+.guess-buttons button {
+width: 50px;
+height: 50px;
+border-radius: 10px;
+border: 2px solid #cbd5e1;
+background: white;
+font-size: 20px;
+font-weight: 700;
+cursor: pointer;
+}
+.guess-buttons button:hover {
+border-color: #2563eb;
+background: #dbeafe;
+}
+.guess-buttons button.selected {
+background: #2563eb;
+color: white;
+border-color: #1e40af;
+}
+        /* Results Screen */
+.results-table {
+background: white;
+border-radius: 10px;
+overflow: hidden;
+margin-bottom: 30px;
+}
+.results-table table {
+width: 100%;
+border-collapse: collapse;
+}
+.results-table th {
+background: var(--bg-primary);
+color: white;
+padding: 15px;
+text-align: left;
+font-weight: 700;
+}
+.results-table td {
+padding: 15px;
+border-bottom: 1px solid var(--border-light);
+}
+.results-table tr:last-child td {
+border-bottom: none;
+}
+.winner-badge {
+background: #fbbf24;
+color: #78350f;
+padding: 5px 12px;
+border-radius: 12px;
+font-weight: 700;
+font-size: 12px;
+}
+@media (max-width: 768px) {
+.setup-card, .game-card {
+padding: 30px 20px;
+}
+.game-title {
+font-size: 36px;
+}
+.rating-buttons {
+gap: 8px;
+}
+.rating-btn {
+width: 60px;
+height: 60px;
+font-size: 24px;
+}
+.confession-text {
+font-size: 20px;
+}
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+</head>
+<body>
+<div class="container">
+<a href="leadership-games-de.html" class="back-link">← Back to Games</a>
+<!-- Setup Screen -->
+<div id="setupScreen" class="game-screen active">
+<div class="setup-card">
+<div class="game-logo">🃏</div>
+<h1 class="game-title">Confession Poker</h1>
+<p class="game-subtitle">Build psychological safety through shared vulnerability</p>
+<div class="input-group">
+<label>Add Players (3-8 players recommended)</label>
+<input type="text" id="playerInput" placeholder="Enter player name..." onkeypress="if(event.key==='Enter') addPlayer()">
+<button onclick="addPlayer()" class="btn btn-primary" style="margin-top: 10px; width: 100%;" aria-label="Button">Add Player</button>
+<div id="playerTags" class="player-tags"></div>
+</div>
+<button onclick="startGame()" id="startButton" class="btn btn-primary" disabled aria-label="Button">
+Start Game
+</button>
+<div style="margin-top: 40px; padding-top: 40px; border-top: 2px solid var(--border-light);">
+<h3 style="font-size: 20px; font-weight: 700; color: var(--bg-primary); margin-bottom: 15px;">How to Play:</h3>
+<ol style="text-align: left; color: #475569; line-height: 1.8; padding-left: 20px;">
+<li><strong>One player</strong> reads a workplace confession card</li>
+<li><strong>Active player</strong> rates themselves 1-5 (how much they've done this)</li>
+<li><strong>Others guess</strong> what the active player rated themselves</li>
+<li><strong>Reveal & score</strong> - closest guesses earn points!</li>
+<li><strong>Rotate</strong> until everyone has been active player</li>
+</ol>
+</div>
+</div>
+</div>
+<!-- Rating Screen -->
+<div id="ratingScreen" class="game-screen">
+<div class="game-card">
+<div class="round-header">
+<div class="round-number" id="roundNumber">Round 1 of X</div>
+<div class="active-player" id="activePlayerName">Spielername</div>
+</div>
+<div class="confession-card">
+<div class="confession-text" id="confessionText">Loading confession...</div>
+<div class="confession-hint">Rate yourself honestly: 1 = Never, 5 = Always</div>
+</div>
+<div class="rating-buttons" id="ratingButtons">
+<button class="rating-btn" onclick="selectRating(1)" aria-label="Button">1</button>
+<button class="rating-btn" onclick="selectRating(2)" aria-label="Button">2</button>
+<button class="rating-btn" onclick="selectRating(3)" aria-label="Button">3</button>
+<button class="rating-btn" onclick="selectRating(4)" aria-label="Button">4</button>
+<button class="rating-btn" onclick="selectRating(5)" aria-label="Button">5</button>
+</div>
+<button onclick="submitRating()" id="submitRating" class="btn btn-primary" style="width: 100%;" disabled aria-label="Button">
+Submit Rating
+</button>
+</div>
+</div>
+<!-- Guessing Screen -->
+<div id="guessingScreen" class="game-screen">
+<div class="game-card">
+<div class="round-header">
+<div class="round-number" id="guessingRoundNumber">Round 1 of X</div>
+<div class="active-player">Guess <span id="guessingActivePlayer">Player</span>'s Rating</div>
+</div>
+<div class="confession-card">
+<div class="confession-text" id="guessingConfessionText">Confession text here</div>
+<div class="confession-hint">How did they rate themselves? (1-5)</div>
+</div>
+<div class="guess-section">
+<div class="guess-title">Submit Dein Guesses:</div>
+<div class="guess-grid" id="guessGrid"></div>
+</div>
+<button onclick="submitGuesses()" id="submitGuesses" class="btn btn-primary" style="width: 100%;" aria-label="Button">
+Reveal Results
+</button>
+</div>
+</div>
+<!-- Results Screen -->
+<div id="resultsScreen" class="game-screen">
+<div class="game-card">
+<h2 style="font-size: 36px; font-weight: 800; color: var(--bg-primary); text-align: center; margin-bottom: 30px;">
+🏆 Final Scores
+</h2>
+<div class="results-table">
+<table>
+<thead>
+<tr>
+<th>Player</th>
+<th style="text-align: right;">Score</th>
+</tr>
+</thead>
+<tbody id="resultsTableBody"></tbody>
+</table>
+</div>
+<div style="display: flex; gap: 15px;">
+<button onclick="location.reload()" class="btn btn-primary" style="flex: 1;" aria-label="Button">
+Play Again
+</button>
+<button onclick="location.href='leadership-games-de.html'" class="btn btn-primary" style="flex: 1;" aria-label="Button">
+More Games
+</button>
+</div>
+</div>
+</div>
+</div>
+<script>
+        // Mock confession cards (replace with JSON database later)
+const confessions = [
+"I've checked my phone during a 1-on-1 meeting with a team member",
+"I've taken credit for someone else's idea in a meeting",
+"I've avoided giving critical feedback to keep the peace",
+"I've pretended to understand something when I was completely lost",
+"I've made a promise to my team that I knew I probably couldn't keep",
+"I've complained about my boss/organization to my direct reports",
+"I've said 'yes' to a commitment when I meant 'no' because I didn't want conflict",
+"I've hidden a mistake rather than admitting it immediately",
+"I've blamed a system or process for something that was my fault",
+"I've scheduled meetings that could have been emails",
+"I've micromanaged someone because I didn't trust them to deliver",
+"I've made decisions without consulting the people most affected",
+"I've ghosted on a commitment and hoped no one would notice",
+"I've let poor performance slide because addressing it felt uncomfortable",
+"I've prioritized looking good over helping my team succeed"
+];
+        // Game state
+let players = [];
+let currentRound = 0;
+let currentRating = null;
+let guesses = {};
+let scores = {};
+let usedConfessions = [];
+function addPlayer() {
+const input = document.getElementById('playerInput');
+const name = input.value.trim();
+if (name && !players.includes(name)) {
+players.push(name);
+scores[name] = 0;
+input.value = '';
+updatePlayerTags();
+updateStartButton();
+}
+}
+function removePlayer(name) {
+players = players.filter(p => p !== name);
+delete scores[name];
+updatePlayerTags();
+updateStartButton();
+}
+function updatePlayerTags() {
+const container = document.getElementById('playerTags');
+safeSetInnerHTML(container, players.map(name => `
+<div class="player-tag">
+${name}
+<span class="remove-player" onclick="removePlayer('${name}')">✕</span>
+</div>
+`).join(''));
+}
+function updateStartButton() {
+document.getElementById('startButton').disabled = players.length < 3;
+}
+function startGame() {
+if (players.length < 3) {
+alert('Need at least 3 players to start!');
+return;
+}
+currentRound = 0;
+showScreen('ratingScreen');
+nextRound();
+}
+function nextRound() {
+if (currentRound >= players.length) {
+showResults();
+return;
+}
+const activePlayer = players[currentRound];
+const confession = getRandomConfession();
+            // Update round info
+document.getElementById('roundNumber').textContent = `Round ${currentRound + 1} of ${players.length}`;
+document.getElementById('activePlayerName').textContent = activePlayer + "'s Turn";
+document.getElementById('confessionText').textContent = confession;
+            // Zurücksetzen rating selection
+currentRating = null;
+document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+document.getElementById('submitRating').disabled = true;
+}
+function getRandomConfession() {
+const available = confessions.filter(c => !usedConfessions.includes(c));
+if (available.length === 0) {
+usedConfessions = [];
+return confessions[0];
+}
+const confession = available[Math.floor(Math.random() * available.length)];
+usedConfessions.push(confession);
+return confession;
+}
+function selectRating(rating) {
+currentRating = rating;
+document.querySelectorAll('.rating-btn').forEach(btn => btn.classList.remove('selected'));
+event.target.classList.add('selected');
+document.getElementById('submitRating').disabled = false;
+}
+function submitRating() {
+            // Move to guessing screen
+const activePlayer = players[currentRound];
+const confession = document.getElementById('confessionText').textContent;
+document.getElementById('guessingRoundNumber').textContent = `Round ${currentRound + 1} of ${players.length}`;
+document.getElementById('guessingActivePlayer').textContent = activePlayer;
+document.getElementById('guessingConfessionText').textContent = confession;
+            // Create guess inputs for other players
+const guessGrid = document.getElementById('guessGrid');
+safeSetInnerHTML(guessGrid, players
+.filter(p => p !== activePlayer)
+.map(p => `
+<div class="guess-row">
+<div class="guess-name">${p}</div>
+<div class="guess-buttons">
+<button onclick="selectGuess('${p}', 1)" aria-label="Button">1</button>
+<button onclick="selectGuess('${p}', 2)" aria-label="Button">2</button>
+<button onclick="selectGuess('${p}', 3)" aria-label="Button">3</button>
+<button onclick="selectGuess('${p}', 4)" aria-label="Button">4</button>
+<button onclick="selectGuess('${p}', 5)" aria-label="Button">5</button>
+</div>
+</div>
+`).join(''));
+guesses = {};
+showScreen('guessingScreen');
+}
+function selectGuess(player, rating) {
+guesses[player] = rating;
+            // Update button styling
+const row = event.target.closest('.guess-row');
+row.querySelectorAll('button').forEach(btn => btn.classList.remove('selected'));
+event.target.classList.add('selected');
+}
+function submitGuesses() {
+            // Calculate scores
+const activePlayer = players[currentRound];
+const otherPlayers = players.filter(p => p !== activePlayer);
+let allGuessed = true;
+otherPlayers.forEach(p => {
+if (!guesses[p]) allGuessed = false;
+});
+if (!allGuessed) {
+alert('All players must submit a guess!');
+return;
+}
+            // Score guesses (exact match = 2 points, off by 1 = 1 point)
+otherPlayers.forEach(p => {
+const diff = Math.abs(guesses[p] - currentRating);
+if (diff === 0) scores[p] += 2;
+else if (diff === 1) scores[p] += 1;
+});
+currentRound++;
+if (currentRound < players.length) {
+setTimeout(() => {
+showScreen('ratingScreen');
+nextRound();
+}, 100);
+} else {
+showResults();
+}
+}
+${player}
+</td>
+<td style="text-align: right; font-weight: 700; color: var(--bg-primary); font-size: 24px;">
+${scores[player]}
+</td>
+</tr>
+`).join('');
+showScreen('resultsScreen');
+}
+function showScreen(screenId) {
+document.querySelectorAll('.game-screen').forEach(screen => {
+screen.classList.remove('active');
+});
+document.getElementById(screenId).classList.add('active');
+}
+</script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>
+>>>>>>> f82bb98a71dd8a9521785cc7a4d3d6198bde9727

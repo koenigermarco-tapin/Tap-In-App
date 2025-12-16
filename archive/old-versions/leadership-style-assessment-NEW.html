@@ -83,6 +83,7 @@
             .score-categories { grid-template-columns: 1fr; }
         }
     </style>
+    <script src="/js/core/dom.js" type="module"></script>
 </head>
 <body>
     <!-- Language Switcher -->
@@ -131,8 +132,8 @@
             <div id="questionContainer"></div>
 
             <div class="nav-buttons">
-                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>← Previous</button>
-                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Next →</button>
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled aria-label="Button">← Previous</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled aria-label="Button">Next →</button>
             </div>
         </div>
 
@@ -418,10 +419,10 @@
                                         <div style="color: #666;">Progress Complete</div>
                                     </div>
                                     <div style="display: flex; gap: 15px; margin-top: 25px;">
-                                        <button onclick="resumeAssessment()" style="flex: 1; background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border: none; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;">
+                                        <button onclick="resumeAssessment()" style="flex: 1; background: linear-gradient(135deg, #a93226 0%, #7a241b 100%); color: white; border: none; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;" aria-label="Button">
                                             ▶️ Resume
                                         </button>
-                                        <button onclick="startFresh()" style="flex: 1; background: white; color: #666; border: 2px solid #e0e0e0; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;">
+                                        <button onclick="startFresh()" style="flex: 1; background: white; color: #666; border: 2px solid #e0e0e0; padding: 15px 20px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer;" aria-label="Button">
                                             🔄 Start Over
                                         </button>
                                     </div>
@@ -505,7 +506,7 @@
                 </div>
             `;
             
-            container.innerHTML = html;
+            safeSetInnerHTML(container, html);
             document.getElementById('currentQ').textContent = index + 1;
             updateProgress();
             setupDragHandlers();
@@ -588,14 +589,14 @@
 
         function showInsight(insight) {
             const container = document.getElementById('insightContainer');
-            container.innerHTML = `
+            safeSetInnerHTML(container, `
                 <div class="insight-card">
                     <div class="insight-icon">${insight.icon}</div>
                     <div class="insight-title">${insight.title}</div>
                     <div class="insight-content">${insight.content}</div>
                     <div class="insight-quote">${insight.quote}</div>
                 </div>
-            `;
+            `);
             container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
@@ -712,13 +713,13 @@
                     <h3 style="color: white; margin-bottom: 0.5rem;">📱 Share Your Balance Score</h3>
                     <p style="font-size: 0.95rem; margin-bottom: 1.5rem; opacity: 0.95;">Help normalize work-life balance conversations</p>
                     <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                        <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        <button onclick="shareToLinkedIn()" style="background: #0077b5; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;" aria-label="Button">
                             LinkedIn
                         </button>
-                        <button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        <button onclick="shareToTwitter()" style="background: #1da1f2; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;" aria-label="Button">
                             Twitter
                         </button>
-                        <button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                        <button onclick="copyShareLink()" style="background: rgba(255,255,255,0.2); color: white; border: 2px solid white; padding: 12px 24px; border-radius: 8px; font-weight: bold; cursor: pointer;" aria-label="Button">
                             📋 Copy Link
                         </button>
                     </div>
@@ -900,7 +901,7 @@
 
             const shareCanvas = document.getElementById('shareCanvas');
             if (shareCanvas) {
-                shareCanvas.innerHTML = `<img src="${canvas.toDataURL()}" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card" loading="lazy">`;
+                safeSetInnerHTML(shareCanvas, `<img src="${canvas.toDataURL()}" style="width: 100%); border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);" alt="Share card" loading="lazy">`;
             }
         }
 
@@ -981,13 +982,13 @@ How sustainable is YOUR pace?`;
                 <h3 style="color: #333; margin-bottom: 15px;">📊 Export Your Results</h3>
                 <p style="color: #666; margin-bottom: 20px;">Download your complete assessment results for analysis, reporting, or personal records.</p>
                 <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
-                    <button onclick="exportToCSV()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);">
+                    <button onclick="exportToCSV()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);" aria-label="Button">
                         📥 Download CSV
                     </button>
-                    <button onclick="exportToExcel()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);">
+                    <button onclick="exportToExcel()" style="background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);" aria-label="Button">
                         📊 Download Excel
                     </button>
-                    <button onclick="exportToJSON()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);">
+                    <button onclick="exportToJSON()" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); color: white; border: none; padding: 15px 30px; border-radius: 10px; font-size: 1.1em; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);" aria-label="Button">
                         💾 Download JSON
                     </button>
                 </div>

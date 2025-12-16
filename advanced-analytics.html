@@ -1,636 +1,579 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<head>    <meta name="description" content="TAP-IN Leadership Academy: Leadership development that actually sticks.">
 
-    <!-- Performance: Resource Hints -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-
-    <title>📊 Advanced Analytics - TAP-IN</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
-            color: white;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 30px;
-            background: linear-gradient(135deg, #a93226 0%, #7a2419 100%);
-            border-radius: 15px;
-        }
-        h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .section {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        .section h2 {
-            color: #a93226;
-            margin-bottom: 20px;
-        }
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 20px 0;
-        }
-        .heatmap {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .heatmap-cell {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-            border: 2px solid rgba(255,255,255,0.1);
-            transition: all 0.3s;
-        }
-        .heatmap-cell.hot {
-            background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(169, 50, 38, 0.3));
-            border-color: #dc2626;
-        }
-        .heatmap-cell.warm {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.3));
-            border-color: #f59e0b;
-        }
-        .heatmap-cell.cool {
-            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.3));
-            border-color: #22c55e;
-        }
-        .cell-label {
-            font-size: 0.9em;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-        .cell-value {
-            font-size: 2em;
-            font-weight: bold;
-        }
-        .cell-trend {
-            font-size: 0.85em;
-            margin-top: 8px;
-        }
-        .insight-box {
-            background: linear-gradient(135deg, rgba(169, 50, 38, 0.2), rgba(122, 36, 25, 0.2));
-            padding: 20px;
-            border-radius: 10px;
-            border-left: 4px solid #a93226;
-            margin: 20px 0;
-        }
-        .insight-box h3 {
-            margin-bottom: 10px;
-            color: #a93226;
-        }
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 20px 0;
-        }
-        .metric-card {
-            background: rgba(255,255,255,0.05);
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .metric-value {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #a93226;
-            margin: 10px 0;
-        }
-        .metric-label {
-            opacity: 0.8;
-        }
-        .benchmark-bar {
-            background: rgba(255,255,255,0.1);
-            height: 30px;
-            border-radius: 15px;
-            overflow: hidden;
-            margin: 10px 0;
-            position: relative;
-        }
-        .benchmark-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #a93226, #f59e0b);
-            border-radius: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            padding-right: 10px;
-            font-weight: bold;
-        }
-        .benchmark-marker {
-            position: absolute;
-            top: -5px;
-            height: 40px;
-            width: 3px;
-            background: white;
-        }
-        .back-link {
-            display: inline-block;
-            margin-top: 20px;
-            color: white;
-            text-decoration: none;
-            opacity: 0.8;
-        }
-        select {
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.2);
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-        }
-    </style>
-    <link rel="stylesheet" href="css/accessibility.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Advanced Analytics - TAP-IN</title>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+body {
+font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+color: white;
+min-height: 100vh;
+padding: 20px;
+}
+.container {
+max-width: 1200px;
+margin: 0 auto;
+}
+.header {
+text-align: center;
+margin-bottom: 40px;
+padding: 30px;
+background: linear-gradient(135deg, var(--tap-red) 0%, #7a2419 100%);
+border-radius: 15px;
+}
+h1 {
+font-size: 2.5em;
+margin-bottom: 10px;
+}
+.section {
+background: rgba(255,255,255,0.05);
+border-radius: 15px;
+padding: 30px;
+margin-bottom: 30px;
+}
+.section h2 {
+color: var(--tap-red);
+margin-bottom: 20px;
+}
+.chart-container {
+position: relative;
+height: 400px;
+margin: 20px 0;
+}
+.heatmap {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+gap: 15px;
+margin: 20px 0;
+}
+.heatmap-cell {
+background: rgba(255,255,255,0.05);
+padding: 20px;
+border-radius: 10px;
+text-align: center;
+border: 2px solid rgba(255,255,255,0.1);
+transition: all 0.3s;
+}
+.heatmap-cell.hot {
+background: linear-gradient(135deg, rgba(220, 38, 38, 0.3), rgba(169, 50, 38, 0.3));
+border-color: #dc2626;
+}
+.heatmap-cell.warm {
+background: linear-gradient(135deg, rgba(245, 158, 11, 0.3), rgba(217, 119, 6, 0.3));
+border-color: var(--warning);
+}
+.heatmap-cell.cool {
+background: linear-gradient(135deg, rgba(34, 197, 94, 0.3), rgba(22, 163, 74, 0.3));
+border-color: #22c55e;
+}
+.cell-label {
+font-size: 0.9em;
+opacity: 0.8;
+margin-bottom: 10px;
+}
+.cell-value {
+font-size: 2em;
+font-weight: bold;
+}
+.cell-trend {
+font-size: 0.85em;
+margin-top: 8px;
+}
+.insight-box {
+background: linear-gradient(135deg, rgba(169, 50, 38, 0.2), rgba(122, 36, 25, 0.2));
+padding: 20px;
+border-radius: 10px;
+border-left: 4px solid var(--tap-red);
+margin: 20px 0;
+}
+.insight-box h3 {
+margin-bottom: 10px;
+color: var(--tap-red);
+}
+.metrics-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 20px;
+margin: 20px 0;
+}
+.metric-card {
+background: rgba(255,255,255,0.05);
+padding: 20px;
+border-radius: 10px;
+text-align: center;
+}
+.metric-value {
+font-size: 2.5em;
+font-weight: bold;
+color: var(--tap-red);
+margin: 10px 0;
+}
+.metric-label {
+opacity: 0.8;
+}
+.benchmark-bar {
+background: rgba(255,255,255,0.1);
+height: 30px;
+border-radius: 15px;
+overflow: hidden;
+margin: 10px 0;
+position: relative;
+}
+.benchmark-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--tap-red), var(--warning));
+border-radius: 15px;
+display: flex;
+align-items: center;
+justify-content: flex-end;
+padding-right: 10px;
+font-weight: bold;
+}
+.benchmark-marker {
+position: absolute;
+top: -5px;
+height: 40px;
+width: 3px;
+background: white;
+}
+.back-link {
+display: inline-block;
+margin-top: 20px;
+color: white;
+text-decoration: none;
+opacity: 0.8;
+}
+select {
+background: rgba(255,255,255,0.1);
+color: white;
+border: 1px solid rgba(255,255,255,0.2);
+padding: 10px;
+border-radius: 5px;
+margin: 10px 0;
+}
+</style>
+<link rel="stylesheet" href="css/accessibility.css">
 
 <body>
-    <!-- Skip Links for Accessibility -->
-    <a href="#main-content" class="skip-link">Skip to main content</a>
-    <a href="#navigation" class="skip-link">Skip to navigation</a>
-
-    <div class="container">
-        <div class="header">
-            <h1>📊 Advanced Analytics</h1>
-            <p>Deep insights into your leadership journey</p>
-        </div>
-
-        <!-- Executive Summary -->
-        <div class="section">
-            <h2>📋 Executive Summary</h2>
-            <div class="metrics-grid">
-                <div class="metric-card">
-                    <div class="metric-label">Current Score</div>
-                    <div class="metric-value" id="currentScore">--</div>
-                    <div id="scoreChange" style="font-size: 0.9em;"></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Total Progress</div>
-                    <div class="metric-value" id="totalProgress">--</div>
-                    <div style="font-size: 0.9em; opacity: 0.7;">since first assessment</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Assessments Taken</div>
-                    <div class="metric-value" id="assessmentCount">0</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Avg Improvement</div>
-                    <div class="metric-value" id="avgImprovement">--</div>
-                    <div style="font-size: 0.9em; opacity: 0.7;">per assessment</div>
-                </div>
-            </div>
-
-            <div class="insight-box" id="topInsight">
-                <h3>💡 Key Insight</h3>
-                <p id="insightText">Complete more assessments to unlock insights...</p>
-            </div>
-        </div>
-
-        <!-- Heatmap: Category Performance -->
-        <div class="section">
-            <h2>🔥 Category Heatmap</h2>
-            <p style="opacity: 0.7; margin-bottom: 20px;">Red = needs attention • Yellow = moderate • Green = strong</p>
-            <div class="heatmap" id="heatmap">
-                <!-- Will be populated -->
-            </div>
-        </div>
-
-        <!-- Historical Trends -->
-        <div class="section">
-            <h2>📈 Historical Trends</h2>
-            <select id="trendFilter" onchange="updateTrendChart()">
-                <option value="all">All Assessments</option>
-                <option value="30">Last 30 Days</option>
-                <option value="60">Last 60 Days</option>
-                <option value="90">Last 90 Days</option>
-            </select>
-            <div class="chart-container">
-                <canvas id="trendChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Benchmarks -->
-        <div class="section">
-            <h2>⚖️ Your Performance vs Benchmarks</h2>
-            <p style="opacity: 0.7; margin-bottom: 20px;">Compare your scores to community averages</p>
-            <div id="benchmarks">
-                <!-- Will be populated -->
-            </div>
-        </div>
-
-        <!-- Category Breakdown Radar -->
-        <div class="section">
-            <h2>🎯 Multi-Dimensional Analysis</h2>
-            <div class="chart-container">
-                <canvas id="radarChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Improvement Velocity -->
-        <div class="section">
-            <h2>🚀 Improvement Velocity</h2>
-            <p style="opacity: 0.7; margin-bottom: 20px;">How fast are you improving over time?</p>
-            <div class="chart-container">
-                <canvas id="velocityChart"></canvas>
-            </div>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="/dashboard.html" class="back-link">← Back to Dashboard</a>
-        </div>
-    </div>
-
-    <script>
-        function getAssessments() {
-            return JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
-        }
-
-        function calculateMetrics() {
-            const assessments = getAssessments();
-            if (assessments.length === 0) return null;
-
-            const sorted = assessments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            const first = sorted[0];
-            const last = sorted[sorted.length - 1];
-
-            const currentScore = last.totalScore || 0;
-            const firstScore = first.totalScore || 0;
-            const totalProgress = currentScore - firstScore;
-            const avgImprovement = assessments.length > 1 ? totalProgress / (assessments.length - 1) : 0;
-
+<!-- Skip Links for Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<a href="#navigation" class="skip-link">Skip to navigation</a>
+<div class="container">
+<div class="header">
+<h1><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-chart-bar"></use></svg> Advanced Analytics</h1>
+<p>Deep insights into your leadership journey</p>
+</div>
+<!-- Executive Summary -->
+<div class="section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-clipboard-document-list"></use></svg> Executive Summary</h2>
+<div class="metrics-grid">
+<div class="metric-card">
+<div class="metric-label">Current Score</div>
+<div class="metric-value" id="currentScore">--</div>
+<div id="scoreChange" style="font-size: 0.9em;"></div>
+</div>
+<div class="metric-card">
+<div class="metric-label">Total Progress</div>
+<div class="metric-value" id="totalProgress">--</div>
+<div style="font-size: 0.9em; opacity: 0.7;">since first assessment</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">Assessments Taken</div>
+<div class="metric-value" id="assessmentCount">0</div>
+</div>
+<div class="metric-card">
+<div class="metric-label">Avg Improvement</div>
+<div class="metric-value" id="avgImprovement">--</div>
+<div style="font-size: 0.9em; opacity: 0.7;">per assessment</div>
+</div>
+</div>
+<div class="insight-box" id="topInsight">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-light-bulb"></use></svg> Key Insight</h3>
+<p id="insightText">Complete more assessments to unlock insights...</p>
+</div>
+</div>
+<!-- Heatmap: Category Performance -->
+<div class="section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-fire"></use></svg> Category Heatmap</h2>
+<p style="opacity: 0.7; margin-bottom: 20px;">Red = needs attention • Yellow = moderate • Green = strong</p>
+<div class="heatmap" id="heatmap">
+<!-- Will be populated -->
+</div>
+</div>
+<!-- Historical Trends -->
+<div class="section">
+<h2>📈 Historical Trends</h2>
+<select id="trendFilter" onchange="updateTrendChart()">
+<option value="all">All Assessments</option>
+<option value="30">Last 30 Days</option>
+<option value="60">Last 60 Days</option>
+<option value="90">Last 90 Days</option>
+</select>
+<div class="chart-container">
+<canvas id="trendChart"></canvas>
+</div>
+</div>
+<!-- Benchmarks -->
+<div class="section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-scale"></use></svg> Your Performance vs Benchmarks</h2>
+<p style="opacity: 0.7; margin-bottom: 20px;">Compare your scores to community averages</p>
+<div id="benchmarks">
+<!-- Will be populated -->
+</div>
+</div>
+<!-- Category Breakdown Radar -->
+<div class="section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Multi-Dimensional Analysis</h2>
+<div class="chart-container">
+<canvas id="radarChart"></canvas>
+</div>
+</div>
+<!-- Improvement Velocity -->
+<div class="section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-rocket-launch"></use></svg> Improvement Velocity</h2>
+<p style="opacity: 0.7; margin-bottom: 20px;">How fast are you improving over time?</p>
+<div class="chart-container">
+<canvas id="velocityChart"></canvas>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<a href="/dashboard.html" class="back-link">← Back to Dashboard</a>
+</div>
+</div>
+<script>
+function getAssessments() {
+return JSON.parse(localStorage.getItem('tap-in-assessments') || '[]');
+}
+function calculateMetrics() {
+const assessments = getAssessments();
+if (assessments.length === 0) return null;
+const sorted = assessments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+const first = sorted[0];
+const last = sorted[sorted.length - 1];
+const currentScore = last.totalScore || 0;
+const firstScore = first.totalScore || 0;
+const totalProgress = currentScore - firstScore;
+const avgImprovement = assessments.length > 1 ? totalProgress / (assessments.length - 1) : 0;
             // Calculate score change from previous
-            const previous = sorted.length > 1 ? sorted[sorted.length - 2] : first;
-            const scoreChange = currentScore - (previous.totalScore || 0);
-
-            return {
-                currentScore,
-                totalProgress,
-                assessmentCount: assessments.length,
-                avgImprovement,
-                scoreChange
-            };
-        }
-
-        function updateExecutiveSummary() {
-            const metrics = calculateMetrics();
-            if (!metrics) return;
-
-            document.getElementById('currentScore').textContent = metrics.currentScore;
-            document.getElementById('totalProgress').textContent = metrics.totalProgress > 0 ? `+${metrics.totalProgress}` : metrics.totalProgress;
-            document.getElementById('assessmentCount').textContent = metrics.assessmentCount;
-            document.getElementById('avgImprovement').textContent = metrics.avgImprovement.toFixed(1);
-
-            const scoreChange = document.getElementById('scoreChange');
-            if (metrics.scoreChange > 0) {
-                scoreChange.textContent = `↗️ +${metrics.scoreChange} from last assessment`;
-                scoreChange.style.color = '#22c55e';
-            } else if (metrics.scoreChange < 0) {
-                scoreChange.textContent = `↘️ ${metrics.scoreChange} from last assessment`;
-                scoreChange.style.color = '#dc2626';
-            } else {
-                scoreChange.textContent = '→ No change';
-                scoreChange.style.color = '#f59e0b';
-            }
-
+const previous = sorted.length > 1 ? sorted[sorted.length - 2] : first;
+const scoreChange = currentScore - (previous.totalScore || 0);
+return {
+currentScore,
+totalProgress,
+assessmentCount: assessments.length,
+avgImprovement,
+scoreChange
+};
+}
+function updateExecutiveSummary() {
+const metrics = calculateMetrics();
+if (!metrics) return;
+document.getElementById('currentScore').textContent = metrics.currentScore;
+document.getElementById('totalProgress').textContent = metrics.totalProgress > 0 ? `+${metrics.totalProgress}` : metrics.totalProgress;
+document.getElementById('assessmentCount').textContent = metrics.assessmentCount;
+document.getElementById('avgImprovement').textContent = metrics.avgImprovement.toFixed(1);
+const scoreChange = document.getElementById('scoreChange');
+if (metrics.scoreChange > 0) {
+scoreChange.textContent = `↗️ +${metrics.scoreChange} from last assessment`;
+scoreChange.style.color = '#22c55e';
+} else if (metrics.scoreChange < 0) {
+scoreChange.textContent = `↘️ ${metrics.scoreChange} from last assessment`;
+scoreChange.style.color = '#dc2626';
+} else {
+scoreChange.textContent = '→ No change';
+scoreChange.style.color = 'var(--warning)';
+}
             // Generate insight
-            const insights = [];
-            if (metrics.totalProgress > 20) {
-                insights.push(`Excellent progress! You've improved ${metrics.totalProgress} points since you started.`);
-            }
-            if (metrics.avgImprovement > 5) {
-                insights.push(`You're improving an average of ${metrics.avgImprovement.toFixed(1)} points per assessment.`);
-            }
-            if (metrics.scoreChange > 10) {
-                insights.push(`Strong momentum with +${metrics.scoreChange} points in your latest assessment!`);
-            }
-            if (metrics.assessmentCount >= 5) {
-                insights.push(`Consistent tracking with ${metrics.assessmentCount} assessments completed.`);
-            }
-
-            if (insights.length > 0) {
-                document.getElementById('insightText').textContent = insights.join(' ');
-            }
-        }
-
-        function updateHeatmap() {
-            const assessments = getAssessments();
-            if (assessments.length === 0) return;
-
+const insights = [];
+if (metrics.totalProgress > 20) {
+insights.push(`Excellent progress! You've improved ${metrics.totalProgress} points since you started.`);
+}
+if (metrics.avgImprovement > 5) {
+insights.push(`You're improving an average of ${metrics.avgImprovement.toFixed(1)} points per assessment.`);
+}
+if (metrics.scoreChange > 10) {
+insights.push(`Strong momentum with +${metrics.scoreChange} points in your latest assessment!`);
+}
+if (metrics.assessmentCount >= 5) {
+insights.push(`Consistent tracking with ${metrics.assessmentCount} assessments completed.`);
+}
+if (insights.length > 0) {
+document.getElementById('insightText').textContent = insights.join(' ');
+}
+}
+function updateHeatmap() {
+const assessments = getAssessments();
+if (assessments.length === 0) return;
             // Aggregate scores by category
-            const categoryScores = {};
-            assessments.forEach(assessment => {
-                if (assessment.scores) {
-                    Object.entries(assessment.scores).forEach(([category, score]) => {
-                        if (!categoryScores[category]) categoryScores[category] = [];
-                        categoryScores[category].push(score);
-                    });
-                }
-            });
-
+const categoryScores = {};
+assessments.forEach(assessment => {
+if (assessment.scores) {
+Object.entries(assessment.scores).forEach(([category, score]) => {
+if (!categoryScores[category]) categoryScores[category] = [];
+categoryScores[category].push(score);
+});
+}
+});
             // Calculate averages
-            const heatmapData = Object.entries(categoryScores).map(([category, scores]) => {
-                const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
-                const trend = scores.length > 1 ? scores[scores.length - 1] - scores[0] : 0;
-                return { category, avg, trend };
-            });
-
-            const heatmapHtml = heatmapData.map(({ category, avg, trend }) => {
-                let tempClass = 'cool';
-                if (avg < 50) tempClass = 'hot';
-                else if (avg < 70) tempClass = 'warm';
-
-                const trendIcon = trend > 0 ? '📈' : trend < 0 ? '📉' : '➡️';
-                const trendColor = trend > 0 ? '#22c55e' : trend < 0 ? '#dc2626' : '#f59e0b';
-
-                return `
-                    <div class="heatmap-cell ${tempClass}">
-                        <div class="cell-label">${category}</div>
-                        <div class="cell-value">${Math.round(avg)}</div>
-                        <div class="cell-trend" style="color: ${trendColor};">
-                            ${trendIcon} ${trend > 0 ? '+' : ''}${Math.round(trend)}
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            document.getElementById('heatmap').innerHTML = heatmapHtml;
-        }
-
-        let trendChart = null;
-
-        function updateTrendChart() {
-            const filter = document.getElementById('trendFilter').value;
-            let assessments = getAssessments();
-
-            if (filter !== 'all') {
-                const cutoffDate = new Date(Date.now() - parseInt(filter) * 24 * 60 * 60 * 1000);
-                assessments = assessments.filter(a => new Date(a.timestamp) >= cutoffDate);
-            }
-
-            assessments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-            const labels = assessments.map(a => new Date(a.timestamp).toLocaleDateString());
-            const data = assessments.map(a => a.totalScore || 0);
-
-            const ctx = document.getElementById('trendChart').getContext('2d');
-
-            if (trendChart) trendChart.destroy();
-
-            trendChart = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Total Score',
-                        data: data,
-                        borderColor: '#a93226',
-                        backgroundColor: 'rgba(169, 50, 38, 0.1)',
-                        fill: true,
-                        tension: 0.4,
-                        pointRadius: 6,
-                        pointHoverRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { color: '#ffffff' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#ffffff' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#ffffff' } },
-                        tooltip: {
-                            callbacks: {
-                                label: (context) => `Score: ${context.parsed.y}/100`
-                            }
-                        }
-                    }
-                }
-            });
-        }
-
-        function updateBenchmarks() {
-            const assessments = getAssessments();
-            if (assessments.length === 0) return;
-
-            const latest = assessments[assessments.length - 1];
-            
+const heatmapData = Object.entries(categoryScores).map(([category, scores]) => {
+const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+const trend = scores.length > 1 ? scores[scores.length - 1] - scores[0] : 0;
+return { category, avg, trend };
+});
+const heatmapHtml = heatmapData.map(({ category, avg, trend }) => {
+let tempClass = 'cool';
+if (avg < 50) tempClass = 'hot';
+else if (avg < 70) tempClass = 'warm';
+const trendIcon = trend > 0 ? '📈' : trend < 0 ? '📉' : '➡️';
+const trendColor = trend > 0 ? '#22c55e' : trend < 0 ? '#dc2626' : 'var(--warning)';
+return `
+<div class="heatmap-cell ${tempClass}">
+<div class="cell-label">${category}</div>
+<div class="cell-value">${Math.round(avg)}</div>
+<div class="cell-trend" style="color: ${trendColor};">
+${trendIcon} ${trend > 0 ? '+' : ''}${Math.round(trend)}
+</div>
+</div>
+`;
+}).join('');
+safeSetInnerHTML(document.getElementById('heatmap'), heatmapHtml);
+}
+let trendChart = null;
+function updateTrendChart() {
+const filter = document.getElementById('trendFilter').value;
+let assessments = getAssessments();
+if (filter !== 'all') {
+const cutoffDate = new Date(Date.now() - parseInt(filter) * 24 * 60 * 60 * 1000);
+assessments = assessments.filter(a => new Date(a.timestamp) >= cutoffDate);
+}
+assessments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+const labels = assessments.map(a => new Date(a.timestamp).toLocaleDateString());
+const data = assessments.map(a => a.totalScore || 0);
+const ctx = document.getElementById('trendChart').getContext('2d');
+if (trendChart) trendChart.destroy();
+trendChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [{
+label: 'Total Score',
+data: data,
+borderColor: 'var(--tap-red)',
+backgroundColor: 'rgba(169, 50, 38, 0.1)',
+fill: true,
+tension: 0.4,
+pointRadius: 6,
+pointHoverRadius: 8
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+y: {
+beginAtZero: true,
+max: 100,
+ticks: { color: 'var(--belt-white)' },
+grid: { color: 'rgba(255, 255, 255, 0.1)' }
+},
+x: {
+ticks: { color: 'var(--belt-white)' },
+grid: { color: 'rgba(255, 255, 255, 0.1)' }
+}
+},
+plugins: {
+legend: { labels: { color: 'var(--belt-white)' } },
+tooltip: {
+callbacks: {
+label: (context) => `Score: ${context.parsed.y}/100`
+}
+}
+}
+}
+});
+}
+function updateBenchmarks() {
+const assessments = getAssessments();
+if (assessments.length === 0) return;
+const latest = assessments[assessments.length - 1];
             // Mock benchmarks (in production, these would come from real data)
-            const benchmarks = [
-                { category: 'Work-Life Balance', your: latest.totalScore || 0, average: 62, top10: 85 },
-                { category: 'Mental Health', your: latest.totalScore || 0, average: 58, top10: 82 },
-                { category: 'Leadership', your: latest.totalScore || 0, average: 65, top10: 88 },
-                { category: 'Team Dynamics', your: latest.totalScore || 0, average: 60, top10: 84 }
-            ];
-
-            const benchmarksHtml = benchmarks.map(b => `
-                <div style="margin: 20px 0;">
-                    <div style="margin-bottom: 10px; font-weight: bold;">${b.category}</div>
-                    <div class="benchmark-bar">
-                        <div class="benchmark-fill" style="width: ${b.your}%;">
-                            ${b.your}
-                        </div>
-                        <div class="benchmark-marker" style="left: ${b.average}%; opacity: 0.6;" title="Average: ${b.average}"></div>
-                        <div class="benchmark-marker" style="left: ${b.top10}%; background: gold;" title="Top 10%: ${b.top10}"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.7; margin-top: 5px;">
-                        <span>0</span>
-                        <span>Avg: ${b.average}</span>
-                        <span>Top 10%: ${b.top10}</span>
-                        <span>100</span>
-                    </div>
-                </div>
-            `).join('');
-
-            document.getElementById('benchmarks').innerHTML = benchmarksHtml;
-        }
-
-        function updateRadarChart() {
-            const assessments = getAssessments();
-            if (assessments.length === 0) return;
-
-            const latest = assessments[assessments.length - 1];
-            if (!latest.scores) return;
-
-            const labels = Object.keys(latest.scores);
-            const data = Object.values(latest.scores);
-
-            const ctx = document.getElementById('radarChart').getContext('2d');
-
-            new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Your Scores',
-                        data: data,
-                        borderColor: '#a93226',
-                        backgroundColor: 'rgba(169, 50, 38, 0.2)',
-                        pointBackgroundColor: '#a93226',
-                        pointBorderColor: '#fff',
-                        pointRadius: 6
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 100,
-                            ticks: { color: '#ffffff', backdropColor: 'transparent' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            pointLabels: { color: '#ffffff' }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#ffffff' } }
-                    }
-                }
-            });
-        }
-
-        function updateVelocityChart() {
-            const assessments = getAssessments();
-            if (assessments.length < 2) return;
-
-            const sorted = assessments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-            
-            const velocities = [];
-            for (let i = 1; i < sorted.length; i++) {
-                const change = (sorted[i].totalScore || 0) - (sorted[i - 1].totalScore || 0);
-                const daysDiff = (new Date(sorted[i].timestamp) - new Date(sorted[i - 1].timestamp)) / (1000 * 60 * 60 * 24);
-                const velocity = daysDiff > 0 ? change / daysDiff : 0;
-                velocities.push(velocity.toFixed(2));
-            }
-
-            const labels = sorted.slice(1).map(a => new Date(a.timestamp).toLocaleDateString());
-
-            const ctx = document.getElementById('velocityChart').getContext('2d');
-
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Points per Day',
-                        data: velocities,
-                        backgroundColor: velocities.map(v => v >= 0 ? 'rgba(34, 197, 94, 0.6)' : 'rgba(220, 38, 38, 0.6)'),
-                        borderColor: velocities.map(v => v >= 0 ? '#22c55e' : '#dc2626'),
-                        borderWidth: 2
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            ticks: { color: '#ffffff' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        },
-                        x: {
-                            ticks: { color: '#ffffff' },
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' }
-                        }
-                    },
-                    plugins: {
-                        legend: { labels: { color: '#ffffff' } }
-                    }
-                }
-            });
-        }
-
+const benchmarks = [
+{ category: 'Work-Life Balance', your: latest.totalScore || 0, average: 62, top10: 85 },
+{ category: 'Mental Health', your: latest.totalScore || 0, average: 58, top10: 82 },
+{ category: 'Leadership', your: latest.totalScore || 0, average: 65, top10: 88 },
+{ category: 'Team Dynamics', your: latest.totalScore || 0, average: 60, top10: 84 }
+];
+const benchmarksHtml = benchmarks.map(b => `
+<div style="margin: 20px 0;">
+<div style="margin-bottom: 10px; font-weight: bold;">${b.category}</div>
+<div class="benchmark-bar">
+<div class="benchmark-fill" style="width: ${b.your}%;">
+${b.your}
+</div>
+<div class="benchmark-marker" style="left: ${b.average}%; opacity: 0.6;" title="Average: ${b.average}"></div>
+<div class="benchmark-marker" style="left: ${b.top10}%; background: gold;" title="Top 10%: ${b.top10}"></div>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.7; margin-top: 5px;">
+<span>0</span>
+<span>Avg: ${b.average}</span>
+<span>Top 10%: ${b.top10}</span>
+<span>100</span>
+</div>
+</div>
+`).join('');
+safeSetInnerHTML(document.getElementById('benchmarks'), benchmarksHtml);
+}
+function updateRadarChart() {
+const assessments = getAssessments();
+if (assessments.length === 0) return;
+const latest = assessments[assessments.length - 1];
+if (!latest.scores) return;
+const labels = Object.keys(latest.scores);
+const data = Object.values(latest.scores);
+const ctx = document.getElementById('radarChart').getContext('2d');
+new Chart(ctx, {
+type: 'radar',
+data: {
+labels: labels,
+datasets: [{
+label: 'Your Scores',
+data: data,
+borderColor: 'var(--tap-red)',
+backgroundColor: 'rgba(169, 50, 38, 0.2)',
+pointBackgroundColor: 'var(--tap-red)',
+pointBorderColor: '#fff',
+pointRadius: 6
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+r: {
+beginAtZero: true,
+max: 100,
+ticks: { color: 'var(--belt-white)', backdropColor: 'transparent' },
+grid: { color: 'rgba(255, 255, 255, 0.1)' },
+pointLabels: { color: 'var(--belt-white)' }
+}
+},
+plugins: {
+legend: { labels: { color: 'var(--belt-white)' } }
+}
+}
+});
+}
+function updateVelocityChart() {
+const assessments = getAssessments();
+if (assessments.length < 2) return;
+const sorted = assessments.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+const velocities = [];
+for (let i = 1; i < sorted.length; i++) {
+const change = (sorted[i].totalScore || 0) - (sorted[i - 1].totalScore || 0);
+const daysDiff = (new Date(sorted[i].timestamp) - new Date(sorted[i - 1].timestamp)) / (1000 * 60 * 60 * 24);
+const velocity = daysDiff > 0 ? change / daysDiff : 0;
+velocities.push(velocity.toFixed(2));
+}
+const labels = sorted.slice(1).map(a => new Date(a.timestamp).toLocaleDateString());
+const ctx = document.getElementById('velocityChart').getContext('2d');
+new Chart(ctx, {
+type: 'bar',
+data: {
+labels: labels,
+datasets: [{
+label: 'Points per Day',
+data: velocities,
+backgroundColor: velocities.map(v => v >= 0 ? 'rgba(34, 197, 94, 0.6)' : 'rgba(220, 38, 38, 0.6)'),
+borderColor: velocities.map(v => v >= 0 ? '#22c55e' : '#dc2626'),
+borderWidth: 2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+y: {
+ticks: { color: 'var(--belt-white)' },
+grid: { color: 'rgba(255, 255, 255, 0.1)' }
+},
+x: {
+ticks: { color: 'var(--belt-white)' },
+grid: { color: 'rgba(255, 255, 255, 0.1)' }
+}
+},
+plugins: {
+legend: { labels: { color: 'var(--belt-white)' } }
+}
+}
+});
+}
         // Initialize
-        updateExecutiveSummary();
-        updateHeatmap();
-        updateTrendChart();
-        updateBenchmarks();
-        updateRadarChart();
-        updateVelocityChart();
-    </script>
-
-    <!-- Performance Optimizer - Load First -->
+updateExecutiveSummary();
+updateHeatmap();
+updateTrendChart();
+updateBenchmarks();
+updateRadarChart();
+updateVelocityChart();
+</script>
+<!-- Performance Optimizer - Load First -->
 <script src="js/performance-optimizer.min.js"></script>
 <!-- TAP-IN Utilities -->
 <script src="js/shared-utilities.js"></script>
 <script src="js/global-error-handler.min.js"></script>
 <script src="js/storage-health.min.js"></script>
-    <!-- TAP-IN Core Modules -->
-    <script src="js/language-switcher.min.js"></script>
-    <script src="js/meta-tags-manager.js"></script>
-    <script src="js/achievement-badges.js"></script>
-    <script src="js/structured-data.js"></script>
-
-    <script src="js/keyboard-navigation.js" defer></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<script src="js/keyboard-navigation.js" defer></script>
 
-    <!-- PWA Service Worker Registration -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registered:', registration.scope);
-                        
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
                         // Check for updates
-                        registration.addEventListener('updatefound', function() {
-                            const newWorker = registration.installing;
-                            newWorker.addEventListener('statechange', function() {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                                     // New service worker available
                                     console.log('New service worker available');
-                                }
-                            });
-                        });
-                    })
-                    .catch(function(error) {
+}
+});
+});
+})
+.catch(function(error) {
                         // Silent fail - not critical
-                    });
-            });
-        }
-    </script>
-    <script src="js/pwa-install-prompt.js"></script>
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
 </html>
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>

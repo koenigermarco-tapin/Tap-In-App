@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0d0d14">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <meta name="description" content="TAP-IN: Leadership-Entwicklung, die wirklich wirkt. Verstehe dich selbst, dann führe andere.">
+    <meta property="og:title" content="TAP-IN Leadership Academy">
+    <meta property="og:description" content="Ein strukturierter Weg von Selbsterkenntnis zu Teamführung. Basierend auf 15 Jahren Praxiserfahrung.">
+    <meta property="og:type" content="website">
+    <title>TAP-IN Leadership Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --black: #0d0d14;
+            --dark-grey: #1a1a24;
+            --mid-grey: #2a2a3a;
+            --light-grey: #8a8a9a;
+            --white: #ffffff;
+            --brick-red: #a93226;
+            --brick-red-light: #c0392b;
+            --blue: #4a6fa5;
+            --purple: #6b5b95;
+            --green: #10b981;
+            --blue-glow: rgba(74, 111, 165, 0.3);
+            --purple-glow: rgba(107, 91, 149, 0.3);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(180deg, rgba(13, 13, 20, 0.98) 0%, rgba(13, 13, 20, 0.85) 100%);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--white);
+        }
+        .nav-logo span { font-weight: 800; font-size: 1.3rem; letter-spacing: -0.5px; }
+        .nav-links { display: flex; gap: 30px; align-items: center; }
+        .nav-links a { color: var(--light-grey); text-decoration: none; font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+        .nav-links a:hover { color: var(--white); }
+        .nav-cta {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 8px;
+            color: var(--white);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(169, 50, 38, 0.25);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(169, 50, 38, 0.4); }
+        .lang-switch {
+            padding: 8px 14px;
+            background: var(--mid-grey);
+            border-radius: 6px;
+            color: var(--white);
+            font-size: 0.85rem;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        .lang-switch:hover { background: rgba(255, 255, 255, 0.15); }
+        
+        /* Hamburger Menu */
+        .nav-hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 10px;
+            margin: -10px;
+            z-index: 102;
+        }
+        .nav-hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--white);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        .nav-hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .nav-hamburger.active span:nth-child(2) { opacity: 0; }
+        .nav-hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+        
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(13, 13, 20, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 99;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .mobile-menu.active { opacity: 1; visibility: visible; }
+        .mobile-menu a { color: var(--white); text-decoration: none; font-size: 1.5rem; font-weight: 600; padding: 15px 30px; }
+        .mobile-menu a:hover { color: var(--brick-red-light); }
+        .mobile-menu .nav-cta { margin-top: 20px; font-size: 1.1rem; padding: 14px 28px; }
+        .mobile-menu .lang-switch { position: absolute; top: 25px; right: 70px; font-size: 1rem; padding: 10px 18px; }
+
+        /* Hero */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 40px 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 30% 20%, var(--purple-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 60%, var(--blue-glow) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 100%, rgba(169, 50, 38, 0.1) 0%, transparent 40%);
+        }
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            letter-spacing: -2px;
+        }
+        .hero h1 .line1 { color: var(--white); }
+        .hero h1 .line2 { 
+            background: linear-gradient(135deg, var(--brick-red-light) 0%, var(--purple) 50%, var(--blue) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero-sub {
+            font-size: 1.25rem;
+            color: var(--light-grey);
+            max-width: 600px;
+            margin: 0 auto 40px;
+            line-height: 1.7;
+        }
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, var(--brick-red) 0%, var(--brick-red-light) 100%);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.05rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(169, 50, 38, 0.35);
+        }
+        .hero-cta:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px rgba(169, 50, 38, 0.5);
+        }
+        .hero-meta {
+            margin-top: 25px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        .hero-meta span { color: var(--white); font-weight: 600; }
+        .restore-link {
+            margin-top: 15px;
+            font-size: 0.85rem;
+        }
+        .restore-link a {
+            color: var(--light-grey);
+            text-decoration: none;
+        }
+        .restore-link a:hover { color: var(--purple); }
+        .restore-link span { color: var(--purple); }
+
+        /* Section Styles */
+        .section {
+            padding: 100px 40px;
+        }
+        .section-dark {
+            background: var(--dark-grey);
+        }
+        .section-gradient {
+            background: linear-gradient(180deg, var(--black) 0%, var(--dark-grey) 100%);
+        }
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 60px;
+        }
+        .section-header h2 {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+        }
+        .section-header p {
+            color: var(--light-grey);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .cards-grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .cards-grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+        
+        .card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 35px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: var(--purple);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .card-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .card-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+        .card-icon.red { background: linear-gradient(135deg, rgba(169, 50, 38, 0.2) 0%, rgba(192, 57, 43, 0.2) 100%); color: var(--brick-red-light); }
+        .card-icon.blue { background: linear-gradient(135deg, rgba(74, 111, 165, 0.2) 0%, rgba(74, 111, 165, 0.3) 100%); color: var(--blue); }
+        .card-icon.purple { background: linear-gradient(135deg, rgba(107, 91, 149, 0.2) 0%, rgba(107, 91, 149, 0.3) 100%); color: var(--purple); }
+        .card-icon.green { background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.3) 100%); color: var(--green); }
+        .card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .card p {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Path Cards (larger) */
+        .path-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 20px;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+        .path-card:hover {
+            border-color: var(--green);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        .path-card h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+        .path-tagline {
+            color: var(--green);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        .path-card > p {
+            color: var(--light-grey);
+            line-height: 1.7;
+            margin-bottom: 20px;
+        }
+        .path-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        .path-features li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            color: var(--light-grey);
+        }
+        .path-features li svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+            flex-shrink: 0;
+        }
+        .unlock-note {
+            background: var(--mid-grey);
+            padding: 12px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--light-grey);
+        }
+        .unlock-note svg {
+            width: 20px;
+            height: 20px;
+            color: var(--blue);
+            flex-shrink: 0;
+        }
+
+        /* Buttons */
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: transparent;
+            border: 2px solid var(--mid-grey);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            border-color: var(--purple);
+            background: rgba(107, 91, 149, 0.1);
+        }
+
+        /* Steps */
+        .steps-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .step {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+        .step-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .step-content p {
+            color: var(--light-grey);
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .step-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            background: var(--mid-grey);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--light-grey);
+            font-weight: 500;
+        }
+
+        /* Stats */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 700px;
+            margin: 60px auto 0;
+            text-align: center;
+        }
+        .stat h3 {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--white) 0%, var(--light-grey) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+        }
+        .stat p {
+            color: var(--light-grey);
+            font-size: 0.9rem;
+        }
+
+        /* Belt Path */
+        .belt-list {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .belt-item {
+            display: flex;
+            gap: 20px;
+            padding: 20px 0;
+            border-bottom: 1px solid var(--mid-grey);
+            align-items: center;
+        }
+        .belt-item:last-child {
+            border-bottom: none;
+        }
+        .belt-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+        }
+        .belt-icon.white { background: #ffffff; color: var(--black); }
+        .belt-icon.blue { background: #3b82f6; color: white; }
+        .belt-icon.purple { background: #8b5cf6; color: white; }
+        .belt-icon.brown { background: #92400e; color: white; }
+        .belt-icon.black { background: #1f2937; color: white; border: 2px solid var(--light-grey); }
+        .belt-content h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .belt-content p {
+            color: var(--light-grey);
+            font-size: 0.95rem;
+        }
+        .hub-badge {
+            background: var(--blue);
+            color: white;
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Tool Cards */
+        .tool-card {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        .tool-card:hover {
+            border-color: var(--green);
+            transform: translateY(-3px);
+        }
+        .tool-card .card-icon {
+            margin: 0 auto 15px;
+        }
+        .tool-card h4 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .tool-card p {
+            color: var(--light-grey);
+            font-size: 0.85rem;
+        }
+
+        /* About Blocks */
+        .about-block {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+        .about-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--purple) 0%, var(--blue) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 20px var(--purple-glow);
+        }
+        .about-icon svg {
+            width: 24px;
+            height: 24px;
+            stroke: white;
+            fill: none;
+            stroke-width: 2;
+        }
+        .about-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .about-content p {
+            color: var(--light-grey);
+            line-height: 1.7;
+            margin-bottom: 12px;
+        }
+        .about-content strong {
+            color: var(--white);
+        }
+        
+        /* B2B Section */
+        .b2b-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1000px;
+            margin: 0 auto;
+            align-items: center;
+        }
+        .b2b-list {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+        .b2b-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 8px 0;
+            color: var(--light-grey);
+        }
+        .b2b-list li svg {
+            width: 20px;
+            height: 20px;
+            color: var(--green);
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .b2b-visual {
+            background: var(--dark-grey);
+            border: 1px solid var(--mid-grey);
+            border-radius: 16px;
+            padding: 30px;
+        }
+        .b2b-visual h4 {
+            font-size: 1rem;
+            margin-bottom: 20px;
+            color: var(--light-grey);
+        }
+        .progress-bar {
+            margin-bottom: 15px;
+        }
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+        .progress-label span:first-child {
+            color: var(--light-grey);
+        }
+        .progress-track {
+            height: 8px;
+            background: var(--mid-grey);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+        }
+        .progress-fill.low { background: #ef4444; }
+        .progress-fill.medium { background: #f59e0b; }
+        .progress-fill.high { background: var(--green); }
+
+        /* CTA Section */
+        .cta-section {
+            padding: 100px 40px;
+            text-align: center;
+        }
+        .cta-card {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, var(--dark-grey) 0%, var(--mid-grey) 100%);
+            border-radius: 24px;
+            border: 1px solid var(--mid-grey);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--brick-red), var(--purple), var(--blue));
+        }
+        .cta-card h2 {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+        .cta-card p {
+            color: var(--light-grey);
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 40px;
+            text-align: center;
+            color: var(--light-grey);
+            font-size: 0.9rem;
+            border-top: 1px solid var(--mid-grey);
+        }
+        .footer a { color: var(--purple); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .cards-grid, .cards-grid-2 {
+                grid-template-columns: 1fr;
+            }
+            .cards-grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .b2b-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-row {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+        }
+        @media (max-width: 768px) {
+            .nav { padding: 15px 20px; }
+            .nav-links { display: none; }
+            .nav-hamburger { display: flex; }
+            .mobile-menu { display: flex; }
+            .hero { padding: 100px 20px 60px; }
+            .hero-sub { font-size: 1.1rem; }
+            .section { padding: 60px 20px; }
+            .step { flex-direction: column; gap: 15px; }
+            .about-block { flex-direction: column; gap: 15px; }
+            .cards-grid-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (max-width: 480px) {
+            .nav { padding: 12px 16px; }
+            .nav-logo span { font-size: 1.1rem; }
+            .hero h1 { font-size: 2rem; letter-spacing: -1px; }
+            .hero-sub { font-size: 1rem; }
+            .mobile-menu a { font-size: 1.3rem; }
+            .cta-card { padding: 40px 25px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">
+            <span>TAP-IN</span>
+        </a>
+        <div class="nav-links">
+            <a href="#how">So funktioniert's</a>
+            <a href="#team-tols">Team Tools</a>
+            <a href="index.html" class="lang-switch">EN</a>
+            <a href="src/pages/assessments/deep-dive-assessment-de.html" class="nav-cta">Jetzt starten</a>
+        </div>
+        <div class="nav-hamburger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </nav>
+    
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html" class="lang-switch">EN</a>
+        <a href="#how" onclick="toggleMobileMenu()">So funktioniert's</a>
+        <a href="#team-tols" onclick="toggleMobileMenu()">Team Tools</a>
+        <a href="src/pages/tols/restore-progress-de.html">Fortschritt wiederherstellen</a>
+            <a href="src/pages/assessments/deep-dive-assessment-de.html" class="nav-cta">Jetzt starten</a>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1>
+                <span class="line1">Leadership-Entwicklung,</span><br>
+                <span class="line2">die wirklich wirkt.</span>
+            </h1>
+            <p class="hero-sub">Ein strukturierter Weg von Selbsterkenntnis zu Teamführung. Basierend auf 15 Jahren Praxiserfahrung mit Teams in Krisen und Wachstumsphasen.</p>
+            <a href="src/pages/assessments/deep-dive-assessment-de.html" class="hero-cta">Kostenloses Assessment starten</a>
+            <p class="hero-meta">Für immer kostenlos · <span>Keine Anmeldung nötig</span> · Ergebnis in 3 Min</p>
+            <p class="restore-link">
+                <a href="src/pages/tols/restore-progress-de.html">Backup-Code vorhanden? <span>Fortschritt wiederherstellen</span></a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Two Paths -->
+    <section class="section section-gradient">
+        <div class="section-header">
+            <h2>Zwei Wege, ein Fundament</h2>
+            <p>Jede Führungsreise beginnt mit Selbsterkenntnis. Schließe deine ersten Erkenntnisse ab, um Team-Tools freizuschalten.</p>
+        </div>
+        <div class="cards-grid cards-grid-2" style="max-width: 900px;">
+            <!-- The Gym -->
+            <div class="path-card">
+                <div class="card-icon green">
+                    <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <h3>The Gym</h3>
+                <p class="path-tagline">Persönliche Entwicklung</p>
+                <p>Arbeite dich in deinem eigenen Tempo durch das Gürtel-System. Jeder Gürtel baut auf dem letzten auf—von Selbstverständnis bis zur effektiven Führung.</p>
+                <ul class="path-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Assessments, die deine Muster aufdecken
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Kurse mit praktischer Anwendung
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Szenarien zum Üben des Gelernten
+                    </li>
+                </ul>
+                <a href="src/pages/gym/gym-dashboard-de.html" class="btn-primary">Zum Gym</a>
+            </div>
+            
+            <!-- The Hub -->
+            <div class="path-card">
+                <div class="card-icon blue">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <h3>The Hub</h3>
+                <p class="path-tagline">Team Tools</p>
+                <p>Diagnose-Tools, Übungen und Manager-Werkzeuge für dein Team. Das, was in Workshops und im Führungsalltag wirklich den Unterschied macht.</p>
+                <div class="unlock-note">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                    Freischaltung bei Weißgurt Streifen 2 — oder via B2B-Zugang
+                </div>
+                <ul class="path-features">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Team-Gesundheits-Diagnose
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Workshop-Übungen
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Manager-Toolkit
+                    </li>
+                </ul>
+                <a href="src/pages/hub/hub-home-BUSINES-de.html" class="btn-secondary">Tools ansehen</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="section section-dark" id="how">
+        <div class="section-header">
+            <h2>18 Minuten zu deinem kompletten Profil</h2>
+            <p>Keine langen Kurse. Keine komplexen Frameworks. Einfach sofortiger Mehrwert.</p>
+        </div>
+        <div class="steps-container">
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Leadership Assessment machen</h3>
+                    <p>Beantworte 46 Fragen darüber, wie du arbeitest, führst und Herausforderungen meisterst. Erhalte dein komplettes Profil mit Worker Type und Leadership-Archetyp.</p>
+                    <span class="step-badge">~18 Minuten</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Deine Leadership-DNA-Card erhalten</h3>
+                    <p>Erhalte sofort ein detailliertes, teilbares Profil mit deinem Führungstyp, Arbeitsstil, Stärken, blinden Flecken und Kommunikationspräferenzen.</p>
+                    <span class="step-badge">Sofort</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Deinen ersten Move bekommen</h3>
+                    <p>Basierend auf deinen Assessment-Ergebnissen erhältst du eine personalisierte Aktion, die du HEUTE umsetzen kannst. Kleine Aktion, sofortige Wirkung.</p>
+                    <span class="step-badge">2 Minuten</span>
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Deinen Weg wählen</h3>
+                    <p>Starte mit <strong>The Gym</strong> (Gürtel-Progression → persönliche Entwicklung) oder <strong>The Hub</strong> (Team-Tools). Oder erkunde beides—du entscheidest, was jetzt wichtig ist.</p>
+                    <span class="step-badge">Dein Tempo</span>
+                </div>
+            </div>
+        </div>
+        <div class="stats-row">
+            <div class="stat">
+                <h3>18min</h3>
+                <p>Zeit bis zum kompletten Profil</p>
+            </div>
+            <div class="stat">
+                <h3>20+</h3>
+                <p>Gürtel-Progressionsstufen</p>
+            </div>
+            <div class="stat">
+                <h3>100%</h3>
+                <p>Kostenlos nutzbar</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Belt Path -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Der Gürtel-Weg</h2>
+            <p>Vom Weißgurt zum Schwarzgurt. Jeder Streifen baut echte Fähigkeiten auf.</p>
+        </div>
+        <div class="belt-list">
+            <div class="belt-item">
+                <div class="belt-icon white">W</div>
+                <div class="belt-content">
+                    <h4>Weißgurt — Erkenne dich selbst <span class="hub-badge">Hub-Zugang bei Streifen 2</span></h4>
+                    <p>Führungsstil, Werte, Kommunikationsmuster, Stressreaktion</p>
+                </div>
+            </div>
+            <div class="belt-item">
+                <div class="belt-icon blue">B</div>
+                <div class="belt-content">
+                    <h4>Blaugurt — Führe dich selbst</h4>
+                    <p>Energie-Management, Fokus, limitierende Überzeugungen, emotionale Intelligenz</p>
+                </div>
+            </div>
+            <div class="belt-item">
+                <div class="belt-icon purple">L</div>
+                <div class="belt-content">
+                    <h4>Lilaugurt — Kommuniziere & Beeinflusse</h4>
+                    <p>Feedback, schwierige Gespräche, Präsenz, Überzeugungskraft</p>
+                </div>
+            </div>
+            <div class="belt-item">
+                <div class="belt-icon brown">Br</div>
+                <div class="belt-content">
+                    <h4>Braungurt — Führe andere</h4>
+                    <p>Entscheidungen, Delegation, Coaching, Teamdynamik</p>
+                </div>
+            </div>
+            <div class="belt-item">
+                <div class="belt-icon black">S</div>
+                <div class="belt-content">
+                    <h4>Schwarzgurt — Meisterschaft</h4>
+                    <p>Integration, andere lehren, dein Führungs-Vermächtnis aufbauen</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Team Tools Preview -->
+    <section class="section section-dark" id="team-tools">
+        <div class="section-header">
+            <h2>Team Tools</h2>
+            <p>Verfügbar im Hub. Praktische Werkzeuge für Workshops, Offsites und Teamentwicklung.</p>
+        </div>
+        <div class="cards-grid cards-grid-4" style="max-width: 900px;">
+            <div class="tool-card">
+                <div class="card-icon blue">
+                    <svg viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <h4>Team Health Assessment</h4>
+                <p>Team-Dysfunktionen diagnostizieren</p>
+            </div>
+            <div class="tool-card">
+                <div class="card-icon purple">
+                    <svg viewBox="0 0 24 24"><path d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"/></svg>
+                </div>
+                <h4>Shark Tank</h4>
+                <p>Pitchen & Feedback üben</p>
+            </div>
+            <div class="tool-card">
+                <div class="card-icon red">
+                    <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><path d="M3 9h18M9 21V9"/></svg>
+                </div>
+                <h4>Confession Poker</h4>
+                <p>Psychologische Sicherheit aufbauen</p>
+            </div>
+            <div class="tool-card">
+                <div class="card-icon green">
+                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                </div>
+                <h4>Conflict Cards</h4>
+                <p>Schwierige Gespräche navigieren</p>
+            </div>
+        </div>
+        <p style="text-align: center; color: var(--light-grey); margin-top: 30px; font-size: 0.95rem;">Diese Tools werden bei Weißgurt Streifen 2 freigeschaltet—sobald du dich selbst verstehst, bist du bereit, dein Team zu verstehen.</p>
+    </section>
+
+    <!-- Who We Are -->
+    <section class="section">
+        <div class="section-header">
+            <h2>Wer wir sind & Was wir tun</h2>
+        </div>
+        <div class="steps-container" style="max-width: 900px;">
+            <div class="about-block">
+                <div class="about-icon">
+                    <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                </div>
+                <div class="about-content">
+                    <h3>Wer wir sind</h3>
+                    <p>Wir sind Praktiker, keine Theoretiker. Unsere Gründer bringen echte Führungserfahrung aus der Skalierung von Teams durch extreme Herausforderungen mit.</p>
+                    <p><strong>Flo</strong> hat ein Unternehmen geleitet und mit über 700 Firmen durch Workshops und Teamentwicklungsprogramme zusammengearbeitet. <strong>Marco</strong> war Operations Director in einem Tourismus-Startup mit 100 Mitarbeitern (verantwortlich für 60), und hat davor einen lokalen Lieferdienst von 0 auf 2.000 Bestellungen pro Tag skaliert, dann 2.500 Kuriere in 10 Städten mit 100 Mitarbeitern gemanagt—mit 28 Jahren. Er führte Teams durch Hypergrowth während COVID mit 350-450% Wachstum pro Jahr, während das Personal nur 50% wuchs.</p>
+                    <p>TAP-IN kommt aus dieser echten Erfahrung. Die anonymisierten Daten und Erkenntnisse aus dem Management tausender Menschen durch Krisen und Wachstum fließen in jedes Tool ein, das wir bauen.</p>
+                </div>
+            </div>
+            <div class="about-block">
+                <div class="about-icon">
+                    <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <div class="about-content">
+                    <h3>Was wir tun</h3>
+                    <p>Diese App ist nur eine Art, wie wir zeigen, wie wir Zusammenarbeit verbessern können. Wir erstellen praktische, gamifizierte Leadership-Entwicklungstools basierend auf echter Erfahrung im Management von Teams durch Hypergrowth, Krisen und alltägliche Herausforderungen.</p>
+                    <p>Unsere Assessments enthüllen deine Leadership-DNA. Unsere Spiele bauen echte Fähigkeiten auf. Unsere Tools lösen echte Probleme. Alles so gestaltet, dass es in deinen Zeitplan passt, nicht ihn ersetzt.</p>
+                </div>
+            </div>
+            <div class="about-block">
+                <div class="about-icon">
+                    <svg viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                </div>
+                <div class="about-content">
+                    <h3>Wie wir es zu dir bringen</h3>
+                    <p><strong>Skool Community:</strong> Tritt unserer Community bei, wo Führungskräfte Erfahrungen teilen, gemeinsam lernen und sich gegenseitig beim Wachstum unterstützen.</p>
+                    <p><strong>Zu dir kommen:</strong> Wir bauen Programme, um Leadership-Entwicklung direkt zu deiner Organisation zu bringen.</p>
+                    <p><strong>Echtes Jiu-Jitsu Training:</strong> Unsere langfristige Vision beinhaltet die Kombination von Leadership-Entwicklung mit echtem Brazilian Jiu-Jitsu Training—weil Führung, wie Jiu-Jitsu, am besten durch Praxis gelernt wird, nicht nur durch Theorie.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- For Companies -->
+    <section class="section section-dark">
+        <div class="section-header">
+            <h2>Für Unternehmen & Teams</h2>
+            <p>Braucht ihr Teamentwicklung ohne den individuellen Aufwand? Wir haben die Lösung.</p>
+        </div>
+        <div class="b2b-grid">
+            <div>
+                <h3 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 15px;">Mit deinem Team testen</h3>
+                <p style="color: var(--light-grey); margin-bottom: 25px;">Lade deine Kollegen ein. Alle machen das Assessment, dann seht ihr eure Teamdynamik, Kompatibilität und wie ihr besser zusammenarbeiten könnt.</p>
+                <ul class="b2b-list">
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Voller Hub-Zugang für dein Team
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Moderierte Workshops (wir führen die Übungen durch)
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Team Health Assessment mit Experten-Debrief
+                    </li>
+                    <li>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"/></svg>
+                        Maßgeschneiderte Programme für eure spezifischen Herausforderungen
+                    </li>
+                </ul>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <a href="join-team-de.html" class="btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px;"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                        Team beitreten
+                    </a>
+                </div>
+            </div>
+            <div class="b2b-visual">
+                <h4>Team Health Assessment Vorschau</h4>
+                <p style="font-weight: 600; margin-bottom: 20px;">5 Dysfunktionen Analyse</p>
+                <div class="progress-bar">
+                    <div class="progress-label"><span>Vertrauen</span><span>45%</span></div>
+                    <div class="progress-track"><div class="progress-fill low" style="width: 45%"></div></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-label"><span>Konflikt</span><span>65%</span></div>
+                    <div class="progress-track"><div class="progress-fill medium" style="width: 65%"></div></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-label"><span>Commitment</span><span>78%</span></div>
+                    <div class="progress-track"><div class="progress-fill high" style="width: 78%"></div></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-label"><span>Verantwortung</span><span>58%</span></div>
+                    <div class="progress-track"><div class="progress-fill medium" style="width: 58%"></div></div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-label"><span>Ergebnisse</span><span>82%</span></div>
+                    <div class="progress-track"><div class="progress-fill high" style="width: 82%"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Final CTA -->
+    <section class="cta-section">
+        <div class="cta-card">
+            <h2>Was ist dein Führungsstil?</h2>
+            <p>18 Minuten. Komplettes Führungsprofil mit Worker Type und Archetyp. Keine Anmeldung nötig.</p>
+            <a href="src/pages/assessments/deep-dive-assessment-de.html" class="hero-cta">Kostenloses Assessment starten</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 TAP-IN Leadership Academy · <a href="https://www.skool.com/tap-in" target="_blank">Community beitreten</a> · <a href="impresum.html">Impressum</a> · <a href="datenschutz.html">Datenschutz</a></p>
+    </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const hamburger = document.querySelector('.nav-hamburger');
+            const mobileMenu = document.getElementById('mobileMenu');
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+        }
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const mobileMenu = document.getElementById('mobileMenu');
+                if (mobileMenu.classList.contains('active')) toggleMobileMenu();
+            }
+        });
+        
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>

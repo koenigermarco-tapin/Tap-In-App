@@ -1,180 +1,146 @@
+<meta name="description" content="TAP-IN Leadership Academy: Leadership development that actually sticks.">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
 <!-- SAVE & EXIT BUTTON COMPONENT -->
 <!-- Use in: All Hub learning module pages -->
 <!-- Purpose: Save progress and return to Hub home -->
-
 <style>
 .save-exit-btn {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    
-    background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-    color: white;
-    
-    padding: 1rem 1.5rem;
-    border: 2px solid rgba(59, 130, 246, 0.3);
-    border-radius: 8px;
-    
-    font-weight: 600;
-    font-size: 0.95rem;
-    
-    cursor: pointer;
-    z-index: 1000;
-    
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
-    
-    transition: all 0.2s ease;
-    
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+position: fixed;
+bottom: 2rem;
+right: 2rem;
+background: linear-gradient(135deg, #2563eb 0%, var(--belt-blue) 100%);
+color: white;
+padding: 1rem 1.5rem;
+border: 2px solid rgba(59, 130, 246, 0.3);
+border-radius: 8px;
+font-weight: 600;
+font-size: 0.95rem;
+cursor: pointer;
+z-index: 1000;
+box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+transition: all 0.2s ease;
+display: flex;
+align-items: center;
+gap: 0.5rem;
 }
-
 .save-exit-btn:hover {
-    border-color: rgba(59, 130, 246, 0.6);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
-    transform: translateY(-2px);
+border-color: rgba(59, 130, 246, 0.6);
+box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+transform: translateY(-2px);
 }
-
 .save-exit-btn:active {
-    transform: translateY(0);
+transform: translateY(0);
 }
-
 .save-exit-btn:disabled {
-    opacity: 0.7;
-    cursor: wait;
+opacity: 0.7;
+cursor: wait;
 }
-
 .save-icon {
-    font-size: 1.2rem;
+font-size: 1.2rem;
 }
-
 /* Success state */
 .save-exit-btn.saved {
-    background: linear-gradient(135deg, #059669 0%, #10b981 100%);
-    border-color: rgba(16, 185, 129, 0.3);
-    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+background: linear-gradient(135deg, #059669 0%, var(--tap-green) 100%);
+border-color: rgba(16, 185, 129, 0.3);
+box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
 }
-
 /* Mobile */
 @media (max-width: 768px) {
-    .save-exit-btn {
-        bottom: 1rem;
-        left: 50%;
-        right: auto;
-        transform: translateX(-50%);
-        
-        padding: 0.875rem 1.25rem;
-        font-size: 0.9rem;
-    }
-    
-    .save-exit-btn:hover {
-        transform: translateX(-50%) translateY(-2px);
-    }
-    
-    .save-exit-btn:active {
-        transform: translateX(-50%);
-    }
+.save-exit-btn {
+bottom: 1rem;
+left: 50%;
+right: auto;
+transform: translateX(-50%);
+padding: 0.875rem 1.25rem;
+font-size: 0.9rem;
+}
+.save-exit-btn:hover {
+transform: translateX(-50%) translateY(-2px);
+}
+.save-exit-btn:active {
+transform: translateX(-50%);
+}
 }
 </style>
-
-<button class="save-exit-btn" id="saveExitBtn">
-    <span class="save-icon">💾</span>
-    <span class="save-text">SAVE & EXIT</span>
+<button class="save-exit-btn" id="saveExitBtn" aria-label="Saveexitbtn">
+<span class="save-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg></span>
+<span class="save-text">SAVE & EXIT</span>
 </button>
-
 <script>
 (function() {
-    const saveExitBtn = document.getElementById('saveExitBtn');
-    const saveText = document.querySelector('.save-text');
-    const saveIcon = document.querySelector('.save-icon');
-    
+const saveExitBtn = document.getElementById('saveExitBtn');
+const saveText = document.querySelector('.save-text');
+const saveIcon = document.querySelector('.save-icon');
     // Get module info (should be set by parent page)
-    const moduleId = document.body.dataset.moduleId || window.location.pathname.split('/').pop().replace('.html', '');
-    const isGerman = moduleId.includes('-de') || window.location.pathname.includes('-de.html');
-    
+const moduleId = document.body.dataset.moduleId || window.location.pathname.split('/').pop().replace('.html', '');
+const isGerman = moduleId.includes('-de') || window.location.pathname.includes('-de.html');
     // Update button text for German
-    if (isGerman) {
-        saveText.textContent = 'SPEICHERN & BEENDEN';
-    }
-    
-    saveExitBtn.addEventListener('click', function() {
-        saveAndExit();
-    });
-    
+if (isGerman) {
+saveText.textContent = 'SPEICHERN & BEENDEN';
+}
+saveExitBtn.addEventListener('click', function() {
+saveAndExit();
+});
     // ESC key support
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            saveAndExit();
-        }
-    });
-    
-    function saveAndExit() {
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape') {
+saveAndExit();
+}
+});
+function saveAndExit() {
         // Disable button during save
-        saveExitBtn.disabled = true;
-        
+saveExitBtn.disabled = true;
         // Update button state
-        const savingText = isGerman ? 'SPEICHERT...' : 'SAVING...';
-        const savedText = isGerman ? 'GESPEICHERT ✓' : 'SAVED ✓';
-        
-        saveText.textContent = savingText;
-        
+const savingText = isGerman ? 'SPEICHERT...' : 'SAVING...';
+const savedText = isGerman ? 'GESPEICHERT <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg>' : 'SAVED <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg>';
+saveText.textContent = savingText;
         // Get current progress
-        const currentSection = parseInt(document.body.dataset.currentSection || '1');
-        const totalSections = parseInt(document.body.dataset.totalSections || '4');
-        const isComplete = currentSection >= totalSections;
-        
+const currentSection = parseInt(document.body.dataset.currentSection || '1');
+const totalSections = parseInt(document.body.dataset.totalSections || '4');
+const isComplete = currentSection >= totalSections;
         // Save progress
-        const progress = {
-            moduleId: moduleId,
-            currentSection: currentSection,
-            totalSections: totalSections,
-            percentage: Math.round((currentSection / totalSections) * 100),
-            lastAccessed: new Date().toISOString(),
-            completed: isComplete
-        };
-        
-        localStorage.setItem(`module_${moduleId}`, JSON.stringify(progress));
-        
+const progress = {
+moduleId: moduleId,
+currentSection: currentSection,
+totalSections: totalSections,
+percentage: Math.round((currentSection / totalSections) * 100),
+lastAccessed: new Date().toISOString(),
+completed: isComplete
+};
+localStorage.setItem(`module_${moduleId}`, JSON.stringify(progress));
         // Update global module progress
-        const allModuleProgress = JSON.parse(localStorage.getItem('allModuleProgress') || '{}');
-        allModuleProgress[moduleId] = progress;
-        localStorage.setItem('allModuleProgress', JSON.stringify(allModuleProgress));
-        
+const allModuleProgress = JSON.parse(localStorage.getItem('allModuleProgress') || '{}');
+allModuleProgress[moduleId] = progress;
+localStorage.setItem('allModuleProgress', JSON.stringify(allModuleProgress));
         // Award XP if module completed
-        if (isComplete) {
-            const xpEarned = 25; // Standard module XP
-            const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
-            const newXP = currentXP + xpEarned;
-            localStorage.setItem('totalXP', newXP.toString());
-            
+if (isComplete) {
+const xpEarned = 25; // Standard module XP
+const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+const newXP = currentXP + xpEarned;
+localStorage.setItem('totalXP', newXP.toString());
             // Track XP transaction
-            const xpHistory = JSON.parse(localStorage.getItem('xpHistory') || '[]');
-            xpHistory.push({
-                amount: xpEarned,
-                source: moduleId,
-                type: 'module_complete',
-                timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('xpHistory', JSON.stringify(xpHistory));
-        }
-        
+const xpHistory = JSON.parse(localStorage.getItem('xpHistory') || '[]');
+xpHistory.push({
+amount: xpEarned,
+source: moduleId,
+type: 'module_complete',
+timestamp: new Date().toISOString()
+});
+localStorage.setItem('xpHistory', JSON.stringify(xpHistory));
+}
         // Show success state
-        setTimeout(() => {
-            saveExitBtn.classList.add('saved');
-            saveText.textContent = savedText;
-            saveIcon.textContent = '✓';
-            
+setTimeout(() => {
+saveExitBtn.classList.add('saved');
+saveText.textContent = savedText;
+saveIcon.textContent = '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-icon-check"></use></svg>';
             // Return to Hub after brief delay
-            setTimeout(() => {
-                const hubUrl = isGerman ? 'hub-home-BUSINESS-de.html' : 'hub-home-BUSINESS.html';
-                window.location.href = hubUrl;
-            }, 800);
-        }, 500);
-    }
+setTimeout(() => {
+const hubUrl = isGerman ? 'hub-home-BUSINESS-de.html' : 'hub-home-BUSINESS.html';
+window.location.href = hubUrl;
+}, 800);
+}, 500);
+}
 })();
 </script>
-
-
-    <!-- Screen Reader Enhancements for Accessibility -->
-    <script src="js/screen-reader-enhancements.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>

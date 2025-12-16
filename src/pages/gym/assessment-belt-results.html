@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- SEO Meta Tags -->
+<meta name="description" content="TAP-IN Leadership Development Platform">
+<meta name="keywords" content="leadership training, team building, professional development">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="TAP-IN Leadership Development">
+<meta property="og:description" content="Master leadership skills through martial arts methodology">
+<meta property="og:url" content="https://tap-in-platform.netlify.app/">
+<meta property="og:image" content="/og-image.png">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:title" content="TAP-IN Leadership Development">
+<meta property="twitter:description" content="Master leadership skills through martial arts methodology">
+<meta property="twitter:image" content="/og-image.png">
+<!-- Canonical URL -->
+<link rel="canonical" href="https://tap-in-platform.netlify.app/">
+<title>
+<link rel="stylesheet" href="css/variables.css">
+<link rel="stylesheet" href="css/core-styles.css">
+<link rel="stylesheet" href="css/hero-icons.css">
+<link rel="stylesheet" href="css/accessibility.css">
+Your Belt Assessment Results | Tap-In</title>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+    /* TAP-IN Design System Variables */
+:root {
+--tap-primary-navy: var(--bg-primary);
+--tap-primary-purple: #7c3aed;
+--tap-accent-gold: var(--warning);
+--tap-success-green: var(--tap-green);
+--tap-error-red: var(--error);
+--tap-bg-gradient: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: #1a1d2e;
+color: var(--border-light);
+font-family: Inter, -apple-system, sans-serif;
+min-height: 100vh;
+padding: 2rem;
+}
+.container {
+max-width: 1000px;
+margin: 0 auto;
+}
+.hero-section {
+text-align: center;
+padding: 3rem 0;
+margin-bottom: 3rem;
+}
+.congrats-badge {
+display: inline-block;
+background: rgba(16, 185, 129, 0.2);
+color: var(--tap-green);
+padding: 0.5rem 1.5rem;
+border-radius: 50px;
+font-size: 0.85rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 1.5rem;
+border: 2px solid var(--tap-green);
+}
+.belt-reveal {
+margin: 2rem 0;
+animation: fadeInScale 0.8s ease;
+}
+@keyframes fadeInScale {
+from {
+opacity: 0;
+transform: scale(0.9);
+}
+to {
+opacity: 1;
+transform: scale(1);
+}
+}
+.belt-icon {
+font-size: 6rem;
+margin-bottom: 1rem;
+display: block;
+}
+.belt-title {
+font-size: 3rem;
+font-weight: 800;
+margin-bottom: 0.5rem;
+}
+.belt-white .belt-title { color: var(--border-light); }
+.belt-blue .belt-title { color: var(--tap-blue); }
+.belt-purple .belt-title { color: #a855f7; }
+.belt-brown .belt-title { color: #d97706; }
+.belt-black .belt-title { color: #fbbf24; }
+.overall-score {
+font-size: 4rem;
+font-weight: 800;
+color: var(--tap-blue);
+margin: 1rem 0;
+}
+.score-label {
+color: var(--text-secondary);
+font-size: 1.2rem;
+}
+    /* Scores Grid */
+.scores-grid {
+display: grid;
+grid-template-columns: repeat(5, 1fr);
+gap: 1.5rem;
+margin: 3rem 0;
+}
+.score-card {
+background: #252940;
+border: 2px solid #3d4466;
+border-radius: 12px;
+padding: 1.5rem;
+text-align: center;
+transition: all 0.3s ease;
+}
+.score-card:hover {
+transform: translateY(-4px);
+border-color: var(--tap-blue);
+}
+.score-card.weakest {
+border-color: var(--error);
+background: rgba(239, 68, 68, 0.1);
+}
+.score-card.strongest {
+border-color: var(--tap-green);
+background: rgba(16, 185, 129, 0.1);
+}
+.score-icon {
+font-size: 2rem;
+margin-bottom: 0.5rem;
+}
+.score-category {
+font-size: 0.85rem;
+color: var(--text-secondary);
+text-transform: uppercase;
+letter-spacing: 1px;
+margin-bottom: 0.5rem;
+font-weight: 600;
+}
+.score-value {
+font-size: 2.5rem;
+font-weight: 800;
+color: var(--tap-blue);
+}
+.score-card.weakest .score-value {
+color: var(--error);
+}
+.score-card.strongest .score-value {
+color: var(--tap-green);
+}
+.score-bar {
+width: 100%;
+height: 6px;
+background: #1a1d2e;
+border-radius: 3px;
+margin-top: 0.5rem;
+overflow: hidden;
+}
+.score-bar-fill {
+height: 100%;
+background: var(--tap-blue);
+border-radius: 3px;
+transition: width 1s ease;
+}
+.score-card.weakest .score-bar-fill {
+background: var(--error);
+}
+.score-card.strongest .score-bar-fill {
+background: var(--tap-green);
+}
+    /* Recommendations */
+.recommendations-section {
+margin-top: 4rem;
+}
+.section-title {
+font-size: 2rem;
+font-weight: 800;
+margin-bottom: 1.5rem;
+text-align: center;
+}
+.weakness-banner {
+background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+border: 2px solid var(--error);
+border-radius: 16px;
+padding: 2rem;
+margin-bottom: 2rem;
+position: relative;
+overflow: hidden;
+}
+.weakness-banner::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 4px;
+background: var(--error);
+}
+.weakness-banner h3 {
+font-size: 1.5rem;
+color: var(--error);
+margin-bottom: 0.5rem;
+}
+.weakness-banner p {
+color: var(--text-secondary);
+line-height: 1.6;
+margin-bottom: 1.5rem;
+}
+.course-recommendations {
+display: grid;
+grid-template-columns: repeat(2, 1fr);
+gap: 2rem;
+margin-top: 2rem;
+}
+.course-card {
+background: #252940;
+border: 2px solid #3d4466;
+border-radius: 12px;
+padding: 2rem;
+transition: all 0.3s ease;
+text-decoration: none;
+color: inherit;
+display: block;
+}
+.course-card:hover {
+border-color: var(--tap-blue);
+transform: translateY(-4px);
+box-shadow: 0 8px 24px rgba(74, 124, 156, 0.2);
+}
+.course-card.primary {
+border-color: var(--tap-blue);
+background: rgba(74, 124, 156, 0.1);
+}
+.course-header {
+display: flex;
+align-items: center;
+gap: 1rem;
+margin-bottom: 1rem;
+}
+.course-icon {
+font-size: 2.5rem;
+}
+.course-badge {
+display: inline-block;
+background: var(--tap-blue);
+color: white;
+padding: 0.3rem 0.8rem;
+border-radius: 6px;
+font-size: 0.75rem;
+font-weight: 700;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+.course-title {
+font-size: 1.3rem;
+font-weight: 700;
+color: var(--border-light);
+margin-bottom: 0.5rem;
+}
+.course-description {
+color: var(--text-secondary);
+line-height: 1.6;
+margin-bottom: 1rem;
+}
+.course-meta {
+display: flex;
+gap: 1.5rem;
+color: var(--text-secondary);
+font-size: 0.9rem;
+}
+.cta-button {
+display: inline-flex;
+align-items: center;
+gap: 1rem;
+background: var(--tap-blue);
+color: white;
+padding: 1rem 2rem;
+border-radius: 10px;
+font-weight: 700;
+text-decoration: none;
+transition: all 0.3s ease;
+margin-top: 1rem;
+border: none;
+cursor: pointer;
+font-size: 1rem;
+}
+.cta-button:hover {
+background: #5a8cac;
+transform: translateY(-2px);
+}
+    /* Share Section */
+.share-section {
+text-align: center;
+padding: 3rem;
+background: #252940;
+border: 2px solid #3d4466;
+border-radius: 12px;
+margin-top: 3rem;
+}
+    /* Invite Section */
+.invite-section {
+margin-top: 3rem;
+padding: 3rem;
+background: linear-gradient(135deg, var(--tap-blue) 0%, #2d5a7b 100%);
+border-radius: 16px;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
+.invite-section::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 4px;
+background: linear-gradient(90deg, #5a8cac 0%, var(--tap-blue) 100%);
+}
+.invite-emoji {
+font-size: 3rem;
+margin-bottom: 1rem;
+}
+.invite-title {
+font-size: 1.8rem;
+margin-bottom: 1rem;
+color: white;
+font-weight: 800;
+}
+.invite-text {
+color: rgba(255, 255, 255, 0.9);
+margin-bottom: 2rem;
+font-size: 1.1rem;
+line-height: 1.6;
+}
+.invite-btn {
+display: inline-block;
+background: white;
+color: var(--tap-blue);
+padding: 1rem 2.5rem;
+border-radius: 8px;
+text-decoration: none;
+font-weight: 600;
+font-size: 1.1rem;
+transition: all 0.2s ease;
+}
+.invite-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+}
+.invite-reward {
+margin-top: 1.5rem;
+color: rgba(255, 255, 255, 0.8);
+font-size: 0.95rem;
+}
+.share-buttons {
+display: flex;
+gap: 1rem;
+justify-content: center;
+margin-top: 1.5rem;
+}
+.share-btn {
+padding: 0.8rem 1.5rem;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+border: 2px solid #3d4466;
+background: #2d3548;
+color: var(--border-light);
+text-decoration: none;
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+}
+.share-btn:hover {
+border-color: var(--tap-blue);
+transform: translateY(-2px);
+}
+.download-card-btn {
+padding: 1rem 2rem;
+background: linear-gradient(135deg, var(--tap-blue) 0%, #2d5a7b 100%);
+color: white;
+border: none;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+transition: all 0.3s ease;
+font-size: 1rem;
+}
+.download-card-btn:hover {
+transform: translateY(-2px);
+box-shadow: 0 4px 12px rgba(74, 124, 156, 0.3);
+}
+.linkedin-share-box {
+margin-top: 2rem;
+padding: 1.5rem;
+background: rgba(74, 124, 156, 0.1);
+border: 2px solid var(--tap-blue);
+border-radius: 12px;
+text-align: left;
+}
+.share-text-preview {
+background: #1a1d2e;
+padding: 1rem;
+border-radius: 8px;
+font-family: monospace;
+font-size: 0.9rem;
+line-height: 1.6;
+margin: 1rem 0;
+color: var(--border-light);
+white-space: pre-wrap;
+}
+.copy-linkedin-btn {
+background: #0077b5;
+color: white;
+border: none;
+padding: 0.75rem 1.5rem;
+border-radius: 6px;
+cursor: pointer;
+font-weight: 600;
+transition: all 0.2s ease;
+}
+.copy-linkedin-btn:hover {
+background: #006399;
+transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+.scores-grid {
+grid-template-columns: 1fr;
+}
+.course-recommendations {
+grid-template-columns: 1fr;
+}
+.belt-icon { font-size: 4rem; }
+.belt-title { font-size: 2rem; }
+.overall-score { font-size: 3rem; }
+}
+</style>
+<link rel="stylesheet" href="css/accessibility.css">
+
+<body>
+<!-- Skip Links for Accessibility -->
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<a href="#navigation" class="skip-link">Skip to navigation</a>
+<div class="container">
+<div class="hero-section">
+<div class="congrats-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> Assessment Complete</div>
+<div class="belt-reveal" id="beltReveal">
+<div class="belt-icon" id="beltIcon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<div class="belt-title" id="beltTitle">White Belt</div>
+<div class="overall-score" id="overallScore">75%</div>
+<div class="score-label">Overall Leadership Score</div>
+</div>
+</div>
+<div class="scores-grid" id="scoresGrid">
+<!-- Scores will be dynamically inserted -->
+</div>
+<div class="recommendations-section">
+<h2 class="section-title">Your Personalized Training Path</h2>
+<div class="weakness-banner" id="weaknessBanner">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Start Here: <span id="weaknessArea">Trust</span></h3>
+<p id="weaknessMessage">
+Trust is the foundation of all high-performing teams.
+Focus on building psychological safety and vulnerability.
+</p>
+</div>
+<div class="course-recommendations" id="courseRecommendations">
+<!-- Courses will be dynamically inserted -->
+</div>
+</div>
+<div class="share-section">
+<h3 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Share Your Achievement</h3>
+<p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+Inspire others to discover their leadership potential
+</p>
+<div class="share-buttons">
+<button class="share-btn" onclick="shareResults('twitter')" aria-label="🐦 Twitter">
+🐦 Twitter
+</button>
+<button class="share-btn" onclick="shareResults('linkedin')" aria-label="Briefcase LinkedIn">
+Briefcase LinkedIn
+</button>
+<button class="share-btn" onclick="copyResultsLink()" aria-label="🔗 Copy Link">
+🔗 Copy Link
+</button>
+<button class="download-card-btn" onclick="downloadResultsCard(event)" aria-label="📸 Download Results Card">
+📸 Download Results Card
+</button>
+</div>
+<!-- LinkedIn Share Text -->
+<div class="linkedin-share-box">
+<div style="font-weight: 600; margin-bottom: 1rem; color: var(--border-light); font-size: 1.1rem;">
+Device Phone Mobile Share on LinkedIn
+</div>
+<p style="color: var(--text-secondary); margin-bottom: 1rem; font-size: 0.9rem;">
+Copy this text and paste it with your downloaded results card:
+</p>
+<div class="share-text-preview" id="shareTextPreview">
+<!-- Will be populated by JavaScript -->
+</div>
+<button class="copy-linkedin-btn" onclick="copyShareText(event)" aria-label="<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-clipboard-document-list"></use></svg> Copy LinkedIn Text">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-clipboard-document-list"></use></svg> Copy LinkedIn Text
+</button>
+</div>
+</div>
+<!-- Team Invite Section -->
+<div class="invite-section">
+<div class="invite-emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-rocket-launch"></use></svg></div>
+<h3 class="invite-title">Invite Your Team</h3>
+<p class="invite-text">
+Help your teammates discover their Impact-Level.<br>
+Teams that assess together, grow together.
+</p>
+<a href="invite-team.html" class="invite-btn">
+Invite Teammates →
+</a>
+<div class="invite-reward">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-sparkles"></use></svg> Get +50 XP for each teammate who completes the assessment
+</div>
+</div>
+</div>
+<script>
+    // Routing map for personalized recommendations
+const routingMap = {
+trust: {
+gymStripes: [
+{ number: 1, title: 'Trust Foundations', url: 'white-belt-stripe1-gamified.html' },
+{ number: 2, title: 'Practicing Vulnerability', url: 'white-belt-stripe2-gamified.html' },
+{ number: 3, title: 'Building Team Trust', url: 'white-belt-stripe3-gamified.html' },
+{ number: 4, title: 'Trust Mastery', url: 'white-belt-stripe4-gamified.html' }
+],
+hubCourse: {
+title: 'Communication Mastery',
+url: 'course-communication.html',
+description: 'Learn active listening and vulnerability-based communication'
+},
+message: 'Trust is the foundation of all high-performing teams. Focus on building psychological safety and vulnerability through open communication.',
+icon: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg>'
+},
+conflict: {
+gymStripes: [
+{ number: 5, title: 'Difficult Conversations', url: 'blue-belt-stripe1-gamified.html' },
+{ number: 6, title: 'Active Listening', url: 'blue-belt-stripe2-gamified.html' },
+{ number: 7, title: 'Feedback Systems', url: 'blue-belt-stripe3-gamified.html' },
+{ number: 8, title: 'Boundaries', url: 'blue-belt-stripe4-gamified.html' }
+],
+hubCourse: {
+title: 'Feedback Culture',
+url: 'course-feedback-culture.html',
+description: 'Master the art of giving and receiving constructive feedback'
+},
+message: 'Healthy conflict drives better decisions. Learn to engage in productive debate without artificial harmony holding your team back.',
+icon: 'Bolt'
+},
+commitment: {
+gymStripes: [
+{ number: 9, title: 'Team Alignment', url: 'purple-belt-stripe1-gamified.html' },
+{ number: 10, title: 'Healthy Conflict', url: 'purple-belt-stripe2-gamified.html' },
+{ number: 11, title: 'Collective Accountability', url: 'purple-belt-stripe3-gamified.html' },
+{ number: 12, title: 'Results Focus', url: 'purple-belt-stripe4-gamified.html' }
+],
+hubCourse: {
+title: 'Expectation Management',
+url: 'course-expectation-management.html',
+description: 'Create clarity and buy-in across all levels'
+},
+message: 'Commitment requires clarity and buy-in. Strengthen your ability to make clear decisions and ensure everyone is aligned on direction.',
+icon: 'Flag'
+},
+accountability: {
+gymStripes: [
+{ number: 13, title: 'Accountability Foundation', url: 'brown-belt-stripe1-gamified.html' },
+{ number: 14, title: 'Accountability Depth', url: 'brown-belt-stripe2-gamified.html' },
+{ number: 15, title: 'Accountability Systems', url: 'brown-belt-stripe3-gamified.html' },
+{ number: 16, title: 'Accountability Mastery', url: 'brown-belt-stripe4-gamified.html' }
+],
+hubCourse: {
+title: 'Boundaries',
+url: 'course-boundaries.html',
+description: 'Set and enforce standards without being the bad guy'
+},
+message: 'Accountability starts with clear standards and peer pressure to perform. Learn to call out issues early and hold yourself and others to high standards.',
+icon: 'Chart Bar'
+},
+results: {
+gymStripes: [
+{ number: 17, title: 'Integration', url: 'black-belt-stripe1-gamified.html' },
+{ number: 18, title: 'Teaching Others', url: 'black-belt-stripe2-gamified.html' },
+{ number: 19, title: 'Leadership Philosophy', url: 'black-belt-stripe3-gamified.html' },
+{ number: 20, title: 'Legacy', url: 'black-belt-stripe4-gamified.html' }
+],
+hubCourse: {
+title: 'Deep Work',
+url: 'course-deep-work.html',
+description: 'Focus on what matters most and avoid distractions'
+},
+message: 'Results require collective focus over individual ego. Master the discipline of prioritizing team outcomes above personal status.',
+icon: 'Trophy'
+}
+};
+    // Belt configurations
+const beltConfig = {
+white: { icon: 'Academic Cap', title: 'White Belt', color: 'var(--border-light)' },
+blue: { icon: 'Academic Cap', title: 'Blue Belt', color: 'var(--tap-blue)' },
+purple: { icon: 'Academic Cap', title: 'Purple Belt', color: '#a855f7' },
+brown: { icon: 'Academic Cap', title: 'Brown Belt', color: '#d97706' },
+black: { icon: 'Academic Cap', title: 'Black Belt', color: '#fbbf24' }
+};
+    // Load results from localStorage
+const scores = JSON.parse(localStorage.getItem('assessmentScores') || '{}');
+const totalScore = parseInt(localStorage.getItem('assessmentTotal') || '0');
+const beltLevel = localStorage.getItem('beltLevel') || 'white';
+const weakestArea = localStorage.getItem('weakestArea') || 'trust';
+    // Display belt reveal
+const belt = beltConfig[beltLevel];
+document.getElementById('beltIcon').textContent = belt.icon;
+document.getElementById('beltTitle').textContent = belt.title;
+document.getElementById('overallScore').textContent = totalScore + '%';
+document.getElementById('beltReveal').className = `belt-reveal belt-${beltLevel}`;
+    // Confetti on load
+setTimeout(() => {
+confetti({
+particleCount: 100,
+spread: 70,
+origin: { y: 0.6 }
+});
+}, 500);
+    // Display individual scores
+const scoresGrid = document.getElementById('scoresGrid');
+const categoryIcons = {
+trust: '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg>',
+conflict: 'Bolt',
+commitment: 'Flag',
+accountability: 'Chart Bar',
+results: 'Trophy'
+};
+    // Find strongest and weakest
+const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+const strongestArea = sortedScores[0][0];
+Object.entries(scores).forEach(([category, score]) => {
+const isWeakest = category === weakestArea;
+const isStrongest = category === strongestArea;
+const card = document.createElement('div');
+card.className = `score-card ${isWeakest ? 'weakest' : ''} ${isStrongest ? 'strongest' : ''}`;
+safeSetInnerHTML(card, `
+<div class="score-icon">${categoryIcons[category]}</div>
+<div class="score-category">${category}</div>
+<div class="score-value">${score}%</div>
+<div class="score-bar">
+<div class="score-bar-fill" style="width: ${score}%"></div>
+</div>
+${isWeakest ? '<div style="color: var(--error)); font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-exclamation-triangle"></use></svg> START HERE</div>' : ''}
+${isStrongest ? '<div style="color: var(--tap-green); font-size: 0.75rem; margin-top: 0.5rem; font-weight: 600;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-check-circle"></use></svg> STRENGTH</div>' : ''}
+`;
+scoresGrid.appendChild(card);
+});
+    // Display weakness banner
+const routing = routingMap[weakestArea];
+document.getElementById('weaknessArea').textContent = weakestArea.charAt(0).toUpperCase() + weakestArea.slice(1);
+document.getElementById('weaknessMessage').textContent = routing.message;
+    // Display course recommendations
+const recommendationsContainer = document.getElementById('courseRecommendations');
+    // Primary recommendation: Gym stripes
+const gymCard = document.createElement('a');
+gymCard.href = routing.gymStripes[0].url;
+gymCard.className = 'course-card primary';
+safeSetInnerHTML(gymCard, `
+<div class="course-header">
+<div class="course-icon">${routing.icon}</div>
+<div>
+<div class="course-badge">Recommended</div>
+</div>
+</div>
+<h3 class="course-title">White Belt: ${weakestArea.charAt(0).toUpperCase() + weakestArea.slice(1)} Training</h3>
+<p class="course-description">
+Start with ${routing.gymStripes[0].title} and progress through all 4 stripes to build a solid foundation.
+</p>
+<div class="course-meta">
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> 4 Stripes</span>
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-clock"></use></svg> ~80 min</span>
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-star-solid"></use></svg> +400 XP</span>
+</div>
+`);
+recommendationsContainer.appendChild(gymCard);
+    // Secondary recommendation: Hub course
+const hubCard = document.createElement('a');
+hubCard.href = routing.hubCourse.url;
+hubCard.className = 'course-card';
+safeSetInnerHTML(hubCard, `
+<div class="course-header">
+<div class="course-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-bok-open"></use></svg></div>
+</div>
+<h3 class="course-title">${routing.hubCourse.title}</h3>
+<p class="course-description">
+${routing.hubCourse.description}
+</p>
+<div class="course-meta">
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-book-open"></use></svg> 4 Lessons</span>
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-clock"></use></svg> ~60 min</span>
+<span><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-star-solid"></use></svg> +100 XP</span>
+</div>
+`);
+recommendationsContainer.appendChild(hubCard);
+    // Share functions
+function shareResults(platform) {
+const text = `I just completed the Tap-In Leadership Assessment and earned my ${belt.title}! My overall score: ${totalScore}%. Discover your leadership level: `;
+const url = window.location.origin + '/belt-assessment-sales-landing.html';
+if (platform === 'twitter') {
+window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+} else if (platform === 'linkedin') {
+window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+}
+}
+function copyResultsLink() {
+const url = window.location.origin + '/belt-assessment-sales-landing.html';
+navigator.clipboard.writeText(url).then(() => {
+alert('Link copied to clipboard! Share it with your team.');
+});
+}
+    // Track referral completion (if user came from invite link)
+function trackReferralCompletion() {
+const refCode = sessionStorage.getItem('referredBy');
+if (refCode && typeof trackAssessmentComplete === 'function') {
+trackAssessmentComplete(refCode);
+}
+}
+    // Download Results Card
+async function downloadResultsCard(event) {
+      // Get user data
+const scores = JSON.parse(localStorage.getItem('assessmentScores') || '{}');
+const totalScore = parseInt(localStorage.getItem('assessmentTotal') || '0');
+const beltLevel = localStorage.getItem('beltLevel') || 'white';
+const userName = localStorage.getItem('userName') || 'Anonymous Leader';
+const weakestArea = localStorage.getItem('weakestArea') || 'trust';
+      // Belt emojis
+const beltEmojis = {
+white: 'Academic Cap',
+blue: 'Academic Cap',
+purple: 'Academic Cap',
+brown: 'Academic Cap',
+black: 'Academic Cap'
+};
+      // Create card container (hidden)
+const card = document.createElement('div');
+card.id = 'results-card';
+card.style.cssText = `
+position: fixed;
+left: -9999px;
+width: 1200px;
+height: 630px;
+background: linear-gradient(135deg, #1a1d2e 0%, #252940 100%);
+padding: 60px;
+font-family: Inter, sans-serif;
+color: white;
+`;
+safeSetInnerHTML(card, `
+<div style="display: flex); flex-direction: column; height: 100%;">
+<!-- Header -->
+<div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+<div>
+<div style="font-size: 24px; color: var(--text-secondary); margin-bottom: 8px;">TAP-IN</div>
+<div style="font-size: 32px; font-weight: 700; color: var(--tap-blue);">IMPACT ASSESSMENT</div>
+</div>
+<div style="font-size: 80px;">${beltEmojis[beltLevel]}</div>
+</div>
+<!-- User Name -->
+<div style="font-size: 48px; font-weight: 700; margin-bottom: 20px; text-align: center;">
+${userName}
+</div>
+<!-- Belt Level -->
+<div style="text-align: center; margin-bottom: 40px;">
+<div style="font-size: 36px; font-weight: 600; color: var(--tap-blue); text-transform: uppercase; margin-bottom: 10px;">
+${beltLevel} Belt
+</div>
+<div style="font-size: 28px; color: var(--text-secondary);">
+${totalScore}% Overall Score
+</div>
+</div>
+<!-- Score Bars -->
+<div style="background: rgba(74, 124, 156, 0.1); padding: 30px; border-radius: 16px; margin-bottom: 30px;">
+${Object.entries(scores).map(([area, score]) => `
+<div style="margin-bottom: 20px;">
+<div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+<span style="font-size: 20px; text-transform: capitalize;">${area}</span>
+<span style="font-size: 20px; font-weight: 600;">${score}%</span>
+</div>
+<div style="background: rgba(255,255,255,0.1); height: 12px; border-radius: 6px; overflow: hidden;">
+<div style="background: ${score < 60 ? 'var(--error)' : score < 80 ? '#fbbf24' : 'var(--tap-green)'}; height: 100%; width: ${score}%; border-radius: 6px;"></div>
+</div>
+</div>
+`).join('')}
+</div>
+<!-- Growth Area -->
+<div style="text-align: center; margin-bottom: 30px;">
+<div style="font-size: 20px; color: var(--text-secondary); margin-bottom: 8px;">Primary Growth Area</div>
+<div style="font-size: 28px; font-weight: 600; color: #fbbf24; text-transform: capitalize;">
+${weakestArea} Development
+</div>
+</div>
+<!-- Footer -->
+<div style="text-align: center; margin-top: auto;">
+<div style="font-size: 24px; color: var(--tap-blue); font-weight: 600;">
+tap-in-the-gym.netlify.app
+</div>
+<div style="font-size: 18px; color: var(--text-secondary); margin-top: 8px;">
+Take the free assessment
+</div>
+</div>
+</div>
+`;
+document.body.appendChild(card);
+      // Show loading state
+const button = event.target;
+const originalText = button.innerHTML;
+safeSetInnerHTML(button, '⏳ Generating...');
+button.disabled = true;
+      // Wait for render
+await new Promise(resolve => setTimeout(resolve, 100));
+      // Generate image
+try {
+const canvas = await html2canvas(card, {
+backgroundColor: '#1a1d2e',
+scale: 2, // Higher quality
+logging: false
+});
+        // Convert to downloadable image
+const dataUrl = canvas.toDataURL('image/png');
+const link = document.createElement('a');
+link.download = `tap-in-results-${beltLevel}-belt.png`;
+link.href = dataUrl;
+link.click();
+        // Success feedback
+safeSetInnerHTML(button, 'Check Circle Downloaded!');
+setTimeout(() => {
+safeSetInnerHTML(button, originalText);
+button.disabled = false;
+}, 2000);
+        // Track download
+const downloads = parseInt(localStorage.getItem('resultCardsDownloaded') || '0');
+localStorage.setItem('resultCardsDownloaded', downloads + 1);
+const downloadDates = JSON.parse(localStorage.getItem('resultCardsDownloadedAt') || '[]');
+downloadDates.push(new Date().toISOString());
+localStorage.setItem('resultCardsDownloadedAt', JSON.stringify(downloadDates));
+        // Award XP for first download
+if (downloads === 0) {
+const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+localStorage.setItem('totalXP', currentXP + 25);
+          // Show XP notification
+confetti({
+particleCount: 50,
+spread: 60,
+origin: { y: 0.7 }
+});
+setTimeout(() => {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> +25 XP for downloading your first results card!');
+}, 500);
+}
+} catch (error) {
+        console.error('Error generating card:', error);
+safeSetInnerHTML(button, 'X Circle Error - Try Again');
+setTimeout(() => {
+safeSetInnerHTML(button, originalText);
+button.disabled = false;
+}, 2000);
+} finally {
+        // Remove card element
+document.body.removeChild(card);
+}
+}
+    // Copy LinkedIn Share Text
+function copyShareText(event) {
+const beltLevel = localStorage.getItem('beltLevel') || 'white';
+const totalScore = localStorage.getItem('assessmentTotal') || '0';
+const weakestArea = localStorage.getItem('weakestArea') || 'trust';
+const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+const text = `Just discovered I'm a ${capitalize(beltLevel)} Belt (${totalScore}%) in Impact Leadership! Academic Cap
+My primary growth area: ${capitalize(weakestArea)} Development
+Took the free Tap-In assessment - based on Google's Project Aristotle research and Patrick Lencioni's 5 Dysfunctions framework.
+10 minutes, instant results, surprisingly accurate.
+Take it: tap-in-the-gym.netlify.app
+#Leadership #TeamDevelopment #ProfessionalGrowth`;
+navigator.clipboard.writeText(text).then(() => {
+const button = event.target;
+const originalText = button.innerHTML;
+safeSetInnerHTML(button, 'Check Circle Copied!');
+setTimeout(() => {
+safeSetInnerHTML(button, originalText);
+}, 2000);
+        // Track copy
+const copies = parseInt(localStorage.getItem('shareTextCopied') || '0');
+localStorage.setItem('shareTextCopied', copies + 1);
+}).catch(err => {
+        console.error('Failed to copy:', err);
+});
+}
+    // Update share text preview on page load
+function updateShareTextPreview() {
+const beltLevel = localStorage.getItem('beltLevel') || 'white';
+const totalScore = localStorage.getItem('assessmentTotal') || '0';
+const weakestArea = localStorage.getItem('weakestArea') || 'trust';
+const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
+const previewText = `Just discovered I'm a ${capitalize(beltLevel)} Belt (${totalScore}%) in Impact Leadership! Academic Cap
+My primary growth area: ${capitalize(weakestArea)} Development
+Took the free Tap-In assessment - based on Google's Project Aristotle research and Patrick Lencioni's 5 Dysfunctions framework.
+10 minutes, instant results, surprisingly accurate.
+Take it: tap-in-the-gym.netlify.app
+#Leadership #TeamDevelopment #ProfessionalGrowth`;
+const previewElement = document.getElementById('shareTextPreview');
+if (previewElement) {
+previewElement.textContent = previewText;
+}
+}
+    // Call tracking on page load
+trackReferralCompletion();
+updateShareTextPreview();
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<script src="js/invite-system.min.js" defer></script>
+<!-- Wisdom Tracker & Hub Unlock Systems -->
+<script src="js/wisdom-tracker.min.js" defer></script>
+<script src="js/hub-unlock-system.min.js" defer></script>
+<script src="js/progres-sync-init.js" defer></script>
+<!-- Initialize Systems -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Wisdom Tracker
+if (typeof WisdomTracker !== 'undefined') {
+WisdomTracker.init();
+//       console.log('Check Circle Wisdom Tracker initialized');
+}
+    // Initialize Hub Unlock System  
+if (typeof HubUnlockSystem !== 'undefined') {
+HubUnlockSystem.init();
+      console.log('Check Circle Hub Unlock System initialized');
+}
+});
+</script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<script src="js/keyboard-navigation.js" defer></script>
+
+<script src="js/core-gamification.js" defer></script>
+<script src="js/core-progres-tracker.js" defer></script>
+<script src="js/keyboard-nav.js" defer></script>
+<script src="js/unified-eror-system.js" defer></script>
+<script src="js/safe-storage.min.js" defer></script>
+<script src="js/lazy-confeti.min.js" defer></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
+</html>
+<!-- Focus Management for Accessibility -->
+<script src="js/focus-management.js" defer></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>

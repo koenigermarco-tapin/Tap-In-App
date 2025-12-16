@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Echtzeit-Feedback | Tap-In Hub</title>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+background: #1a1d2e;
+color: var(--border-light);
+font-family: Inter, -apple-system, sans-serif;
+line-height: 1.6;
+}
+.lesson-nav {
+position: sticky;
+top: 0;
+background: #1a1d2e;
+border-bottom: 2px solid #3d4466;
+padding: 1rem 2rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+z-index: 100;
+}
+.back-btn {
+color: var(--text-secondary);
+text-decoration: none;
+font-size: 0.95rem;
+transition: color 0.2s ease;
+}
+.back-btn:hover { color: var(--belt-white); }
+.progress-indicator {
+color: var(--tap-blue);
+font-size: 0.9rem;
+font-weight: 600;
+}
+.lesson-header {
+background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+padding: 3rem 2rem;
+text-align: center;
+border-bottom: 2px solid #3d4466;
+}
+.lesson-header h1 {
+font-size: 2.5rem;
+color: var(--tap-blue);
+margin-bottom: 0.5rem;
+}
+.lesson-subtitle {
+color: var(--text-secondary);
+font-size: 1.2rem;
+margin-bottom: 1.5rem;
+}
+.lesson-meta {
+display: flex;
+gap: 2rem;
+justify-content: center;
+color: var(--text-secondary);
+font-size: 0.95rem;
+}
+.container {
+max-width: 900px;
+margin: 0 auto;
+padding: 3rem 2rem;
+}
+.content-section {
+background: #2d3548;
+border: 2px solid #3d4466;
+border-left: 4px solid var(--tap-blue);
+border-radius: 12px;
+padding: 2rem;
+margin-bottom: 2rem;
+}
+.content-section h2 {
+color: var(--tap-blue);
+margin-bottom: 1rem;
+font-size: 1.5rem;
+}
+.content-section p {
+color: var(--border-light);
+line-height: 1.8;
+margin-bottom: 1rem;
+}
+.content-section ul {
+list-style: none;
+padding-left: 0;
+}
+.content-section ul li {
+padding: 0.5rem 0;
+padding-left: 1.5rem;
+position: relative;
+color: var(--border-light);
+}
+.content-section ul li:before {
+content: "→";
+position: absolute;
+left: 0;
+color: var(--tap-blue);
+font-weight: bold;
+}
+.timing-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 1rem;
+margin: 1.5rem 0;
+}
+.timing-box {
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 12px;
+padding: 1.5rem;
+text-align: center;
+}
+.timing-box .emoji {
+font-size: 2.5rem;
+margin-bottom: 0.5rem;
+}
+.timing-box h4 {
+color: var(--tap-blue);
+margin-bottom: 0.5rem;
+font-size: 1rem;
+}
+.timing-box p {
+color: var(--text-secondary);
+font-size: 0.85rem;
+}
+.script-box {
+background: #1a1d2e;
+border: 2px solid var(--tap-blue);
+border-radius: 8px;
+padding: 1.5rem;
+margin: 1rem 0;
+}
+.script-box h4 {
+color: var(--tap-blue);
+margin-bottom: 0.75rem;
+font-size: 1rem;
+}
+.script-box p {
+color: var(--border-light);
+font-style: italic;
+font-size: 0.95rem;
+}
+.highlight-box {
+background: rgba(74, 124, 156, 0.1);
+border-left: 4px solid var(--tap-blue);
+padding: 1.5rem;
+border-radius: 8px;
+margin: 1.5rem 0;
+}
+.highlight-box h3 {
+color: var(--tap-blue);
+margin-bottom: 0.75rem;
+font-size: 1.2rem;
+}
+.warning-box {
+background: rgba(239, 68, 68, 0.1);
+border-left: 4px solid var(--error);
+padding: 1.5rem;
+border-radius: 8px;
+margin: 1.5rem 0;
+}
+.warning-box h3 {
+color: var(--error);
+margin-bottom: 0.75rem;
+font-size: 1.2rem;
+}
+.comparison-grid {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 1.5rem;
+margin: 1.5rem 0;
+}
+.comparison-box {
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 12px;
+padding: 1.5rem;
+}
+.comparison-box h4 {
+margin-bottom: 1rem;
+font-size: 1.1rem;
+}
+.comparison-box.public h4 {
+color: var(--tap-green);
+}
+.comparison-box.private h4 {
+color: var(--warning);
+}
+.comparison-box ul {
+list-style: none;
+padding: 0;
+}
+.comparison-box li {
+padding: 0.4rem 0;
+color: var(--text-secondary);
+font-size: 0.95rem;
+}
+.practice-section {
+background: #252940;
+border: 2px solid var(--tap-blue);
+border-radius: 12px;
+padding: 2rem;
+margin: 2rem 0;
+}
+.practice-section h3 {
+color: var(--tap-blue);
+margin-bottom: 1rem;
+}
+.practice-section p {
+margin-bottom: 1rem;
+color: var(--border-light);
+}
+textarea {
+width: 100%;
+min-height: 150px;
+background: #1a1d2e;
+border: 2px solid #3d4466;
+border-radius: 8px;
+color: var(--border-light);
+padding: 1rem;
+font-family: inherit;
+font-size: 1rem;
+resize: vertical;
+margin-bottom: 1rem;
+}
+textarea:focus {
+outline: none;
+border-color: var(--tap-blue);
+}
+.save-btn {
+background: #3d4466;
+color: white;
+border: none;
+padding: 0.75rem 2rem;
+border-radius: 8px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.save-btn:hover {
+background: #4d5476;
+transform: translateY(-2px);
+}
+.takeaway-section {
+background: linear-gradient(135deg, #2d3548 0%, #252940 100%);
+border: 2px solid var(--tap-blue);
+border-radius: 12px;
+padding: 2rem;
+text-align: center;
+margin: 2rem 0;
+}
+.takeaway-section h3 {
+color: var(--tap-blue);
+margin-bottom: 1rem;
+}
+.takeaway-text {
+font-size: 1.3rem;
+font-weight: 600;
+color: var(--border-light);
+margin-bottom: 2rem;
+font-style: italic;
+}
+.complete-btn {
+background: var(--tap-blue);
+color: white;
+border: none;
+padding: 1rem 3rem;
+border-radius: 8px;
+font-size: 1.1rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.2s ease;
+}
+.complete-btn:hover {
+background: #5a8cac;
+transform: translateY(-2px);
+}
+.lesson-footer {
+display: flex;
+justify-content: space-between;
+margin-top: 3rem;
+padding-top: 2rem;
+border-top: 2px solid #3d4466;
+}
+.nav-btn {
+background: #3d4466;
+color: white;
+text-decoration: none;
+padding: 1rem 2rem;
+border-radius: 8px;
+font-weight: 600;
+transition: all 0.2s ease;
+display: inline-block;
+}
+.nav-btn:hover {
+background: #4d5476;
+transform: translateY(-2px);
+}
+@media (max-width: 768px) {
+.timing-grid, .comparison-grid {
+grid-template-columns: 1fr;
+}
+.lesson-header h1 {
+font-size: 2rem;
+}
+.container {
+padding: 2rem 1rem;
+}
+}
+</style>
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Echtzeit-Feedback | Tap-In Hub - TAP-IN Leadership Academy">
+</head>
+<body>
+<nav class="lesson-nav">
+<a href="src/pages/hub/hub-home-BUSINES-de.html" class="back-btn">← Zurück zum Hub</a>
+<div class="progress-indicator">Lektion 2 von 4</div>
+</nav>
+<div class="lesson-header">
+<h1>Echtzeit-Feedback</h1>
+<p class="lesson-subtitle">Die Kraft der sofortigen Kurskorrektur</p>
+<div class="lesson-meta">
+<span>⏱️ 15 Min</span>
+<span>⭐ 25 XP</span>
+</div>
+</div>
+<div class="container">
+<div class="content-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-bolt"></use></svg> Das Argument für Geschwindigkeit</h2>
+<p>Traditionelle Feedback-Modelle – jährliche Bewertungen, vierteljährliche Check-ins – sind zu langsam für moderne Arbeit. Bis das Feedback ankommt, ist der Moment vorbei, Details sind verschwommen, und die Möglichkeit für bedeutsame Veränderung ist vermindert. Echtzeit-Feedback schließt diese Lücke.</p>
+<p>Neurowissenschaft unterstützt diese Dringlichkeit. Das Gehirn lernt am besten, wenn Ursache und Wirkung zeitlich nah beieinander liegen. Ein Coach, der deinen Tennisschlag sofort korrigiert, hilft dir, den Unterschied zu fühlen. Ein Coach, der es drei Monate später bei deiner Jahresbewertung erwähnt, nicht.</p>
+<p>Echtzeit bedeutet nicht sofort. Es bedeutet "nah genug am Ereignis, dass beide Parteien sich an Details klar erinnern können". Für die meisten Arbeitsplatzsituationen bedeutet das innerhalb von 24-48 Stunden – idealerweise am selben Tag. Das Ziel ist Relevanz, nicht Perfektion.</p>
+<div class="timing-grid">
+<div class="timing-box">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-bolt"></use></svg></div>
+<h4>Sofort</h4>
+<p>Direkt nach einem Meeting oder einer Präsentation. Höchste Wirkung, beste Erinnerung.</p>
+</div>
+<div class="timing-box">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-calendar"></use></svg></div>
+<h4>Am selben Tag</h4>
+<p>Vor Ende des Arbeitstages. Noch frisch, ermöglicht Reflexionszeit.</p>
+</div>
+<div class="timing-box">
+<div class="emoji">⏰</div>
+<h4>Innerhalb von 48 Stunden</h4>
+<p>Akzeptabel für komplexe Situationen. Nicht länger warten.</p>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Den Moment erfassen</h2>
+<p>Echtzeit-Feedback erfordert, dass du feedback-würdige Momente bemerkst, während sie passieren. Das ist eine Fähigkeit, die sich mit Übung verbessert. Trainiere dich selbst, Situationen zu erkennen, in denen sofortiger Input helfen könnte – sowohl positive Momente, die es wert sind, verstärkt zu werden, als auch Probleme, die angesprochen werden sollten.</p>
+<p>Momente zum Erfassen:</p>
+<ul>
+<li><strong>Jemand meistert eine schwierige Situation gut:</strong> Erkenne es an, bevor der Moment vergeht</li>
+<li><strong>Ein Verhaltensmuster entsteht:</strong> Sprich es nach dem zweiten oder dritten Auftreten an, nicht beim zehnten</li>
+<li><strong>Jemand scheint festzustecken oder frustriert:</strong> Biete Hilfe an, während der Kontext klar ist</li>
+<li><strong>Ein Ansatz funktioniert nicht:</strong> Korrigiere den Kurs, bevor mehr Aufwand verschwendet wird</li>
+<li><strong>Eine Lieferung hat Probleme:</strong> Fange es ab, bevor es die nächste Stufe erreicht</li>
+</ul>
+<p>Führe ein Feedback-Protokoll – eine einfache Notiz, wo du Beobachtungen aufschreibst, während sie passieren. Das dient zwei Zwecken: Es verhindert Vergessen (entscheidend für positives Feedback, das wir oft durchrutschen lassen), und es hilft dir, Muster zu erkennen, die du sonst verpassen könntest.</p>
+</div>
+<div class="content-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chat-bubble-left-right"></use></svg> Das Format für schnelle Gespräche</h2>
+<p>Echtzeit-Feedback sollte kein geplantes Meeting oder langes Gespräch erfordern. Oft reicht ein 60-Sekunden-Gespräch. Das Ziel ist Effizienz, ohne Klarheit oder Sorgfalt zu opfern.</p>
+<div class="script-box">
+<h4>Format: Das 60-Sekunden-Feedback</h4>
+<p>"Hey, hast du 60 Sekunden? Ich wollte etwas teilen, solange es noch frisch ist. [SBI-Feedback oder Beobachtung]. Was denkst du?"</p>
+</div>
+<div class="script-box">
+<h4>Beispiel: Positiv</h4>
+<p>"Sarah, kurze Beobachtung von dem Kundengespräch. Als der Kunde beim Zeitplan Widerstand leistete, bist du ruhig geblieben und hast es als Kollaborationsmöglichkeit umgeframed, statt defensiv zu werden. Der Kunde hat sich sichtbar entspannt, und wir sind an einem viel besseren Punkt gelandet. Mach weiter so."</p>
+</div>
+<div class="script-box">
+<h4>Beispiel: Konstruktiv</h4>
+<p>"Marcus, hast du eine Minute? Im Standup gerade hast du erwähnt, dass du blockiert bist, aber nicht spezifiziert, was du brauchst. Das Team war sich nicht sicher, wie es helfen kann. Könntest du beim nächsten Mal spezifisch sagen, was dich entblocken würde? Dann können Leute sofort einspringen."</p>
+</div>
+<p>Beachte das Muster: Kontext, Beobachtung, Auswirkung und (für konstruktives Feedback) ein spezifischer Vorschlag für das nächste Mal. Das dauert Sekunden zu übermitteln, aber gibt der Person alles, was sie braucht.</p>
+<div class="highlight-box">
+<h3>Das "Was denkst du?"-Ende</h3>
+<p>Mit einer Frage zu enden lädt zum Dialog ein und zeigt, dass du nicht nur ein Urteil verkündest – du eröffnest ein Gespräch. Manchmal hat die Person Kontext, den du verpasst. Manchmal ist sie sich bereits bewusst und arbeitet daran. Die Frage respektiert ihre Perspektive, während sie trotzdem deine Botschaft übermittelt.</p>
+</div>
+</div>
+<div class="content-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-globe-americas"></use></svg> Öffentlich vs. Privat</h2>
+<p>Eine gängige Regel: "Lobe öffentlich, kritisiere privat." Das ist generell guter Rat, aber es ist nuancierter, als es klingt. Manche Menschen sind mit öffentlichem Lob unwohl. Manche Feedback-Situationen profitieren davon, dass andere die gleiche Botschaft hören. Kontext zählt.</p>
+<div class="comparison-grid">
+<div class="comparison-box public">
+<h4><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check-circle"></use></svg> Öffentlich geben</h4>
+<ul>
+<li>Anerkennung für spezifische Leistungen</li>
+<li>Verstärkung von Teamwerten und -verhaltensweisen</li>
+<li>Erfolge feiern (wenn Person sich wohlfühlt)</li>
+<li>Gutes Verhalten für andere modellieren</li>
+<li>Gruppenmuster korrigieren (ohne auszugrenzen)</li>
+</ul>
+</div>
+<div class="comparison-box private">
+<h4>🔒 Privat halten</h4>
+<ul>
+<li>Persönliche Leistungsprobleme</li>
+<li>Sensible Themen (zwischenmenschliche Konflikte usw.)</li>
+<li>Erstmalige Probleme (Chance zur Selbstkorrektur geben)</li>
+<li>Alles, was peinlich sein könnte</li>
+<li>Feedback für Menschen, die Rampenlicht nicht mögen</li>
+</ul>
+</div>
+</div>
+<p>Im Zweifel wähle privat. Du kannst Feedback später immer noch breiter teilen, wenn angemessen, aber du kannst ein öffentliches Gespräch, das privat hätte sein sollen, nicht zurücknehmen. Frage dich: "Wenn ich dieses Feedback erhalten würde, würde ich wollen, dass andere dabei sind?"</p>
+</div>
+<div class="content-section">
+<h2><svg class="hero-icon hero-icon-md hero-icon-inline" style="stroke: currentColor;"><use href="icons/sprite.svg#icon-bel"></use></svg> Asynchrones Echtzeit-Feedback</h2>
+<p>Remote- und Hybridarbeit erfordert die Anpassung von Feedback-Praktiken. Du wirst nicht immer jemanden für ein schnelles Gespräch zur Seite nehmen können. Aber "Echtzeit"-Feedback kann trotzdem asynchron passieren – du brauchst nur den richtigen Ansatz.</p>
+<p>Effektives asynchrones Feedback:</p>
+<ul>
+<li><strong>DM statt öffentlicher Kanal:</strong> Für konstruktives Feedback immer Direktnachrichten nutzen</li>
+<li><strong>Sprachnachrichten-Option:</strong> Ton zählt; manchmal verflacht Text, was unterstützend klingen sollte</li>
+<li><strong>Explizit zur Dringlichkeit:</strong> Mach klar, ob sofortige Antwort nötig ist</li>
+<li><strong>Angebot zu besprechen:</strong> Beende asynchrone Nachrichten mit "Gerne mehr dazu reden, wenn hilfreich"</li>
+</ul>
+<div class="script-box">
+<h4>Beispiel: Slack-Feedback</h4>
+<p>"Hey, hab gerade die Aufzeichnung deiner Präsentation angeschaut. Wirklich starke Struktur – das 3-Teile-Framework hat es leicht gemacht zu folgen. Eine Sache für das nächste Mal: Die Q&A-Sektion wirkte gehetzt. Vielleicht mehr Zeit einplanen oder einen Parkplatz für Fragen haben, die du nachverfolgst. Insgesamt tolle Arbeit. Lass mich wissen, wenn du debriefieren willst."</p>
+</div>
+<div class="warning-box">
+<h3>Die Warnung zum geschriebenen Wort</h3>
+<p>Schriftliches Feedback wird leicht falsch gelesen. Ohne Tonfall können selbst wohlgemeinte Nachrichten harsch klingen. Für alles über einfaches positives Feedback hinaus, überlege ob ein kurzer Anruf besser wäre. Die extra 5 Minuten könnten Missverständnisse und verletzte Gefühle verhindern.</p>
+</div>
+</div>
+<div class="content-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-path"></use></svg> Die Gewohnheit aufbauen</h2>
+<p>Echtzeit-Feedback wird mächtig, wenn es gewohnheitsmäßig ist, nicht gelegentlich. Das Ziel ist, einen so stetigen Strom von Feedback zu erzeugen, dass es aufhört, eine große Sache zu sein – es ist einfach, wie du arbeitest. Das erfordert bewusstes Üben, bis es automatisch wird.</p>
+<p>Strategien zum Gewohnheitsaufbau:</p>
+<ul>
+<li><strong>Das tägliche Feedback-Ziel:</strong> Gib jeden Tag mindestens ein Stück Echtzeit-Feedback</li>
+<li><strong>Nach-Meeting-Reflexion:</strong> Nach jedem Meeting frage "Gibt es Feedback, das ich geben sollte?"</li>
+<li><strong>Die 2-Minuten-Regel:</strong> Wenn Feedback weniger als 2 Minuten dauert, tu es jetzt</li>
+<li><strong>Feedback-Trigger:</strong> Verbinde Feedback mit bestehenden Routinen (nach Standup, nach 1:1s)</li>
+<li><strong>Wöchentliche Überprüfung:</strong> Durchsuche dein Feedback-Protokoll – hast du Gelegenheiten verpasst?</li>
+</ul>
+<p>Verfolge dein Feedback-Geben für einen Monat. Die meisten Menschen sind schockiert zu entdecken, wie wenig sie tatsächlich teilen im Vergleich zu dem, was sie denken zu teilen. Daten schaffen Bewusstsein, und Bewusstsein ermöglicht Veränderung.</p>
+</div>
+<div class="practice-section">
+<h3>💪 Praxisübung</h3>
+<p>Denke an drei Feedback-Gelegenheiten aus der letzten Woche, die du verpasst hast. Für jede schreibe, was du gesagt hättest, wenn du Echtzeit-Feedback gegeben hättest.</p>
+<textarea id="practiceAnswer" placeholder="VERPASSTE GELEGENHEIT #1:
+Die Situation:
+Was ich gesagt hätte:
+Wann/wie ich es übermittelt hätte:
+VERPASSTE GELEGENHEIT #2:
+Die Situation:
+Was ich gesagt hätte:
+Wann/wie ich es übermittelt hätte:
+VERPASSTE GELEGENHEIT #3:
+Die Situation:
+Was ich gesagt hätte:
+Wann/wie ich es übermittelt hätte:
+Meine Verpflichtung zum Aufbau der Feedback-Gewohnheit:"></textarea>
+<button class="save-btn" onclick="saveExercise()" aria-label="Action">Fortschritt speichern</button>
+</div>
+<div class="takeaway-section">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Kernaussage</h3>
+<p class="takeaway-text">"Die beste Zeit für Feedback ist direkt nachdem es passiert ist – die zweitbeste Zeit ist jetzt"</p>
+<button class="complete-btn" onclick="completeLesson()" aria-label="Complete">Als erledigt markieren (+25 XP)</button>
+</div>
+<div class="lesson-footer">
+<a href="src/pages/courses/feedback-culture-1-fundamentals-de.html" class="nav-btn">← Vorherige Lektion</a>
+<a href="src/pages/courses/feedback-culture-3-receiving-team-de.html" class="nav-btn">Nächste Lektion →</a>
+</div>
+</div>
+<script>
+function saveExercise() {
+const answer = document.getElementById('practiceAnswer').value;
+if (answer.trim()) {
+localStorage.setItem('feedback-culture-2-realtime-de-exercise', answer);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-down-tray"></use></svg> Fortschritt gespeichert!');
+} else {
+alert('Bitte schreib etwas, bevor du speicherst!');
+}
+}
+window.addEventListener('DOMContentLoaded', function() {
+const saved = localStorage.getItem('feedback-culture-2-realtime-de-exercise');
+if (saved) {
+document.getElementById('practiceAnswer').value = saved;
+}
+});
+</script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>

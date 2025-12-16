@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<title>Nicht einverstanden & Verpflichten Roulette</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<style>
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(1800deg); } }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+.fade-in { animation: fadeIn 0.5s ease-out; }
+.pulse-animation { animation: pulse 2s infinite; }
+.bounce-animation { animation: bounce 1s infinite; }
+.spin-wheel { animation: spin 3s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAP-IN">
+<link rel="stylesheet" href="css/pwa-install-banner.css">
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
+    <meta name="description" content="Nicht einverstanden & Verpflichten Roulette - TAP-IN Leadership Academy">
+</head>
+<body class="bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 min-h-screen">
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+        // DECISION SCENARIOS (20 total)
+const SCENARIOS = [
+{
+id: 1,
+title: "Fire the Toxic Top Performer?",
+context: "Sarah hits 150% of quota every quarter but creates a hostile work environment. Three team members have privately mentioned quitting because of her behavior. HR has documented multiple complaints.",
+decision: "Fire Sarah immediately or keep her and work on behavior coaching?",
+proFire: ["Protect team culture", "Stopp the bleeding", "Send message that values matter", "Reduce risk of lawsuits"],
+proKeep: ["Revenue impact", "Difficult to replace her skills", "She might improve with coaching", "Other team members could be 'too sensitive'"]
+},
+{
+id: 2,
+title: "Move Offices to Speichern $500K/year?",
+context: "Dein lease is up. Moving to a cheaper location 30 Minuten further from downtown would save $500K annually but add 45-60 Minuten to most employees' commutes.",
+decision: "Move to save money or stay for employee convenience?",
+proMove: ["$500K is real money", "Remote work is available", "Some employees live near new location", "Invest savings in compensation"],
+proStay: ["Retention risk", "Recruiting will be harder", "Quality of life matters", "Lost productivity in commute time"]
+},
+{
+id: 3,
+title: "Launch Unfinished Product?",
+context: "Marketing has promised customers a launch date in 2 weeks. Engineering says the product is only 70% ready. Sales has already pre-sold 15 enterprise deals based on the promised features.",
+decision: "Launch on time with missing features or delay and disappoint customers?",
+proLaunch: ["Keep promises to waiting customers", "Competition is catching up", "Can patch post-launch", "Marketing momentum is now"],
+proDelay: ["Product quality reputation", "Support will be overwhelmed", "Refund risk", "Technical debt will compound"]
+},
+{
+id: 4,
+title: "Implement Forced Ranking?",
+context: "Dein exec team wants to implement stack ranking - bottom 10% of performers are automatically put on PIPs each quarter. They claim Microsoft and Amazon did it successfully.",
+decision: "Implement forced ranking or refuse the policy?",
+proRanking: ["Forces performance conversations", "Clear accountability", "Rewards high performers", "Industry standard in some companies"],
+proRefuse: ["Destroys collaboration", "People game the system", "Discriminatory impact risk", "Microsoft abandoned it for good reason"]
+},
+{
+id: 5,
+title: "Mandatory Return to Office?",
+context: "Productivity metrics are flat, but executives feel 'disconnected.' 60% of dein team has moved away and would need to relocate or quit if du mandate full-time office return.",
+decision: "Require everyone back in office or stay remote-friendly?",
+proOffice: ["Executive alignment", "Easier collaboration", "Company culture", "Use the expensive office space"],
+proRemote: ["Avoid mass exodus", "Access to global talent", "Productivity hasn't dropped", "Employees prefer it"]
+},
+{
+id: 6,
+title: "Acquire Competitor at 3x Revenue?",
+context: "Dein main competitor is willing to sell for $15M (they do $5M revenue). Du'd eliminate competition and acquire their customer base, but it would drain dein runway to 8 months.",
+decision: "Acquire them or pass and compete naturally?",
+proAcquire: ["Eliminate competition", "Acquire customers", "Acquihire their talent", "Market consolidation play"],
+proPass: ["Too expensive", "Integration risk", "Runway concerns", "May fail anyway with cash pressure"]
+},
+{
+id: 7,
+title: "Build In-House vs Buy SaaS?",
+context: "Dein team can build a custom solution for $200K and 6 months, or buy an existing SaaS tool for $80K/year. The SaaS tool is 80% of what du need, custom would be 100%.",
+decision: "Build custom or buy existing SaaS?",
+proBuild: ["Perfect fit for needs", "Own the IP", "No recurring costs", "Engineering wants the challenge"],
+proBuy: ["Faster to market", "Proven solution", "Vendor support", "Team can focus on core product"]
+},
+{
+id: 8,
+title: "Go Direct to Consumer?",
+context: "Du currently sell through resellers who take 40% margin. Going direct would increase profit but alienate dein current distribution partners who represent 80% of revenue.",
+decision: "Launch direct sales or protect reseller relationships?",
+proDirect: ["Higher margins", "Customer data control", "Modern go-to-market", "Long-term strategic move"],
+proReseller: ["Immediate revenue risk", "Relationship damage", "They have customer relationships", "Distribution infrastructure exists"]
+},
+{
+id: 9,
+title: "Accept Controversial Client?",
+context: "A tobacco company wants to become dein biggest customer - $2M ARR deal. 30% of dein employees have signed a petition saying they'll quit if du take the deal.",
+decision: "Take the $2M deal or refuse on principle?",
+proTake: ["$2M changes the company", "Tobacco is legal", "Can't judge customers", "Employee activists don't run company"],
+proRefuse: ["Values alignment", "Retention risk is real", "Brand damage", "Recruiting impact"]
+},
+{
+id: 10,
+title: "Raise Prices 30%?",
+context: "Dein product is significantly underpriced vs competitors. Finance says 30% increase would add $3M profit with only ~15% customer churn (based on surveys). But some loyal early customers would be hit hard.",
+decision: "Raise prices 30% or keep current pricing?",
+proRaise: ["Obvious profit opportunity", "Competitors charge more", "Better aligns value to price", "Early customers have gotten discount for years"],
+proKeep: ["Churn risk higher than forecast", "Trust with early supporters", "Competitive advantage", "Growth over profit"]
+},
+{
+id: 11,
+title: "Shut Down Unprofitable Product Line?",
+context: "Product B loses $500K/year and only 8% of customers use it. But those 8% are dein most loyal customers and loudly oppose shutting it down. They threaten to leave entirely.",
+decision: "Shut down Product B or continue operating it at a loss?",
+proShutdown: ["Stopp losing money", "Focus resources", "8% of customers isn't worth $500K", "They might be bluffing about leaving"],
+proWeiter: ["Customer loyalty matters", "Upsell opportunity", "Competitive differentiator", "Brand promise to support it"]
+},
+{
+id: 12,
+title: "Hire Expensive Executive?",
+context: "Du can hire a world-class CMO for $350K (50% above budget) who previously scaled a competitor from $10M to $100M. Or hire a good but unproven candidate at $200K.",
+decision: "Stretch for the superstar or hire within budget?",
+proSuperstar: ["Proven track record", "Worth the premium", "Attract other A-players", "Experience matters"],
+proBudget: ["Budget discipline", "Unproven can surprise du", "Team building matters more than individual", "Comp inflation risk"]
+},
+{
+id: 13,
+title: "Outsource Customer Support?",
+context: "Outsourcing support to Philippines would save $400K/year. Dein current US-based team is beloved by customers (NPS: 72) but expensive. Outsourced quality is unproven.",
+decision: "Outsource to cut costs or keep in-house for quality?",
+proOutsource: ["$400K savings", "Scale faster", "24/7 coverage", "Common industry practice"],
+proInHouse: ["Customer satisfaction risk", "Quality control", "Current team is a competitive advantage", "Cultural alignment"]
+},
+{
+id: 14,
+title: "Partner with Larger Competitor?",
+context: "Dein biggest competitor offers a partnership: they'll promote dein product to their customer base in exchange for 30% revenue share. Du'd grow 3x but become dependent on them.",
+decision: "Partner with competitor or stay independent?",
+proPartner: ["Instant distribution", "3x growth opportunity", "Validate dein product", "Speed to market"],
+proIndependent: ["Dependency risk", "30% is expensive long-term", "They'll learn dein secrets", "Could acquire/crush du later"]
+},
+{
+id: 15,
+title: "Implement Unlimited PTO?",
+context: "Employees are asking for unlimited PTO. HR says people actually take less time off under unlimited policies, saving accrual liability. But dein culture already has burnout issues.",
+decision: "Implement unlimited PTO or stick with accrual system?",
+proUnlimited: ["Recruiting benefit", "Eliminate accrual liability", "Trust employees", "Modern perk"],
+proAccrual: ["People take less time with unlimited", "Burnout culture will get worse", "Hard to enforce minimums", "Accounting clarity"]
+},
+{
+id: 16,
+title: "Rebrand the Company?",
+context: "Dein agency proposes a complete rebrand ($500K cost) claiming dein current brand limits growth. Du have moderate brand recognition now but want to go upmarket.",
+decision: "Invest $500K in rebrand or stick with current brand?",
+proRebrand: ["Upmarket positioning", "Refresh needed", "Agency has proven track record", "Signal change to market"],
+proKeep: ["$500K is a lot", "Current brand has recognition", "Could just evolve slowly", "Risky to confuse market"]
+},
+{
+id: 17,
+title: "Expand to Europe Now?",
+context: "Du have product-market fit in the US. European customers are asking for du, but GDPR compliance, local entity setup, and support would cost $1M and distract the team for 6 months.",
+decision: "Expand to Europe now or wait until du're bigger?",
+proExpand: ["First-mover advantage", "Customer demand exists", "Diversification", "Competition is entering"],
+proWait: ["Focus on US growth first", "$1M is steep", "Operational complexity", "Can do it better later with more resources"]
+},
+{
+id: 18,
+title: "Sell the Company?",
+context: "A strategic acquirer offers $50M (4x revenue). Dein VC wants to hold out for $200M in 3 years. The offer is all cash and guaranteed. Founders would make $8M each.",
+decision: "Sell now for $50M or hold out for potential $200M?",
+proSell: ["Life-changing money now", "Bird in hand", "Market conditions could change", "$8M is real financial freedom"],
+proHold: ["4x revenue is cheap", "Company is growing fast", "VC pressure to hold", "Could be worth $200M+"]
+},
+{
+id: 19,
+title: "Implement Salary Transparency?",
+context: "Employees demand full salary transparency after discovering pay inequities. HR warns this could create massive morale issues and trigger raise demands du can't afford.",
+decision: "Publish all salaries or keep compensation private?",
+proTransparency: ["Fairness and trust", "Forces addressing inequities", "Modern practice", "Employee demand"],
+proPrivate: ["Morale and comparison issues", "Can't afford to fix all gaps now", "Individual situations vary", "Competitive disadvantage"]
+},
+{
+id: 20,
+title: "Pivot the Product Strategy?",
+context: "Usage data shows customers use dein product completely differently than du designed it. Pivoting to their use case would mean rebuilding 40% of the product and abandoning dein original vision.",
+decision: "Pivot to customer behavior or stick with original vision?",
+proPivot: ["Customers showing du the way", "Product-market fit matters more than vision", "Revenue following the pivot", "Vision can evolve"],
+proVision: ["Built for a reason", "Current users bought original vision", "Rebuilding risk", "Customers don't always know best"]
+}
+];
+        // Firebase config
+const firebaseConfig = {
+apiKey: "AIzaSyBvK_vZ3vXj5k5L0Qp6X9K5Z6Yq8L0A5B0",
+authDomain: "disagree-commit.firebaseapp.com",
+databaseURL: "https://disagree-commit-default-rtdb.firebaseio.com",
+projectId: "disagree-commit"
+};
+let firebaseApp = null;
+try {
+if (!firebase.apps.length) firebaseApp = firebase.initializeApp(firebaseConfig);
+} catch (error) {
+            console.warn('Firebase init failed:', error);
+}
+class GameRoom {
+constructor(roomCode, multiDevice = false) {
+this.roomCode = roomCode;
+this.multiDevice = multiDevice && firebaseApp !== null;
+this.storageKey = `disagree-commit-${roomCode}`;
+if (this.multiDevice) {
+this.dbRef = firebase.database().ref(`rooms/${roomCode}`);
+}
+}
+async getState() {
+if (this.multiDevice) {
+const snapshot = await this.dbRef.once('value');
+return snapshot.val();
+}
+const data = localStorage.getItem(this.storageKey);
+return data ? JSON.parse(data) : null;
+}
+async setState(state) {
+if (this.multiDevice) {
+await this.dbRef.set(state);
+} else {
+localStorage.setItem(this.storageKey, JSON.stringify(state));
+window.dispatchEvent(new Event('storage'));
+}
+}
+subscribe(callback) {
+if (this.multiDevice) {
+this.dbRef.on('value', (snapshot) => callback(snapshot.val()));
+return () => this.dbRef.off('value');
+} else {
+const handler = () => {
+const data = localStorage.getItem(this.storageKey);
+callback(data ? JSON.parse(data) : null);
+};
+window.addEventListener('storage', handler);
+return () => window.removeEventListener('storage', handler);
+}
+}
+}
+function DisagreeCommit() {
+const [screen, setScreen] = useState('mode-select');
+const [gameMode, setGameMode] = useState(null);
+const [roomCode, setRoomCode] = useState('');
+const [myName, setMyName] = useState('');
+const [players, setPlayers] = useState([]);
+const [blockTokens, setBlockTokens] = useState({});
+const [scores, setScores] = useState({});
+const [currentScenario, setCurrentScenario] = useState(null);
+const [phase, setPhase] = useState('wheel'); // wheel, thinking, debate1, vote1, debate2, vote2, commitment
+const [timeLeft, setTimeLeft] = useState(0);
+const [votes, setVotes] = useState({});
+const [commitments, setCommitments] = useState({});
+const [allCommitments, setAllCommitments] = useState([]);
+const [round, setRound] = useState(0);
+const [spinning, setSpinning] = useState(false);
+const roomRef = useRef(null);
+const timerRef = useRef(null);
+useEffect(() => {
+if (!roomCode || screen === 'mode-select') return;
+const room = new GameRoom(roomCode, gameMode === 'multi-device');
+roomRef.current = room;
+const unsubscribe = room.subscribe((state) => {
+if (state) {
+setPlayers(state.players || []);
+setBlockTokens(state.blockTokens || {});
+setScores(state.scores || {});
+setCurrentScenario(state.currentScenario || null);
+setPhase(state.phase || 'wheel');
+setTimeLeft(state.timeLeft || 0);
+setVotes(state.votes || {});
+setCommitments(state.commitments || {});
+setAllCommitments(state.allCommitments || []);
+setRound(state.round || 0);
+if (state.screen) setScreen(state.screen);
+}
+});
+room.getState().then(state => {
+if (!state) {
+room.setState({
+players: [],
+blockTokens: {},
+scores: {},
+round: 0,
+phase: 'wheel',
+allCommitments: [],
+screen: 'lobby'
+});
+}
+});
+return unsubscribe;
+}, [roomCode, gameMode]);
+            // Timer
+useEffect(() => {
+if (phase === 'thinking' || phase === 'debate1' || phase === 'debate2') {
+timerRef.current = setInterval(async () => {
+if (timeLeft > 0) {
+await updateRoom({ timeLeft: timeLeft - 1 });
+} else {
+if (phase === 'thinking') {
+await updateRoom({ phase: 'debate1', timeLeft: 60 });
+} else if (phase === 'debate1') {
+await updateRoom({ phase: 'vote1', votes: {} });
+} else if (phase === 'debate2') {
+await updateRoom({ phase: 'vote2', votes: {} });
+}
+}
+}, 1000);
+return () => clearInterval(timerRef.current);
+}
+}, [phase, timeLeft]);
+const updateRoom = async (updates) => {
+if (!roomRef.current) return;
+const state = await roomRef.current.getState();
+await roomRef.current.setState({ ...state, ...updates });
+};
+const selectMode = (mode) => {
+setGameMode(mode);
+setScreen('lobby');
+const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+setRoomCode(code);
+};
+const addPlayer = async (name) => {
+if (!name.trim() || !roomRef.current) return;
+const state = await roomRef.current.getState();
+if (state.players.some(p => p.name === name)) {
+alert('Name taken!');
+return;
+}
+const newPlayer = { name, id: Date.now() };
+await updateRoom({
+players: [...state.players, newPlayer],
+blockTokens: { ...state.blockTokens, [name]: 3 },
+scores: { ...state.scores, [name]: 0 }
+});
+setMyName(name);
+};
+const startGame = async () => {
+const state = await roomRef.current.getState();
+if (state.players.length < 3) {
+alert('Need at least 3 players!');
+return;
+}
+await updateRoom({
+screen: 'game',
+round: 1,
+phase: 'wheel'
+});
+};
+const spinWheel = async () => {
+setSpinning(true);
+setTimeout(async () => {
+const scenario = SCENARIOS[Math.floor(Math.random() * SCENARIOS.length)];
+await updateRoom({
+currentScenario: scenario,
+phase: 'thinking',
+timeLeft: 30,
+votes: {},
+commitments: {}
+});
+setSpinning(false);
+}, 3000);
+};
+const vote = async (decision) => {
+const state = await roomRef.current.getState();
+await updateRoom({
+votes: { ...state.votes, [myName]: decision }
+});
+                // Check if all voted
+if (Object.keys({ ...state.votes, [myName]: decision }).length === state.players.length) {
+checkConsensus({ ...state.votes, [myName]: decision });
+}
+};
+const checkConsensus = async (voteResults) => {
+const state = await roomRef.current.getState();
+const agree = Object.values(voteResults).filter(v => v === 'agree').length;
+const disagree = Object.values(voteResults).filter(v => v === 'disagree').length;
+if (agree === voteResults.length || disagree === voteResults.length) {
+                    // Unanimous!
+const points = phase === 'vote1' ? 2 : 1;
+const newScores = { ...state.scores };
+Object.keys(newScores).forEach(name => {
+newScores[name] = (newScores[name] || 0) + points;
+});
+await updateRoom({
+scores: newScores,
+phase: 'commitment'
+});
+} else if (phase === 'vote1') {
+                    // Split vote, go to debate 2
+await updateRoom({
+phase: 'debate2',
+timeLeft: 60,
+votes: {}
+});
+} else {
+                    // Still split after debate 2, failure (unless someone blocks)
+await updateRoom({ phase: 'commitment' });
+}
+};
+const useBlock = async () => {
+const state = await roomRef.current.getState();
+if ((state.blockTokens[myName] || 0) <= 0) return;
+const newTokens = { ...state.blockTokens };
+newTokens[myName] = newTokens[myName] - 1;
+const newScores = { ...state.scores };
+newScores[myName] = (newScores[myName] || 0) - 1;
+await updateRoom({
+blockTokens: newTokens,
+scores: newScores,
+phase: 'wheel',
+votes: {},
+round: state.round + 1
+});
+};
+const submitCommitment = async (text) => {
+const state = await roomRef.current.getState();
+const newCommitments = { ...state.commitments, [myName]: text };
+await updateRoom({ commitments: newCommitments });
+if (Object.keys(newCommitments).length === state.players.length) {
+                    // Everyone committed
+const commitmentLog = {
+round: state.round,
+scenario: state.currentScenario.title,
+commitments: newCommitments
+};
+await updateRoom({
+allCommitments: [...state.allCommitments, commitmentLog],
+phase: 'wheel',
+round: state.round + 1
+});
+if (state.round >= 10) {
+await updateRoom({ screen: 'end' });
+}
+}
+};
+const resetGame = () => {
+setScreen('mode-select');
+setGameMode(null);
+setMyName('');
+setRoomCode('');
+};
+const hasVoted = votes[myName] !== undefined;
+const hasCommitted = commitments[myName] !== undefined;
+const allVoted = Object.keys(votes).length === players.length;
+            // Mode Select
+if (screen === 'mode-select') {
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-2xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20 fade-in">
+<h1 className="text-5xl font-bold text-white mb-4 text-center">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg> Disagree & Commit
+</h1>
+<p className="text-white/80 text-center mb-12 text-lg">
+Debate. Decide. Deliver.
+</p>
+<div className="space-y-6">
+<button
+onClick={() = aria-label="className="w-full bg-gradient-to-r from-indigo-50"> selectMode('pass-play')}
+className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-6 rounded-2xl font-bold text-xl hover:shadow-2xl transform hover:scale-105 transition"
+>
+<div className="text-3xl mb-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-hand-raised"></use></svg></div>
+Pass & Play
+</button>
+<button
+onClick={() = aria-label="className="w-full bg-gradient-to-r from-purple-50"> selectMode('multi-device')}
+className="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white px-8 py-6 rounded-2xl font-bold text-xl hover:shadow-2xl transform hover:scale-105 transition"
+>
+<div className="text-3xl mb-2"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-globe-alt"></use></svg></div>
+Multi-Device
+</button>
+</div>
+</div>
+</div>
+</div>
+);
+}
+            // Lobby
+if (screen === 'lobby') {
+return (
+<div className="min-h-screen flex items-center justify-center p-4">
+<div className="max-w-2xl w-full">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 shadow-2xl border border-white/20 fade-in">
+<div className="text-center mb-8">
+<h2 className="text-3xl font-bold text-white mb-4">Game Lobby</h2>
+<div className="inline-block bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-lg px-6 py-3 border border-indigo-500/50">
+<p className="text-white/60 text-sm">Room Code</p>
+<p className="text-4xl font-mono font-bold text-white">{roomCode}</p>
+</div>
+</div>
+{!myName ? (
+<input
+type="text"
+placeholder="Enter dein name"
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 mb-6"
+onKeyPress={(e) => {
+if (e.key === 'Enter') {
+addPlayer(e.target.value);
+e.target.value = '';
+}
+}}
+/>
+) : (
+<>
+<div className="mb-6">
+<h3 className="text-white font-bold mb-4">Players ({players.length}/6)</h3>
+<div className="space-y-2">
+{players.map(player => (
+<div key={player.id} className="bg-white/5 rounded-lg p-3 flex justify-between">
+<span className="text-white">{player.name}</span>
+{player.name === myName && <span className="text-indigo-400">(Du)</span>}
+</div>
+))}
+</div>
+</div>
+{players.length >= 3 && players[0]?.name === myName && (
+<button
+onClick={startGame}
+className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white px-8 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition pulse-animation"
+aria-label="Start game">
+Start Game
+</button>
+)}
+{players.length < 3 && (
+<p className="text-white/60 text-center">Need {3 - players.length} more players</p>
+)}
+</>
+)}
+<button onClick={() = aria-label="← Back"> setScreen('mode-select')} className="w-full mt-4 text-white/60 hover:text-white">
+← Back
+</button>
+</div>
+</div>
+</div>
+);
+}
+            // Game
+if (screen === 'game') {
+return (
+<div className="min-h-screen p-4">
+<div className="max-w-6xl mx-auto">
+                            {/* Header */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 mb-6">
+<div className="flex justify-between items-center">
+<div>
+<h2 className="text-2xl font-bold text-white">Round {round}/10</h2>
+<p className="text-white/60">Room: {roomCode}</p>
+</div>
+{phase !== 'wheel' && (
+<div className="text-center">
+<p className={`text-5xl font-bold ${timeLeft <= 10 ? 'text-red-400' : 'text-white'}`}>
+{Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+</p>
+<p className="text-white/60 text-sm">
+{phase === 'thinking' ? 'Thinking' : phase.includes('debate') ? 'Debate' : 'Vote'}
+</p>
+</div>
+)}
+</div>
+</div>
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                                {/* Main Area */}
+<div className="lg:col-span-2 space-y-6">
+                                    {/* Wheel */}
+{phase === 'wheel' && (
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 text-center">
+<div className={`text-8xl mb-8 ${spinning ? 'spin-wheel' : ''}`}><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-trending-up"></use></svg></div>
+{!spinning && players[0]?.name === myName && (
+<button
+onClick={spinWheel}
+className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-12 py-6 rounded-2xl font-bold text-2xl hover:shadow-lg transform hover:scale-105 transition pulse-animation"
+aria-label="SPIN THE WHEEL">
+SPIN THE WHEEL
+</button>
+)}
+{spinning && (
+<p className="text-white text-2xl">Spinning...</p>
+)}
+</div>
+)}
+                                    {/* Scenario Display */}
+{currentScenario && phase !== 'wheel' && (
+<div className="bg-gradient-to-br from-indigo-600 to-purple-600 border-4 border-white rounded-2xl p-8 shadow-2xl">
+<h3 className="text-3xl font-bold text-white mb-4">{currentScenario.title}</h3>
+<div className="bg-white/20 rounded-lg p-4 mb-4">
+<p className="text-white/90 text-sm mb-2 font-semibold">Context:</p>
+<p className="text-white">{currentScenario.context}</p>
+</div>
+<div className="bg-white/20 rounded-lg p-4">
+<p className="text-white/90 text-sm mb-2 font-semibold">Decision:</p>
+<p className="text-white font-bold">{currentScenario.decision}</p>
+</div>
+</div>
+)}
+                                    {/* Voting */}
+{(phase === 'vote1' || phase === 'vote2') && !hasVoted && (
+<div className="space-y-4">
+<p className="text-white text-center text-xl font-bold">Cast Dein Vote:</p>
+<div className="flex gap-4">
+<button
+onClick={() = aria-label="className="flex-1 bg-green-500 text-white px-8 py"> vote('agree')}
+className="flex-1 bg-green-500 text-white px-8 py-6 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+>
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> AGREE
+</button>
+<button
+onClick={() = aria-label="className="flex-1 bg-red-500 text-white px-8 py-6"> vote('disagree')}
+className="flex-1 bg-red-500 text-white px-8 py-6 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+>
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-x-mark"></use></svg> DISAGREE
+</button>
+</div>
+{(blockTokens[myName] || 0) > 0 && (
+<button
+onClick={useBlock}
+className="w-full bg-orange-500 text-white px-6 py-4 rounded-xl font-bold hover:shadow-lg transform hover:scale-105 transition"
+aria-label="<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-no-symbol"></use></svg> BLOCK (Costs 1 token & -1 point)">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-no-symbol"></use></svg> BLOCK (Costs 1 token & -1 point)
+</button>
+)}
+</div>
+)}
+{hasVoted && !allVoted && (
+<p className="text-green-400 text-center text-xl">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Vote submitted! ({Object.keys(votes).length}/{players.length})
+</p>
+)}
+                                    {/* Commitment */}
+{phase === 'commitment' && !hasCommitted && (
+<div className="space-y-4">
+<p className="text-white text-center text-xl font-bold">
+What will du commit to doing?
+</p>
+<textarea
+className="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 min-h-[100px]"
+placeholder="Enter dein specific commitment..."
+onKeyPress={(e) => {
+if (e.key === 'Enter' && !e.shiftKey) {
+e.preventDefault();
+submitCommitment(e.target.value);
+}
+}}
+/>
+</div>
+)}
+{hasCommitted && (
+<p className="text-green-400 text-center text-xl">
+<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Commitment submitted! ({Object.keys(commitments).length}/{players.length})
+</p>
+)}
+{(phase === 'thinking' || phase.includes('debate')) && (
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center">
+<p className="text-white text-lg">
+{phase === 'thinking' ? '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chat-bubble-bottom-center-text"></use></svg> Think about dein position...' : '<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chat-bubble-left-right"></use></svg> Debate time!'}
+</p>
+</div>
+)}
+</div>
+                                {/* Sidebar */}
+<div className="bg-white/10 backdrop-blur-lg rounded-2xl p-6">
+<h3 className="text-xl font-bold text-white mb-4">Scoreboard</h3>
+<div className="space-y-3 mb-6">
+{players
+.sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0))
+.map(player => (
+<div key={player.id} className="bg-white/5 rounded-lg p-3">
+<div className="flex justify-between items-center mb-2">
+<div>
+<span className="text-white font-medium">{player.name}</span>
+{player.name === myName && <span className="ml-2 text-indigo-400 text-xs">(Du)</span>}
+</div>
+<span className="text-2xl font-bold text-indigo-400">
+{scores[player.name] || 0}
+</span>
+</div>
+<div className="flex gap-2">
+{[...Array(blockTokens[player.name] || 0)].map((_, i) => (
+<span key={i} className="text-orange-400"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-no-symbol"></use></svg></span>
+))}
+</div>
+</div>
+))}
+</div>
+<button onClick={resetGame} className="w-full text-white/60 hover:text-white text-sm" aria-label="End Game">
+End Game
+</button>
+</div>
+</div>
+</div>
+</div>
+);
+}
+            // End
+if (screen === 'end') {
+const sorted = [...players].sort((a, b) => (scores[b.name] || 0) - (scores[a.name] || 0));
+const winner = sorted[0];
+return (
+<div className="min-h-screen p-4">
+<div className="max-w-4xl mx-auto">
+<div className="bg-white/10 backdrop-blur-lg rounded-3xl p-12 shadow-2xl border border-white/20">
+<h1 className="text-6xl text-center mb-8"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg></h1>
+<h2 className="text-4xl font-bold text-white text-center mb-8">Game Over!</h2>
+<div className="bg-gradient-to-r from-indigo-500/30 to-purple-500/30 rounded-xl p-8 mb-8 border border-indigo-500/50 text-center">
+<p className="text-white/80 mb-2">Winner</p>
+<p className="text-5xl font-bold text-white">{winner?.name}</p>
+<p className="text-3xl text-indigo-400 mt-4">{scores[winner?.name]} points</p>
+</div>
+<div className="space-y-3 mb-8">
+<h3 className="text-2xl font-bold text-white mb-4">Final Standings</h3>
+{sorted.map((player, i) => (
+<div key={player.id} className="bg-white/5 rounded-lg p-4 flex justify-between">
+<span className="text-white">#{i + 1} {player.name}</span>
+<span className="text-2xl font-bold text-indigo-400">{scores[player.name] || 0}</span>
+</div>
+))}
+</div>
+<div className="mb-8">
+<h3 className="text-2xl font-bold text-white mb-4">Commitment Log</h3>
+<div className="space-y-4 max-h-96 overflow-y-auto">
+{allCommitments.map((log, i) => (
+<div key={i} className="bg-white/5 rounded-lg p-4">
+<p className="text-white font-bold mb-2">Round {log.round}: {log.scenario}</p>
+{Object.entries(log.commitments).map(([name, commitment]) => (
+<p key={name} className="text-white/80 text-sm ml-4">
+<strong>{name}:</strong> {commitment}
+</p>
+))}
+</div>
+))}
+</div>
+</div>
+<button
+onClick={resetGame}
+className="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-12 py-4 rounded-xl font-bold text-xl hover:shadow-lg transform hover:scale-105 transition"
+aria-label="Play Again">
+Play Again
+</button>
+</div>
+</div>
+</div>
+);
+}
+return null;
+}
+ReactDOM.render(<DisagreeCommit />, document.getElementById('root'));
+</script>
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-error-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- TAP-IN Core Modules -->
+<script src="js/meta-tags-manager.js"></script>
+<script src="js/achievement-badges.js"></script>
+<script src="js/structured-data.js"></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/screen-reader-enhancements.js" defer></script>
+</body>
+</html>
