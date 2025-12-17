@@ -1,590 +1,1773 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Black Belt Stripe 4: Mastery & Legacy | TAP-IN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --belt-gradient-start: #1f2937;
-            --belt-gradient-end: #111827;
-            --belt-accent: #374151;
-            --header-text: #ffffff;
-            --light-bg: #f8fafc;
-            --success-green: #38a169;
-            --warning-orange: #dd6b20;
-            --card-bg: #ffffff;
-            --border-light: #e2e8f0;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
-            min-height: 100vh;
-            padding: 2rem 1rem;
-            line-height: 1.6;
-        }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 2rem; color: var(--header-text); }
-        .stripe-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            color: #ffffff;
-            font-weight: 600;
-        }
-        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
-        .header p { font-size: 1.1rem; opacity: 0.9; }
-        .progress-container {
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            color: var(--header-text);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .progress-bar {
-            background: rgba(255,255,255,0.2);
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #6b7280 0%, #374151 100%);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            margin-bottom: 2rem;
-        }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
-        .section-subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
-        .intro-box {
-            background: #f7fafc;
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .intro-box h3 { color: var(--text-dark); font-size: 1.1rem; margin-bottom: 0.75rem; }
-        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
-        .intro-box p:last-child { margin-bottom: 0; }
-        .intro-box strong { color: var(--text-dark); font-weight: 700; }
-        .intro-box ul { margin: 1rem 0 1rem 1.5rem; line-height: 1.8; }
-        .intro-box li { margin-bottom: 0.5rem; }
-        .intro-box.philosophy {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-left: 6px solid #374151;
-        }
-        .intro-box.research {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border-left: 6px solid #374151;
-        }
-        .intro-box.research h3 { color: #ffffff; }
-        .intro-box.research p { color: #e2e8f0; }
-        .intro-box.research strong { color: #a78bfa; }
-        .practice-card {
-            background: #f0fdf4;
-            border-left: 4px solid #22c55e;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
-        }
-        .practice-card h4 { color: #166534; font-size: 1rem; margin-bottom: 0.5rem; }
-        .practice-card p { color: #14532d; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.5rem; }
-        .practice-card p:last-child { margin-bottom: 0; }
-        .insight-card {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border: 1px solid #93c5fd;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        .insight-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-        .insight-title { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem; }
-        .insight-content { color: var(--text-dark); font-size: 0.95rem; line-height: 1.7; }
-        .insight-content p { margin-bottom: 0.75rem; }
-        .insight-content p:last-child { margin-bottom: 0; }
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-            gap: 1rem;
-        }
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #1e293b;
-        }
-        .btn-secondary:hover {
-            background: #d1d5db;
-            transform: translateY(-2px);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #374151 0%, #111827 100%);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-        .xp-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 0.35rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-left: 0.5rem;
-        }
-        .quiz-option:hover {
-            border-color: #374151 !important;
-            background: #f8fafc;
-        }
-        @media (max-width: 768px) {
-            body { padding: 1rem 0.5rem; }
-            .header h1 { font-size: 1.5rem; }
-            .main-card { padding: 1.5rem; }
-            .nav-buttons { flex-direction: column; }
-        }
-    
-        /* Language Switcher */
-        .language-switcher {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .lang-btn {
-            color: rgba(255, 255, 255, 0.6);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .lang-btn:hover {
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .lang-btn.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .lang-separator {
-            color: rgba(255, 255, 255, 0.3);
-        }
-        @media (max-width: 768px) {
-            .language-switcher {
-                top: 0.5rem;
-                right: 0.5rem;
-                padding: 0.4rem 0.8rem;
-            }
-        }
-
-    </style>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Build lasting legacy and impact in Black Belt Stripe 4. Learn to create systems and culture that outlive your direct leadership."><!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tap-in-platform.netlify.app/black-belt-stripe4-gamified.html">
+<meta property="og:title" content="Black Belt Stripe 4 Training">
+<meta property="og:description" content="Master leadership fundamentals in Black Belt Stripe 4. Interactive lessons, quizzes, and progress tracking.">
+<meta property="og:image" content="https://tap-in-platform.netlify.app/og-image.png">
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://tap-in-platform.netlify.app/black-belt-stripe4-gamified.html">
+<meta property="twitter:title" content="Black Belt Stripe 4 Training">
+<meta property="twitter:description" content="Master leadership fundamentals in Black Belt Stripe 4. Interactive lessons, quizzes, and progress tracking.">
+<meta property="twitter:image" content="https://tap-in-platform.netlify.app/og-image.png">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Black Belt Stripe 4: Legacy | TAP-IN</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../../../css/dark-mode.css">
+<link rel="stylesheet" href="../../../css/hero-icons.css">
+<link rel="stylesheet" href="../../../css/gamification-v10.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --primary-navy: var(--bg-primary); --secondary-navy: var(--bg-tertiary); --accent-red: #b91c1c; --accent-purple: #a78bfa; --success-green: #38a169; --warning-orange: #dd6b20; --card-bg: var(--belt-white); --border-light: var(--border-light); --text-dark: var(--bg-secondary); --text-muted: var(--text-muted); --light-bg: var(--text-primary); }
+body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); min-height: 100vh; padding: 2rem 1rem; line-height: 1.6; }
+.container { max-width: 800px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 2rem; color: white; }
+.stripe-badge { display: inline-block; background: rgba(255,255,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.85rem; margin-bottom: 1rem; border: 1px solid rgba(255,255,255,0.2); }
+.header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+.header p { font-size: 1.1rem; opacity: 0.8; }
+.progress-container { background: rgba(255,255,255,0.1); border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 2rem; }
+.progress-header { display: flex; justify-content: space-between; color: white; font-size: 0.9rem; margin-bottom: 0.5rem; }
+.progress-bar { background: rgba(255,255,255,0.2); height: 8px; border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%); border-radius: 4px; transition: width 0.5s ease; }
+.main-card { background: white; border-radius: 20px; padding: 2.5rem; box-shadow: 0 20px 60px rgba(0,0,0,0.3); }
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.5s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+.section-subtitle { color: var(--text-muted); margin-bottom: 1.5rem; }
+.intro-box { background: var(--light-bg); border: 1px solid var(--border-light); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; }
+.intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+.intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+.intro-box p:last-child { margin-bottom: 0; }
+.intro-box strong { color: var(--primary-navy); }
+.intro-box.philosophy { background: linear-gradient(135deg, var(--light-bg) 0%, var(--border-light) 100%); border-left: 6px solid var(--primary-navy); }
+.intro-box.philosophy em { color: var(--accent-purple); }
+.intro-box.research { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); border: none; }
+.intro-box.research h3 { color: #fff; }
+.intro-box.research p { color: var(--border-light); }
+.intro-box.research strong { color: var(--accent-purple); }
+.intro-box.black-belt-wisdom { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-left: 6px solid var(--accent-red); }
+.intro-box.black-belt-wisdom h3 { color: var(--belt-white); }
+.intro-box.black-belt-wisdom p { color: var(--border-light); }
+.intro-box.black-belt-wisdom strong { color: var(--belt-white); }
+.intro-box.black-belt-wisdom em { color: var(--accent-purple); }
+.legacy-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.legacy-item { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 2px solid #86efac; border-radius: 12px; padding: 1.25rem; text-align: center; }
+.legacy-item .emoji { font-size: 2rem; margin-bottom: 0.5rem; }
+.legacy-item h4 { color: #166534; font-size: 0.95rem; margin-bottom: 0.25rem; }
+.legacy-item p { color: #14532d; font-size: 0.8rem; }
+.reflection-box { background: #fffbeb; border: 2px solid #fcd34d; border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+.reflection-box h3 { color: var(--belt-brown); font-size: 1rem; margin-bottom: 0.75rem; }
+.reflection-box p { color: #78350f; font-size: 0.95rem; margin-bottom: 1rem; }
+.reflection-textarea { width: 100%; min-height: 100px; padding: 1rem; border: 1px solid #fcd34d; border-radius: 8px; font-family: inherit; font-size: 0.95rem; resize: vertical; }
+.belt-complete { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-radius: 20px; padding: 2.5rem; color: white; text-align: center; margin-bottom: 1.5rem; border: 2px solid var(--accent-purple); }
+.belt-complete h2 { font-size: 2rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--belt-white) 0%, var(--accent-purple) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.belt-visual { font-size: 5rem; margin: 1rem 0; }
+.belt-complete p { opacity: 0.9; font-size: 1.1rem; }
+.journey-recap { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin: 1.5rem 0; }
+.journey-item { background: var(--light-bg); border-radius: 8px; padding: 0.75rem 0.5rem; text-align: center; }
+.journey-item .emoji { font-size: 1.5rem; }
+.journey-item p { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.25rem; }
+.final-message { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); border-radius: 12px; padding: 1.5rem; margin: 1.5rem 0; }
+.final-message h3 { color: white; font-size: 1.1rem; margin-bottom: 0.75rem; }
+.final-message p { color: var(--border-light); font-size: 0.95rem; margin-bottom: 0.75rem; }
+.final-message p:last-child { margin-bottom: 0; }
+.nav-buttons { display: flex; justify-content: space-between; margin-top: 2rem; gap: 1rem; }
+.btn { padding: 1rem 2rem; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.3s; border: none; text-decoration: none; text-align: center; }
+.btn-secondary { background: #edf2f7; color: var(--text-dark); }
+.btn-primary { background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%); color: white; }
+.btn-success { background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%); color: white; }
+.btn-gold { background: linear-gradient(135deg, var(--warning) 0%, #d97706 100%); color: white; }
+.quote-block { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); border-radius: 12px; padding: 1.5rem; text-align: center; margin: 1.5rem 0; }
+.quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+.quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+.celebrate { animation: pulse 2s ease-in-out infinite; }
+@media (max-width: 768px) { body { padding: 1rem; } .main-card { padding: 1.5rem; } .nav-buttons { flex-direction: column; } .btn { width: 100%; } .journey-recap { grid-template-columns: repeat(3, 1fr); } }
+        /* ============= NUMBERED OPTION BOX READABILITY FIX ============= */
+.scale-option,
+.rating-option,
+.numbered-option,
+.option-number,
+[data-value="1"],
+[data-value="2"],
+[data-value="3"],
+[data-value="4"],
+[data-value="5"] {
+color: var(--belt-white) !important;
+font-weight: 700 !important;
+font-size: 1.1rem !important;
+background: var(--bg-secondary) !important;
+border: 2px solid #475569 !important;
+text-shadow: 0 1px 3px rgba(0,0,0,0.5) !important;
+}
+.scale-option:hover,
+.rating-option:hover,
+.numbered-option:hover,
+.option-number:hover,
+[data-value]:hover {
+background: var(--bg-tertiary) !important;
+border-color: #667eea !important;
+color: var(--belt-white) !important;
+transform: scale(1.05) !important;
+}
+.scale-option.selected,
+.rating-option.selected,
+.numbered-option.selected,
+.option-number.selected,
+[data-value].selected {
+background: #667eea !important;
+border-color: #818cf8 !important;
+color: var(--belt-white) !important;
+box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3) !important;
+}
+.scale-label,
+.rating-label,
+.option-label {
+color: var(--belt-white) !important;
+font-weight: 600 !important;
+font-size: 0.9rem !important;
+text-align: center !important;
+margin-top: 0.5rem !important;
+}
+.scale-container,
+.rating-container,
+.options-row {
+display: flex !important;
+justify-content: space-between !important;
+gap: 0.75rem !important;
+margin: 1.5rem 0 !important;
+}
+.scale-container > *,
+.rating-container > *,
+.options-row > * {
+flex: 1 !important;
+min-width: 60px !important;
+text-align: center !important;
+padding: 1rem 0.5rem !important;
+border-radius: 8px !important;
+cursor: pointer !important;
+transition: all 0.2s ease !important;
+}
+@media (max-width: 768px) {
+.scale-option,
+.rating-option,
+.numbered-option,
+.option-number,
+[data-value] {
+font-size: 1rem !important;
+padding: 0.75rem 0.25rem !important;
+min-width: 50px !important;
+}
+.scale-label,
+.rating-label,
+.option-label {
+font-size: 0.75rem !important;
+}
+}
+input[type="range"] {
+-webkit-appearance: none !important;
+width: 100% !important;
+height: 8px !important;
+background: var(--bg-tertiary) !important;
+border-radius: 5px !important;
+outline: none !important;
+}
+input[type="range"]::-webkit-slider-thumb {
+-webkit-appearance: none !important;
+width: 24px !important;
+height: 24px !important;
+background: #667eea !important;
+cursor: pointer !important;
+border-radius: 50% !important;
+border: 3px solid var(--belt-white) !important;
+box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+input[type="range"]::-moz-range-thumb {
+width: 24px !important;
+height: 24px !important;
+background: #667eea !important;
+cursor: pointer !important;
+border-radius: 50% !important;
+border: 3px solid var(--belt-white) !important;
+box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+}
+.slider-value,
+.range-value {
+display: block !important;
+text-align: center !important;
+font-size: 1.5rem !important;
+font-weight: 700 !important;
+color: #667eea !important;
+margin-top: 1rem !important;
+text-shadow: 0 1px 2px rgba(0,0,0,0.2) !important;
+}
+.slider-labels {
+display: flex !important;
+justify-content: space-between !important;
+margin-top: 0.5rem !important;
+}
+.slider-labels span {
+font-size: 0.85rem !important;
+color: #cbd5e1 !important;
+font-weight: 600 !important;
+}
+        /* Quiz Section Styling */
+.quiz-section {
+background: white;
+border-radius: 20px;
+padding: 40px;
+margin: 40px 0;
+box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+.quiz-section .section-header {
+text-align: center;
+margin-bottom: 40px;
+}
+.quiz-section .section-header h2 {
+color: var(--bg-primary);
+font-size: 32px;
+margin-bottom: 10px;
+}
+.quiz-section .section-header p {
+color: var(--text-muted);
+font-size: 18px;
+}
+.quiz-question {
+background: #f8f9fa;
+border-radius: 12px;
+padding: 30px;
+margin: 20px 0;
+border-left: 4px solid #667eea;
+}
+.quiz-question h3 {
+color: #667eea;
+font-size: 16px;
+font-weight: 600;
+margin-bottom: 15px;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+.question-text {
+font-size: 18px;
+font-weight: 500;
+margin-bottom: 20px;
+color: #2d3748;
+line-height: 1.6;
+}
+.quiz-options {
+display: grid;
+gap: 12px;
+}
+.quiz-option {
+background: white;
+border: 2px solid var(--border-light);
+border-radius: 8px;
+padding: 15px 20px;
+text-align: left;
+font-size: 16px;
+cursor: pointer;
+transition: all 0.2s;
+color: #2d3748;
+font-family: inherit;
+}
+.quiz-option:hover {
+border-color: #667eea;
+background: #f7fafc;
+transform: translateX(4px);
+}
+.quiz-option:disabled {
+cursor: not-allowed;
+opacity: 0.7;
+}
+.quiz-option.selected-correct {
+background: #d4edda;
+border-color: #28a745;
+color: #155724;
+font-weight: 600;
+}
+.quiz-option.selected-incorrect {
+background: #f8d7da;
+border-color: #dc3545;
+color: #721c24;
+}
+.quiz-feedback {
+margin-top: 15px;
+padding: 15px;
+border-radius: 8px;
+font-size: 14px;
+}
+.quiz-feedback.correct {
+background: #d4edda;
+color: #155724;
+border-left: 4px solid #28a745;
+}
+.quiz-feedback.incorrect {
+background: #f8d7da;
+color: #721c24;
+border-left: 4px solid #dc3545;
+}
+.quiz-feedback .feedback-text {
+margin: 0;
+line-height: 1.6;
+}
+.quiz-completion {
+text-align: center;
+padding: 40px;
+background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+border-radius: 12px;
+margin-top: 30px;
+}
+.quiz-completion h3 {
+color: #155724;
+font-size: 28px;
+margin-bottom: 20px;
+}
+.quiz-score {
+font-size: 24px;
+font-weight: 600;
+color: #155724;
+margin-bottom: 10px;
+}
+.quiz-xp {
+font-size: 20px;
+color: #155724;
+margin-bottom: 20px;
+}
+        /* Mobile Responsive */
+@media (max-width: 768px) {
+.quiz-section {
+padding: 20px;
+}
+.quiz-question {
+padding: 20px;
+}
+.question-text {
+font-size: 16px;
+}
+.quiz-section .section-header h2 {
+font-size: 24px;
+}
+}
+</style>
+<link rel="canonical" href="https://tap-in-platform.netlify.app/black-belt-stripe4-gamified.html">
+
 <body>
-
-        <div class="language-switcher">
-            <a href="black-belt-stripe4-gamified.html" class="lang-btn active">EN</a>
-            <span class="lang-separator">|</span>
-            <a href="black-belt-stripe4-gamified-de.html" class="lang-btn">DE</a>
-        </div>
-    <div class="container">
-        <div class="header">
-            <div class="stripe-badge">⬛ Black Belt - Stripe 4</div>
-            <h1>Mastery & Legacy</h1>
-            <p>Your leadership legacy</p>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-header">
-                <span>Progress</span>
-                <span id="progressText">Section 1 of 5</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressBar" style="width: 20%"></div>
-            </div>
-        </div>
-
-        <div class="main-card">
-            <!-- Section 1: Introduction -->
-            <div class="section active" id="section-1">
-                <h2 class="section-title">🎯 Introduction</h2>
-                <p class="section-subtitle">Understanding mastery & legacy</p>
-
-                <div class="intro-box">
-                    <h3>What You'll Learn</h3>
-                    <p>This stripe focuses on <strong>mastery & legacy</strong>. You'll discover practical frameworks and tools you can apply immediately to your leadership.</p>
-                    <p>By the end of this stripe, you'll have concrete actions to implement this week.</p>
-                </div>
-
-                <div class="intro-box philosophy">
-                    <h3>The TAP-IN Approach</h3>
-                    <p><em>Practice makes permanent, not perfect.</em></p>
-                    <p>This isn't theory. Every concept includes practical application. Your job is to try it, fail at it, adjust, and try again.</p>
-                </div>
-
-                <div class="intro-box research">
-                    <h3>📊 Why This Matters</h3>
-                    <p>Research shows that mastery & legacy is a critical factor in team performance. Teams that master this see measurable improvements in both outcomes and culture.</p>
-                </div>
-
-                <div class="nav-buttons">
-                    <a href="gym-dashboard.html" class="btn btn-secondary">← Back to Dashboard</a>
-                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Section 2: Core Concept -->
-            <div class="section" id="section-2">
-                <h2 class="section-title">💡 Core Concept</h2>
-                <p class="section-subtitle">The foundation you need to understand</p>
-
-                <div class="intro-box">
-                    <h3>The Framework</h3>
-                    <p>At its core, mastery & legacy requires understanding three key elements:</p>
-                    <ul>
-                        <li><strong>Awareness:</strong> Recognizing when this matters</li>
-                        <li><strong>Skill:</strong> Knowing what to do</li>
-                        <li><strong>Practice:</strong> Building the habit</li>
-                    </ul>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Practical Application</h4>
-                    <p>Here's how this shows up in real team situations:</p>
-                    <p><strong>Scenario:</strong> A team member disagrees with your decision during a meeting.</p>
-                    <p><strong>Response:</strong> Welcome the disagreement. It's a sign of psychological safety and leads to better decisions.</p>
-                </div>
-
-                <div class="insight-card">
-                    <div class="insight-icon">⚡</div>
-                    <div class="insight-title">Key Insight</div>
-                    <div class="insight-content">
-                        <p>Most leaders know what to do. The gap is in actually doing it consistently.</p>
-                        <p><strong>Your focus: Build the muscle memory through daily practice.</strong></p>
-                    </div>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Section 3: Deep Dive -->
-            <div class="section" id="section-3">
-                <h2 class="section-title">🔍 Deep Dive</h2>
-                <p class="section-subtitle">Going deeper into the practice</p>
-
-                <div class="intro-box">
-                    <h3>Common Pitfalls</h3>
-                    <p>Even experienced leaders make these mistakes:</p>
-                    <ul>
-                        <li>Knowing intellectually but not practicing</li>
-                        <li>Applying inconsistently across team members</li>
-                        <li>Giving up after first failed attempt</li>
-                    </ul>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Exercise: Self-Assessment</h4>
-                    <p>On a scale of 1-10, how consistently do you practice mastery & legacy?</p>
-                    <p>If below 7: Identify one specific situation this week where you'll practice this intentionally.</p>
-                    <p>If 7+: Identify how you'll help a team member develop this skill.</p>
-                </div>
-
-                <div class="intro-box research">
-                    <h3>📊 What Research Shows</h3>
-                    <p>Studies indicate that deliberate practice in specific situations leads to 3-5x faster skill development than general awareness training.</p>
-                    <p><strong>Translation:</strong> Pick specific moments to practice, rather than trying to "be better" generally.</p>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Section 4: Implementation -->
-            <div class="section" id="section-4">
-                <h2 class="section-title">🔨 Implementation Guide</h2>
-                <p class="section-subtitle">Making this real in your team</p>
-
-                <div class="practice-card">
-                    <h4>Action #1: This Week</h4>
-                    <p>Identify one meeting or interaction where you'll deliberately practice mastery & legacy.</p>
-                    <p><strong>Before:</strong> Set your intention. What specifically will you do?</p>
-                    <p><strong>After:</strong> Reflect. What worked? What would you do differently?</p>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Action #2: Team Level</h4>
-                    <p>Share this concept with your team. Make it explicit that you're working on this.</p>
-                    <p><strong>Why:</strong> When you're transparent about your development areas, you give others permission to do the same.</p>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Action #3: Accountability</h4>
-                    <p>Ask someone to give you feedback on how you're doing with this.</p>
-                    <p><strong>The ask:</strong> "I'm working on mastery & legacy. Will you tell me when you see me doing it well, and when you see me missing opportunities?"</p>
-                </div>
-
-                <div class="insight-card">
-                    <div class="insight-icon">🎯</div>
-                    <div class="insight-title">Remember</div>
-                    <div class="insight-content">
-                        <p>You won't get this perfect. That's not the goal.</p>
-                        <p><strong>The goal: Get 1% better each week through consistent practice.</strong></p>
-                    </div>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextSection()">Complete Stripe →</button>
-                </div>
-            </div>
-
-            <!-- Section 5: Quiz -->
-            <div class="section" id="section-5">
-                <h2 class="section-title">✅ Knowledge Check</h2>
-                <p class="section-subtitle">Test your understanding (70% to pass)</p>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        1. The three key elements for mastering this concept are:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Theory, Practice, Mastery</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Awareness, Skill, Practice</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Knowledge, Application, Teaching</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Learning, Doing, Reflecting</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        2. Research shows that deliberate practice in specific situations leads to:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">The same results as general training</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="1" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">3-5x faster skill development</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Slower but deeper learning</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Only works for beginners</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        3. The best way to improve at this skill is to:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="0" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Practice consistently in specific situations</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="1" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Read more books about it</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Wait until you feel ready</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Generally try to be better</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        4. When sharing your development areas with your team, you should:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="0" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Keep them private to maintain authority</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="1" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Be transparent - it gives others permission to develop too</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Only share once you've mastered them</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Share only with your manager</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px;">
-                    <button onclick="submitQuiz()" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;">
-                        Submit Quiz & Complete Stripe <span class="xp-badge">+100 XP</span>
-                    </button>
-                    <p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentSection = 1;
-        const totalSections = 5;
-
-        function updateProgress() {
-            const progress = (currentSection / totalSections) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressText').textContent = 'Section ' + currentSection + ' of ' + totalSections;
-        }
-
-        function showSection(sectionNum) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById('section-' + sectionNum).classList.add('active');
-            currentSection = sectionNum;
-            updateProgress();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function nextSection() {
-            if (currentSection < totalSections) {
-                showSection(currentSection + 1);
-            }
-        }
-
-        function prevSection() {
-            if (currentSection > 1) {
-                showSection(currentSection - 1);
-            }
-        }
-
-        function submitQuiz() {
-            const totalQuestions = 4;
-            let answered = 0;
-            let correct = 0;
-            
-            for (let i = 1; i <= totalQuestions; i++) {
-                const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
-                if (selected) {
-                    answered++;
-                    if (selected.dataset.correct === "true") {
-                        correct++;
-                    }
-                }
-            }
-            
-            if (answered < totalQuestions) {
-                alert('Please answer all ' + totalQuestions + ' questions before submitting!');
-                return;
-            }
-            
-            const percentage = Math.round((correct / totalQuestions) * 100);
-            const passed = percentage >= 70;
-            
-            if (passed) {
-                // Save progress
-                const progress = JSON.parse(localStorage.getItem('userProgress') || '{}');
-                if (!progress.completedStripes) progress.completedStripes = [];
-                const stripeKey = 'black-4';
-                if (!progress.completedStripes.includes(stripeKey)) {
-                    progress.completedStripes.push(stripeKey);
-                }
-                localStorage.setItem('userProgress', JSON.stringify(progress));
-                
-                alert('✓ Quiz Passed!\n\nScore: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe 4 Complete!');
-                
-                // Navigate
-                if (confirm('Continue to Dashboard?')) {
-                    window.location.href = 'gym-dashboard.html';
-                } else {
-                    window.location.href = 'gym-dashboard.html';
-                }
-            } else {
-                document.getElementById('quizFeedback').innerHTML = 
-                    '<span style="color: #dc2626;">Score: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Need 70% to pass. Review and try again!</span>';
-            }
-        }
-
-        // Initialize
-        updateProgress();
-    </script>
-</body>
+<!-- Stripe Sequential Unlock Check -->
+<script>
+(function() {
+            // Check if previous stripe is completed
+const currentStripe = 4;
+const previousStripeKey = 'blackBeltStripe3Complete';
+const previousComplete = localStorage.getItem(previousStripeKey) === 'true';
+if (!previousComplete) {
+                // Redirect to previous stripe or belt hub
+const beltHub = 'black-belt.html';
+const previousStripe = 'black-belt-stripe3-gamified.html';
+                // Show message and redirect
+alert(`Lock Closed Complete Stripe 3 first! You need to finish the previous stripe before continuing.`);
+window.location.href = previousStripe;
+return;
+}
+            // Allow access - previous stripe is complete
+            console.log(`<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-check"></use></svg> Stripe 3 complete, allowing access to Stripe 4`);
+})();
+</script>
+<div class="container">
+<div class="header">
+<div class="stripe-badge">⬛ Black Belt • Stripe 4 of 4 • FINAL</div>
+<h1>Legacy</h1>
+<p>What Outlasts You</p>
+</div>
+<div class="progress-container">
+<div class="progress-header"><span>Progress</span><span id="progress-text">0%</span></div>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+</div>
+<div class="main-card">
+<div class="section active" id="section-1">
+<h2 class="section-title">🏛️ The Legacy Question</h2>
+<p class="section-subtitle">What will remain when you're gone?</p>
+<div class="intro-box">
+<h3>Beyond Results</h3>
+<p>Results are important. But results are temporary. <strong>Legacy is what remains when you're no longer in the room.</strong></p>
+<p>The true measure of a leader isn't what they achieved—it's what continues after they leave.</p>
+</div>
+<div class="intro-box black-belt-wisdom">
+<h3>⬛ Black Belt Wisdom</h3>
+<p><em>"The greatest leaders are those who make themselves progressively unnecessary."</em></p>
+<p><strong>Your legacy isn't built by what you do. It's built by what you enable others to do.</strong></p>
+</div>
+<div class="intro-box philosophy">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg> The BJJ Principle: Lineage</h3>
+<p>In Jiu-Jitsu, every practitioner belongs to a lineage—a chain of teachers stretching back to the founders. When you earn your Black Belt, you become a link in that chain.</p>
+<p><strong>Your students become your legacy.</strong> Their students become their legacy. The art continues through generations—long after any individual is gone.</p>
+</div>
+<div class="intro-box research">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-chart-bar"></use></svg> The Research</h3>
+<p><strong>Research on organizational longevity</strong> shows that companies built around a single leader rarely outlast that leader. The ones that endure are built on <strong>principles, systems, and culture</strong>—not personality.</p>
+<p>The same is true for teams. Leaders who build personality-dependent teams create fragile organizations. Leaders who build principle-driven teams create resilient ones.</p>
+</div>
+<!-- QUIZ SECTION -->
+<div class="quiz-section" id="quizSection" style="margin-top: 60px;">
+<div class="section-header">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-flag"></use></svg> Test Your Knowledge</h2>
+<p>Complete this quiz to validate your mastery. Academic Cap Black Belt requires 85% to pass (9/10 correct). your understanding of this stripe's content.</p>
+</div>
+<!-- Question 1: Multiple Choice -->
+<div class="quiz-question" data-question="1">
+<h3>Question 1 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're leading through a major organizational crisis. Your team is stressed, stakeholders are demanding answers, and you don't have all the information you need.
+Black Belt crisis leadership requires:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt crisis leadership: transparency about uncertainty, clarity about what you know, direction about how you'll proceed. People need: honesty ('I don't know everything'), clarity ('Here's what I do know'), direction ('Here's how we'll figure it out'). False confidence destroys trust. Uncertainty without direction creates anxiety. The Black Belt move: 'Here's what we know. Here's what we don't. Here's how we'll learn. Here's what we'll do next.' This is leadership in ambiguity - clarity in uncertainty." onclick="selectQuizAnswer(1, this)" aria-label="A) Projecting absolute confidence even when uncer">
+A) Projecting absolute confidence even when uncertain
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt crisis leadership: transparency about uncertainty, clarity about what you know, direction about how you'll proceed. People need: honesty ('I don't know everything'), clarity ('Here's what I do know'), direction ('Here's how we'll figure it out'). False confidence destroys trust. Uncertainty without direction creates anxiety. The Black Belt move: 'Here's what we know. Here's what we don't. Here's how we'll learn. Here's what we'll do next.' This is leadership in ambiguity - clarity in uncertainty." onclick="selectQuizAnswer(1, this)" aria-label="B) Being transparent about uncertainty while prov">
+B) Being transparent about uncertainty while providing clarity on what you DO know and how you'll proceed
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt crisis leadership: transparency about uncertainty, clarity about what you know, direction about how you'll proceed. People need: honesty ('I don't know everything'), clarity ('Here's what I do know'), direction ('Here's how we'll figure it out'). False confidence destroys trust. Uncertainty without direction creates anxiety. The Black Belt move: 'Here's what we know. Here's what we don't. Here's how we'll learn. Here's what we'll do next.' This is leadership in ambiguity - clarity in uncertainty." onclick="selectQuizAnswer(1, this)" aria-label="A) Projecting absolute confidence even when uncer">
+C) Waiting until you have complete information before communicating
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt crisis leadership: transparency about uncertainty, clarity about what you know, direction about how you'll proceed. People need: honesty ('I don't know everything'), clarity ('Here's what I do know'), direction ('Here's how we'll figure it out'). False confidence destroys trust. Uncertainty without direction creates anxiety. The Black Belt move: 'Here's what we know. Here's what we don't. Here's how we'll learn. Here's what we'll do next.' This is leadership in ambiguity - clarity in uncertainty." onclick="selectQuizAnswer(1, this)" aria-label="A) Projecting absolute confidence even when uncer">
+D) Delegating the crisis response to experts and focusing on maintaining normal operations
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 2: Multiple Choice -->
+<div class="quiz-question" data-question="2">
+<h3>Question 2 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're facing an ethical dilemma with no good options. Every choice has negative consequences. There's no 'right' answer.
+Black Belt ethical leadership means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt ethical leadership recognizes: some dilemmas have no good answers. When every option has costs, you choose based on values. 'Which option aligns with what I stand for? Which can I live with? Which serves the greater good?' You accept that negative consequences are inevitable, but you choose the path that honors your values. This is the hardest leadership - choosing when all options are hard. Black Belt integrity means: when there's no good answer, you choose the least-worst path that aligns with your values." onclick="selectQuizAnswer(2, this)" aria-label="A) Choosing the option with the least negative co">
+A) Choosing the option with the least negative consequences
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt ethical leadership recognizes: some dilemmas have no good answers. When every option has costs, you choose based on values. 'Which option aligns with what I stand for? Which can I live with? Which serves the greater good?' You accept that negative consequences are inevitable, but you choose the path that honors your values. This is the hardest leadership - choosing when all options are hard. Black Belt integrity means: when there's no good answer, you choose the least-worst path that aligns with your values." onclick="selectQuizAnswer(2, this)" aria-label="A) Choosing the option with the least negative co">
+B) Finding a creative third option that avoids the dilemma
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt ethical leadership recognizes: some dilemmas have no good answers. When every option has costs, you choose based on values. 'Which option aligns with what I stand for? Which can I live with? Which serves the greater good?' You accept that negative consequences are inevitable, but you choose the path that honors your values. This is the hardest leadership - choosing when all options are hard. Black Belt integrity means: when there's no good answer, you choose the least-worst path that aligns with your values." onclick="selectQuizAnswer(2, this)" aria-label="C) Choosing based on your core values, accepting">
+C) Choosing based on your core values, accepting that negative consequences are inevitable
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt ethical leadership recognizes: some dilemmas have no good answers. When every option has costs, you choose based on values. 'Which option aligns with what I stand for? Which can I live with? Which serves the greater good?' You accept that negative consequences are inevitable, but you choose the path that honors your values. This is the hardest leadership - choosing when all options are hard. Black Belt integrity means: when there's no good answer, you choose the least-worst path that aligns with your values." onclick="selectQuizAnswer(2, this)" aria-label="A) Choosing the option with the least negative co">
+D) Delaying the decision until a better option emerges
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 3: Multiple Choice -->
+<div class="quiz-question" data-question="3">
+<h3>Question 3 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're leading a transformation that's failing. Resistance is high, results are slow, leadership is questioning the approach.
+Black Belt leadership means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt transformation leadership: hold vision steady, adjust tactics based on learning. The vision (where we're going) doesn't change easily. The approach (how we're getting there) adapts to reality. The Black Belt move: 'What's failing? Why? What can we learn? How do we adjust?' This requires: courage (acknowledging what's not working), learning (understanding why), flexibility (changing approach), persistence (maintaining vision). This is how you lead through failure - not by giving up, not by refusing to adapt, but by learning and adjusting." onclick="selectQuizAnswer(3, this)" aria-label="A) Doubling down on the original plan and pushing">
+A) Doubling down on the original plan and pushing harder
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt transformation leadership: hold vision steady, adjust tactics based on learning. The vision (where we're going) doesn't change easily. The approach (how we're getting there) adapts to reality. The Black Belt move: 'What's failing? Why? What can we learn? How do we adjust?' This requires: courage (acknowledging what's not working), learning (understanding why), flexibility (changing approach), persistence (maintaining vision). This is how you lead through failure - not by giving up, not by refusing to adapt, but by learning and adjusting." onclick="selectQuizAnswer(3, this)" aria-label="A) Doubling down on the original plan and pushing">
+B) Pivoting immediately to a new approach based on stakeholder feedback
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt transformation leadership: hold vision steady, adjust tactics based on learning. The vision (where we're going) doesn't change easily. The approach (how we're getting there) adapts to reality. The Black Belt move: 'What's failing? Why? What can we learn? How do we adjust?' This requires: courage (acknowledging what's not working), learning (understanding why), flexibility (changing approach), persistence (maintaining vision). This is how you lead through failure - not by giving up, not by refusing to adapt, but by learning and adjusting." onclick="selectQuizAnswer(3, this)" aria-label="C) Examining what's failing and why, then adjusti">
+C) Examining what's failing and why, then adjusting approach while maintaining vision
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt transformation leadership: hold vision steady, adjust tactics based on learning. The vision (where we're going) doesn't change easily. The approach (how we're getting there) adapts to reality. The Black Belt move: 'What's failing? Why? What can we learn? How do we adjust?' This requires: courage (acknowledging what's not working), learning (understanding why), flexibility (changing approach), persistence (maintaining vision). This is how you lead through failure - not by giving up, not by refusing to adapt, but by learning and adjusting." onclick="selectQuizAnswer(3, this)" aria-label="A) Doubling down on the original plan and pushing">
+D) Stepping back and letting the transformation fail to learn from it
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 4: Multiple Choice -->
+<div class="quiz-question" data-question="4">
+<h3>Question 4 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're under extreme pressure - tight deadlines, high stakes, multiple demands. You feel yourself getting reactive, making quick decisions, losing patience with your team.
+Black Belt mastery under pressure means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt mastery: pressure doesn't drive you - you drive through pressure. The paradox: when everything is urgent, you must slow down. Create space: 'Let me think about this.' 'What's really important here?' 'What's the best move?' Reactivity creates mistakes. Clarity creates better decisions. The Black Belt move: pause, breathe, think, then act. Even 30 seconds of clarity prevents hours of fixing mistakes. This is what mastery looks like under fire - calm, clear, decisive, not reactive." onclick="selectQuizAnswer(4, this)" aria-label="A) Pushing through the pressure and maintaining y">
+A) Pushing through the pressure and maintaining your high standards
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt mastery: pressure doesn't drive you - you drive through pressure. The paradox: when everything is urgent, you must slow down. Create space: 'Let me think about this.' 'What's really important here?' 'What's the best move?' Reactivity creates mistakes. Clarity creates better decisions. The Black Belt move: pause, breathe, think, then act. Even 30 seconds of clarity prevents hours of fixing mistakes. This is what mastery looks like under fire - calm, clear, decisive, not reactive." onclick="selectQuizAnswer(4, this)" aria-label="B) Slowing down to speed up - creating space for">
+B) Slowing down to speed up - creating space for clear thinking even when urgent
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt mastery: pressure doesn't drive you - you drive through pressure. The paradox: when everything is urgent, you must slow down. Create space: 'Let me think about this.' 'What's really important here?' 'What's the best move?' Reactivity creates mistakes. Clarity creates better decisions. The Black Belt move: pause, breathe, think, then act. Even 30 seconds of clarity prevents hours of fixing mistakes. This is what mastery looks like under fire - calm, clear, decisive, not reactive." onclick="selectQuizAnswer(4, this)" aria-label="A) Pushing through the pressure and maintaining y">
+C) Isolating yourself to avoid spreading stress to your team
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt mastery: pressure doesn't drive you - you drive through pressure. The paradox: when everything is urgent, you must slow down. Create space: 'Let me think about this.' 'What's really important here?' 'What's the best move?' Reactivity creates mistakes. Clarity creates better decisions. The Black Belt move: pause, breathe, think, then act. Even 30 seconds of clarity prevents hours of fixing mistakes. This is what mastery looks like under fire - calm, clear, decisive, not reactive." onclick="selectQuizAnswer(4, this)" aria-label="A) Pushing through the pressure and maintaining y">
+D) Accepting that pressure naturally causes reactivity and it's unavoidable
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 5: Multiple Choice -->
+<div class="quiz-question" data-question="5">
+<h3>Question 5 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're leading through a conflict between two senior team members. Both are right from their perspectives. Both are valuable. The conflict is blocking progress.
+Black Belt conflict resolution means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt conflict resolution: when both perspectives have merit, find the shared interest they're both serving. Example: 'You want speed (perspective 1) and you want quality (perspective 2). Both serve customer satisfaction. How do we achieve both?' The Black Belt move: reframe from 'either/or' to 'both/and.' Help them see they're on the same team, just emphasizing different aspects of the same goal. Then find solutions that honor both. This is integration, not compromise." onclick="selectQuizAnswer(5, this)" aria-label="A) Choosing the side that aligns with your strate">
+A) Choosing the side that aligns with your strategic priorities
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt conflict resolution: when both perspectives have merit, find the shared interest they're both serving. Example: 'You want speed (perspective 1) and you want quality (perspective 2). Both serve customer satisfaction. How do we achieve both?' The Black Belt move: reframe from 'either/or' to 'both/and.' Help them see they're on the same team, just emphasizing different aspects of the same goal. Then find solutions that honor both. This is integration, not compromise." onclick="selectQuizAnswer(5, this)" aria-label="B) Finding the underlying shared interest that bo">
+B) Finding the underlying shared interest that both perspectives are trying to serve
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt conflict resolution: when both perspectives have merit, find the shared interest they're both serving. Example: 'You want speed (perspective 1) and you want quality (perspective 2). Both serve customer satisfaction. How do we achieve both?' The Black Belt move: reframe from 'either/or' to 'both/and.' Help them see they're on the same team, just emphasizing different aspects of the same goal. Then find solutions that honor both. This is integration, not compromise." onclick="selectQuizAnswer(5, this)" aria-label="A) Choosing the side that aligns with your strate">
+C) Mediating a compromise where both sides give up something
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt conflict resolution: when both perspectives have merit, find the shared interest they're both serving. Example: 'You want speed (perspective 1) and you want quality (perspective 2). Both serve customer satisfaction. How do we achieve both?' The Black Belt move: reframe from 'either/or' to 'both/and.' Help them see they're on the same team, just emphasizing different aspects of the same goal. Then find solutions that honor both. This is integration, not compromise." onclick="selectQuizAnswer(5, this)" aria-label="A) Choosing the side that aligns with your strate">
+D) Separating them into different teams to avoid the conflict
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 6: Multiple Choice -->
+<div class="quiz-question" data-question="6">
+<h3>Question 6 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're recovering from a major leadership failure. A decision you made caused significant harm. People lost trust. Your confidence is shaken.
+Black Belt recovery means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt recovery: failure is data, not identity. The move: (1) Acknowledge fully ('I made a mistake. Here's what happened. I'm sorry.'), (2) Learn deeply ('What did I miss? Why did this happen?'), (3) Change behavior ('Here's what I'll do differently.'), (4) Rebuild trust through consistent new behavior. This isn't about self-flagellation or defensiveness - it's about integration. Failure teaches. Learn. Grow. Come back stronger. This is how you recover with integrity - not by avoiding, not by proving, but by learning and changing." onclick="selectQuizAnswer(6, this)" aria-label="A) Moving on quickly and focusing on future succe">
+A) Moving on quickly and focusing on future success
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt recovery: failure is data, not identity. The move: (1) Acknowledge fully ('I made a mistake. Here's what happened. I'm sorry.'), (2) Learn deeply ('What did I miss? Why did this happen?'), (3) Change behavior ('Here's what I'll do differently.'), (4) Rebuild trust through consistent new behavior. This isn't about self-flagellation or defensiveness - it's about integration. Failure teaches. Learn. Grow. Come back stronger. This is how you recover with integrity - not by avoiding, not by proving, but by learning and changing." onclick="selectQuizAnswer(6, this)" aria-label="B) Acknowledging the failure fully, learning from">
+B) Acknowledging the failure fully, learning from it, rebuilding trust through changed behavior
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt recovery: failure is data, not identity. The move: (1) Acknowledge fully ('I made a mistake. Here's what happened. I'm sorry.'), (2) Learn deeply ('What did I miss? Why did this happen?'), (3) Change behavior ('Here's what I'll do differently.'), (4) Rebuild trust through consistent new behavior. This isn't about self-flagellation or defensiveness - it's about integration. Failure teaches. Learn. Grow. Come back stronger. This is how you recover with integrity - not by avoiding, not by proving, but by learning and changing." onclick="selectQuizAnswer(6, this)" aria-label="A) Moving on quickly and focusing on future succe">
+C) Finding ways to minimize the failure's significance
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt recovery: failure is data, not identity. The move: (1) Acknowledge fully ('I made a mistake. Here's what happened. I'm sorry.'), (2) Learn deeply ('What did I miss? Why did this happen?'), (3) Change behavior ('Here's what I'll do differently.'), (4) Rebuild trust through consistent new behavior. This isn't about self-flagellation or defensiveness - it's about integration. Failure teaches. Learn. Grow. Come back stronger. This is how you recover with integrity - not by avoiding, not by proving, but by learning and changing." onclick="selectQuizAnswer(6, this)" aria-label="A) Moving on quickly and focusing on future succe">
+D) Proving your competence through immediate wins to restore confidence
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 7: Multiple Choice -->
+<div class="quiz-question" data-question="7">
+<h3>Question 7 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're making a decision with incomplete information. Waiting for more data will delay critical action. Acting now risks making the wrong choice.
+Black Belt decision-making means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt decision-making: perfectionism is paralysis. You make the best call with available information, then adjust based on feedback. The Black Belt framework: 'Here's what I know. Here's what I don't. Here's my best decision given what I know. Here's how I'll learn if I'm wrong. Here's how I'll adjust.' This is 'discovery-driven' decision-making - you move forward, learn, adjust. Waiting for perfect information means you never move. Making calls with incomplete information and adjusting is leadership." onclick="selectQuizAnswer(7, this)" aria-label="A) Waiting until you have enough information to b">
+A) Waiting until you have enough information to be confident
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt decision-making: perfectionism is paralysis. You make the best call with available information, then adjust based on feedback. The Black Belt framework: 'Here's what I know. Here's what I don't. Here's my best decision given what I know. Here's how I'll learn if I'm wrong. Here's how I'll adjust.' This is 'discovery-driven' decision-making - you move forward, learn, adjust. Waiting for perfect information means you never move. Making calls with incomplete information and adjusting is leadership." onclick="selectQuizAnswer(7, this)" aria-label="B) Making the best decision with available inform">
+B) Making the best decision with available information, building in feedback loops to adjust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt decision-making: perfectionism is paralysis. You make the best call with available information, then adjust based on feedback. The Black Belt framework: 'Here's what I know. Here's what I don't. Here's my best decision given what I know. Here's how I'll learn if I'm wrong. Here's how I'll adjust.' This is 'discovery-driven' decision-making - you move forward, learn, adjust. Waiting for perfect information means you never move. Making calls with incomplete information and adjusting is leadership." onclick="selectQuizAnswer(7, this)" aria-label="A) Waiting until you have enough information to b">
+C) Choosing the safest option that minimizes risk
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt decision-making: perfectionism is paralysis. You make the best call with available information, then adjust based on feedback. The Black Belt framework: 'Here's what I know. Here's what I don't. Here's my best decision given what I know. Here's how I'll learn if I'm wrong. Here's how I'll adjust.' This is 'discovery-driven' decision-making - you move forward, learn, adjust. Waiting for perfect information means you never move. Making calls with incomplete information and adjusting is leadership." onclick="selectQuizAnswer(7, this)" aria-label="A) Waiting until you have enough information to b">
+D) Deferring the decision to someone with more information
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 8: Multiple Choice -->
+<div class="quiz-question" data-question="8">
+<h3>Question 8 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're leading a team that's demoralized after a major setback. Morale is low. Energy is depleted. Results are suffering.
+Black Belt leadership means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt leadership: you can't skip the emotions. People need: acknowledgment ('This is hard'), processing ('What did we learn?'), refocusing ('What's possible now?'). The Black Belt move: create space for the emotions, help them make meaning from the setback, then redirect energy forward. Don't bypass the feelings - process them. Then channel that energy into growth. This is how you lead through demoralization - not by ignoring it, not by forcing positivity, but by acknowledging, processing, and redirecting." onclick="selectQuizAnswer(8, this)" aria-label="A) Pushing harder for results to overcome the set">
+A) Pushing harder for results to overcome the setback
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt leadership: you can't skip the emotions. People need: acknowledgment ('This is hard'), processing ('What did we learn?'), refocusing ('What's possible now?'). The Black Belt move: create space for the emotions, help them make meaning from the setback, then redirect energy forward. Don't bypass the feelings - process them. Then channel that energy into growth. This is how you lead through demoralization - not by ignoring it, not by forcing positivity, but by acknowledging, processing, and redirecting." onclick="selectQuizAnswer(8, this)" aria-label="B) Acknowledging the setback, processing the emot">
+B) Acknowledging the setback, processing the emotions, then refocusing on what's possible
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt leadership: you can't skip the emotions. People need: acknowledgment ('This is hard'), processing ('What did we learn?'), refocusing ('What's possible now?'). The Black Belt move: create space for the emotions, help them make meaning from the setback, then redirect energy forward. Don't bypass the feelings - process them. Then channel that energy into growth. This is how you lead through demoralization - not by ignoring it, not by forcing positivity, but by acknowledging, processing, and redirecting." onclick="selectQuizAnswer(8, this)" aria-label="A) Pushing harder for results to overcome the set">
+C) Focusing on positive outcomes and avoiding discussion of the setback
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt leadership: you can't skip the emotions. People need: acknowledgment ('This is hard'), processing ('What did we learn?'), refocusing ('What's possible now?'). The Black Belt move: create space for the emotions, help them make meaning from the setback, then redirect energy forward. Don't bypass the feelings - process them. Then channel that energy into growth. This is how you lead through demoralization - not by ignoring it, not by forcing positivity, but by acknowledging, processing, and redirecting." onclick="selectQuizAnswer(8, this)" aria-label="A) Pushing harder for results to overcome the set">
+D) Restructuring the team to bring in fresh energy
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 9: Multiple Choice -->
+<div class="quiz-question" data-question="9">
+<h3>Question 9 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're managing your own triggers and biases under stress. You notice yourself getting defensive, making assumptions, reacting emotionally.
+Black Belt self-management means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt self-awareness: you notice your reactions, pause, choose your response. The pattern: Trigger → Recognize → Pause → Choose. Example: Someone challenges you. Your trigger fires (defensiveness). You notice: 'I'm getting defensive.' You pause. You choose: 'What are they really saying? How can I respond with curiosity instead of defensiveness?' This is mastery - awareness in real-time, choice instead of reaction. It's not suppression (ignoring emotions) - it's integration (feeling emotions, choosing response)." onclick="selectQuizAnswer(9, this)" aria-label="A) Suppressing your emotional reactions to mainta">
+A) Suppressing your emotional reactions to maintain professionalism
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt self-awareness: you notice your reactions, pause, choose your response. The pattern: Trigger → Recognize → Pause → Choose. Example: Someone challenges you. Your trigger fires (defensiveness). You notice: 'I'm getting defensive.' You pause. You choose: 'What are they really saying? How can I respond with curiosity instead of defensiveness?' This is mastery - awareness in real-time, choice instead of reaction. It's not suppression (ignoring emotions) - it's integration (feeling emotions, choosing response)." onclick="selectQuizAnswer(9, this)" aria-label="B) Recognizing your triggers in real-time, pausin">
+B) Recognizing your triggers in real-time, pausing, choosing your response rather than reacting
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt self-awareness: you notice your reactions, pause, choose your response. The pattern: Trigger → Recognize → Pause → Choose. Example: Someone challenges you. Your trigger fires (defensiveness). You notice: 'I'm getting defensive.' You pause. You choose: 'What are they really saying? How can I respond with curiosity instead of defensiveness?' This is mastery - awareness in real-time, choice instead of reaction. It's not suppression (ignoring emotions) - it's integration (feeling emotions, choosing response)." onclick="selectQuizAnswer(9, this)" aria-label="A) Suppressing your emotional reactions to mainta">
+C) Removing yourself from stressful situations until you can respond calmly
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt self-awareness: you notice your reactions, pause, choose your response. The pattern: Trigger → Recognize → Pause → Choose. Example: Someone challenges you. Your trigger fires (defensiveness). You notice: 'I'm getting defensive.' You pause. You choose: 'What are they really saying? How can I respond with curiosity instead of defensiveness?' This is mastery - awareness in real-time, choice instead of reaction. It's not suppression (ignoring emotions) - it's integration (feeling emotions, choosing response)." onclick="selectQuizAnswer(9, this)" aria-label="A) Suppressing your emotional reactions to mainta">
+D) Accepting that stress naturally causes reactivity and it's part of leadership
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 10: Multiple Choice -->
+<div class="quiz-question" data-question="10">
+<h3>Question 10 of 10</h3>
+<p class="question-text" style="white-space: pre-line;">SCENARIO: You're facing the ultimate Black Belt challenge: integrating all your learning - trust, conflict, commitment, accountability, strategy, culture, coaching, philosophy - while leading through a complex, ambiguous situation with high stakes.
+Black Belt integration means:</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt mastery: integration happens in real-time, under pressure, holistically. You're not thinking 'Now I'll apply White Belt trust' - you're seeing the whole situation and knowing: 'This requires vulnerability, crucial conversation, strategic thinking, and accountability, in this sequence, now.' It's seamless. Natural. Intuitive. The concepts have become part of how you think, not tools you apply. This is what mastery looks like - integration so complete it becomes instinct. You don't think about it - you just do it. This is Black Belt." onclick="selectQuizAnswer(10, this)" aria-label="A) Applying each concept sequentially as situatio">
+A) Applying each concept sequentially as situations arise
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Black Belt mastery: integration happens in real-time, under pressure, holistically. You're not thinking 'Now I'll apply White Belt trust' - you're seeing the whole situation and knowing: 'This requires vulnerability, crucial conversation, strategic thinking, and accountability, in this sequence, now.' It's seamless. Natural. Intuitive. The concepts have become part of how you think, not tools you apply. This is what mastery looks like - integration so complete it becomes instinct. You don't think about it - you just do it. This is Black Belt." onclick="selectQuizAnswer(10, this)" aria-label="B) Seeing the situation holistically and applying">
+B) Seeing the situation holistically and applying the right concepts in the right sequence, in real-time, under pressure
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt mastery: integration happens in real-time, under pressure, holistically. You're not thinking 'Now I'll apply White Belt trust' - you're seeing the whole situation and knowing: 'This requires vulnerability, crucial conversation, strategic thinking, and accountability, in this sequence, now.' It's seamless. Natural. Intuitive. The concepts have become part of how you think, not tools you apply. This is what mastery looks like - integration so complete it becomes instinct. You don't think about it - you just do it. This is Black Belt." onclick="selectQuizAnswer(10, this)" aria-label="A) Applying each concept sequentially as situatio">
+C) Relying on your strongest leadership skills and delegating areas where you're weaker
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Black Belt mastery: integration happens in real-time, under pressure, holistically. You're not thinking 'Now I'll apply White Belt trust' - you're seeing the whole situation and knowing: 'This requires vulnerability, crucial conversation, strategic thinking, and accountability, in this sequence, now.' It's seamless. Natural. Intuitive. The concepts have become part of how you think, not tools you apply. This is what mastery looks like - integration so complete it becomes instinct. You don't think about it - you just do it. This is Black Belt." onclick="selectQuizAnswer(10, this)" aria-label="A) Applying each concept sequentially as situatio">
+D) Following a framework or checklist to ensure you cover all concepts
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<div class="quiz-completion" style="display: none;">
+<h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
+<p class="quiz-score">You scored: <span id="quizScore">0</span>/10</p>
+<p class="quiz-xp">+50 XP awarded!</p>
+<button class="btn-primary" onclick="completeQuiz(4)
+window.dispatchEvent(new CustomEvent(\'lessonCompleted\'));" aria-label="Complete">Continue</button>
+</div>
+</div>
+<div class="nav-buttons">
+<a href="src/pages/gym/black-belt.html" class="btn btn-secondary">← Back to Hub</a>
+<button class="btn btn-primary" onclick="nextSection()" aria-label="Next">Types of Legacy →</button>
+</div>
+</div>
+<div class="section" id="section-2">
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-sparkles"></use></svg> Four Types of Legacy</h2>
+<p class="section-subtitle">How leaders leave their mark.</p>
+<div class="legacy-grid">
+<div class="legacy-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-user-group"></use></svg></div>
+<h4>People Legacy</h4>
+<p>Leaders you developed who carry your principles forward</p>
+</div>
+<div class="legacy-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-cube"></use></svg></div>
+<h4>Systems Legacy</h4>
+<p>Processes and structures that work without you</p>
+</div>
+<div class="legacy-item">
+<div class="emoji">🧬</div>
+<h4>Culture Legacy</h4>
+<p>Values and behaviors embedded in the organization</p>
+</div>
+<div class="legacy-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-light-bulb"></use></svg></div>
+<h4>Ideas Legacy</h4>
+<p>Frameworks and insights that outlive you</p>
+</div>
+</div>
+<div class="intro-box">
+<h3>The Legacy Test</h3>
+<p>Ask yourself: <strong>"If I left tomorrow, what would continue?"</strong></p>
+<ul style="margin: 0.75rem 0 0 1.5rem; color: var(--text-dark);">
+<li style="margin-bottom: 0.5rem;">Would the team keep performing at this level?</li>
+<li style="margin-bottom: 0.5rem;">Would the culture remain strong?</li>
+<li style="margin-bottom: 0.5rem;">Would the systems keep working?</li>
+<li>Would anyone be ready to take your place?</li>
+</ul>
+<p style="margin-top: 0.75rem;">If the answer is "no" to any of these, you haven't built a legacy—you've built a dependency.</p>
+</div>
+<div class="intro-box philosophy">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg> The Final Principle</h3>
+<p><strong>Legacy is the ultimate expression of leadership maturity.</strong> It requires you to shift from "What can I accomplish?" to "What can I enable?"</p>
+<p>This is the Black Belt mindset: You've mastered the techniques. Now you exist to pass them on.</p>
+</div>
+<!-- QUIZ SECTION -->
+<div class="quiz-section" id="quizSection" style="margin-top: 60px;">
+<div class="section-header">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-flag"></use></svg> Test Your Knowledge</h2>
+<p>Complete this quiz to validate your mastery. Academic Cap Black Belt requires 85% to pass (9/10 correct). your understanding of this stripe's content.</p>
+</div>
+<!-- Question 1: Multiple Choice -->
+<div class="quiz-question" data-question="1">
+<h3>Question 1 of 10</h3>
+<p class="question-text">According to the 2025 Talent Trends Austria Report, what percentage of employees fully trust leadership?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+A) 31%
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="B) 1%">
+B) 1%
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+C) 50%
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+D) 10%
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 2: Multiple Choice -->
+<div class="quiz-question" data-question="2">
+<h3>Question 2 of 10</h3>
+<p class="question-text">What type of trust does Lencioni's Five Dysfunctions model focus on?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+A) Predictability-based trust
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="B) Vulnerability-based trust">
+B) Vulnerability-based trust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+C) Professional trust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+D) Competency trust
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 3: Multiple Choice -->
+<div class="quiz-question" data-question="3">
+<h3>Question 3 of 10</h3>
+<p class="question-text">According to Google's Project Aristotle, what was the #1 predictor of team performance?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+A) Team member IQ
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="B) Psychological safety">
+B) Psychological safety
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+C) Years of experience
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+D) Available resources
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 4: Multiple Choice -->
+<div class="quiz-question" data-question="4">
+<h3>Question 4 of 10</h3>
+<p class="question-text">In BJJ, what do people who progress fastest do?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+A) Never tap out
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="B) Tap early and ask questions">
+B) Tap early and ask questions
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+C) Only train with lower belts
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+D) Avoid difficult positions
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 5: Multiple Choice -->
+<div class="quiz-question" data-question="5">
+<h3>Question 5 of 10</h3>
+<p class="question-text">True or False: Vulnerability-based trust means being weak or incompetent.</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="False! Vulnerability-based trust is about courage—admitting you don't know something or made a mistake. It's strength, not weakness." onclick="selectQuizAnswer(5, this)" aria-label="A) True">
+A) True
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="False! Vulnerability-based trust is about courage—admitting you don't know something or made a mistake. It's strength, not weakness." onclick="selectQuizAnswer(5, this)" aria-label="B) False">
+B) False
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 6: Multiple Choice -->
+<div class="quiz-question" data-question="6">
+<h3>Question 6 of 10</h3>
+<p class="question-text">What happens when teams lack vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+A) They work faster
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="B) They hide weaknesses and mistakes">
+B) They hide weaknesses and mistakes
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+C) They communicate better
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+D) They innovate more
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 7: Multiple Choice -->
+<div class="quiz-question" data-question="7">
+<h3>Question 7 of 10</h3>
+<p class="question-text">Which of these is a sign of vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+A) Team members never admit mistakes
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="B) People ask for help when stuck">
+B) People ask for help when stuck
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+C) Everyone pretends to know everything
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+D) Weaknesses are hidden
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 8: Multiple Choice -->
+<div class="quiz-question" data-question="8">
+<h3>Question 8 of 10</h3>
+<p class="question-text">What is the relationship between trust and conflict in Lencioni's model?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+A) Trust prevents conflict
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="B) Trust enables healthy conflict">
+B) Trust enables healthy conflict
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+C) They are unrelated
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+D) Conflict destroys trust
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 9: Multiple Choice -->
+<div class="quiz-question" data-question="9">
+<h3>Question 9 of 10</h3>
+<p class="question-text">In a high-trust team, what happens when someone makes a mistake?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+A) They are immediately fired
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+B) They hide it from others
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="C) They admit it and the team helps fix it">
+C) They admit it and the team helps fix it
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+D) They blame someone else
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 10: Multiple Choice -->
+<div class="quiz-question" data-question="10">
+<h3>Question 10 of 10</h3>
+<p class="question-text">What is the first step to building vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+A) Wait for others to go first
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="B) Start by admitting your own mistakes and askin">
+B) Start by admitting your own mistakes and asking for help
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+C) Demand trust from your team
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+D) Only trust people you know well
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<div class="quiz-completion" style="display: none;">
+<h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
+<p class="quiz-score">You scored: <span id="quizScore">0</span>/10</p>
+<p class="quiz-xp">+50 XP awarded!</p>
+<button class="btn-primary" onclick="completeQuiz(4)" aria-label="Complete">Continue</button>
+</div>
+</div>
+<div class="nav-buttons">
+<button class="btn btn-secondary" onclick="prevSection()" aria-label="Previous">← Back</button>
+<button class="btn btn-primary" onclick="nextSection()" aria-label="Next">Your Legacy →</button>
+</div>
+</div>
+<div class="section" id="section-3">
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-pencil"></use></svg> Your Legacy Practice</h2>
+<p class="section-subtitle">Define what you want to leave behind.</p>
+<div class="reflection-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-document-text"></use></svg> Your Legacy Statement</h3>
+<p>In one sentence, what do you want to be remembered for as a leader? Not what you achieved—how you led.</p>
+<textarea class="reflection-textarea" id="statement" placeholder="I want to be remembered as a leader who..."></textarea>
+</div>
+<div class="reflection-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-document-text"></use></svg> Your Succession</h3>
+<p>Who are you actively preparing to continue your work? Name them. What's the next step in their development?</p>
+<textarea class="reflection-textarea" id="succession" placeholder="I'm preparing... for..."></textarea>
+</div>
+<div class="reflection-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-document-text"></use></svg> Your One Thing</h3>
+<p>If you could pass on only ONE lesson from your entire leadership journey, what would it be?</p>
+<textarea class="reflection-textarea" id="lesson" placeholder="The one thing I've learned is..."></textarea>
+</div>
+<!-- QUIZ SECTION -->
+<div class="quiz-section" id="quizSection" style="margin-top: 60px;">
+<div class="section-header">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-flag"></use></svg> Test Your Knowledge</h2>
+<p>Complete this quiz to validate your mastery. Academic Cap Black Belt requires 85% to pass (9/10 correct). your understanding of this stripe's content.</p>
+</div>
+<!-- Question 1: Multiple Choice -->
+<div class="quiz-question" data-question="1">
+<h3>Question 1 of 10</h3>
+<p class="question-text">According to the 2025 Talent Trends Austria Report, what percentage of employees fully trust leadership?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+A) 31%
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="B) 1%">
+B) 1%
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+C) 50%
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+D) 10%
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 2: Multiple Choice -->
+<div class="quiz-question" data-question="2">
+<h3>Question 2 of 10</h3>
+<p class="question-text">What type of trust does Lencioni's Five Dysfunctions model focus on?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+A) Predictability-based trust
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="B) Vulnerability-based trust">
+B) Vulnerability-based trust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+C) Professional trust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+D) Competency trust
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 3: Multiple Choice -->
+<div class="quiz-question" data-question="3">
+<h3>Question 3 of 10</h3>
+<p class="question-text">According to Google's Project Aristotle, what was the #1 predictor of team performance?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+A) Team member IQ
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="B) Psychological safety">
+B) Psychological safety
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+C) Years of experience
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+D) Available resources
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 4: Multiple Choice -->
+<div class="quiz-question" data-question="4">
+<h3>Question 4 of 10</h3>
+<p class="question-text">In BJJ, what do people who progress fastest do?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+A) Never tap out
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="B) Tap early and ask questions">
+B) Tap early and ask questions
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+C) Only train with lower belts
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+D) Avoid difficult positions
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 5: Multiple Choice -->
+<div class="quiz-question" data-question="5">
+<h3>Question 5 of 10</h3>
+<p class="question-text">True or False: Vulnerability-based trust means being weak or incompetent.</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="False! Vulnerability-based trust is about courage—admitting you don't know something or made a mistake. It's strength, not weakness." onclick="selectQuizAnswer(5, this)" aria-label="A) True">
+A) True
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="False! Vulnerability-based trust is about courage—admitting you don't know something or made a mistake. It's strength, not weakness." onclick="selectQuizAnswer(5, this)" aria-label="B) False">
+B) False
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 6: Multiple Choice -->
+<div class="quiz-question" data-question="6">
+<h3>Question 6 of 10</h3>
+<p class="question-text">What happens when teams lack vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+A) They work faster
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="B) They hide weaknesses and mistakes">
+B) They hide weaknesses and mistakes
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+C) They communicate better
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+D) They innovate more
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 7: Multiple Choice -->
+<div class="quiz-question" data-question="7">
+<h3>Question 7 of 10</h3>
+<p class="question-text">Which of these is a sign of vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+A) Team members never admit mistakes
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="B) People ask for help when stuck">
+B) People ask for help when stuck
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+C) Everyone pretends to know everything
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+D) Weaknesses are hidden
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 8: Multiple Choice -->
+<div class="quiz-question" data-question="8">
+<h3>Question 8 of 10</h3>
+<p class="question-text">What is the relationship between trust and conflict in Lencioni's model?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+A) Trust prevents conflict
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="B) Trust enables healthy conflict">
+B) Trust enables healthy conflict
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+C) They are unrelated
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+D) Conflict destroys trust
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 9: Multiple Choice -->
+<div class="quiz-question" data-question="9">
+<h3>Question 9 of 10</h3>
+<p class="question-text">In a high-trust team, what happens when someone makes a mistake?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+A) They are immediately fired
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+B) They hide it from others
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="C) They admit it and the team helps fix it">
+C) They admit it and the team helps fix it
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+D) They blame someone else
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 10: Multiple Choice -->
+<div class="quiz-question" data-question="10">
+<h3>Question 10 of 10</h3>
+<p class="question-text">What is the first step to building vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+A) Wait for others to go first
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="B) Start by admitting your own mistakes and askin">
+B) Start by admitting your own mistakes and asking for help
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+C) Demand trust from your team
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+D) Only trust people you know well
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<div class="quiz-completion" style="display: none;">
+<h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
+<p class="quiz-score">You scored: <span id="quizScore">0</span>/10</p>
+<p class="quiz-xp">+50 XP awarded!</p>
+<button class="btn-primary" onclick="completeQuiz(4)" aria-label="Complete">Continue</button>
+</div>
+</div>
+<div class="nav-buttons">
+<button class="btn btn-secondary" onclick="prevSection()" aria-label="Previous">← Back</button>
+<button class="btn btn-primary" onclick="showResults()" aria-label="Primary action">Complete Black Belt →</button>
+</div>
+</div>
+<div class="section" id="section-4">
+<div class="belt-complete celebrate">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg> BLACK BELT COMPLETE</h2>
+<div class="belt-visual">⬛</div>
+<p>You've completed the TAP-IN Leadership Journey.</p>
+</div>
+<div class="intro-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg> Your Complete Journey</h3>
+<div class="journey-recap">
+<div class="journey-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<p>Self</p>
+</div>
+<div class="journey-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<p>Team</p>
+</div>
+<div class="journey-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<p>Alignment</p>
+</div>
+<div class="journey-item">
+<div class="emoji"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<p>Systems</p>
+</div>
+<div class="journey-item">
+<div class="emoji">⬛</div>
+<p>Mastery</p>
+</div>
+</div>
+</div>
+<div class="final-message">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-flag"></use></svg> What Black Belt Really Means</h3>
+<p>In Jiu-Jitsu, they say a Black Belt is "a White Belt who never quit." The same is true in leadership.</p>
+<p>You haven't reached the end—you've reached the beginning of a deeper journey. The principles you've learned will take a lifetime to master. The people you develop will carry your legacy forward.</p>
+<p><strong>The work continues. You're ready.</strong></p>
+</div>
+<div class="quote-block">
+<p class="quote">"The meaning of life is to find your gift. The purpose of life is to give it away."</p>
+<p class="author">— Pablo Picasso</p>
+</div>
+<div class="intro-box black-belt-wisdom">
+<h3>⬛ Your Final Charge</h3>
+<p><em>Go lead. Go teach. Go build something that outlasts you.</em></p>
+<p><strong>The world needs leaders who develop leaders. Be one of them.</strong></p>
+</div>
+<!-- QUIZ SECTION -->
+<div class="quiz-section" id="quizSection" style="margin-top: 60px;">
+<div class="section-header">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-flag"></use></svg> Test Your Knowledge</h2>
+<p>Complete this quiz to validate your mastery. Academic Cap Black Belt requires 85% to pass (9/10 correct). your understanding of this stripe's content.</p>
+</div>
+<!-- Question 1: Multiple Choice -->
+<div class="quiz-question" data-question="1">
+<h3>Question 1 of 10</h3>
+<p class="question-text">According to the 2025 Talent Trends Austria Report, what percentage of employees fully trust leadership?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+A) 31%
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="B) 1%">
+B) 1%
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+C) 50%
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Only 1% of employees fully trust leadership, highlighting the critical trust crisis in organizations." onclick="selectQuizAnswer(1, this)" aria-label="A) 31%">
+D) 10%
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 2: Multiple Choice -->
+<div class="quiz-question" data-question="2">
+<h3>Question 2 of 10</h3>
+<p class="question-text">What type of trust does Lencioni's Five Dysfunctions model focus on?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+A) Predictability-based trust
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="B) Vulnerability-based trust">
+B) Vulnerability-based trust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+C) Professional trust
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Vulnerability-based trust is the foundation. It allows team members to admit mistakes and ask for help without fear." onclick="selectQuizAnswer(2, this)" aria-label="A) Predictability-based trust">
+D) Competency trust
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 3: Multiple Choice -->
+<div class="quiz-question" data-question="3">
+<h3>Question 3 of 10</h3>
+<p class="question-text">According to Google's Project Aristotle, what was the #1 predictor of team performance?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+A) Team member IQ
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="B) Psychological safety">
+B) Psychological safety
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+C) Years of experience
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Psychological safety was the top factor. Teams where members feel safe to take risks outperform others." onclick="selectQuizAnswer(3, this)" aria-label="A) Team member IQ">
+D) Available resources
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 4: Multiple Choice -->
+<div class="quiz-question" data-question="4">
+<h3>Question 4 of 10</h3>
+<p class="question-text">In BJJ, what do people who progress fastest do?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+A) Never tap out
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="B) Tap early and ask questions">
+B) Tap early and ask questions
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+C) Only train with lower belts
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Tapping early and asking questions shows vulnerability and accelerates learning, just like in teams." onclick="selectQuizAnswer(4, this)" aria-label="A) Never tap out">
+D) Avoid difficult positions
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 5: Multiple Choice -->
+<div class="quiz-question" data-question="5">
+<h3>Question 5 of 10</h3>
+<p class="question-text">True or False: Vulnerability-based trust means being weak or incompetent.</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="False! Vulnerability-based trust is about courage—admitting you don't know something or made a mistake. It's strength, not weakness." onclick="selectQuizAnswer(5, this)" aria-label="A) True">
+A) True
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="False! Vulnerability-based trust is about courage—admitting you don't know something or made a mistake. It's strength, not weakness." onclick="selectQuizAnswer(5, this)" aria-label="B) False">
+B) False
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 6: Multiple Choice -->
+<div class="quiz-question" data-question="6">
+<h3>Question 6 of 10</h3>
+<p class="question-text">What happens when teams lack vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+A) They work faster
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="B) They hide weaknesses and mistakes">
+B) They hide weaknesses and mistakes
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+C) They communicate better
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Without vulnerability-based trust, team members hide weaknesses and mistakes, leading to poor decisions and artificial harmony." onclick="selectQuizAnswer(6, this)" aria-label="A) They work faster">
+D) They innovate more
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 7: Multiple Choice -->
+<div class="quiz-question" data-question="7">
+<h3>Question 7 of 10</h3>
+<p class="question-text">Which of these is a sign of vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+A) Team members never admit mistakes
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="B) People ask for help when stuck">
+B) People ask for help when stuck
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+C) Everyone pretends to know everything
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Asking for help when stuck demonstrates vulnerability-based trust. It shows safety to admit you don't know something." onclick="selectQuizAnswer(7, this)" aria-label="A) Team members never admit mistakes">
+D) Weaknesses are hidden
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 8: Multiple Choice -->
+<div class="quiz-question" data-question="8">
+<h3>Question 8 of 10</h3>
+<p class="question-text">What is the relationship between trust and conflict in Lencioni's model?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+A) Trust prevents conflict
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="B) Trust enables healthy conflict">
+B) Trust enables healthy conflict
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+C) They are unrelated
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Trust enables healthy conflict. Without trust, teams avoid conflict (artificial harmony), which is actually a dysfunction." onclick="selectQuizAnswer(8, this)" aria-label="A) Trust prevents conflict">
+D) Conflict destroys trust
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 9: Multiple Choice -->
+<div class="quiz-question" data-question="9">
+<h3>Question 9 of 10</h3>
+<p class="question-text">In a high-trust team, what happens when someone makes a mistake?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+A) They are immediately fired
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+B) They hide it from others
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="C) They admit it and the team helps fix it">
+C) They admit it and the team helps fix it
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="In high-trust teams, mistakes are admitted openly and the team works together to fix them. This builds stronger trust." onclick="selectQuizAnswer(9, this)" aria-label="A) They are immediately fired">
+D) They blame someone else
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<!-- Question 10: Multiple Choice -->
+<div class="quiz-question" data-question="10">
+<h3>Question 10 of 10</h3>
+<p class="question-text">What is the first step to building vulnerability-based trust?</p>
+<div class="quiz-options">
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+A) Wait for others to go first
+</button>
+<button class="quiz-option" data-correct="true" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="B) Start by admitting your own mistakes and askin">
+B) Start by admitting your own mistakes and asking for help
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+C) Demand trust from your team
+</button>
+<button class="quiz-option" data-correct="false" data-explanation="Building trust starts with you. Admit your own mistakes and ask for help first. This creates psychological safety for others." onclick="selectQuizAnswer(10, this)" aria-label="A) Wait for others to go first">
+D) Only trust people you know well
+</button>
+</div>
+<div class="quiz-feedback" style="display: none;">
+<p class="feedback-text"></p>
+</div>
+</div>
+<div class="quiz-completion" style="display: none;">
+<h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
+<p class="quiz-score">You scored: <span id="quizScore">0</span>/10</p>
+<p class="quiz-xp">+50 XP awarded!</p>
+<button class="btn-primary" onclick="completeQuiz(4)" aria-label="Complete">Continue</button>
+</div>
+</div>
+<div class="nav-buttons">
+<a href="src/pages/gym/black-belt.html" class="btn btn-secondary">← Back to Black Belt</a>
+<a href="src/pages/gym/gym-dashboard.html" class="btn btn-gold">Return to GYM Dashboard →</a>
+</div>
+</div>
+</div>
+</div>
+<script>
+let currentSection = 1; const totalSections = 4;
+function nextSection() { if (currentSection < totalSections) { document.getElementById(`section-${currentSection}`).classList.remove('active'); currentSection++; document.getElementById(`section-${currentSection}`).classList.add('active'); updateProgress(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }
+function prevSection() { if (currentSection > 1) { document.getElementById(`section-${currentSection}`).classList.remove('active'); currentSection--; document.getElementById(`section-${currentSection}`).classList.add('active'); updateProgress(); window.scrollTo({ top: 0, behavior: 'smooth' }); } }
+%`; document.getElementById('progress-text').textContent = `${Math.round(progress)}%`; }
+;
+['statement', 'succession', 'lesson'].forEach(f => {
+const el = document.getElementById(f);
+if (el && el.value) localStorage.setItem(`legacy_${f}`, el.value);
+});
+nextSection();
+}
+updateProgress();
+function getStripeNumber() {
+const match = window.location.pathname.match(/stripe(\d+)/);
+return match ? parseInt(match[1]) : 1;
+}
+function retryQuiz() {
+quizAnswers = [];
+quizScore = 0;
+document.querySelectorAll('.quiz-question').forEach(question => {
+const options = question.querySelectorAll('.quiz-option');
+options.forEach(opt => {
+opt.style.pointerEvents = 'auto';
+opt.classList.remove('selected-correct', 'selected-incorrect');
+});
+const feedback = question.querySelector('.quiz-feedback');
+if (feedback) {
+feedback.style.display = 'none';
+feedback.classList.remove('correct', 'incorrect');
+}
+});
+const completionDiv = document.querySelector('.quiz-completion');
+if (completionDiv) completionDiv.style.display = 'none';
+const firstQuestion = document.querySelector('.quiz-question');
+if (firstQuestion) firstQuestion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+function scrollToLessons() {
+const lessonsSection = document.querySelector('.intro-section, .main-card, .header');
+if (lessonsSection) {
+lessonsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+} else {
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+}</script>
+<!-- Gamification System -->
+<!-- Performance Optimizer - Load First -->
+<script src="../../../js/performance-optimizer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+<script src="../../../js/xp-level-system.js"></script>
+<script src="../../../js/gamification-celebrations.js"></script>
+<script src="../../../js/shared-quiz-system.js"></script>
+<script src="../../../js/gamification-v10.js" defer></script>
+<script src="../../../js/stripe-completion-helper.min.js" defer></script>
+<!-- TAP-IN Utilities -->
+<script src="../../../js/shared-utilities.js"></script>
+<script src="../../../js/global-eror-handler.min.js"></script>
+<script src="../../../js/storage-health.min.js"></script>
+<script>
+        // Quiz functionality
+let quizAnswers = [];
+let quizScore = 0;
+const totalQuizQuestions = 0;
+function selectQuizAnswer(questionNum, optionElement) {
+            // Disable all options for this question
+const question = document.querySelector(`[data-question="${questionNum}"]`);
+const options = question.querySelectorAll('.quiz-option');
+options.forEach(opt => {
+opt.disabled = true;
+opt.style.pointerEvents = 'none';
+});
+            // Check if correct
+const isCorrect = optionElement.dataset.correct === 'true';
+            // Visual feedback
+optionElement.classList.add(isCorrect ? 'selected-correct' : 'selected-incorrect');
+            // Show feedback
+const feedbackDiv = question.querySelector('.quiz-feedback');
+feedbackDiv.style.display = 'block';
+feedbackDiv.classList.add(isCorrect ? 'correct' : 'incorrect');
+if (isCorrect) {
+feedbackDiv.querySelector('.feedback-text').textContent =
+"Check Circle Correct! " + (optionElement.dataset.explanation || '');
+quizScore++;
+} else {
+                // Highlight correct answer
+options.forEach(opt => {
+if (opt.dataset.correct === 'true') {
+opt.classList.add('selected-correct');
+}
+});
+feedbackDiv.querySelector('.feedback-text').textContent =
+"X Circle Not quite. " + (optionElement.dataset.explanation || '');
+}
+            // Track answer
+quizAnswers[questionNum - 1] = isCorrect;
+            // Check if all answered
+checkQuizCompletion();
+}
+function checkQuizCompletion() {
+const totalQuestions = document.querySelectorAll('.quiz-question').length;
+const answered = quizAnswers.filter(a => a !== undefined).length;
+if (answered === totalQuestions) {
+const completionDiv = document.querySelector('.quiz-completion');
+completionDiv.style.display = 'block';
+                // Check if passed
+const passingThreshold = 9;
+const passed = quizScore >= passingThreshold;
+if (passed) {
+                    // PASSED - Show success message
+safeSetInnerHTML(completionDiv, `
+<h3>Quiz Complete! <svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg></h3>
+<p class="quiz-score">You scored: <span id="quizScore">${quizScore}</span>/10</p>
+<p class="quiz-xp">+${quizScore === 10 ? 75 : 75} XP awarded!</p>
+<button class="btn-primary" onclick="completeQuiz(getStripeNumber())" aria-label="Complete">Continue</button>
+`);
+document.getElementById('quizScore').textContent = quizScore;
+                    // Award XP
+const xpAmount = quizScore === 10 ? 75 : 75;
+if (typeof TapInGamification !== "undefined") {
+    TapInGamification.saveStripeCompletion("black", 4, Math.round((quizScore / totalQuizQuestions) * 100));
+}
+} else {
+                    // FAILED - Show belt-specific submission
+            // Get belt-specific failure message
+            const failMsg = typeof TapInGamification !== "undefined" 
+                ? TapInGamification.getBeltFailureMessage("black")
+                : { title: "Quiz Failed", message: "Please review and try again." };
+             message
+const failedQuestions = [];
+quizAnswers.forEach((isCorrect, index) => {
+if (!isCorrect) {
+const question = document.querySelector(`[data-question="${index + 1}"]`);
+if (question) {
+const questionText = question.querySelector('.question-text')?.textContent || `Question ${index + 1}`;
+failedQuestions.push({
+num: index + 1,
+text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
+});
+}
+}
+});
+safeSetInnerHTML(completionDiv, `
+<div style="text-align: center); padding: 2rem;">
+<div style="font-size: 4rem; margin-bottom: 1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">You Got Submitted by a Black Belt! Academic Cap</h3>
+<p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">The black belt showed you what mastery looks like. Black Belt tests are HARD - that's why they mean something. Review, reflect, and return.</p>
+<div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+<h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-bok-open"></use></svg> Review These Questions:</h4>
+<ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
+${failedQuestions.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Question ${q.num}:</strong> ${q.text}</li>`).join('')}
+</ul>
+<p style="color: #991b1b; margin-top: 1rem; font-size: 0.9rem;">
+<strong><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-light-bulb"></use></svg> Tip:</strong> Scroll up to review the lessons and scenarios, then retry the quiz!
+</p>
+</div>
+<div style="margin-top: 2rem;">
+<button class="btn-primary" onclick="retryQuiz()" style="margin-right: 1rem; padding: 12px 24px; font-size: 1rem;" aria-label="Retry quiz"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-arrow-path"></use></svg> Retry Quiz</button>
+<button class="btn-secondary" onclick="scrollToLessons()" style="padding: 12px 24px; font-size: 1rem;" aria-label="Secondary action"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-book-open"></use></svg> Review Lessons</button>
+</div>
+<p style="color: var(--text-muted); margin-top: 1.5rem; font-size: 0.9rem;">Score: ${quizScore}/10 (Need ${passingThreshold}/10 to pass)</p>
+</div>
+`;
+                    // Award small XP for attempt
+if (typeof TapInGamification !== "undefined") { TapInGamification.saveStripeCompletion("black", 4, 10); }
+}
+                // Scroll to completion
+completionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+}</span>/10</p>
+<p class="quiz-xp">+${quizScore === 10 ? 75 : 75} XP awarded!</p>
+<button class="btn-primary" onclick="completeQuiz(getStripeNumber())" aria-label="Complete">Continue</button>
+`;
+document.getElementById('quizScore').textContent = quizScore;
+                    // Award XP
+const xpAmount = quizScore === 10 ? 75 : 75;
+if (typeof TapInGamification !== "undefined") {
+    TapInGamification.saveStripeCompletion("black", 4, Math.round((quizScore / totalQuizQuestions) * 100));
+}
+} else {
+                    // FAILED - Show belt-specific submission
+            // Get belt-specific failure message
+            const failMsg = typeof TapInGamification !== "undefined" 
+                ? TapInGamification.getBeltFailureMessage("black")
+                : { title: "Quiz Failed", message: "Please review and try again." };
+             message
+const failedQuestions = [];
+quizAnswers.forEach((isCorrect, index) => {
+if (!isCorrect) {
+const question = document.querySelector(`[data-question="${index + 1}"]`);
+if (question) {
+const questionText = question.querySelector('.question-text')?.textContent || `Question ${index + 1}`;
+failedQuestions.push({
+num: index + 1,
+text: questionText.substring(0, 80) + (questionText.length > 80 ? '...' : '')
+});
+}
+}
+});
+safeSetInnerHTML(completionDiv, `
+<div style="text-align: center); padding: 2rem;">
+<div style="font-size: 4rem; margin-bottom: 1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-academic-cap"></use></svg></div>
+<h3 style="color: #dc2626; margin-bottom: 1rem; font-size: 1.5rem;">You Got Submitted by a Black Belt! Academic Cap</h3>
+<p style="color: var(--text-muted); margin-bottom: 2rem; line-height: 1.6; font-size: 1rem;">The black belt showed you what mastery looks like. Black Belt tests are HARD - that's why they mean something. Review, reflect, and return.</p>
+<div style="background: #fef2f2; border: 2px solid #fecaca; border-radius: 12px; padding: 1.5rem; margin: 2rem 0; text-align: left;">
+<h4 style="color: #991b1b; margin-bottom: 1rem; font-size: 1.1rem;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-bok-open"></use></svg> Review These Questions:</h4>
+<ul style="color: #7f1d1d; line-height: 1.8; margin-left: 1.5rem; font-size: 0.95rem;">
+${failedQuestions.map(q => `<li style="margin-bottom: 0.5rem;"><strong>Question ${q.num}:</strong> ${q.text}</li>`).join('')}
+</ul>
+<p style="color: #991b1b; margin-top: 1rem; font-size: 0.9rem;">
+<strong><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-light-bulb"></use></svg> Tip:</strong> Scroll up to review the lessons and scenarios, then retry the quiz!
+</p>
+</div>
+<div style="margin-top: 2rem;">
+<button class="btn-primary" onclick="retryQuiz()" style="margin-right: 1rem; padding: 12px 24px; font-size: 1rem;" aria-label="Retry quiz"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-arrow-path"></use></svg> Retry Quiz</button>
+<button class="btn-secondary" onclick="scrollToLessons()" style="padding: 12px 24px; font-size: 1rem;" aria-label="Secondary action"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-book-open"></use></svg> Review Lessons</button>
+</div>
+<p style="color: var(--text-muted); margin-top: 1.5rem; font-size: 0.9rem;">Score: ${quizScore}/10 (Need ${passingThreshold}/10 to pass)</p>
+</div>
+`;
+                    // Award small XP for attempt
+if (typeof TapInGamification !== "undefined") { TapInGamification.saveStripeCompletion("black", 4, 10); }
+}
+                // Scroll to completion
+completionDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+});
+}
+}
+function awardQuizXP(amount) {
+            // Use existing XP system if available
+if (typeof TapInGamification !== 'undefined' && TapInGamification.awardXP) {
+TapInGamification.awardXP(amount, 'Quiz Completion');
+} else {
+                // Fallback to localStorage
+const currentXP = parseInt(localStorage.getItem('totalXP') || '0');
+const newXP = currentXP + amount;
+localStorage.setItem('totalXP', newXP.toString());
+}
+}
+function completeQuiz(stripeNum) {
+            // Mark quiz complete
+const storageKey = 'blackbeltStripe' + stripeNum + 'QuizComplete';
+localStorage.setItem(storageKey, 'true');
+localStorage.setItem(storageKey + 'Score', quizScore.toString());
+localStorage.setItem(storageKey + 'Date', new Date().toISOString());
+            // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Quiz Complete! Continue to Stripe ' + nextStripe + '?')) {
+window.location.href = 'black-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'gym-dashboard.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-trophy"></use></svg> Black Belt Complete! Ready for the next level.');
+window.location.href = 'gym-dashboard.html';
+}
+}
+</script>
+<!-- TAP-IN Core Modules -->
+<script src="../../../js/meta-tags-manager.js"></script>
+<script src="../../../js/achievement-badges.js"></script>
+<script src="../../../js/structured-data.js"></script>
+<script src="../../../js/dark-mode.js"></script>
+
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="../../../js/pwa-instal-prompt.js"></script>
 </html>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="../../../js/scren-reader-enhancements.js" defer></script>

@@ -1,590 +1,2709 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>Blue Belt Streifen 1: Konflikt-Grundlagen | TAP-IN</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --belt-gradient-start: #3b82f6;
-            --belt-gradient-end: #1d4ed8;
-            --belt-accent: #60a5fa;
-            --header-text: #ffffff;
-            --light-bg: #f8fafc;
-            --success-green: #38a169;
-            --warning-orange: #dd6b20;
-            --card-bg: #ffffff;
-            --border-light: #e2e8f0;
-            --text-dark: #1e293b;
-            --text-muted: #64748b;
-        }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            min-height: 100vh;
-            padding: 2rem 1rem;
-            line-height: 1.6;
-        }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 2rem; color: var(--header-text); }
-        .stripe-badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            color: #ffffff;
-            font-weight: 600;
-        }
-        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
-        .header p { font-size: 1.1rem; opacity: 0.9; }
-        .progress-container {
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-            padding: 1rem 1.5rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            color: var(--header-text);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        .progress-bar {
-            background: rgba(255,255,255,0.2);
-            height: 8px;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        .main-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            margin-bottom: 2rem;
-        }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.5s ease; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
-        .section-subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
-        .intro-box {
-            background: #f7fafc;
-            border: 1px solid var(--border-light);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-        .intro-box h3 { color: var(--text-dark); font-size: 1.1rem; margin-bottom: 0.75rem; }
-        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
-        .intro-box p:last-child { margin-bottom: 0; }
-        .intro-box strong { color: var(--text-dark); font-weight: 700; }
-        .intro-box ul { margin: 1rem 0 1rem 1.5rem; line-height: 1.8; }
-        .intro-box li { margin-bottom: 0.5rem; }
-        .intro-box.philosophy {
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-left: 6px solid #60a5fa;
-        }
-        .intro-box.research {
-            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border-left: 6px solid #60a5fa;
-        }
-        .intro-box.research h3 { color: #ffffff; }
-        .intro-box.research p { color: #e2e8f0; }
-        .intro-box.research strong { color: #a78bfa; }
-        .practice-card {
-            background: #f0fdf4;
-            border-left: 4px solid #22c55e;
-            border-radius: 8px;
-            padding: 1.25rem;
-            margin-bottom: 1.25rem;
-        }
-        .practice-card h4 { color: #166534; font-size: 1rem; margin-bottom: 0.5rem; }
-        .practice-card p { color: #14532d; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.5rem; }
-        .practice-card p:last-child { margin-bottom: 0; }
-        .insight-card {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border: 1px solid #93c5fd;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin: 1.5rem 0;
-        }
-        .insight-icon { font-size: 2rem; margin-bottom: 0.75rem; }
-        .insight-title { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem; }
-        .insight-content { color: var(--text-dark); font-size: 0.95rem; line-height: 1.7; }
-        .insight-content p { margin-bottom: 0.75rem; }
-        .insight-content p:last-child { margin-bottom: 0; }
-        .nav-buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 2rem;
-            gap: 1rem;
-        }
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn-secondary {
-            background: #e5e7eb;
-            color: #1e293b;
-        }
-        .btn-secondary:hover {
-            background: #d1d5db;
-            transform: translateY(-2px);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #60a5fa 0%, #1d4ed8 100%);
-            color: white;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
-        }
-        .xp-badge {
-            background: #fef3c7;
-            color: #92400e;
-            padding: 0.35rem 0.75rem;
-            border-radius: 12px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-left: 0.5rem;
-        }
-        .quiz-option:hover {
-            border-color: #60a5fa !important;
-            background: #f8fafc;
-        }
-        @media (max-width: 768px) {
-            body { padding: 1rem 0.5rem; }
-            .header h1 { font-size: 1.5rem; }
-            .main-card { padding: 1.5rem; }
-            .nav-buttons { flex-direction: column; }
-        }
-    
-        /* Language Switcher */
-        .language-switcher {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            padding: 0.5rem 1rem;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .lang-btn {
-            color: rgba(255, 255, 255, 0.6);
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.85rem;
-            padding: 0.25rem 0.5rem;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-        }
-        .lang-btn:hover {
-            color: rgba(255, 255, 255, 0.9);
-            background: rgba(255, 255, 255, 0.1);
-        }
-        .lang-btn.active {
-            color: white;
-            background: rgba(255, 255, 255, 0.2);
-        }
-        .lang-separator {
-            color: rgba(255, 255, 255, 0.3);
-        }
-        @media (max-width: 768px) {
-            .language-switcher {
-                top: 0.5rem;
-                right: 0.5rem;
-                padding: 0.4rem 0.8rem;
-            }
-        }
-
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- Performance: Resource Hints -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<!-- SEO Meta Tags -->
+<meta name="description" content="TAP-IN Leadership Training - Blue Belt Streifen 1: Schwierige Gespräche. Meistere Blue Belt Streifen 1 mit interaktiven Lektionen, Szenarien und Quizzes.">
+<meta name="keywords" content="Leadership, Teambuilding, Persönliche Entwicklung, Blue Belt, Management Training, TAP-IN">
+<meta property="og:title" content="Blue Belt Streifen 1: Schwierige Gespräche | TAP-IN Leadership">
+<meta property="og:description" content="Meistere Leadership-Skills durch Martial Arts Methodik. Blue Belt Streifen 1 Trainingsmodul.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tap-in-the-gym.netlify.app/blue-belt-stripe1-gamified.html">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>Blue Belt Streifen 1: Schwierige Gespräche | TAP-IN</title>
+<script src="/js/core/dom.js" type="module"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<!-- Core Styles -->
+<link rel="stylesheet" href="css/core-styles.css">
+<link rel="stylesheet" href="css/hero-icons.css">
+<link rel="stylesheet" href="css/scenarios.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+--primary-navy: var(--bg-primary);
+--secondary-navy: var(--bg-tertiary);
+--accent-red: #b91c1c;
+--accent-purple: #a78bfa;
+--purple-gradient: linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%);
+--success-green: #38a169;
+--warning-orange: #dd6b20;
+--card-bg: var(--belt-white);
+--border-light: var(--border-light);
+--text-dark: var(--bg-secondary);
+--text-muted: var(--text-muted);
+--light-bg: var(--text-primary);
+}
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+background: linear-gradient(135deg, var(--bg-primary) 0%, #7c3aed 100%);
+min-height: 100vh;
+padding: 2rem 1rem;
+line-height: 1.6;
+}
+.container { max-width: 800px; margin: 0 auto; }
+.header { text-align: center; margin-bottom: 2rem; color: white; }
+.stripe-badge {
+display: inline-block;
+background: rgba(255,255,255,0.2);
+padding: 0.5rem 1rem;
+border-radius: 20px;
+font-size: 0.85rem;
+margin-bottom: 1rem;
+}
+.difficulty-badge {
+display: inline-block;
+background: var(--warning-orange);
+color: white;
+padding: 0.25rem 0.75rem;
+border-radius: 12px;
+font-size: 0.75rem;
+font-weight: 600;
+margin-left: 0.5rem;
+}
+.header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+.header p { font-size: 1.1rem; opacity: 0.9; }
+.progress-container {
+background: rgba(255,255,255,0.2);
+border-radius: 10px;
+padding: 1rem 1.5rem;
+margin-bottom: 2rem;
+}
+.progress-header {
+display: flex;
+justify-content: space-between;
+color: white;
+font-size: 0.9rem;
+margin-bottom: 0.5rem;
+}
+.progress-bar {
+background: rgba(255,255,255,0.3);
+height: 8px;
+border-radius: 4px;
+overflow: hidden;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(90deg, var(--accent-red) 0%, #dc2626 100%);
+border-radius: 4px;
+transition: width 0.5s ease;
+}
+.main-card {
+background: white;
+border-radius: 20px;
+padding: 2.5rem;
+box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+margin-bottom: 2rem;
+}
+.section { display: none; }
+.section.active { display: block; animation: fadeIn 0.5s ease; }
+@keyframes fadeIn {
+from { opacity: 0; transform: translateY(10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+.section-subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
+.intro-box {
+background: #f7fafc;
+border: 1px solid var(--border-light);
+border-radius: 12px;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+}
+.intro-box h3 { color: var(--primary-navy); font-size: 1.1rem; margin-bottom: 0.75rem; }
+.intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+.intro-box p:last-child { margin-bottom: 0; }
+.intro-box strong { color: var(--primary-navy); }
+.intro-box.philosophy {
+background: linear-gradient(135deg, var(--light-bg) 0%, var(--border-light) 100%);
+border-left: 6px solid var(--primary-navy);
+}
+.intro-box.philosophy h3 { color: var(--primary-navy); }
+.intro-box.philosophy p { color: var(--text-dark); }
+.intro-box.philosophy strong { color: var(--primary-navy); }
+.intro-box.philosophy em { color: var(--accent-purple); }
+.intro-box.warning {
+background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+border-left: 6px solid var(--warning-orange);
+}
+.intro-box.warning h3 { color: var(--belt-brown); }
+.intro-box.warning p { color: #78350f; }
+.intro-box.research {
+background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+border: none;
+}
+.intro-box.research h3 { color: var(--belt-white); }
+.intro-box.research p { color: var(--border-light); }
+.intro-box.research strong { color: var(--accent-purple); }
+.insight-card {
+background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+border: 1px solid #93c5fd;
+border-radius: 12px;
+padding: 1.5rem;
+margin: 1.5rem 0;
+}
+.insight-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+.insight-title { font-size: 1.1rem; font-weight: 700; color: var(--primary-navy); margin-bottom: 0.75rem; }
+.insight-content { color: var(--text-dark); font-size: 0.95rem; line-height: 1.7; margin-bottom: 0.75rem; }
+.insight-quote {
+font-style: italic;
+color: var(--blue-dark);
+font-size: 0.9rem;
+padding-left: 1rem;
+border-left: 3px solid var(--primary-blue);
+}
+.framework-box {
+background: #f0fdf4;
+border: 2px solid #86efac;
+border-radius: 12px;
+padding: 1.5rem;
+margin: 1.5rem 0;
+}
+.framework-box h3 { color: #166534; font-size: 1.1rem; margin-bottom: 1rem; }
+.framework-step {
+display: flex;
+align-items: flex-start;
+padding: 0.75rem 0;
+border-bottom: 1px solid #bbf7d0;
+}
+.framework-step:last-child { border-bottom: none; }
+.framework-letter {
+width: 32px;
+height: 32px;
+background: #166534;
+color: white;
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+font-weight: 700;
+margin-right: 1rem;
+flex-shrink: 0;
+}
+.framework-content h4 { color: #166534; font-size: 0.95rem; margin-bottom: 0.25rem; }
+.framework-content p { color: var(--text-dark); font-size: 0.9rem; }
+.scenario-card {
+background: #fffbeb;
+border: 2px solid #fcd34d;
+border-radius: 12px;
+padding: 1.5rem;
+margin-bottom: 1.5rem;
+}
+.scenario-card h4 { color: var(--belt-brown); font-size: 1rem; margin-bottom: 0.75rem; }
+.scenario-card p { color: #78350f; font-size: 0.95rem; margin-bottom: 1rem; }
+.scenario-card textarea {
+width: 100%;
+min-height: 80px;
+padding: 0.75rem;
+border: 1px solid #fcd34d;
+border-radius: 8px;
+font-family: inherit;
+font-size: 0.95rem;
+resize: vertical;
+}
+.scenario-card textarea:focus { outline: none; border-color: var(--warning); }
+.reflection-box {
+background: #fffbeb;
+border: 2px solid #fcd34d;
+border-radius: 12px;
+padding: 1.5rem;
+margin: 1.5rem 0;
+}
+.reflection-box h3 { color: var(--belt-brown); font-size: 1rem; margin-bottom: 0.75rem; }
+.reflection-box p { color: #78350f; font-size: 0.95rem; margin-bottom: 1rem; }
+.reflection-textarea {
+width: 100%;
+min-height: 100px;
+padding: 1rem;
+border: 1px solid #fcd34d;
+border-radius: 8px;
+font-family: inherit;
+font-size: 0.95rem;
+resize: vertical;
+background: white;
+}
+.reflection-textarea:focus { outline: none; border-color: var(--warning); }
+.nav-buttons {
+display: flex;
+justify-content: space-between;
+margin-top: 2rem;
+gap: 1rem;
+}
+.btn {
+padding: 1rem 2rem;
+border-radius: 10px;
+font-size: 1rem;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+border: none;
+text-decoration: none;
+}
+.btn-secondary { background: #edf2f7; color: var(--text-dark); }
+.btn-secondary:hover { background: var(--border-light); }
+.btn-primary {
+background: linear-gradient(135deg, var(--primary-navy) 0%, var(--secondary-navy) 100%);
+color: white;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 25px rgba(26, 54, 93, 0.3);
+}
+.btn-success {
+background: linear-gradient(135deg, var(--success-green) 0%, #2f855a 100%);
+color: white;
+}
+.btn-success:hover {
+transform: translateY(-2px);
+box-shadow: 0 10px 25px rgba(56, 161, 105, 0.3);
+}
+.stripe-earned {
+background: linear-gradient(135deg, var(--primary-navy) 0%, #7c3aed 100%);
+border-radius: 16px;
+padding: 2rem;
+color: white;
+text-align: center;
+margin-bottom: 1.5rem;
+}
+.stripe-earned h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+.stripe-visual { font-size: 3rem; margin: 1rem 0; }
+.quote-block {
+background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+border-radius: 12px;
+padding: 1.5rem;
+text-align: center;
+margin: 1.5rem 0;
+}
+.quote-block .quote { font-size: 1.1rem; color: white; font-style: italic; margin-bottom: 0.75rem; }
+.quote-block .author { color: var(--accent-purple); font-weight: 600; font-size: 0.9rem; }
+@media (max-width: 768px) {
+body { padding: 1rem; }
+.main-card { padding: 1.5rem; }
+.header h1 { font-size: 1.75rem; }
+.nav-buttons { flex-direction: column; }
+.btn { width: 100%; text-align: center; }
+}
+        /* Scenario Question Styles */
+.scenarios-section {
+background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+border-radius: 16px;
+padding: 30px;
+margin: 40px 0;
+border: 2px solid #4a5568;
+}
+.scenarios-section h2 {
+color: #f6e05e;
+font-size: 24px;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.scenarios-section .section-intro {
+color: #a0aec0;
+margin-bottom: 25px;
+line-height: 1.6;
+}
+.scenario-card {
+background: #2d3748;
+border-radius: 12px;
+padding: 25px;
+margin-bottom: 20px;
+border-left: 4px solid #805ad5;
+}
+.scenario-badge {
+display: inline-block;
+background: rgba(128, 90, 213, 0.2);
+color: #b794f4;
+padding: 0.25rem 0.75rem;
+border-radius: 20px;
+font-size: 0.75rem;
+font-weight: 600;
+margin-bottom: 1rem;
+}
+.scenario-question {
+color: var(--border-light);
+font-size: 1.1rem;
+line-height: 1.6;
+margin-bottom: 20px;
+font-weight: 500;
+}
+.scenario-options {
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+.scenario-option {
+text-align: left;
+padding: 15px 20px;
+background: #1a202c;
+border: 2px solid #4a5568;
+border-radius: 10px;
+color: var(--border-light);
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 0.95rem;
+line-height: 1.5;
+font-family: inherit;
+}
+.scenario-option:hover:not(.answered) {
+background: #3d4a5c;
+border-color: #718096;
+transform: translateX(5px);
+}
+.scenario-option.selected { border-color: #805ad5; background: rgba(128, 90, 213, 0.15); }
+.scenario-option.correct { border-color: #48bb78; background: rgba(72, 187, 120, 0.15); }
+.scenario-option.partial { border-color: #f6e05e; background: rgba(246, 224, 94, 0.1); }
+.scenario-option.incorrect { border-color: #fc8181; background: rgba(252, 129, 129, 0.1); }
+.scenario-option.answered { cursor: default; }
+.scenario-feedback {
+margin-top: 20px;
+padding: 20px;
+background: #1a202c;
+border-radius: 10px;
+display: none;
+}
+.scenario-feedback.show {
+display: block;
+animation: fadeInScenario 0.3s ease;
+}
+@keyframes fadeInScenario {
+from { opacity: 0; transform: translateY(-10px); }
+to { opacity: 1; transform: translateY(0); }
+}
+.scenario-feedback.positive { border-left: 4px solid #48bb78; }
+.scenario-feedback.warning { border-left: 4px solid #f6e05e; }
+.scenario-feedback.negative { border-left: 4px solid #fc8181; }
+.scenario-feedback-text {
+color: var(--border-light);
+font-size: 1rem;
+margin-bottom: 10px;
+font-weight: 500;
+}
+.scenario-insight {
+color: #a0aec0;
+font-size: 0.9rem;
+font-style: italic;
+line-height: 1.6;
+}
+.scenario-xp {
+display: inline-block;
+background: linear-gradient(135deg, #fbbf24 0%, var(--warning) 100%);
+color: #78350f;
+padding: 4px 12px;
+border-radius: 15px;
+font-size: 0.85rem;
+font-weight: 700;
+margin-top: 15px;
+}
+.fun-fact-card {
+background: linear-gradient(135deg, #1e3a5f 0%, #2d4a6f 100%);
+border-radius: 12px;
+padding: 20px;
+margin: 25px 0;
+border-left: 4px solid #f6e05e;
+}
+.fun-fact-icon { font-size: 1.5rem; margin-bottom: 8px; }
+.fun-fact-text { color: var(--border-light); font-size: 0.95rem; line-height: 1.6; margin: 0; }
+</style>
+<!-- Personality Discovery Styles -->
+<style>
+.discovery-section {
+background: linear-gradient(135deg, #2d1b4e 0%, #1a1033 100%);
+border-radius: 16px;
+padding: 30px;
+margin: 40px 0;
+border: 2px solid #7c3aed;
+}
+.discovery-section h2 {
+color: #c4b5fd;
+font-size: 24px;
+margin-bottom: 10px;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+.discovery-section .section-intro {
+color: #a78bfa;
+margin-bottom: 25px;
+line-height: 1.6;
+}
+.discovery-card {
+background: #1e1433;
+border-radius: 12px;
+padding: 25px;
+margin-bottom: 20px;
+border-left: 4px solid var(--belt-purple);
+}
+.discovery-badge {
+display: inline-block;
+background: rgba(139, 92, 246, 0.2);
+color: #c4b5fd;
+padding: 0.25rem 0.75rem;
+border-radius: 20px;
+font-size: 0.75rem;
+font-weight: 600;
+margin-bottom: 1rem;
+}
+.discovery-question {
+color: var(--border-light);
+font-size: 1.1rem;
+line-height: 1.6;
+margin-bottom: 20px;
+font-weight: 500;
+}
+.discovery-options {
+display: flex;
+flex-direction: column;
+gap: 12px;
+}
+.discovery-option {
+text-align: left;
+padding: 15px 20px;
+background: #2d1b4e;
+border: 2px solid #4c1d95;
+border-radius: 10px;
+color: var(--border-light);
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 0.95rem;
+line-height: 1.5;
+font-family: inherit;
+}
+.discovery-option:hover:not(.answered) {
+background: #3d2560;
+border-color: #7c3aed;
+transform: translateX(5px);
+}
+.discovery-option.selected {
+border-color: var(--belt-purple);
+background: rgba(139, 92, 246, 0.2);
+}
+.discovery-option.answered {
+cursor: default;
+}
+.discovery-result {
+margin-top: 20px;
+padding: 20px;
+background: #2d1b4e;
+border-radius: 10px;
+display: none;
+border-left: 4px solid var(--belt-purple);
+}
+.discovery-result.show {
+display: block;
+animation: fadeIn 0.3s ease;
+}
+.discovery-type {
+display: inline-block;
+background: linear-gradient(135deg, #c4b5fd 0%, #a78bfa 100%);
+color: #1a1033;
+padding: 6px 16px;
+border-radius: 20px;
+font-weight: 700;
+font-size: 0.95rem;
+margin-bottom: 12px;
+}
+.discovery-feedback {
+color: var(--border-light);
+font-size: 0.95rem;
+line-height: 1.6;
+}
+.discovery-xp {
+display: inline-block;
+background: linear-gradient(135deg, #fbbf24 0%, var(--warning) 100%);
+color: #78350f;
+padding: 4px 12px;
+border-radius: 15px;
+font-size: 0.85rem;
+font-weight: 700;
+margin-top: 15px;
+}
+.discovery-summary {
+background: #1e1433;
+border-radius: 12px;
+padding: 20px;
+margin-top: 30px;
+text-align: center;
+}
+.discovery-summary h3 {
+color: #c4b5fd;
+margin-bottom: 10px;
+}
+.discovery-summary p {
+color: #a78bfa;
+}
+@media (max-width: 768px) {
+.discovery-section {
+padding: 20px;
+margin: 20px 0;
+}
+.discovery-card {
+padding: 20px;
+}
+.discovery-option {
+padding: 12px 15px;
+font-size: 0.9rem;
+}
+}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#c62828">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TAP-IN">
+<link rel="stylesheet" href="css/pwa-install-banner.css">
+<script src="/js/core/dom.js" type="module"></script>
+<script src="/js/core/progress.js" type="module"></script>
+<script src="/js/core/results.js" type="module"></script>
+<script src="/js/core/quiz.js" type="module"></script>
+<script src="/js/core/lessons.js" type="module"></script>
+<link rel="stylesheet" href="/css/variables.css">
 </head>
 <body>
-
-        <div class="language-switcher">
-            <a href="blue-belt-stripe1-gamified.html" class="lang-btn">EN</a>
-            <span class="lang-separator">|</span>
-            <a href="blue-belt-stripe1-gamified-de.html" class="lang-btn active">DE</a>
-        </div>
-    <div class="container">
-        <div class="header">
-            <div class="stripe-badge">🔵 Blauer Gürtel - Streifen 1</div>
-            <h1>Konfliktgrundlagen</h1>
-            <p>Produktiven Konflikt verstehen</p>
-        </div>
-
-        <div class="progress-container">
-            <div class="progress-header">
-                <span>Fortschritt</span>
-                <span id="progressText">Section 1 von 5</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressBar" style="width: 20%"></div>
-            </div>
-        </div>
-
-        <div class="main-card">
-            <!-- Abschnitt 1: Einführung -->
-            <div class="section active" id="section-1">
-                <h2 class="section-title">🎯 Introduction</h2>
-                <p class="section-subtitle">Understanding conflict foundations</p>
-
-                <div class="intro-box">
-                    <h3>Was du lernen wirst</h3>
-                    <p>This stripe focuses on <strong>conflict foundations</strong>. You'll discover practical frameworks and tools you can apply immediately to your leadership.</p>
-                    <p>By the end von this stripe, you'll have concrete actions to implement this week.</p>
-                </div>
-
-                <div class="intro-box philosophy">
-                    <h3>Der TAP-IN-Ansatz</h3>
-                    <p><em>Übung macht dauerhaft, nicht perfekt.</em></p>
-                    <p>Das ist keine Theorie. Jedes Konzept beinhaltet praktische Anwendung. Deine Aufgabe ist es, es zu versuchen, daran zu scheitern, anzupassen und es erneut zu versuchen.</p>
-                </div>
-
-                <div class="intro-box research">
-                    <h3>📊 Why This Matters</h3>
-                    <p>Research shows that conflict foundations is a critical factor in team performance. Teams that master this see measurable improvements in both outcomes and culture.</p>
-                </div>
-
-                <div class="nav-buttons">
-                    <a href="gym-dashboard-de.html" class="btn btn-secondary">← Zurück to Dashboard</a>
-                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Abschnitt 2: Kernkonzept -->
-            <div class="section" id="section-2">
-                <h2 class="section-title">💡 Core Concept</h2>
-                <p class="section-subtitle">Die Grundlage, die du verstehen musst</p>
-
-                <div class="intro-box">
-                    <h3>Das Framework</h3>
-                    <p>At its core, conflict foundations requires understanding three key elements:</p>
-                    <ul>
-                        <li><strong>Bewusstsein:</strong> Recognizing when this matters</li>
-                        <li><strong>Fähigkeit:</strong> Knowing what to do</li>
-                        <li><strong>Praxis:</strong> Building the habit</li>
-                    </ul>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Praktische Anwendung</h4>
-                    <p>So zeigt sich das in echten Teamsituationen:</p>
-                    <p><strong>Szenario:</strong> A team member disagrees with your decision during a meeting.</p>
-                    <p><strong>Reaktion:</strong> Welcome the disagreement. It's a sign von psychological safety and leads to better decisions.</p>
-                </div>
-
-                <div class="insight-card">
-                    <div class="insight-icon">⚡</div>
-                    <div class="insight-title">Wichtige Erkenntnis</div>
-                    <div class="insight-content">
-                        <p>Die meisten Führungskräfte wissen, was zu tun ist. Die Lücke liegt darin, es tatsächlich konsistent zu tun.</p>
-                        <p><strong>Dein Fokus: Baue das Muskelgedächtnis durch tägliche Praxis auf.</strong></p>
-                    </div>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Abschnitt 3: Vertiefung -->
-            <div class="section" id="section-3">
-                <h2 class="section-title">🔍 Deep Dive</h2>
-                <p class="section-subtitle">Tiefer in die Praxis eintauchen</p>
-
-                <div class="intro-box">
-                    <h3>Häufige Fallstricke</h3>
-                    <p>Selbst erfahrene Führungskräfte machen diese Fehler:</p>
-                    <ul>
-                        <li>Intellektuell wissen, aber nicht praktizieren</li>
-                        <li>Inkonsistent über Teammitglieder hinweg anwenden</li>
-                        <li>Nach dem ersten gescheiterten Versuch aufgeben</li>
-                    </ul>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Übung: Selbsteinschätzung</h4>
-                    <p>On a scale von 1-10, how consistently do you practice conflict foundations?</p>
-                    <p>Wenn unter 7: Identifiziere eine spezifische Situation diese Woche, in der du dies absichtlich praktizieren wirst.</p>
-                    <p>Wenn 7+: Identifiziere, wie du einem Teammitglied helfen wirst, diese Fähigkeit zu entwickeln.</p>
-                </div>
-
-                <div class="intro-box research">
-                    <h3>📊 What Research Shows</h3>
-                    <p>Studien zeigen, dass bewusstes Üben in spezifischen Situationen zu 3-5x schnellerer Fähigkeitsentwicklung führt als allgemeines Bewusstseinstraining.</p>
-                    <p><strong>Übersetzung:</strong> Pick specific moments to practice, rather than trying to "be better" generally.</p>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
-                </div>
-            </div>
-
-            <!-- Abschnitt 4: Implementation -->
-            <div class="section" id="section-4">
-                <h2 class="section-title">🔨 Implementation Guide</h2>
-                <p class="section-subtitle">Das in deinem Team real machen</p>
-
-                <div class="practice-card">
-                    <h4>Aktion #1: Diese Woche</h4>
-                    <p>Identify one meeting or interaction where you'll deliberately practice conflict foundations.</p>
-                    <p><strong>Vorher:</strong> Set your intention. What specifically will you do?</p>
-                    <p><strong>Nachher:</strong> Reflect. What worked? What would you do differently?</p>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Aktion #2: Team-Ebene</h4>
-                    <p>Teile dieses Konzept mit deinem Team. Mache explizit, dass du daran arbeitest.</p>
-                    <p><strong>Warum:</strong> When you're transparent about your development areas, you give others permission to do the same.</p>
-                </div>
-
-                <div class="practice-card">
-                    <h4>Aktion #3: Verantwortlichkeit</h4>
-                    <p>Bitte jemanden, dir Feedback zu geben, wie es dir damit geht.</p>
-                    <p><strong>Die Bitte:</strong> "I'm working on conflict foundations. Will you tell me when you see me doing it well, and when you see me missing opportunities?"</p>
-                </div>
-
-                <div class="insight-card">
-                    <div class="insight-icon">🎯</div>
-                    <div class="insight-title">Merke</div>
-                    <div class="insight-content">
-                        <p>Du wirst das nicht perfekt hinbekommen. Das ist nicht das Ziel.</p>
-                        <p><strong>Das Ziel: Werde jede Woche 1% besser durch konsequentes Üben.</strong></p>
-                    </div>
-                </div>
-
-                <div class="nav-buttons">
-                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
-                    <button class="btn btn-primary" onclick="nextSection()">Complete Streifen →</button>
-                </div>
-            </div>
-
-            <!-- Abschnitt 5: Quiz -->
-            <div class="section" id="section-5">
-                <h2 class="section-title">✅ Knowledge Check</h2>
-                <p class="section-subtitle">Test your understanding (70% zum Bestehen)</p>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        1. The three key elements for mastering this concept are:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Theorie, Praxis, Meisterschaft</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Bewusstsein, Fähigkeit, Praxis</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Wissen, Anwendung, Lehre</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Lernen, Tun, Reflektieren</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        2. Forschung zeigt, dass deliberate practice in specific situations leads to:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Denselben Ergebnissen wie allgemeines Training</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="1" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">3-5x schnellere Fähigkeitsentwicklung</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Langsameres aber tieferes Lernen</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Funktioniert nur für Anfänger</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        3. The best way to improve at this skill is to:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="0" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Konsistent in spezifischen Situationen üben</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="1" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Mehr Bücher darüber lesen</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Warten, bis du dich bereit fühlst</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Allgemein versuchen, besser zu sein</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
-                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
-                        4. When sharing your development areas with your team, you should:
-                    </p>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="0" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Sie privat halten, um Autorität zu bewahren</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="1" data-correct="true" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Transparent sein - das gibt anderen die Erlaubnis, sich auch zu entwickeln</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Nur teilen, wenn du sie gemeistert hast</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
-                            <input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
-                            <span style="color: #475569; font-size: 16px;">Nur mit deinem Manager teilen</span>
-                        </label>
-                    </div>
-                </div>
-
-                <div style="text-align: center; margin-top: 30px;">
-                    <button onclick="submitQuiz()" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;">
-                        Quiz absenden & Streifen abschließen <span class="xp-badge">+100 XP</span>
-                    </button>
-                    <p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentSection = 1;
-        const totalSections = 5;
-
-        function updateProgress() {
-            const progress = (currentSection / totalSections) * 100;
-            document.getElementById('progressBar').style.width = progress + '%';
-            document.getElementById('progressText').textContent = 'Section ' + currentSection + ' von ' + totalSections;
-        }
-
-        function showSection(sectionNum) {
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById('section-' + sectionNum).classList.add('active');
-            currentSection = sectionNum;
-            updateProgress();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function nextSection() {
-            if (currentSection < totalSections) {
-                showSection(currentSection + 1);
-            }
-        }
-
-        function prevSection() {
-            if (currentSection > 1) {
-                showSection(currentSection - 1);
-            }
-        }
-
-        function submitQuiz() {
-            const totalQuestions = 4;
-            let answered = 0;
-            let correct = 0;
-            
-            for (let i = 1; i <= totalQuestions; i++) {
-                const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
-                if (selected) {
-                    answered++;
-                    if (selected.dataset.correct === "true") {
-                        correct++;
-                    }
-                }
-            }
-            
-            if (answered < totalQuestions) {
-                alert('Please answer all ' + totalQuestions + ' questions before submitting!');
-                return;
-            }
-            
-            const percentage = Math.round((correct / totalQuestions) * 100);
-            const passed = percentage >= 70;
-            
-            if (passed) {
-                // Save progress
-                const progress = JSON.parse(localStorage.getItem('userProgress') || '{}');
-                if (!progress.completedStripes) progress.completedStripes = [];
-                const stripeKey = 'blue-1';
-                if (!progress.completedStripes.includes(stripeKey)) {
-                    progress.completedStripes.push(stripeKey);
-                }
-                localStorage.setItem('userProgress', JSON.stringify(progress));
-                
-                alert('✓ Quiz Passed!\n\nScore: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe 1 Complete!');
-                
-                // Navigate
-                if (confirm('Continue to Streifen 2?')) {
-                    window.location.href = 'blue-belt-stripe2-gamified-de.html';
-                } else {
-                    window.location.href = 'gym-dashboard-de.html';
-                }
-            } else {
-                document.getElementById('quizFeedback').innerHTML = 
-                    '<span style="color: #dc2626;">Score: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Need 70% to pass. Review and try again!</span>';
-            }
-        }
-
-        // Initialize
-        updateProgress();
-    </script>
+<div class="container">
+<div class="header">
+<div class="stripe-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-heart"></use></svg> Blue Belt • Streifen 1 von 4 <span class="difficulty-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-bolt"></use></svg> Anspruchsvoll</span></div>
+<h1>Schwierige Gespräche</h1>
+<p>Die Gespräche führen, die Du vermieden hast</p>
+</div>
+<div class="progress-container">
+<div class="progress-header">
+<span>Fortschritt</span>
+<span id="progress-text">0%</span>
+</div>
+<div class="progress-bar">
+<div class="progress-fill" id="progress-fill"></div>
+</div>
+</div>
+<div class="main-card">
+<!-- Section 1: Introduction -->
+<div class="section active" id="section-1">
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-chat-bubble-left-right"></use></svg> Warum das schwer ist</h2>
+<p class="section-subtitle">Das Gespräch, das Du vermeidest, ist genau das, das Du führen musst.</p>
+<div class="intro-box warning">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-exclamation-triangle"></use></svg> Das wird unangenehm sein</h3>
+<p>Dieser Streifen lehrt die schwerste Fähigkeit im Blue Belt: Gespräche führen, die sich gefährlich anfühlen. Die Einsätze fühlen sich hoch an. Dein Herzschlag beschleunigt sich. Ein Teil von Dir will weglaufen.</p>
+<p><strong>Dieses Unbehagen ist das Signal, dass es wichtig ist.</strong></p>
+</div>
+<div class="intro-box">
+<h3>Der Preis des Schweigens</h3>
+<p>Jedes vermiedene Gespräch hat einen Preis. Das Feedback, das Du nicht gegeben hast, wird zum Performance-Problem. Die Grenze, die Du nicht gesetzt hast, wird zu Groll. Die Sorge, die Du nicht geäußert hast, wird zum gescheiterten Projekt.</p>
+<p><strong>Schweigen ist nicht neutral. Schweigen ist toxisch.</strong> Es vergiftet Beziehungen langsam, unsichtbar, bis eines Tages alles explodiert—oder leise stirbt.</p>
+</div>
+<div class="intro-box philosophy">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Das BJJ-Prinzip: Probleme früh ansprechen</h3>
+<p>Im Jiu-Jitsu wird ein kleiner positioneller Nachteil zur Submission, wenn Du ihn ignorierst. Der beste Zeitpunkt zum Entkommen ist früh—wenn das Problem noch klein ist. Warte zu lange und Du bist bereits gefangen.</p>
+<p><strong>Gespräche funktionieren genauso.</strong> Ein kleines Problem, das früh angesprochen wird, ist ein 5-Minuten-Gespräch. Dasselbe Problem, monatelang ignoriert, wird zur beziehungsbeendenden Konfrontation.</p>
+<p><em>"Der beste Zeitpunkt für ein schwieriges Gespräch war vor drei Monaten. Der zweitbeste Zeitpunkt ist heute."</em></p>
+</div>
+<div class="intro-box research">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Die Forschung</h3>
+<p><strong>VitalSmarts Forschung</strong> (Autoren von "Crucial Conversations") fanden heraus, dass Teams, die schwierige Gespräche meistern, <strong>5x produktiver sind</strong> als solche, die es nicht tun.</p>
+<p>Dieselbe Forschung fand heraus, dass die meisten Menschen 1-3 entscheidende Gespräche haben, die sie gerade aktiv vermeiden. Die durchschnittlichen Kosten der Vermeidung? <strong>$7.500 pro Gespräch</strong> durch verlorene Produktivität, Fluktuation und beschädigte Beziehungen.</p>
+</div>
+<!-- SCENARIOS SECTION -->
+<div class="scenarios-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Praxis-Szenarien</h2>
+<p class="section-intro">
+Wende an, was Du gelernt hast, auf realistische Leadership-Situationen. Wähle die Antwort, die die Prinzipien dieses Streifens am besten demonstriert.
+</p>
+<!-- Scenario 1: Trust Building -->
+<div class="scenario-card" id="scenario1">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 1 - Vertrauensaufbau</div>
+<p class="scenario-question">Du bist neu in einem Team, das verschlossen und skeptisch Dir gegenüber wirkt. Du...</p>
+<div class="scenario-options" id="scenario1-options">
+<button class="scenario-option" data-scenario="1" data-option="0" data-value="2" aria-label="Versuchst, sie sofort mit Deiner Expertise und ve">
+Versuchst, sie sofort mit Deiner Expertise und vergangenen Erfolgen zu beeindrucken
+</button>
+<button class="scenario-option" data-scenario="1" data-option="1" data-value="3" aria-label="Bleibst ruhig und beobachtest, bis Du die Team-Dy">
+Bleibst ruhig und beobachtest, bis Du die Team-Dynamik verstehst
+</button>
+<button class="scenario-option" data-scenario="1" data-option="2" data-value="5" aria-label="Teilst etwas Echtes über Dich selbst und fragst n">
+Teilst etwas Echtes über Dich selbst und fragst nach ihren Erfahrungen im Team
+</button>
+<button class="scenario-option" data-scenario="1" data-option="3" data-value="1" aria-label="Gehst davon aus, dass sie das Problem sind, und k">
+Gehst davon aus, dass sie das Problem sind, und konzentrierst Dich auf Deine Arbeit, nicht auf Beziehungen
+</button>
+</div>
+<div class="scenario-feedback" id="scenario1-feedback">
+<p class="scenario-feedback-text" id="scenario1-feedback-text"></p>
+<p class="scenario-insight" id="scenario1-insight"></p>
+<span class="scenario-xp" id="scenario1-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Im BJJ vertraust Du Deinem Trainingspartner mit Deinen Gelenken und Deinem Bewusstsein. Vertrauen wird durch konsistentes, verlässliches Handeln aufgebaut - nicht durch Worte.</p>
+</div>
+<!-- Scenario 2: Vulnerability -->
+<div class="scenario-card" id="scenario2">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 2 - Verletzlichkeit</div>
+<p class="scenario-question">In einem Team-Meeting merkst Du, dass Du einen erheblichen Fehler gemacht hast, der den Projektzeitplan beeinflusst hat. Du...</p>
+<div class="scenario-options" id="scenario2-options">
+<button class="scenario-option" data-scenario="2" data-option="0" data-value="1" aria-label="Bleibst still und hoffst, dass niemand es bemerkt">
+Bleibst still und hoffst, dass niemand es bemerkt oder mit Dir in Verbindung bringt
+</button>
+<button class="scenario-option" data-scenario="2" data-option="1" data-value="5" aria-label="Erkennst den Fehler sofort an: 'Ich habe einen Fe">
+Erkennst den Fehler sofort an: 'Ich habe einen Fehler gemacht, der unseren Zeitplan beeinflusst hat. Das ist passiert und so plane ich, es zu beheben.'
+</button>
+<button class="scenario-option" data-scenario="2" data-option="2" data-value="2" aria-label="Erklärst alle externen Faktoren, die zum Fehler b">
+Erklärst alle externen Faktoren, die zum Fehler beigetragen haben
+</button>
+<button class="scenario-option" data-scenario="2" data-option="3" data-value="3" aria-label="Sagst es Deinem Manager privat, aber nicht dem ga">
+Sagst es Deinem Manager privat, aber nicht dem ganzen Team
+</button>
+</div>
+<div class="scenario-feedback" id="scenario2-feedback">
+<p class="scenario-feedback-text" id="scenario2-feedback-text"></p>
+<p class="scenario-insight" id="scenario2-insight"></p>
+<span class="scenario-xp" id="scenario2-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Wusstest Du? Googles Project Aristotle fand heraus, dass psychologische Sicherheit (Vertrauen) der Nr. 1 Prädiktor für Team-Performance ist - mehr als Skills oder Ressourcen.</p>
+</div>
+<!-- Scenario 3: Credibility -->
+<div class="scenario-card" id="scenario3">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 3 - Glaubwürdigkeit</div>
+<p class="scenario-question">Ein Kollege schreibt Dir öffentlich eine Idee zu, die eigentlich eine Team-Leistung war. Du...</p>
+<div class="scenario-options" id="scenario3-options">
+<button class="scenario-option" data-scenario="3" data-option="0" data-value="2" aria-label="Nimmst die Anerkennung schweigend an - Du hast sc">
+Nimmst die Anerkennung schweigend an - Du hast schließlich beigetragen
+</button>
+<button class="scenario-option" data-scenario="3" data-option="1" data-value="5" aria-label="Leitest sofort um: 'Eigentlich war das eine Team-">
+Leitest sofort um: 'Eigentlich war das eine Team-Leistung. Sarahs Recherche und Mikes Analyse waren essenziell.'
+</button>
+<button class="scenario-option" data-scenario="3" data-option="2" data-value="3" aria-label="Dankst ihnen für die Anerkennung, sagst dann priv">
+Dankst ihnen für die Anerkennung, sagst dann privat den Teammitgliedern, dass Du ihre Beiträge geschätzt hast
+</button>
+<button class="scenario-option" data-scenario="3" data-option="3" data-value="2" aria-label="Fühlst Dich peinlich berührt und wechselst schnel">
+Fühlst Dich peinlich berührt und wechselst schnell das Thema
+</button>
+</div>
+<div class="scenario-feedback" id="scenario3-feedback">
+<p class="scenario-feedback-text" id="scenario3-feedback-text"></p>
+<p class="scenario-insight" id="scenario3-insight"></p>
+<span class="scenario-xp" id="scenario3-xp"></span>
+</div>
+</div>
+<!-- Scenarios Summary -->
+<div style="background: #1a202c; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+<h3 style="color: #f6e05e; margin-bottom: 10px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Szenario-Fortschritt</h3>
+<p style="color: #a0aec0;">
+<span id="scenariosCompleted">0</span>/3 Szenarien abgeschlossen |
+<span id="scenarioXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- PERSONALITY DISCOVERY SECTION -->
+<div class="discovery-section">
+<h2>🔮 Erkenne dich selbst</h2>
+<p class="section-intro">
+Entdecke Deine natürlichen Muster und Tendenzen. Es gibt keine falschen Antworten - nur Einblicke, wie Du funktionierst.
+</p>
+<!-- Discovery 1: Trust -->
+<div class="discovery-card" id="discovery1">
+<div class="discovery-badge">🔮 Trust</div>
+<p class="discovery-question">In neuen beruflichen Beziehungen tendierst Du dazu...</p>
+<div class="discovery-options" id="discovery1-options">
+<button class="discovery-option" data-discovery="1" data-option="0" data-value="3" data-type="Cautious Truster" aria-label="Vorsichtig zu vertrauen - Leute müssen sich mein">
+Vorsichtig zu vertrauen - Leute müssen sich mein Vertrauen verdienen
+</button>
+<button class="discovery-option" data-discovery="1" data-option="1" data-value="4" data-type="Open Truster" aria-label="Offen zu vertrauen, bis es einen Grund gibt, es n">
+Offen zu vertrauen, bis es einen Grund gibt, es nicht zu tun
+</button>
+<button class="discovery-option" data-discovery="1" data-option="2" data-value="2" data-type="Competence-Focused" aria-label="Dich auf professionelle Kompetenz zu fokussieren,">
+Dich auf professionelle Kompetenz zu fokussieren, nicht auf persönliches Vertrauen
+</button>
+<button class="discovery-option" data-discovery="1" data-option="3" data-value="5" data-type="Vulnerability Leader" aria-label="Früh etwas Verletzliches zu teilen, um ihre Reakt">
+Früh etwas Verletzliches zu teilen, um ihre Reaktion zu testen
+</button>
+</div>
+<div class="discovery-result" id="discovery1-result">
+<span class="discovery-type" id="discovery1-type"></span>
+<p class="discovery-feedback" id="discovery1-feedback"></p>
+<span class="discovery-xp" id="discovery1-xp"></span>
+</div>
+</div>
+<!-- Discovery 2: Vulnerability -->
+<div class="discovery-card" id="discovery2">
+<div class="discovery-badge">🔮 Vulnerability</div>
+<p class="discovery-question">Wenn Du bei der Arbeit einen sichtbaren Fehler machst, tust Du typischerweise...</p>
+<div class="discovery-options" id="discovery2-options">
+<button class="discovery-option" data-discovery="2" data-option="0" data-value="5" data-type="Ownership-Taker" aria-label="Erkennst ihn sofort an und teilst, wie Du ihn beh">
+Erkennst ihn sofort an und teilst, wie Du ihn beheben wirst
+</button>
+<button class="discovery-option" data-discovery="2" data-option="1" data-value="3" data-type="Quiet Fixer" aria-label="Behebst ihn leise, wenn möglich, erkennst ihn an,">
+Behebst ihn leise, wenn möglich, erkennst ihn an, wenn er bemerkt wird
+</button>
+<button class="discovery-option" data-discovery="2" data-option="2" data-value="2" data-type="Explainer" aria-label="Erklärst die externen Faktoren, die dazu beigetra">
+Erklärst die externen Faktoren, die dazu beigetragen haben
+</button>
+<button class="discovery-option" data-discovery="2" data-option="3" data-value="1" data-type="Wait-and-See" aria-label="Wartest ab, ob es jemand bemerkt, bevor Du entsch">
+Wartest ab, ob es jemand bemerkt, bevor Du entscheidest, wie Du damit umgehst
+</button>
+</div>
+<div class="discovery-result" id="discovery2-result">
+<span class="discovery-type" id="discovery2-type"></span>
+<p class="discovery-feedback" id="discovery2-feedback"></p>
+<span class="discovery-xp" id="discovery2-xp"></span>
+</div>
+</div>
+<!-- Discovery Summary -->
+<div class="discovery-summary">
+<h3>🔮 Selbsterkenntnis-Fortschritt</h3>
+<p>
+<span id="discoveryCompleted">0</span>/2 Entdeckungen abgeschlossen |
+<span id="discoveryXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- QUIZ SECTION -->
+<div class="progress-section" style="margin-top: 60px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 3px solid #2563eb;">
+<h2 style="color: #1e40af; margin-bottom: 20px; font-size: 28px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> Streifen Wissenscheck</h2>
+<p style="color: #1e40af; margin-bottom: 30px; font-size: 16px;">
+Beantworte alle Fragen, um diesen Streifen abzuschließen und Deine Bonus-XP zu verdienen!
+</p>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+1. Produktiver Konflikt fokussiert sich auf:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Argumente gewinnen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Themen, nicht Individuen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Höflich sein</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Meinungsverschiedenheiten vermeiden</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+2. Laut Forschung kostet Konfliktvermeidung US-Unternehmen jährlich:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$35 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$100 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="2" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$359 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$500 billion</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+3. Was ist "Konfliktschuld"?
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Schulden aus Streitigkeiten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Angesammelte ungelöste Meinungsverschiedenheiten, die sich aufbauen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Rechtliche Kosten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Zeit, die in Debatten verschwendet wurde</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+4. Hochleistungsteams lösen Konflikte:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="0" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 48 Stunden</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 2 Wochen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb eines Monats</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Nur wenn absolut notwendig</span>
+</label>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<button onclick="submitQuiz(5)" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;" aria-label="100 XP Bonus">
+Quiz abschicken & Streifen abschließen <span class="xp-badge">+100 XP Bonus</span>
+</button>
+<p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+</div>
+</div>
+<script>
+function submitQuiz(stripeNum) {
+const totalQuestions = 4;
+let answered = 0;
+let correct = 0;
+for (let i = 1; i <= totalQuestions; i++) {
+const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+if (selected) {
+answered++;
+if (selected.dataset.correct === "true") {
+correct++;
+}
+}
+}
+if (answered < totalQuestions) {
+alert('Bitte beantworte alle ' + totalQuestions + ' Fragen, bevor Du absendest!');
+return;
+}
+const percentage = Math.round((correct / totalQuestions) * 100);
+const passed = percentage >= 70;
+if (passed) {
+                // Award bonus XP
+let xp = parseInt(localStorage.getItem('whitebeltStripe' + stripeNum + 'ModuleXP') || '0');
+xp += 100;
+localStorage.setItem('whitebeltStripe' + stripeNum + 'ModuleXP', xp);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Quiz bestanden!\n\nDein Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe ' + stripeNum + ' Abgeschlossen!');
+                // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Weiter zu Streifen ' + nextStripe + '?')) {
+window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> White Belt abgeschlossen! Bereit für Blue Belt.');
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+safeSetInnerHTML(document.getElementById('quizFeedback'),
+'<span style="color: #dc2626;">Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Benötigt 70% zum Bestehen. Überprüfe die Lektionen und versuche es erneut!</span>');
+}
+}
+</script>
+<div class="nav-buttons">
+<a href="src/pages/gym/blue-belt-de.html" class="btn btn-secondary">← Zurück zum Hub</a>
+<button class="btn btn-primary" onclick="nextSection()" aria-label="Next">Lerne das Framework →</button>
+</div>
+</div>
+<!-- Section 2: Das STATE Framework -->
+<div class="section" id="section-2">
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Das STATE Framework</h2>
+<p class="section-subtitle">Eine bewährte Struktur für Gespräche mit hohen Einsätzen.</p>
+<div class="insight-card">
+<div class="insight-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<div class="insight-title">Warum Du ein Framework brauchst</div>
+<div class="insight-content">
+Unter Stress fällt Dein Gehirn zurück auf Kampf oder Flucht. Du greifst entweder an (wirst aggressiv) oder fliehst (vermeidest/schaltest ab). Ein Framework gibt Dir eine dritte Option: <strong>einen strukturierten Pfad durch das Unbehagen.</strong>
+</div>
+</div>
+<div class="framework-box">
+<h3>Das STATE Framework (from Crucial Conversations)</h3>
+<div class="framework-step">
+<div class="framework-letter">S</div>
+<div class="framework-content">
+<h4>Teile Deine Fakten</h4>
+<p>Beginne mit beobachtbaren Fakten, nicht mit Urteilen. "Du warst diese Woche zu 3 Meetings zu spät" nicht "Du bist respektlos."</p>
+</div>
+</div>
+<div class="framework-step">
+<div class="framework-letter">T</div>
+<div class="framework-content">
+<h4>Erzähle Deine Geschichte</h4>
+<p>Teile, was Du aus den Fakten machst. "Die Geschichte, die ich mir erzähle, ist, dass diese Meetings für Dich keine Priorität haben."</p>
+</div>
+</div>
+<div class="framework-step">
+<div class="framework-letter">A</div>
+<div class="framework-content">
+<h4>Frage nach ihrem Blickwinkel</h4>
+<p>Lade ihre Perspektive ehrlich ein. "Ich würde gerne verstehen, was aus Deiner Sicht los ist."</p>
+</div>
+</div>
+<div class="framework-step">
+<div class="framework-letter">T</div>
+<div class="framework-content">
+<h4>Sprich vorsichtig</h4>
+<p>Halte Deine Geschichte locker. "Ich könnte mich irren" oder "Ich bin nicht sicher, ob ich das volle Bild habe."</p>
+</div>
+</div>
+<div class="framework-step">
+<div class="framework-letter">E</div>
+<div class="framework-content">
+<h4>Ermutige zum Hinterfragen</h4>
+<p>Mache es sicher, anderer Meinung zu sein. "Was übersehe ich?" oder "Sag mir, wenn Du das anders siehst."</p>
+</div>
+</div>
+</div>
+<div class="intro-box philosophy">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Warum Fakten zuerst</h3>
+<p>Dein Gehirn vermischt Fakten und Geschichten sofort. Du siehst jemanden mit den Augen rollen (Fakt) und Du "weißt", dass er abweisend ist (Geschichte). Aber Geschichten sind Interpretationen—und oft falsch.</p>
+<p><strong>Mit Fakten zu beginnen hält Dich ehrlich und sie hören zu.</strong> In dem Moment, in dem Du mit Anschuldigungen beginnst, hört die andere Person auf zuzuhören und beginnt sich zu verteidigen.</p>
+</div>
+<!-- SCENARIOS SECTION -->
+<div class="scenarios-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Praxis-Szenarien</h2>
+<p class="section-intro">
+Wende an, was Du gelernt hast, auf realistische Leadership-Situationen. Wähle die Antwort, die die Prinzipien dieses Streifens am besten demonstriert.
+</p>
+<!-- Scenario 1: Trust Building -->
+<div class="scenario-card" id="scenario1">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 1 - Vertrauensaufbau</div>
+<p class="scenario-question">Du bist neu in einem Team, das verschlossen und skeptisch Dir gegenüber wirkt. Du...</p>
+<div class="scenario-options" id="scenario1-options">
+<button class="scenario-option" data-scenario="1" data-option="0" data-value="2" aria-label="Versuchst, sie sofort mit Deiner Expertise und ve">
+Versuchst, sie sofort mit Deiner Expertise und vergangenen Erfolgen zu beeindrucken
+</button>
+<button class="scenario-option" data-scenario="1" data-option="1" data-value="3" aria-label="Bleibst ruhig und beobachtest, bis Du die Team-Dy">
+Bleibst ruhig und beobachtest, bis Du die Team-Dynamik verstehst
+</button>
+<button class="scenario-option" data-scenario="1" data-option="2" data-value="5" aria-label="Teilst etwas Echtes über Dich selbst und fragst n">
+Teilst etwas Echtes über Dich selbst und fragst nach ihren Erfahrungen im Team
+</button>
+<button class="scenario-option" data-scenario="1" data-option="3" data-value="1" aria-label="Gehst davon aus, dass sie das Problem sind, und k">
+Gehst davon aus, dass sie das Problem sind, und konzentrierst Dich auf Deine Arbeit, nicht auf Beziehungen
+</button>
+</div>
+<div class="scenario-feedback" id="scenario1-feedback">
+<p class="scenario-feedback-text" id="scenario1-feedback-text"></p>
+<p class="scenario-insight" id="scenario1-insight"></p>
+<span class="scenario-xp" id="scenario1-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Im BJJ vertraust Du Deinem Trainingspartner mit Deinen Gelenken und Deinem Bewusstsein. Vertrauen wird durch konsistentes, verlässliches Handeln aufgebaut - nicht durch Worte.</p>
+</div>
+<!-- Scenario 2: Vulnerability -->
+<div class="scenario-card" id="scenario2">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 2 - Verletzlichkeit</div>
+<p class="scenario-question">In einem Team-Meeting merkst Du, dass Du einen erheblichen Fehler gemacht hast, der den Projektzeitplan beeinflusst hat. Du...</p>
+<div class="scenario-options" id="scenario2-options">
+<button class="scenario-option" data-scenario="2" data-option="0" data-value="1" aria-label="Bleibst still und hoffst, dass niemand es bemerkt">
+Bleibst still und hoffst, dass niemand es bemerkt oder mit Dir in Verbindung bringt
+</button>
+<button class="scenario-option" data-scenario="2" data-option="1" data-value="5" aria-label="Erkennst den Fehler sofort an: 'Ich habe einen Fe">
+Erkennst den Fehler sofort an: 'Ich habe einen Fehler gemacht, der unseren Zeitplan beeinflusst hat. Das ist passiert und so plane ich, es zu beheben.'
+</button>
+<button class="scenario-option" data-scenario="2" data-option="2" data-value="2" aria-label="Erklärst alle externen Faktoren, die zum Fehler b">
+Erklärst alle externen Faktoren, die zum Fehler beigetragen haben
+</button>
+<button class="scenario-option" data-scenario="2" data-option="3" data-value="3" aria-label="Sagst es Deinem Manager privat, aber nicht dem ga">
+Sagst es Deinem Manager privat, aber nicht dem ganzen Team
+</button>
+</div>
+<div class="scenario-feedback" id="scenario2-feedback">
+<p class="scenario-feedback-text" id="scenario2-feedback-text"></p>
+<p class="scenario-insight" id="scenario2-insight"></p>
+<span class="scenario-xp" id="scenario2-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Wusstest Du? Googles Project Aristotle fand heraus, dass psychologische Sicherheit (Vertrauen) der Nr. 1 Prädiktor für Team-Performance ist - mehr als Skills oder Ressourcen.</p>
+</div>
+<!-- Scenario 3: Credibility -->
+<div class="scenario-card" id="scenario3">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 3 - Glaubwürdigkeit</div>
+<p class="scenario-question">Ein Kollege schreibt Dir öffentlich eine Idee zu, die eigentlich eine Team-Leistung war. Du...</p>
+<div class="scenario-options" id="scenario3-options">
+<button class="scenario-option" data-scenario="3" data-option="0" data-value="2" aria-label="Nimmst die Anerkennung schweigend an - Du hast sc">
+Nimmst die Anerkennung schweigend an - Du hast schließlich beigetragen
+</button>
+<button class="scenario-option" data-scenario="3" data-option="1" data-value="5" aria-label="Leitest sofort um: 'Eigentlich war das eine Team-">
+Leitest sofort um: 'Eigentlich war das eine Team-Leistung. Sarahs Recherche und Mikes Analyse waren essenziell.'
+</button>
+<button class="scenario-option" data-scenario="3" data-option="2" data-value="3" aria-label="Dankst ihnen für die Anerkennung, sagst dann priv">
+Dankst ihnen für die Anerkennung, sagst dann privat den Teammitgliedern, dass Du ihre Beiträge geschätzt hast
+</button>
+<button class="scenario-option" data-scenario="3" data-option="3" data-value="2" aria-label="Fühlst Dich peinlich berührt und wechselst schnel">
+Fühlst Dich peinlich berührt und wechselst schnell das Thema
+</button>
+</div>
+<div class="scenario-feedback" id="scenario3-feedback">
+<p class="scenario-feedback-text" id="scenario3-feedback-text"></p>
+<p class="scenario-insight" id="scenario3-insight"></p>
+<span class="scenario-xp" id="scenario3-xp"></span>
+</div>
+</div>
+<!-- Scenarios Summary -->
+<div style="background: #1a202c; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+<h3 style="color: #f6e05e; margin-bottom: 10px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Szenario-Fortschritt</h3>
+<p style="color: #a0aec0;">
+<span id="scenariosCompleted">0</span>/3 Szenarien abgeschlossen |
+<span id="scenarioXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- QUIZ SECTION -->
+<div class="progress-section" style="margin-top: 60px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 3px solid #2563eb;">
+<h2 style="color: #1e40af; margin-bottom: 20px; font-size: 28px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> Streifen Wissenscheck</h2>
+<p style="color: #1e40af; margin-bottom: 30px; font-size: 16px;">
+Beantworte alle Fragen, um diesen Streifen abzuschließen und Deine Bonus-XP zu verdienen!
+</p>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+1. Produktiver Konflikt fokussiert sich auf:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Argumente gewinnen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Themen, nicht Individuen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Höflich sein</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Meinungsverschiedenheiten vermeiden</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+2. Laut Forschung kostet Konfliktvermeidung US-Unternehmen jährlich:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$35 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$100 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="2" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$359 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$500 billion</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+3. Was ist "Konfliktschuld"?
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Schulden aus Streitigkeiten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Angesammelte ungelöste Meinungsverschiedenheiten, die sich aufbauen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Rechtliche Kosten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Zeit, die in Debatten verschwendet wurde</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+4. Hochleistungsteams lösen Konflikte:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="0" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 48 Stunden</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 2 Wochen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb eines Monats</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Nur wenn absolut notwendig</span>
+</label>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<button onclick="submitQuiz(5)" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;" aria-label="100 XP Bonus">
+Quiz abschicken & Streifen abschließen <span class="xp-badge">+100 XP Bonus</span>
+</button>
+<p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+</div>
+</div>
+<script>
+function submitQuiz(stripeNum) {
+const totalQuestions = 4;
+let answered = 0;
+let correct = 0;
+for (let i = 1; i <= totalQuestions; i++) {
+const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+if (selected) {
+answered++;
+if (selected.dataset.correct === "true") {
+correct++;
+}
+}
+}
+if (answered < totalQuestions) {
+alert('Bitte beantworte alle ' + totalQuestions + ' Fragen, bevor Du absendest!');
+return;
+}
+const percentage = Math.round((correct / totalQuestions) * 100);
+const passed = percentage >= 70;
+if (passed) {
+                // Award bonus XP
+let xp = parseInt(localStorage.getItem('whitebeltStripe' + stripeNum + 'ModuleXP') || '0');
+xp += 100;
+localStorage.setItem('whitebeltStripe' + stripeNum + 'ModuleXP', xp);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Quiz bestanden!\n\nDein Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe ' + stripeNum + ' Abgeschlossen!');
+                // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Weiter zu Streifen ' + nextStripe + '?')) {
+window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> White Belt abgeschlossen! Bereit für Blue Belt.');
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+safeSetInnerHTML(document.getElementById('quizFeedback'),
+'<span style="color: #dc2626;">Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Benötigt 70% zum Bestehen. Überprüfe die Lektionen und versuche es erneut!</span>');
+}
+}
+</script>
+<div class="nav-buttons">
+<button class="btn btn-secondary" onclick="prevSection()" aria-label="Previous">← Zurück</button>
+<button class="btn btn-primary" onclick="nextSection()" aria-label="Next">Praxis-Szenarien →</button>
+</div>
+</div>
+<!-- Section 3: Practice Scenarios -->
+<div class="section" id="section-3">
+<div class="insight-card">
+<div class="insight-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg></div>
+<div class="insight-title">Übe vor dem Druck</div>
+<div class="insight-content">
+Du würdest nicht an einem BJJ-Turnier teilnehmen ohne zu trainieren. Du solltest kein entscheidendes Gespräch führen ohne zu skripten. Schreibe Deine Eröffnung mit STATE auf, bevor Du sprichst.
+</div>
+</div>
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-pencil"></use></svg> Skripte Deine Eröffnung</h2>
+<p class="section-subtitle">Nutze STATE, um Dich auf ein echtes Gespräch vorzubereiten, das Du führen musst.</p>
+<div class="scenario-card">
+<h4><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Das Gespräch, das Du vermeidest</h4>
+<p>Denke an ein echtes schwieriges Gespräch, das Du führen musst. Mit wem ist es? Was ist das Problem?</p>
+<textarea id="scenario-context" placeholder="Beschreibe die Situation kurz..."></textarea>
+</div>
+<div class="scenario-card">
+<h4>S - Teile Deine Fakten</h4>
+<p>Was sind die beobachtbaren, unbestreitbaren Fakten? (Keine Urteile, keine Interpretationen)</p>
+<textarea id="state-s" placeholder="Die Fakten, die ich teilen würde: 'In den letzten zwei Wochen habe ich bemerkt...'"></textarea>
+</div>
+<div class="scenario-card">
+<h4>T - Erzähle Deine Geschichte</h4>
+<p>Welche Geschichte erzählst Du Dir über diese Fakten? Erkenne sie als DEINE Interpretation an.</p>
+<textarea id="state-t" placeholder="Die Geschichte, die ich mir erzähle, ist..."></textarea>
+</div>
+<div class="scenario-card">
+<h4>A - Frage nach ihrem Blickwinkel</h4>
+<p>Wie wirst Du ihre Perspektive ehrlich einladen?</p>
+<textarea id="state-a" placeholder="Ich würde gerne verstehen... / Was ist Deine Sicht darauf?"></textarea>
+</div>
+<!-- SCENARIOS SECTION -->
+<div class="scenarios-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Praxis-Szenarien</h2>
+<p class="section-intro">
+Wende an, was Du gelernt hast, auf realistische Leadership-Situationen. Wähle die Antwort, die die Prinzipien dieses Streifens am besten demonstriert.
+</p>
+<!-- Scenario 1: Trust Building -->
+<div class="scenario-card" id="scenario1">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 1 - Vertrauensaufbau</div>
+<p class="scenario-question">Du bist neu in einem Team, das verschlossen und skeptisch Dir gegenüber wirkt. Du...</p>
+<div class="scenario-options" id="scenario1-options">
+<button class="scenario-option" data-scenario="1" data-option="0" data-value="2" aria-label="Versuchst, sie sofort mit Deiner Expertise und ve">
+Versuchst, sie sofort mit Deiner Expertise und vergangenen Erfolgen zu beeindrucken
+</button>
+<button class="scenario-option" data-scenario="1" data-option="1" data-value="3" aria-label="Bleibst ruhig und beobachtest, bis Du die Team-Dy">
+Bleibst ruhig und beobachtest, bis Du die Team-Dynamik verstehst
+</button>
+<button class="scenario-option" data-scenario="1" data-option="2" data-value="5" aria-label="Teilst etwas Echtes über Dich selbst und fragst n">
+Teilst etwas Echtes über Dich selbst und fragst nach ihren Erfahrungen im Team
+</button>
+<button class="scenario-option" data-scenario="1" data-option="3" data-value="1" aria-label="Gehst davon aus, dass sie das Problem sind, und k">
+Gehst davon aus, dass sie das Problem sind, und konzentrierst Dich auf Deine Arbeit, nicht auf Beziehungen
+</button>
+</div>
+<div class="scenario-feedback" id="scenario1-feedback">
+<p class="scenario-feedback-text" id="scenario1-feedback-text"></p>
+<p class="scenario-insight" id="scenario1-insight"></p>
+<span class="scenario-xp" id="scenario1-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Im BJJ vertraust Du Deinem Trainingspartner mit Deinen Gelenken und Deinem Bewusstsein. Vertrauen wird durch konsistentes, verlässliches Handeln aufgebaut - nicht durch Worte.</p>
+</div>
+<!-- Scenario 2: Vulnerability -->
+<div class="scenario-card" id="scenario2">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 2 - Verletzlichkeit</div>
+<p class="scenario-question">In einem Team-Meeting merkst Du, dass Du einen erheblichen Fehler gemacht hast, der den Projektzeitplan beeinflusst hat. Du...</p>
+<div class="scenario-options" id="scenario2-options">
+<button class="scenario-option" data-scenario="2" data-option="0" data-value="1" aria-label="Bleibst still und hoffst, dass niemand es bemerkt">
+Bleibst still und hoffst, dass niemand es bemerkt oder mit Dir in Verbindung bringt
+</button>
+<button class="scenario-option" data-scenario="2" data-option="1" data-value="5" aria-label="Erkennst den Fehler sofort an: 'Ich habe einen Fe">
+Erkennst den Fehler sofort an: 'Ich habe einen Fehler gemacht, der unseren Zeitplan beeinflusst hat. Das ist passiert und so plane ich, es zu beheben.'
+</button>
+<button class="scenario-option" data-scenario="2" data-option="2" data-value="2" aria-label="Erklärst alle externen Faktoren, die zum Fehler b">
+Erklärst alle externen Faktoren, die zum Fehler beigetragen haben
+</button>
+<button class="scenario-option" data-scenario="2" data-option="3" data-value="3" aria-label="Sagst es Deinem Manager privat, aber nicht dem ga">
+Sagst es Deinem Manager privat, aber nicht dem ganzen Team
+</button>
+</div>
+<div class="scenario-feedback" id="scenario2-feedback">
+<p class="scenario-feedback-text" id="scenario2-feedback-text"></p>
+<p class="scenario-insight" id="scenario2-insight"></p>
+<span class="scenario-xp" id="scenario2-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Wusstest Du? Googles Project Aristotle fand heraus, dass psychologische Sicherheit (Vertrauen) der Nr. 1 Prädiktor für Team-Performance ist - mehr als Skills oder Ressourcen.</p>
+</div>
+<!-- Scenario 3: Credibility -->
+<div class="scenario-card" id="scenario3">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 3 - Glaubwürdigkeit</div>
+<p class="scenario-question">Ein Kollege schreibt Dir öffentlich eine Idee zu, die eigentlich eine Team-Leistung war. Du...</p>
+<div class="scenario-options" id="scenario3-options">
+<button class="scenario-option" data-scenario="3" data-option="0" data-value="2" aria-label="Nimmst die Anerkennung schweigend an - Du hast sc">
+Nimmst die Anerkennung schweigend an - Du hast schließlich beigetragen
+</button>
+<button class="scenario-option" data-scenario="3" data-option="1" data-value="5" aria-label="Leitest sofort um: 'Eigentlich war das eine Team-">
+Leitest sofort um: 'Eigentlich war das eine Team-Leistung. Sarahs Recherche und Mikes Analyse waren essenziell.'
+</button>
+<button class="scenario-option" data-scenario="3" data-option="2" data-value="3" aria-label="Dankst ihnen für die Anerkennung, sagst dann priv">
+Dankst ihnen für die Anerkennung, sagst dann privat den Teammitgliedern, dass Du ihre Beiträge geschätzt hast
+</button>
+<button class="scenario-option" data-scenario="3" data-option="3" data-value="2" aria-label="Fühlst Dich peinlich berührt und wechselst schnel">
+Fühlst Dich peinlich berührt und wechselst schnell das Thema
+</button>
+</div>
+<div class="scenario-feedback" id="scenario3-feedback">
+<p class="scenario-feedback-text" id="scenario3-feedback-text"></p>
+<p class="scenario-insight" id="scenario3-insight"></p>
+<span class="scenario-xp" id="scenario3-xp"></span>
+</div>
+</div>
+<!-- Scenarios Summary -->
+<div style="background: #1a202c; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+<h3 style="color: #f6e05e; margin-bottom: 10px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Szenario-Fortschritt</h3>
+<p style="color: #a0aec0;">
+<span id="scenariosCompleted">0</span>/3 Szenarien abgeschlossen |
+<span id="scenarioXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- QUIZ SECTION -->
+<div class="progress-section" style="margin-top: 60px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 3px solid #2563eb;">
+<h2 style="color: #1e40af; margin-bottom: 20px; font-size: 28px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> Streifen Wissenscheck</h2>
+<p style="color: #1e40af; margin-bottom: 30px; font-size: 16px;">
+Beantworte alle Fragen, um diesen Streifen abzuschließen und Deine Bonus-XP zu verdienen!
+</p>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+1. Produktiver Konflikt fokussiert sich auf:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Argumente gewinnen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Themen, nicht Individuen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Höflich sein</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Meinungsverschiedenheiten vermeiden</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+2. Laut Forschung kostet Konfliktvermeidung US-Unternehmen jährlich:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$35 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$100 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="2" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$359 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$500 billion</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+3. Was ist "Konfliktschuld"?
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Schulden aus Streitigkeiten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Angesammelte ungelöste Meinungsverschiedenheiten, die sich aufbauen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Rechtliche Kosten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Zeit, die in Debatten verschwendet wurde</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+4. Hochleistungsteams lösen Konflikte:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="0" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 48 Stunden</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 2 Wochen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb eines Monats</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Nur wenn absolut notwendig</span>
+</label>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<button onclick="submitQuiz(5)" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;" aria-label="100 XP Bonus">
+Quiz abschicken & Streifen abschließen <span class="xp-badge">+100 XP Bonus</span>
+</button>
+<p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+</div>
+</div>
+<script>
+function submitQuiz(stripeNum) {
+const totalQuestions = 4;
+let answered = 0;
+let correct = 0;
+for (let i = 1; i <= totalQuestions; i++) {
+const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+if (selected) {
+answered++;
+if (selected.dataset.correct === "true") {
+correct++;
+}
+}
+}
+if (answered < totalQuestions) {
+alert('Bitte beantworte alle ' + totalQuestions + ' Fragen, bevor Du absendest!');
+return;
+}
+const percentage = Math.round((correct / totalQuestions) * 100);
+const passed = percentage >= 70;
+if (passed) {
+                // Award bonus XP
+let xp = parseInt(localStorage.getItem('whitebeltStripe' + stripeNum + 'ModuleXP') || '0');
+xp += 100;
+localStorage.setItem('whitebeltStripe' + stripeNum + 'ModuleXP', xp);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Quiz bestanden!\n\nDein Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe ' + stripeNum + ' Abgeschlossen!');
+                // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Weiter zu Streifen ' + nextStripe + '?')) {
+window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> White Belt abgeschlossen! Bereit für Blue Belt.');
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+safeSetInnerHTML(document.getElementById('quizFeedback'),
+'<span style="color: #dc2626;">Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Benötigt 70% zum Bestehen. Überprüfe die Lektionen und versuche es erneut!</span>');
+}
+}
+</script>
+<div class="nav-buttons">
+<button class="btn btn-secondary" onclick="prevSection()" aria-label="Previous">← Zurück</button>
+<button class="btn btn-primary" onclick="nextSection()" aria-label="Next">Continue →</button>
+</div>
+</div>
+<!-- Section 4: Managing Your State -->
+<div class="section" id="section-4">
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-user"></use></svg> Managing Yourself During the Conversation</h2>
+<p class="section-subtitle">The framework only works Wenn du can stay regulated.</p>
+<div class="insight-card">
+<div class="insight-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-academic-cap"></use></svg></div>
+<div class="insight-title">Your Amygdala is Not Your Friend</div>
+<div class="insight-content">
+When stakes feel high, your amygdala floods your system with cortisol and adrenaline. Your IQ literally drops. You lose access to nuance, creativity, and empathy. <strong>You must regulate your nervous system to have a productive conversation.</strong>
+</div>
+</div>
+<div class="intro-box">
+<h3>Before the Conversation</h3>
+<ul style="margin: 1rem 0 0 1.5rem; color: var(--text-dark);">
+<li style="margin-bottom: 0.5rem;"><strong>Script your opening</strong> — Know your first 2-3 sentences</li>
+<li style="margin-bottom: 0.5rem;"><strong>Clarify your intent</strong> — Why do you actually care about this?</li>
+<li style="margin-bottom: 0.5rem;"><strong>Assume good intent</strong> — They're probably not a villain</li>
+<li><strong>Breathe</strong> — 4-4-4 box breathing before you start</li>
+</ul>
+</div>
+<div class="intro-box">
+<h3>During the Conversation</h3>
+<ul style="margin: 1rem 0 0 1.5rem; color: var(--text-dark);">
+<li style="margin-bottom: 0.5rem;"><strong>Watch for silence or violence</strong> — Are they shutting down or attacking?</li>
+<li style="margin-bottom: 0.5rem;"><strong>Make it safe</strong> — "I'm not trying to blame you, I want to solve this together"</li>
+<li style="margin-bottom: 0.5rem;"><strong>Stay curious</strong> — Your job is to understand, not to win</li>
+<li><strong>Pause if needed</strong> — "Can we take 5 minutes and come back to this?"</li>
+</ul>
+</div>
+<div class="intro-box philosophy">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> The Jiu-Jitsu Mindset</h3>
+<p>In rolling, you learn to stay calm when someone is trying to choke you. You train your nervous system to think clearly under pressure.</p>
+<p><strong>Difficult conversations are the same.</strong> The discomfort won't kill you. Breathe. Stay present. Work the problem.</p>
+<p><em>"Get comfortable being uncomfortable." — Jocko Willink</em></p>
+</div>
+<!-- SCENARIOS SECTION -->
+<div class="scenarios-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Praxis-Szenarien</h2>
+<p class="section-intro">
+Wende an, was Du gelernt hast, auf realistische Leadership-Situationen. Wähle die Antwort, die die Prinzipien dieses Streifens am besten demonstriert.
+</p>
+<!-- Scenario 1: Trust Building -->
+<div class="scenario-card" id="scenario1">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 1 - Vertrauensaufbau</div>
+<p class="scenario-question">Du bist neu in einem Team, das verschlossen und skeptisch Dir gegenüber wirkt. Du...</p>
+<div class="scenario-options" id="scenario1-options">
+<button class="scenario-option" data-scenario="1" data-option="0" data-value="2" aria-label="Versuchst, sie sofort mit Deiner Expertise und ve">
+Versuchst, sie sofort mit Deiner Expertise und vergangenen Erfolgen zu beeindrucken
+</button>
+<button class="scenario-option" data-scenario="1" data-option="1" data-value="3" aria-label="Bleibst ruhig und beobachtest, bis Du die Team-Dy">
+Bleibst ruhig und beobachtest, bis Du die Team-Dynamik verstehst
+</button>
+<button class="scenario-option" data-scenario="1" data-option="2" data-value="5" aria-label="Teilst etwas Echtes über Dich selbst und fragst n">
+Teilst etwas Echtes über Dich selbst und fragst nach ihren Erfahrungen im Team
+</button>
+<button class="scenario-option" data-scenario="1" data-option="3" data-value="1" aria-label="Gehst davon aus, dass sie das Problem sind, und k">
+Gehst davon aus, dass sie das Problem sind, und konzentrierst Dich auf Deine Arbeit, nicht auf Beziehungen
+</button>
+</div>
+<div class="scenario-feedback" id="scenario1-feedback">
+<p class="scenario-feedback-text" id="scenario1-feedback-text"></p>
+<p class="scenario-insight" id="scenario1-insight"></p>
+<span class="scenario-xp" id="scenario1-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Im BJJ vertraust Du Deinem Trainingspartner mit Deinen Gelenken und Deinem Bewusstsein. Vertrauen wird durch konsistentes, verlässliches Handeln aufgebaut - nicht durch Worte.</p>
+</div>
+<!-- Scenario 2: Vulnerability -->
+<div class="scenario-card" id="scenario2">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 2 - Verletzlichkeit</div>
+<p class="scenario-question">In einem Team-Meeting merkst Du, dass Du einen erheblichen Fehler gemacht hast, der den Projektzeitplan beeinflusst hat. Du...</p>
+<div class="scenario-options" id="scenario2-options">
+<button class="scenario-option" data-scenario="2" data-option="0" data-value="1" aria-label="Bleibst still und hoffst, dass niemand es bemerkt">
+Bleibst still und hoffst, dass niemand es bemerkt oder mit Dir in Verbindung bringt
+</button>
+<button class="scenario-option" data-scenario="2" data-option="1" data-value="5" aria-label="Erkennst den Fehler sofort an: 'Ich habe einen Fe">
+Erkennst den Fehler sofort an: 'Ich habe einen Fehler gemacht, der unseren Zeitplan beeinflusst hat. Das ist passiert und so plane ich, es zu beheben.'
+</button>
+<button class="scenario-option" data-scenario="2" data-option="2" data-value="2" aria-label="Erklärst alle externen Faktoren, die zum Fehler b">
+Erklärst alle externen Faktoren, die zum Fehler beigetragen haben
+</button>
+<button class="scenario-option" data-scenario="2" data-option="3" data-value="3" aria-label="Sagst es Deinem Manager privat, aber nicht dem ga">
+Sagst es Deinem Manager privat, aber nicht dem ganzen Team
+</button>
+</div>
+<div class="scenario-feedback" id="scenario2-feedback">
+<p class="scenario-feedback-text" id="scenario2-feedback-text"></p>
+<p class="scenario-insight" id="scenario2-insight"></p>
+<span class="scenario-xp" id="scenario2-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Wusstest Du? Googles Project Aristotle fand heraus, dass psychologische Sicherheit (Vertrauen) der Nr. 1 Prädiktor für Team-Performance ist - mehr als Skills oder Ressourcen.</p>
+</div>
+<!-- Scenario 3: Credibility -->
+<div class="scenario-card" id="scenario3">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 3 - Glaubwürdigkeit</div>
+<p class="scenario-question">Ein Kollege schreibt Dir öffentlich eine Idee zu, die eigentlich eine Team-Leistung war. Du...</p>
+<div class="scenario-options" id="scenario3-options">
+<button class="scenario-option" data-scenario="3" data-option="0" data-value="2" aria-label="Nimmst die Anerkennung schweigend an - Du hast sc">
+Nimmst die Anerkennung schweigend an - Du hast schließlich beigetragen
+</button>
+<button class="scenario-option" data-scenario="3" data-option="1" data-value="5" aria-label="Leitest sofort um: 'Eigentlich war das eine Team-">
+Leitest sofort um: 'Eigentlich war das eine Team-Leistung. Sarahs Recherche und Mikes Analyse waren essenziell.'
+</button>
+<button class="scenario-option" data-scenario="3" data-option="2" data-value="3" aria-label="Dankst ihnen für die Anerkennung, sagst dann priv">
+Dankst ihnen für die Anerkennung, sagst dann privat den Teammitgliedern, dass Du ihre Beiträge geschätzt hast
+</button>
+<button class="scenario-option" data-scenario="3" data-option="3" data-value="2" aria-label="Fühlst Dich peinlich berührt und wechselst schnel">
+Fühlst Dich peinlich berührt und wechselst schnell das Thema
+</button>
+</div>
+<div class="scenario-feedback" id="scenario3-feedback">
+<p class="scenario-feedback-text" id="scenario3-feedback-text"></p>
+<p class="scenario-insight" id="scenario3-insight"></p>
+<span class="scenario-xp" id="scenario3-xp"></span>
+</div>
+</div>
+<!-- Scenarios Summary -->
+<div style="background: #1a202c; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+<h3 style="color: #f6e05e; margin-bottom: 10px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Szenario-Fortschritt</h3>
+<p style="color: #a0aec0;">
+<span id="scenariosCompleted">0</span>/3 Szenarien abgeschlossen |
+<span id="scenarioXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- QUIZ SECTION -->
+<div class="progress-section" style="margin-top: 60px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 3px solid #2563eb;">
+<h2 style="color: #1e40af; margin-bottom: 20px; font-size: 28px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> Streifen Wissenscheck</h2>
+<p style="color: #1e40af; margin-bottom: 30px; font-size: 16px;">
+Beantworte alle Fragen, um diesen Streifen abzuschließen und Deine Bonus-XP zu verdienen!
+</p>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+1. Produktiver Konflikt fokussiert sich auf:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Argumente gewinnen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Themen, nicht Individuen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Höflich sein</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Meinungsverschiedenheiten vermeiden</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+2. Laut Forschung kostet Konfliktvermeidung US-Unternehmen jährlich:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$35 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$100 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="2" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$359 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$500 billion</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+3. Was ist "Konfliktschuld"?
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Schulden aus Streitigkeiten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Angesammelte ungelöste Meinungsverschiedenheiten, die sich aufbauen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Rechtliche Kosten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Zeit, die in Debatten verschwendet wurde</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+4. Hochleistungsteams lösen Konflikte:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="0" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 48 Stunden</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 2 Wochen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb eines Monats</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Nur wenn absolut notwendig</span>
+</label>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<button onclick="submitQuiz(5)" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;" aria-label="100 XP Bonus">
+Quiz abschicken & Streifen abschließen <span class="xp-badge">+100 XP Bonus</span>
+</button>
+<p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+</div>
+</div>
+<script>
+function submitQuiz(stripeNum) {
+const totalQuestions = 4;
+let answered = 0;
+let correct = 0;
+for (let i = 1; i <= totalQuestions; i++) {
+const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+if (selected) {
+answered++;
+if (selected.dataset.correct === "true") {
+correct++;
+}
+}
+}
+if (answered < totalQuestions) {
+alert('Bitte beantworte alle ' + totalQuestions + ' Fragen, bevor Du absendest!');
+return;
+}
+const percentage = Math.round((correct / totalQuestions) * 100);
+const passed = percentage >= 70;
+if (passed) {
+                // Award bonus XP
+let xp = parseInt(localStorage.getItem('whitebeltStripe' + stripeNum + 'ModuleXP') || '0');
+xp += 100;
+localStorage.setItem('whitebeltStripe' + stripeNum + 'ModuleXP', xp);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Quiz bestanden!\n\nDein Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe ' + stripeNum + ' Abgeschlossen!');
+                // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Weiter zu Streifen ' + nextStripe + '?')) {
+window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> White Belt abgeschlossen! Bereit für Blue Belt.');
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+safeSetInnerHTML(document.getElementById('quizFeedback'),
+'<span style="color: #dc2626;">Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Benötigt 70% zum Bestehen. Überprüfe die Lektionen und versuche es erneut!</span>');
+}
+}
+</script>
+<div class="nav-buttons">
+<button class="btn btn-secondary" onclick="prevSection()" aria-label="Previous">← Zurück</button>
+<button class="btn btn-primary" onclick="nextSection()" aria-label="Next">Final Reflection →</button>
+</div>
+</div>
+<!-- Section 5: Reflection -->
+<div class="section" id="section-5">
+<h2 class="section-title"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-arrow-path"></use></svg> Commit to the Conversation</h2>
+<p class="section-subtitle">Knowledge without action is just entertainment.</p>
+<div class="reflection-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> The Conversation You Will Have</h3>
+<p>Based on what you scripted earlier, when will you have this conversation? Be specific.</p>
+<textarea class="reflection-textarea" id="reflection-when" placeholder="I will have this conversation with [person] on [date/time]..."></textarea>
+</div>
+<div class="reflection-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> What's the Cost of Avoidance?</h3>
+<p>Wenn du don't have this conversation, what will it cost you? The relationship? Your integrity? A project? Be honest.</p>
+<textarea class="reflection-textarea" id="reflection-cost" placeholder="If I keep avoiding this, the cost will be..."></textarea>
+</div>
+<div class="quote-block">
+<p class="quote">"The conversation you're avoiding is the conversation you need to have."</p>
+<p class="author">— Crucial Conversations</p>
+</div>
+<!-- SCENARIOS SECTION -->
+<div class="scenarios-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Praxis-Szenarien</h2>
+<p class="section-intro">
+Wende an, was Du gelernt hast, auf realistische Leadership-Situationen. Wähle die Antwort, die die Prinzipien dieses Streifens am besten demonstriert.
+</p>
+<!-- Scenario 1: Trust Building -->
+<div class="scenario-card" id="scenario1">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 1 - Vertrauensaufbau</div>
+<p class="scenario-question">Du bist neu in einem Team, das verschlossen und skeptisch Dir gegenüber wirkt. Du...</p>
+<div class="scenario-options" id="scenario1-options">
+<button class="scenario-option" data-scenario="1" data-option="0" data-value="2" aria-label="Versuchst, sie sofort mit Deiner Expertise und ve">
+Versuchst, sie sofort mit Deiner Expertise und vergangenen Erfolgen zu beeindrucken
+</button>
+<button class="scenario-option" data-scenario="1" data-option="1" data-value="3" aria-label="Bleibst ruhig und beobachtest, bis Du die Team-Dy">
+Bleibst ruhig und beobachtest, bis Du die Team-Dynamik verstehst
+</button>
+<button class="scenario-option" data-scenario="1" data-option="2" data-value="5" aria-label="Teilst etwas Echtes über Dich selbst und fragst n">
+Teilst etwas Echtes über Dich selbst und fragst nach ihren Erfahrungen im Team
+</button>
+<button class="scenario-option" data-scenario="1" data-option="3" data-value="1" aria-label="Gehst davon aus, dass sie das Problem sind, und k">
+Gehst davon aus, dass sie das Problem sind, und konzentrierst Dich auf Deine Arbeit, nicht auf Beziehungen
+</button>
+</div>
+<div class="scenario-feedback" id="scenario1-feedback">
+<p class="scenario-feedback-text" id="scenario1-feedback-text"></p>
+<p class="scenario-insight" id="scenario1-insight"></p>
+<span class="scenario-xp" id="scenario1-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Im BJJ vertraust Du Deinem Trainingspartner mit Deinen Gelenken und Deinem Bewusstsein. Vertrauen wird durch konsistentes, verlässliches Handeln aufgebaut - nicht durch Worte.</p>
+</div>
+<!-- Scenario 2: Vulnerability -->
+<div class="scenario-card" id="scenario2">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 2 - Verletzlichkeit</div>
+<p class="scenario-question">In einem Team-Meeting merkst Du, dass Du einen erheblichen Fehler gemacht hast, der den Projektzeitplan beeinflusst hat. Du...</p>
+<div class="scenario-options" id="scenario2-options">
+<button class="scenario-option" data-scenario="2" data-option="0" data-value="1" aria-label="Bleibst still und hoffst, dass niemand es bemerkt">
+Bleibst still und hoffst, dass niemand es bemerkt oder mit Dir in Verbindung bringt
+</button>
+<button class="scenario-option" data-scenario="2" data-option="1" data-value="5" aria-label="Erkennst den Fehler sofort an: 'Ich habe einen Fe">
+Erkennst den Fehler sofort an: 'Ich habe einen Fehler gemacht, der unseren Zeitplan beeinflusst hat. Das ist passiert und so plane ich, es zu beheben.'
+</button>
+<button class="scenario-option" data-scenario="2" data-option="2" data-value="2" aria-label="Erklärst alle externen Faktoren, die zum Fehler b">
+Erklärst alle externen Faktoren, die zum Fehler beigetragen haben
+</button>
+<button class="scenario-option" data-scenario="2" data-option="3" data-value="3" aria-label="Sagst es Deinem Manager privat, aber nicht dem ga">
+Sagst es Deinem Manager privat, aber nicht dem ganzen Team
+</button>
+</div>
+<div class="scenario-feedback" id="scenario2-feedback">
+<p class="scenario-feedback-text" id="scenario2-feedback-text"></p>
+<p class="scenario-insight" id="scenario2-insight"></p>
+<span class="scenario-xp" id="scenario2-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Wusstest Du? Googles Project Aristotle fand heraus, dass psychologische Sicherheit (Vertrauen) der Nr. 1 Prädiktor für Team-Performance ist - mehr als Skills oder Ressourcen.</p>
+</div>
+<!-- Scenario 3: Credibility -->
+<div class="scenario-card" id="scenario3">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 3 - Glaubwürdigkeit</div>
+<p class="scenario-question">Ein Kollege schreibt Dir öffentlich eine Idee zu, die eigentlich eine Team-Leistung war. Du...</p>
+<div class="scenario-options" id="scenario3-options">
+<button class="scenario-option" data-scenario="3" data-option="0" data-value="2" aria-label="Nimmst die Anerkennung schweigend an - Du hast sc">
+Nimmst die Anerkennung schweigend an - Du hast schließlich beigetragen
+</button>
+<button class="scenario-option" data-scenario="3" data-option="1" data-value="5" aria-label="Leitest sofort um: 'Eigentlich war das eine Team-">
+Leitest sofort um: 'Eigentlich war das eine Team-Leistung. Sarahs Recherche und Mikes Analyse waren essenziell.'
+</button>
+<button class="scenario-option" data-scenario="3" data-option="2" data-value="3" aria-label="Dankst ihnen für die Anerkennung, sagst dann priv">
+Dankst ihnen für die Anerkennung, sagst dann privat den Teammitgliedern, dass Du ihre Beiträge geschätzt hast
+</button>
+<button class="scenario-option" data-scenario="3" data-option="3" data-value="2" aria-label="Fühlst Dich peinlich berührt und wechselst schnel">
+Fühlst Dich peinlich berührt und wechselst schnell das Thema
+</button>
+</div>
+<div class="scenario-feedback" id="scenario3-feedback">
+<p class="scenario-feedback-text" id="scenario3-feedback-text"></p>
+<p class="scenario-insight" id="scenario3-insight"></p>
+<span class="scenario-xp" id="scenario3-xp"></span>
+</div>
+</div>
+<!-- Scenarios Summary -->
+<div style="background: #1a202c; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+<h3 style="color: #f6e05e; margin-bottom: 10px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Szenario-Fortschritt</h3>
+<p style="color: #a0aec0;">
+<span id="scenariosCompleted">0</span>/3 Szenarien abgeschlossen |
+<span id="scenarioXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- QUIZ SECTION -->
+<div class="progress-section" style="margin-top: 60px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 3px solid #2563eb;">
+<h2 style="color: #1e40af; margin-bottom: 20px; font-size: 28px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> Streifen Wissenscheck</h2>
+<p style="color: #1e40af; margin-bottom: 30px; font-size: 16px;">
+Beantworte alle Fragen, um diesen Streifen abzuschließen und Deine Bonus-XP zu verdienen!
+</p>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+1. Produktiver Konflikt fokussiert sich auf:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Argumente gewinnen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Themen, nicht Individuen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Höflich sein</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Meinungsverschiedenheiten vermeiden</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+2. Laut Forschung kostet Konfliktvermeidung US-Unternehmen jährlich:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$35 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$100 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="2" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$359 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$500 billion</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+3. Was ist "Konfliktschuld"?
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Schulden aus Streitigkeiten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Angesammelte ungelöste Meinungsverschiedenheiten, die sich aufbauen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Rechtliche Kosten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Zeit, die in Debatten verschwendet wurde</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+4. Hochleistungsteams lösen Konflikte:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="0" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 48 Stunden</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 2 Wochen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb eines Monats</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Nur wenn absolut notwendig</span>
+</label>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<button onclick="submitQuiz(5)" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;" aria-label="100 XP Bonus">
+Quiz abschicken & Streifen abschließen <span class="xp-badge">+100 XP Bonus</span>
+</button>
+<p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+</div>
+</div>
+<script>
+function submitQuiz(stripeNum) {
+const totalQuestions = 4;
+let answered = 0;
+let correct = 0;
+for (let i = 1; i <= totalQuestions; i++) {
+const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+if (selected) {
+answered++;
+if (selected.dataset.correct === "true") {
+correct++;
+}
+}
+}
+if (answered < totalQuestions) {
+alert('Bitte beantworte alle ' + totalQuestions + ' Fragen, bevor Du absendest!');
+return;
+}
+const percentage = Math.round((correct / totalQuestions) * 100);
+const passed = percentage >= 70;
+if (passed) {
+                // Award bonus XP
+let xp = parseInt(localStorage.getItem('whitebeltStripe' + stripeNum + 'ModuleXP') || '0');
+xp += 100;
+localStorage.setItem('whitebeltStripe' + stripeNum + 'ModuleXP', xp);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Quiz bestanden!\n\nDein Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe ' + stripeNum + ' Abgeschlossen!');
+                // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Weiter zu Streifen ' + nextStripe + '?')) {
+window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> White Belt abgeschlossen! Bereit für Blue Belt.');
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+safeSetInnerHTML(document.getElementById('quizFeedback'),
+'<span style="color: #dc2626;">Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Benötigt 70% zum Bestehen. Überprüfe die Lektionen und versuche es erneut!</span>');
+}
+}
+</script>
+<div class="nav-buttons">
+<button class="btn btn-secondary" onclick="prevSection()" aria-label="Previous">← Zurück</button>
+<button class="btn btn-primary" onclick="showResults()" aria-label="Primary action">Complete Stripe 1 →</button>
+</div>
+</div>
+<!-- Section 6: Results -->
+<div class="section" id="section-6">
+<div class="stripe-earned">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> Stripe 1 Earned!</h2>
+<div class="stripe-visual"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-heart"></use></svg> ▬</div>
+<p>You've completed Schwierige Gespräche and earned your first Blue Belt stripe.</p>
+</div>
+<div class="intro-box">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-clipboard-document-list"></use></svg> What You Learned</h3>
+<ul style="margin: 1rem 0 0 1.5rem; color: var(--text-dark);">
+<li style="margin-bottom: 0.5rem;"><strong>Silence is toxic</strong> — Avoided conversations have real costs</li>
+<li style="margin-bottom: 0.5rem;"><strong>Das STATE Framework</strong> — Share facts, Tell story, Ask, Talk tentatively, Encourage testing</li>
+<li style="margin-bottom: 0.5rem;"><strong>Script before you speak</strong> — Preparation prevents panic</li>
+<li><strong>Stay regulated</strong> — Your nervous system determines your effectiveness</li>
+</ul>
+</div>
+<div class="intro-box philosophy">
+<h3><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> The Real Test</h3>
+<p>This stripe means nothing Wenn du don't actually have the conversation you committed to.</p>
+<p>The belt doesn't lie. <strong>Did you do the work, or just read about it?</strong></p>
+<p>Go have the conversation. Then move to Stripe 2.</p>
+</div>
+<div class="quote-block">
+<p class="quote">"Courage is not the absence of fear. It's feeling the fear and doing it anyway."</p>
+<p class="author">— Susan Jeffers</p>
+</div>
+<!-- SCENARIOS SECTION -->
+<div class="scenarios-section">
+<h2><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Praxis-Szenarien</h2>
+<p class="section-intro">
+Wende an, was Du gelernt hast, auf realistische Leadership-Situationen. Wähle die Antwort, die die Prinzipien dieses Streifens am besten demonstriert.
+</p>
+<!-- Scenario 1: Trust Building -->
+<div class="scenario-card" id="scenario1">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 1 - Vertrauensaufbau</div>
+<p class="scenario-question">Du bist neu in einem Team, das verschlossen und skeptisch Dir gegenüber wirkt. Du...</p>
+<div class="scenario-options" id="scenario1-options">
+<button class="scenario-option" data-scenario="1" data-option="0" data-value="2" aria-label="Versuchst, sie sofort mit Deiner Expertise und ve">
+Versuchst, sie sofort mit Deiner Expertise und vergangenen Erfolgen zu beeindrucken
+</button>
+<button class="scenario-option" data-scenario="1" data-option="1" data-value="3" aria-label="Bleibst ruhig und beobachtest, bis Du die Team-Dy">
+Bleibst ruhig und beobachtest, bis Du die Team-Dynamik verstehst
+</button>
+<button class="scenario-option" data-scenario="1" data-option="2" data-value="5" aria-label="Teilst etwas Echtes über Dich selbst und fragst n">
+Teilst etwas Echtes über Dich selbst und fragst nach ihren Erfahrungen im Team
+</button>
+<button class="scenario-option" data-scenario="1" data-option="3" data-value="1" aria-label="Gehst davon aus, dass sie das Problem sind, und k">
+Gehst davon aus, dass sie das Problem sind, und konzentrierst Dich auf Deine Arbeit, nicht auf Beziehungen
+</button>
+</div>
+<div class="scenario-feedback" id="scenario1-feedback">
+<p class="scenario-feedback-text" id="scenario1-feedback-text"></p>
+<p class="scenario-insight" id="scenario1-insight"></p>
+<span class="scenario-xp" id="scenario1-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-academic-cap"></use></svg> Im BJJ vertraust Du Deinem Trainingspartner mit Deinen Gelenken und Deinem Bewusstsein. Vertrauen wird durch konsistentes, verlässliches Handeln aufgebaut - nicht durch Worte.</p>
+</div>
+<!-- Scenario 2: Vulnerability -->
+<div class="scenario-card" id="scenario2">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 2 - Verletzlichkeit</div>
+<p class="scenario-question">In einem Team-Meeting merkst Du, dass Du einen erheblichen Fehler gemacht hast, der den Projektzeitplan beeinflusst hat. Du...</p>
+<div class="scenario-options" id="scenario2-options">
+<button class="scenario-option" data-scenario="2" data-option="0" data-value="1" aria-label="Bleibst still und hoffst, dass niemand es bemerkt">
+Bleibst still und hoffst, dass niemand es bemerkt oder mit Dir in Verbindung bringt
+</button>
+<button class="scenario-option" data-scenario="2" data-option="1" data-value="5" aria-label="Erkennst den Fehler sofort an: 'Ich habe einen Fe">
+Erkennst den Fehler sofort an: 'Ich habe einen Fehler gemacht, der unseren Zeitplan beeinflusst hat. Das ist passiert und so plane ich, es zu beheben.'
+</button>
+<button class="scenario-option" data-scenario="2" data-option="2" data-value="2" aria-label="Erklärst alle externen Faktoren, die zum Fehler b">
+Erklärst alle externen Faktoren, die zum Fehler beigetragen haben
+</button>
+<button class="scenario-option" data-scenario="2" data-option="3" data-value="3" aria-label="Sagst es Deinem Manager privat, aber nicht dem ga">
+Sagst es Deinem Manager privat, aber nicht dem ganzen Team
+</button>
+</div>
+<div class="scenario-feedback" id="scenario2-feedback">
+<p class="scenario-feedback-text" id="scenario2-feedback-text"></p>
+<p class="scenario-insight" id="scenario2-insight"></p>
+<span class="scenario-xp" id="scenario2-xp"></span>
+</div>
+</div>
+<!-- Fun Fact -->
+<div class="fun-fact-card">
+<div class="fun-fact-icon"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg></div>
+<p class="fun-fact-text"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-light-bulb"></use></svg> Wusstest Du? Googles Project Aristotle fand heraus, dass psychologische Sicherheit (Vertrauen) der Nr. 1 Prädiktor für Team-Performance ist - mehr als Skills oder Ressourcen.</p>
+</div>
+<!-- Scenario 3: Credibility -->
+<div class="scenario-card" id="scenario3">
+<div class="scenario-badge"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-flag"></use></svg> Szenario 3 - Glaubwürdigkeit</div>
+<p class="scenario-question">Ein Kollege schreibt Dir öffentlich eine Idee zu, die eigentlich eine Team-Leistung war. Du...</p>
+<div class="scenario-options" id="scenario3-options">
+<button class="scenario-option" data-scenario="3" data-option="0" data-value="2" aria-label="Nimmst die Anerkennung schweigend an - Du hast sc">
+Nimmst die Anerkennung schweigend an - Du hast schließlich beigetragen
+</button>
+<button class="scenario-option" data-scenario="3" data-option="1" data-value="5" aria-label="Leitest sofort um: 'Eigentlich war das eine Team-">
+Leitest sofort um: 'Eigentlich war das eine Team-Leistung. Sarahs Recherche und Mikes Analyse waren essenziell.'
+</button>
+<button class="scenario-option" data-scenario="3" data-option="2" data-value="3" aria-label="Dankst ihnen für die Anerkennung, sagst dann priv">
+Dankst ihnen für die Anerkennung, sagst dann privat den Teammitgliedern, dass Du ihre Beiträge geschätzt hast
+</button>
+<button class="scenario-option" data-scenario="3" data-option="3" data-value="2" aria-label="Fühlst Dich peinlich berührt und wechselst schnel">
+Fühlst Dich peinlich berührt und wechselst schnell das Thema
+</button>
+</div>
+<div class="scenario-feedback" id="scenario3-feedback">
+<p class="scenario-feedback-text" id="scenario3-feedback-text"></p>
+<p class="scenario-insight" id="scenario3-insight"></p>
+<span class="scenario-xp" id="scenario3-xp"></span>
+</div>
+</div>
+<!-- Scenarios Summary -->
+<div style="background: #1a202c; border-radius: 12px; padding: 20px; margin-top: 30px; text-align: center;">
+<h3 style="color: #f6e05e; margin-bottom: 10px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-chart-bar"></use></svg> Szenario-Fortschritt</h3>
+<p style="color: #a0aec0;">
+<span id="scenariosCompleted">0</span>/3 Szenarien abgeschlossen |
+<span id="scenarioXPEarned">0</span> XP verdient
+</p>
+</div>
+</div>
+<!-- QUIZ SECTION -->
+<div class="progress-section" style="margin-top: 60px; background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); border: 3px solid #2563eb;">
+<h2 style="color: #1e40af; margin-bottom: 20px; font-size: 28px;"><svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="icons/sprite.svg#icon-document-text"></use></svg> Streifen Wissenscheck</h2>
+<p style="color: #1e40af; margin-bottom: 30px; font-size: 16px;">
+Beantworte alle Fragen, um diesen Streifen abzuschließen und Deine Bonus-XP zu verdienen!
+</p>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+1. Produktiver Konflikt fokussiert sich auf:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Argumente gewinnen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Themen, nicht Individuen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Höflich sein</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Meinungsverschiedenheiten vermeiden</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+2. Laut Forschung kostet Konfliktvermeidung US-Unternehmen jährlich:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$35 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$100 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="2" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$359 billion</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">$500 billion</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+3. Was ist "Konfliktschuld"?
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="0" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Schulden aus Streitigkeiten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="1" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Angesammelte ungelöste Meinungsverschiedenheiten, die sich aufbauen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Rechtliche Kosten</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Zeit, die in Debatten verschwendet wurde</span>
+</label>
+</div>
+</div>
+<div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #cbd5e1;">
+<p style="font-size: 18px; font-weight: 600; color: var(--bg-primary); margin-bottom: 15px;">
+4. Hochleistungsteams lösen Konflikte:
+</p>
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="0" data-correct="true" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 48 Stunden</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="1" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb von 2 Wochen</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Innerhalb eines Monats</span>
+</label>
+<label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid var(--border-light); border-radius: 8px; cursor: pointer; transition: all 0.3s;" class="quiz-option">
+<input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+<span style="color: #475569; font-size: 16px;">Nur wenn absolut notwendig</span>
+</label>
+</div>
+</div>
+<div style="text-align: center; margin-top: 30px;">
+<button onclick="submitQuiz(5)" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;" aria-label="100 XP Bonus">
+Quiz abschicken & Streifen abschließen <span class="xp-badge">+100 XP Bonus</span>
+</button>
+<p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+</div>
+</div>
+<script>
+function submitQuiz(stripeNum) {
+const totalQuestions = 4;
+let answered = 0;
+let correct = 0;
+for (let i = 1; i <= totalQuestions; i++) {
+const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+if (selected) {
+answered++;
+if (selected.dataset.correct === "true") {
+correct++;
+}
+}
+}
+if (answered < totalQuestions) {
+alert('Bitte beantworte alle ' + totalQuestions + ' Fragen, bevor Du absendest!');
+return;
+}
+const percentage = Math.round((correct / totalQuestions) * 100);
+const passed = percentage >= 70;
+if (passed) {
+                // Award bonus XP
+let xp = parseInt(localStorage.getItem('whitebeltStripe' + stripeNum + 'ModuleXP') || '0');
+xp += 100;
+localStorage.setItem('whitebeltStripe' + stripeNum + 'ModuleXP', xp);
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-check"></use></svg> Quiz bestanden!\n\nDein Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe ' + stripeNum + ' Abgeschlossen!');
+                // Navigate to next stripe or back to hub
+const nextStripe = stripeNum + 1;
+if (nextStripe <= 4) {
+if (confirm('Weiter zu Streifen ' + nextStripe + '?')) {
+window.location.href = 'white-belt-stripe' + nextStripe + '-gamified.html';
+} else {
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+alert('<svg class="hero-icon hero-icon-md" aria-hidden="true"><use href="../../../icons/sprite.svg#icon-icon-trophy"></use></svg> White Belt abgeschlossen! Bereit für Blue Belt.');
+window.location.href = 'learning-hub-de.html';
+}
+} else {
+safeSetInnerHTML(document.getElementById('quizFeedback'),
+'<span style="color: #dc2626;">Ergebnis: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Benötigt 70% zum Bestehen. Überprüfe die Lektionen und versuche es erneut!</span>');
+}
+}
+</script>
+<div class="nav-buttons">
+<a href="src/pages/gym/blue-belt-de.html" class="btn btn-secondary">← Zurück zum Blue Belt</a>
+<a href="src/pages/gym/blue-belt-stripe2-gamified-de.html" class="btn btn-success">Starte Streifen 2: Aktives Zuhören →</a>
+</div>
+</div>
+</div>
+</div>
+<script>
+let currentSection = 1;
+const totalSections = 6;
+function nextSection() {
+if (currentSection < totalSections) {
+document.getElementById(`section-${currentSection}`).classList.remove('active');
+currentSection++;
+document.getElementById(`section-${currentSection}`).classList.add('active');
+updateProgress();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+}
+function prevSection() {
+if (currentSection > 1) {
+document.getElementById(`section-${currentSection}`).classList.remove('active');
+currentSection--;
+document.getElementById(`section-${currentSection}`).classList.add('active');
+updateProgress();
+window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+}
+%`;
+document.getElementById('progress-text').textContent = `${Math.round(progress)}%`;
+}
+`, el.value);
+}
+});
+nextSection();
+}
+updateProgress();
+</script>
+<!-- Gamification System -->
+<!-- Performance Optimizer - Load First -->
+<script src="js/performance-optimizer.min.js"></script>
+<script src="js/gamification.js" defer></script>
+<script src="js/stripe-completion-helper.min.js" defer></script>
+<!-- TAP-IN Utilities -->
+<script src="js/shared-utilities.js"></script>
+<script src="js/global-eror-handler.min.js"></script>
+<script src="js/storage-health.min.js"></script>
+<!-- Scenario Handling Script -->
+<script>
+        // Scenario data with feedback and insights
+const scenarioData = {
+"1": {
+"0": {
+"feedback": "\u26a0\ufe0f Angeben geht oft nach hinten los. Menschen vertrauen denen, die Interesse an ihnen zeigen, bevor sie sich selbst beweisen.",
+"insight": "Patrick Lencioni (Five Dysfunctions, 2002): Vertrauen wird durch Verletzlichkeit aufgebaut, nicht durch Kompetenz-Darstellung. Fragen stellen schlägt früh Antworten geben."
+},
+"1": {
+"feedback": "\u26a0\ufe0f Beobachtung hilft, aber passives Schweigen kann distanziert wirken. Balanciere Beobachten mit echtem Engagement.",
+"insight": "Erste Eindrücke bilden sich in 7 Sekunden (Princeton Forschung). Stille Beobachtung kann als Desinteresse oder Urteil gelesen werden."
+},
+"2": {
+"feedback": "\u2705 Perfekt! Gegenseitige Verletzlichkeit baut am schnellsten Vertrauen auf. Teile zuerst, um Sicherheit zu signalisieren.",
+"insight": "Bren\u00e9 Brown (Dare to Lead): 'Verletzlichkeit ist der Geburtsort von Verbindung.' Leaders, die zuerst teilen, geben anderen die Erlaubnis, dasselbe zu tun."
+},
+"3": {
+"feedback": "\u274c Isolation verhindert Vertrauen. Selbst wenn sie anfangs verschlossen sind, bestimmt Dein Ansatz, ob sich das ändert.",
+"insight": "Jocko Willink (Extreme Ownership): 'Es gibt keine schlechten Teams, nur schlechte Leader.' Übernimm Verantwortung für den Aufbau der Beziehung."
+}
+},
+"2": {
+"0": {
+"feedback": "\u274c Versteckte Fehler untergraben Vertrauen, wenn sie entdeckt werden (und das werden sie meist). Proaktive Ehrlichkeit baut Vertrauen auf, selbst wenn die Nachricht schlecht ist.",
+"insight": "Forschung zeigt, dass versteckte Fehler, wenn entdeckt, Vertrauen 3x mehr schädigen als anerkannte Fehler. Transparenz schlägt Reputationsschutz."
+},
+"1": {
+"feedback": "\u2705 Exzellent! Fehler öffentlich einzugestehen baut immenses Vertrauen auf. Es signalisiert, dass Du das Team über Dein Ego stellst.",
+"insight": "Jocko Willink (Extreme Ownership): 'Der Leader muss alles übernehmen.' Fehler öffentlich anzuerkennen modelliert das Verhalten, das Du von anderen willst."
+},
+"2": {
+"feedback": "\u26a0\ufe0f Kontext zählt, aber mit Erklärungen zu beginnen klingt nach Ausreden. Übernimm zuerst Verantwortung, erkläre danach.",
+"insight": "Kim Scott (Radical Candor): Übernimm das Ergebnis, dann diskutiere Faktoren. 'Ich habe einen Fehler gemacht' vor 'Deshalb' zeigt Verantwortung, nicht Ablenkung."
+},
+"3": {
+"feedback": "\u26a0\ufe0f Besser als Verstecken, aber öffentliches Anerkennen baut mehr Vertrauen auf. Wenn der Fehler das Team betrifft, verdienen sie es, es von Dir zu hören.",
+"insight": "Patrick Lencioni: Vertrauen wird in öffentlichen Momenten aufgebaut. Private Beichte beim Manager verpasst die Team-Building-Gelegenheit."
+}
+},
+"3": {
+"0": {
+"feedback": "\u26a0\ufe0f Unverdiente Anerkennung anzunehmen schädigt Vertrauen mit Teammitgliedern, die die Wahrheit kennen. Kurzfristiger Gewinn, langfristige Kosten.",
+"insight": "Forschung zu Team-Dynamik: Individuelle Anerkennung für Gruppenarbeit anzunehmen ist der schnellste Weg, Team-Zusammenhalt und zukünftige Zusammenarbeit zu zerstören."
+},
+"1": {
+"feedback": "\u2705 Perfekt! Anerkennung öffentlich zu teilen baut Loyalität und Vertrauen auf. Deine Großzügigkeit wird erinnert und erwidert werden.",
+"insight": "Adam Grant (Give and Take): 'Geber', die Anerkennung teilen, übertreffen 'Nehmer' langfristig. Großzügigkeit potenziert sich in Reputation und Beziehungen."
+},
+"2": {
+"feedback": "\u26a0\ufe0f Private Anerkennung hilft, aber verpasst den öffentlichen Moment. Teammitglieder sahen die Diskrepanz - korrigiere sie öffentlich.",
+"insight": "Öffentliche Anerkennung hat mehr Wirkung als privater Dank. Wenn der Fehler öffentlich war, sollte die Korrektur es auch sein."
+},
+"3": {
+"feedback": "\u26a0\ufe0f Ablenkung ohne Korrektur lässt Dich immer noch mit Anerkennung, die Du nicht verdient hast. Unbehagen repariert die Zuschreibung nicht.",
+"insight": "Bren\u00e9 Brown: Leaning into discomfort is where growth happens. A brief correction is awkward but builds trust."
+}
+}
+};
+        // Track completed scenarios
+let scenariosAnswered = JSON.parse(localStorage.getItem("bluebeltStripe1Scenarios") || "{}");
+let scenarioXP = parseInt(localStorage.getItem("bluebeltStripe1ScenarioXP") || "0");
+        // Initialize scenario buttons
+document.querySelectorAll(".scenario-option").forEach(button => {
+button.addEventListener("click", function() {
+const scenarioNum = parseInt(this.dataset.scenario);
+const optionNum = parseInt(this.dataset.option);
+const value = parseInt(this.dataset.value);
+selectScenario(scenarioNum, optionNum, value);
+});
+});
+function selectScenario(scenarioNum, optionNum, value) {
+if (scenariosAnswered[scenarioNum]) return;
+scenariosAnswered[scenarioNum] = { option: optionNum, value: value };
+localStorage.setItem("bluebeltStripe1Scenarios", JSON.stringify(scenariosAnswered));
+const data = scenarioData[scenarioNum][optionNum];
+document.querySelectorAll("[data-scenario=\"" + scenarioNum + "\"]").forEach(opt => {
+opt.classList.add("answered");
+opt.style.cursor = "default";
+if (parseInt(opt.dataset.option) === optionNum) {
+opt.classList.add("selected");
+if (value >= 4) opt.classList.add("correct");
+else if (value >= 3) opt.classList.add("partial");
+else opt.classList.add("incorrect");
+}
+});
+const feedbackBox = document.getElementById("scenario" + scenarioNum + "-feedback");
+document.getElementById("scenario" + scenarioNum + "-feedback-text").textContent = data.feedback;
+document.getElementById("scenario" + scenarioNum + "-insight").textContent = data.insight;
+const xpMap = { 1: 0, 2: 5, 3: 10, 4: 15, 5: 25 };
+const earnedXP = xpMap[value] || 0;
+document.getElementById("scenario" + scenarioNum + "-xp").textContent = earnedXP > 0 ? "+" + earnedXP + " XP" : "No XP";
+feedbackBox.classList.remove("positive", "warning", "negative");
+if (value >= 4) feedbackBox.classList.add("positive");
+else if (value >= 3) feedbackBox.classList.add("warning");
+else feedbackBox.classList.add("negative");
+feedbackBox.classList.add("show");
+scenarioXP += earnedXP;
+localStorage.setItem("bluebeltStripe1ScenarioXP", scenarioXP);
+updateScenarioSummary();
+if (earnedXP > 0 && typeof showAchievement === "function") {
+showAchievement("Scenario Complete!", "+" + earnedXP + " XP for your choice");
+}
+}
+function updateScenarioSummary() {
+document.getElementById("scenariosCompleted").textContent = Object.keys(scenariosAnswered).length;
+document.getElementById("scenarioXPEarned").textContent = scenarioXP;
+}
+function restoreScenarioState() {
+Object.keys(scenariosAnswered).forEach(function(scenarioNum) {
+const answer = scenariosAnswered[scenarioNum];
+const data = scenarioData[scenarioNum] ? scenarioData[scenarioNum][answer.option] : null;
+if (!data) return;
+document.querySelectorAll("[data-scenario=\"" + scenarioNum + "\"]").forEach(opt => {
+opt.classList.add("answered");
+opt.style.cursor = "default";
+if (parseInt(opt.dataset.option) === answer.option) {
+opt.classList.add("selected");
+if (answer.value >= 4) opt.classList.add("correct");
+else if (answer.value >= 3) opt.classList.add("partial");
+else opt.classList.add("incorrect");
+}
+});
+const feedbackBox = document.getElementById("scenario" + scenarioNum + "-feedback");
+document.getElementById("scenario" + scenarioNum + "-feedback-text").textContent = data.feedback;
+document.getElementById("scenario" + scenarioNum + "-insight").textContent = data.insight;
+const xpMap = { 1: 0, 2: 5, 3: 10, 4: 15, 5: 25 };
+const earnedXP = xpMap[answer.value] || 0;
+document.getElementById("scenario" + scenarioNum + "-xp").textContent = earnedXP > 0 ? "+" + earnedXP + " XP" : "No XP";
+feedbackBox.classList.remove("positive", "warning", "negative");
+if (answer.value >= 4) feedbackBox.classList.add("positive");
+else if (answer.value >= 3) feedbackBox.classList.add("warning");
+else feedbackBox.classList.add("negative");
+feedbackBox.classList.add("show");
+});
+updateScenarioSummary();
+}
+document.addEventListener("DOMContentLoaded", restoreScenarioState);
+</script>
+<!-- Discovery Handling Script -->
+<script>
+(function() {
+const discoveryData = {
+"1": {
+"0": {
+"type": "Vorsichtiger Vertrauen-Geber",
+"feedback": "Vorsicht schützt Dich, kann aber Beziehungsaufbau verlangsamen. Forschung zeigt, dass zuerst Vertrauen zu geben oft Gegenseitigkeit erzeugt.",
+"value": 3
+},
+"1": {
+"type": "Offener Vertrauen-Geber",
+"feedback": "Offenes Vertrauen beschleunigt Beziehungen und lädt zu Gegenseitigkeit ein. Patrick Lencionis Forschung zeigt, dass verletzlichkeitsbasiertes Vertrauen am schnellsten aufgebaut wird.",
+"value": 4
+},
+"2": {
+"type": "Kompetenz-Fokussiert",
+"feedback": "Kompetenz zählt, ist aber nicht das ganze Bild. Googles Forschung zeigt, dass Vertrauen (psychologische Sicherheit) Team-Performance besser vorhersagt als individuelle Kompetenz.",
+"value": 2
+},
+"3": {
+"type": "Verletzlichkeits-Leader",
+"feedback": "Research shows going first with vulnerability builds trust fastest. Bren\u00e9 Brown calls this 'rumbling with vulnerability' - it creates permission for others.",
+"value": 5
+}
+},
+"2": {
+"0": {
+"type": "Verantwortungs-Übernehmer",
+"feedback": "Exzellent! Jocko Willink nennt dies Extreme Ownership. Forschung zeigt, dass Fehler öffentlich anzuerkennen Vertrauen erhöht, nicht verringert.",
+"value": 5
+},
+"1": {
+"type": "Stiller Fixer",
+"feedback": "Stilles Beheben funktioniert manchmal, aber verpasst Vertrauensaufbau-Gelegenheiten. Proaktives Anerkennen baut mehr Vertrauen auf als entdeckte Korrektur.",
+"value": 3
+},
+"2": {
+"type": "Erklärer",
+"feedback": "Kontext zählt, aber mit Erklärungen zu beginnen klingt nach Ausreden. Übernimm zuerst Verantwortung, erkläre danach: 'Ich habe einen Fehler gemacht. Das ist passiert...'",
+"value": 2
+},
+"3": {
+"type": "Abwarten-und-Sehen",
+"feedback": "Versteckte Fehler, wenn entdeckt, schädigen Vertrauen 3x mehr als anerkannte Fehler. Proaktive Ehrlichkeit baut Vertrauen auf, selbst wenn die Nachricht schlecht ist.",
+"value": 1
+}
+}
+};
+const storageKey = 'bluebeltStripe1Discoveries';
+const xpStorageKey = 'bluebeltStripe1DiscoveryXP';
+function selectDiscovery(discoveryNum, optionNum, value, typeVal) {
+const answered = JSON.parse(localStorage.getItem(storageKey) || '{}');
+if (answered[discoveryNum]) return;
+answered[discoveryNum] = { option: optionNum, value: value, type: typeVal };
+localStorage.setItem(storageKey, JSON.stringify(answered));
+const data = discoveryData[discoveryNum]?.[optionNum];
+if (!data) return;
+                // Mark options
+const options = document.querySelectorAll('[data-discovery="' + discoveryNum + '"]');
+options.forEach(function(opt) {
+opt.classList.add('answered');
+opt.style.cursor = 'default';
+if (parseInt(opt.dataset.option) === optionNum) {
+opt.classList.add('selected');
+}
+});
+                // Show result
+const resultBox = document.getElementById('discovery' + discoveryNum + '-result');
+const typeEl = document.getElementById('discovery' + discoveryNum + '-type');
+const feedbackEl = document.getElementById('discovery' + discoveryNum + '-feedback');
+const xpEl = document.getElementById('discovery' + discoveryNum + '-xp');
+if (resultBox) {
+typeEl.textContent = data.type;
+feedbackEl.textContent = data.feedback;
+const xpMap = { 1: 5, 2: 10, 3: 10, 4: 15, 5: 15 };
+const earnedXP = xpMap[value] || 10;
+xpEl.textContent = '+' + earnedXP + ' XP';
+let totalXP = parseInt(localStorage.getItem(xpStorageKey) || '0');
+totalXP += earnedXP;
+localStorage.setItem(xpStorageKey, totalXP);
+resultBox.classList.add('show');
+}
+updateDiscoverySummary();
+if (typeof showAchievement === 'function') {
+showAchievement('Muster entdeckt!', data.type);
+}
+}
+function updateDiscoverySummary() {
+const answered = JSON.parse(localStorage.getItem(storageKey) || '{}');
+const totalXP = parseInt(localStorage.getItem(xpStorageKey) || '0');
+const completedEl = document.getElementById('discoveryCompleted');
+const xpEl = document.getElementById('discoveryXPEarned');
+if (completedEl) completedEl.textContent = Object.keys(answered).length;
+if (xpEl) xpEl.textContent = totalXP;
+}
+function restoreDiscoveryState() {
+const answered = JSON.parse(localStorage.getItem(storageKey) || '{}');
+Object.keys(answered).forEach(function(discoveryNum) {
+const answer = answered[discoveryNum];
+const data = discoveryData[discoveryNum]?.[answer.option];
+if (!data) return;
+const options = document.querySelectorAll('[data-discovery="' + discoveryNum + '"]');
+options.forEach(function(opt) {
+opt.classList.add('answered');
+opt.style.cursor = 'default';
+if (parseInt(opt.dataset.option) === answer.option) {
+opt.classList.add('selected');
+}
+});
+const resultBox = document.getElementById('discovery' + discoveryNum + '-result');
+const typeEl = document.getElementById('discovery' + discoveryNum + '-type');
+const feedbackEl = document.getElementById('discovery' + discoveryNum + '-feedback');
+const xpEl = document.getElementById('discovery' + discoveryNum + '-xp');
+if (resultBox) {
+typeEl.textContent = data.type;
+feedbackEl.textContent = data.feedback;
+const xpMap = { 1: 5, 2: 10, 3: 10, 4: 15, 5: 15 };
+const earnedXP = xpMap[answer.value] || 10;
+xpEl.textContent = '+' + earnedXP + ' XP';
+resultBox.classList.add('show');
+}
+});
+updateDiscoverySummary();
+}
+            // Initialize
+document.addEventListener('DOMContentLoaded', function() {
+document.querySelectorAll('.discovery-option').forEach(function(btn) {
+btn.addEventListener('click', function() {
+const d = parseInt(this.dataset.discovery);
+const o = parseInt(this.dataset.option);
+const v = parseInt(this.dataset.value);
+const t = this.dataset.type;
+selectDiscovery(d, o, v, t);
+});
+});
+restoreDiscoveryState();
+});
+})();
+</script>
+<!-- Core JavaScript Modules -->
+<script src="js/core-gamification.js"></script>
+<script src="js/core-progres-tracker.js"></script>
+<script src="js/lazy-confeti.min.js"></script>
+<script src="js/validation.js"></script>
+<script src="js/safe-storage.min.js"></script>
+<script src="js/keyboard-navigation.js"></script>
+<!-- PWA Service Worker Registration -->
+<script>
+if ('serviceWorker' in navigator) {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/service-worker.js')
+.then(function(registration) {
+//                         console.log('Service Worker registered:', registration.scope);
+                        // Check for updates
+registration.addEventListener('updatefound', function() {
+const newWorker = registration.installing;
+newWorker.addEventListener('statechange', function() {
+if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker available
+                                    console.log('New service worker available');
+}
+});
+});
+})
+.catch(function(error) {
+                        // Silent fail - not critical
+});
+});
+}
+</script>
+<script src="js/pwa-instal-prompt.js"></script>
+<!-- Screen Reader Enhancements for Accessibility -->
+<script src="js/scren-reader-enhancements.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Blue Belt Streifen 1: Konflikt-Grundlagen | TAP-IN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --belt-gradient-start: #3b82f6;
+            --belt-gradient-end: #1d4ed8;
+            --belt-accent: #60a5fa;
+            --header-text: #ffffff;
+            --light-bg: #f8fafc;
+            --success-green: #38a169;
+            --warning-orange: #dd6b20;
+            --card-bg: #ffffff;
+            --border-light: #e2e8f0;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            min-height: 100vh;
+            padding: 2rem 1rem;
+            line-height: 1.6;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 2rem; color: var(--header-text); }
+        .stripe-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .header h1 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        .progress-container {
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--header-text);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .progress-bar {
+            background: rgba(255,255,255,0.2);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #60a5fa 0%, #3b82f6 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .main-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-bottom: 2rem;
+        }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .section-title { font-size: 1.5rem; font-weight: 700; color: var(--text-dark); margin-bottom: 1rem; }
+        .section-subtitle { color: var(--text-muted); margin-bottom: 1.5rem; font-size: 1rem; }
+        .intro-box {
+            background: #f7fafc;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .intro-box h3 { color: var(--text-dark); font-size: 1.1rem; margin-bottom: 0.75rem; }
+        .intro-box p { color: var(--text-dark); font-size: 0.95rem; margin-bottom: 0.75rem; line-height: 1.7; }
+        .intro-box p:last-child { margin-bottom: 0; }
+        .intro-box strong { color: var(--text-dark); font-weight: 700; }
+        .intro-box ul { margin: 1rem 0 1rem 1.5rem; line-height: 1.8; }
+        .intro-box li { margin-bottom: 0.5rem; }
+        .intro-box.philosophy {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            border-left: 6px solid #60a5fa;
+        }
+        .intro-box.research {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-left: 6px solid #60a5fa;
+        }
+        .intro-box.research h3 { color: #ffffff; }
+        .intro-box.research p { color: #e2e8f0; }
+        .intro-box.research strong { color: #a78bfa; }
+        .practice-card {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        .practice-card h4 { color: #166534; font-size: 1rem; margin-bottom: 0.5rem; }
+        .practice-card p { color: #14532d; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.5rem; }
+        .practice-card p:last-child { margin-bottom: 0; }
+        .insight-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 1px solid #93c5fd;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        .insight-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+        .insight-title { font-size: 1.1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.75rem; }
+        .insight-content { color: var(--text-dark); font-size: 0.95rem; line-height: 1.7; }
+        .insight-content p { margin-bottom: 0.75rem; }
+        .insight-content p:last-child { margin-bottom: 0; }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #1e293b;
+        }
+        .btn-secondary:hover {
+            background: #d1d5db;
+            transform: translateY(-2px);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #60a5fa 0%, #1d4ed8 100%);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+        .xp-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.35rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-left: 0.5rem;
+        }
+        .quiz-option:hover {
+            border-color: #60a5fa !important;
+            background: #f8fafc;
+        }
+        @media (max-width: 768px) {
+            body { padding: 1rem 0.5rem; }
+            .header h1 { font-size: 1.5rem; }
+            .main-card { padding: 1.5rem; }
+            .nav-buttons { flex-direction: column; }
+        }
+    
+        /* Language Switcher */
+        .language-switcher {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .lang-btn {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 8px;
+            transition: all 0.2s ease;
+        }
+        .lang-btn:hover {
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .lang-btn.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .lang-separator {
+            color: rgba(255, 255, 255, 0.3);
+        }
+        @media (max-width: 768px) {
+            .language-switcher {
+                top: 0.5rem;
+                right: 0.5rem;
+                padding: 0.4rem 0.8rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+        <div class="language-switcher">
+            <a href="blue-belt-stripe1-gamified.html" class="lang-btn">EN</a>
+            <span class="lang-separator">|</span>
+            <a href="blue-belt-stripe1-gamified-de.html" class="lang-btn active">DE</a>
+        </div>
+    <div class="container">
+        <div class="header">
+            <div class="stripe-badge">🔵 Blauer Gürtel - Streifen 1</div>
+            <h1>Konfliktgrundlagen</h1>
+            <p>Produktiven Konflikt verstehen</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-header">
+                <span>Fortschritt</span>
+                <span id="progressText">Section 1 von 5</span>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar" style="width: 20%"></div>
+            </div>
+        </div>
+
+        <div class="main-card">
+            <!-- Abschnitt 1: Einführung -->
+            <div class="section active" id="section-1">
+                <h2 class="section-title">🎯 Introduction</h2>
+                <p class="section-subtitle">Understanding conflict foundations</p>
+
+                <div class="intro-box">
+                    <h3>Was du lernen wirst</h3>
+                    <p>This stripe focuses on <strong>conflict foundations</strong>. You'll discover practical frameworks and tools you can apply immediately to your leadership.</p>
+                    <p>By the end von this stripe, you'll have concrete actions to implement this week.</p>
+                </div>
+
+                <div class="intro-box philosophy">
+                    <h3>Der TAP-IN-Ansatz</h3>
+                    <p><em>Übung macht dauerhaft, nicht perfekt.</em></p>
+                    <p>Das ist keine Theorie. Jedes Konzept beinhaltet praktische Anwendung. Deine Aufgabe ist es, es zu versuchen, daran zu scheitern, anzupassen und es erneut zu versuchen.</p>
+                </div>
+
+                <div class="intro-box research">
+                    <h3>📊 Why This Matters</h3>
+                    <p>Research shows that conflict foundations is a critical factor in team performance. Teams that master this see measurable improvements in both outcomes and culture.</p>
+                </div>
+
+                <div class="nav-buttons">
+                    <a href="gym-dashboard-de.html" class="btn btn-secondary">← Zurück to Dashboard</a>
+                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Abschnitt 2: Kernkonzept -->
+            <div class="section" id="section-2">
+                <h2 class="section-title">💡 Core Concept</h2>
+                <p class="section-subtitle">Die Grundlage, die du verstehen musst</p>
+
+                <div class="intro-box">
+                    <h3>Das Framework</h3>
+                    <p>At its core, conflict foundations requires understanding three key elements:</p>
+                    <ul>
+                        <li><strong>Bewusstsein:</strong> Recognizing when this matters</li>
+                        <li><strong>Fähigkeit:</strong> Knowing what to do</li>
+                        <li><strong>Praxis:</strong> Building the habit</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <h4>Praktische Anwendung</h4>
+                    <p>So zeigt sich das in echten Teamsituationen:</p>
+                    <p><strong>Szenario:</strong> A team member disagrees with your decision during a meeting.</p>
+                    <p><strong>Reaktion:</strong> Welcome the disagreement. It's a sign von psychological safety and leads to better decisions.</p>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">⚡</div>
+                    <div class="insight-title">Wichtige Erkenntnis</div>
+                    <div class="insight-content">
+                        <p>Die meisten Führungskräfte wissen, was zu tun ist. Die Lücke liegt darin, es tatsächlich konsistent zu tun.</p>
+                        <p><strong>Dein Fokus: Baue das Muskelgedächtnis durch tägliche Praxis auf.</strong></p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Abschnitt 3: Vertiefung -->
+            <div class="section" id="section-3">
+                <h2 class="section-title">🔍 Deep Dive</h2>
+                <p class="section-subtitle">Tiefer in die Praxis eintauchen</p>
+
+                <div class="intro-box">
+                    <h3>Häufige Fallstricke</h3>
+                    <p>Selbst erfahrene Führungskräfte machen diese Fehler:</p>
+                    <ul>
+                        <li>Intellektuell wissen, aber nicht praktizieren</li>
+                        <li>Inkonsistent über Teammitglieder hinweg anwenden</li>
+                        <li>Nach dem ersten gescheiterten Versuch aufgeben</li>
+                    </ul>
+                </div>
+
+                <div class="practice-card">
+                    <h4>Übung: Selbsteinschätzung</h4>
+                    <p>On a scale von 1-10, how consistently do you practice conflict foundations?</p>
+                    <p>Wenn unter 7: Identifiziere eine spezifische Situation diese Woche, in der du dies absichtlich praktizieren wirst.</p>
+                    <p>Wenn 7+: Identifiziere, wie du einem Teammitglied helfen wirst, diese Fähigkeit zu entwickeln.</p>
+                </div>
+
+                <div class="intro-box research">
+                    <h3>📊 What Research Shows</h3>
+                    <p>Studien zeigen, dass bewusstes Üben in spezifischen Situationen zu 3-5x schnellerer Fähigkeitsentwicklung führt als allgemeines Bewusstseinstraining.</p>
+                    <p><strong>Übersetzung:</strong> Pick specific moments to practice, rather than trying to "be better" generally.</p>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Continue →</button>
+                </div>
+            </div>
+
+            <!-- Abschnitt 4: Implementation -->
+            <div class="section" id="section-4">
+                <h2 class="section-title">🔨 Implementation Guide</h2>
+                <p class="section-subtitle">Das in deinem Team real machen</p>
+
+                <div class="practice-card">
+                    <h4>Aktion #1: Diese Woche</h4>
+                    <p>Identify one meeting or interaction where you'll deliberately practice conflict foundations.</p>
+                    <p><strong>Vorher:</strong> Set your intention. What specifically will you do?</p>
+                    <p><strong>Nachher:</strong> Reflect. What worked? What would you do differently?</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>Aktion #2: Team-Ebene</h4>
+                    <p>Teile dieses Konzept mit deinem Team. Mache explizit, dass du daran arbeitest.</p>
+                    <p><strong>Warum:</strong> When you're transparent about your development areas, you give others permission to do the same.</p>
+                </div>
+
+                <div class="practice-card">
+                    <h4>Aktion #3: Verantwortlichkeit</h4>
+                    <p>Bitte jemanden, dir Feedback zu geben, wie es dir damit geht.</p>
+                    <p><strong>Die Bitte:</strong> "I'm working on conflict foundations. Will you tell me when you see me doing it well, and when you see me missing opportunities?"</p>
+                </div>
+
+                <div class="insight-card">
+                    <div class="insight-icon">🎯</div>
+                    <div class="insight-title">Merke</div>
+                    <div class="insight-content">
+                        <p>Du wirst das nicht perfekt hinbekommen. Das ist nicht das Ziel.</p>
+                        <p><strong>Das Ziel: Werde jede Woche 1% besser durch konsequentes Üben.</strong></p>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button class="btn btn-secondary" onclick="prevSection()">← Back</button>
+                    <button class="btn btn-primary" onclick="nextSection()">Complete Streifen →</button>
+                </div>
+            </div>
+
+            <!-- Abschnitt 5: Quiz -->
+            <div class="section" id="section-5">
+                <h2 class="section-title">✅ Knowledge Check</h2>
+                <p class="section-subtitle">Test your understanding (70% zum Bestehen)</p>
+
+                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
+                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
+                        1. The three key elements for mastering this concept are:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q1" value="0" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Theorie, Praxis, Meisterschaft</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q1" value="1" data-correct="true" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Bewusstsein, Fähigkeit, Praxis</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q2" value="2" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Wissen, Anwendung, Lehre</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q1" value="3" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Lernen, Tun, Reflektieren</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
+                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
+                        2. Forschung zeigt, dass deliberate practice in specific situations leads to:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q2" value="0" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Denselben Ergebnissen wie allgemeines Training</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q2" value="1" data-correct="true" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">3-5x schnellere Fähigkeitsentwicklung</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q2" value="2" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Langsameres aber tieferes Lernen</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q2" value="3" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Funktioniert nur für Anfänger</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
+                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
+                        3. The best way to improve at this skill is to:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q3" value="0" data-correct="true" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Konsistent in spezifischen Situationen üben</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q3" value="1" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Mehr Bücher darüber lesen</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q3" value="2" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Warten, bis du dich bereit fühlst</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q3" value="3" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Allgemein versuchen, besser zu sein</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; border: 2px solid #e5e7eb;">
+                    <p style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 15px;">
+                        4. When sharing your development areas with your team, you should:
+                    </p>
+                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q4" value="0" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Sie privat halten, um Autorität zu bewahren</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q4" value="1" data-correct="true" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Transparent sein - das gibt anderen die Erlaubnis, sich auch zu entwickeln</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q4" value="2" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Nur teilen, wenn du sie gemeistert hast</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; cursor: pointer;" class="quiz-option">
+                            <input type="radio" name="quiz_q4" value="3" style="width: 20px; height: 20px;">
+                            <span style="color: #475569; font-size: 16px;">Nur mit deinem Manager teilen</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <button onclick="submitQuiz()" class="btn btn-primary" style="padding: 18px 40px; font-size: 18px;">
+                        Quiz absenden & Streifen abschließen <span class="xp-badge">+100 XP</span>
+                    </button>
+                    <p id="quizFeedback" style="margin-top: 20px; font-size: 16px; font-weight: 600;"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 1;
+        const totalSections = 5;
+
+        function updateProgress() {
+            const progress = (currentSection / totalSections) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = 'Section ' + currentSection + ' von ' + totalSections;
+        }
+
+        function showSection(sectionNum) {
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.getElementById('section-' + sectionNum).classList.add('active');
+            currentSection = sectionNum;
+            updateProgress();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function nextSection() {
+            if (currentSection < totalSections) {
+                showSection(currentSection + 1);
+            }
+        }
+
+        function prevSection() {
+            if (currentSection > 1) {
+                showSection(currentSection - 1);
+            }
+        }
+
+        function submitQuiz() {
+            const totalQuestions = 4;
+            let answered = 0;
+            let correct = 0;
+            
+            for (let i = 1; i <= totalQuestions; i++) {
+                const selected = document.querySelector('input[name="quiz_q' + i + '"]:checked');
+                if (selected) {
+                    answered++;
+                    if (selected.dataset.correct === "true") {
+                        correct++;
+                    }
+                }
+            }
+            
+            if (answered < totalQuestions) {
+                alert('Please answer all ' + totalQuestions + ' questions before submitting!');
+                return;
+            }
+            
+            const percentage = Math.round((correct / totalQuestions) * 100);
+            const passed = percentage >= 70;
+            
+            if (passed) {
+                // Save progress
+                const progress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+                if (!progress.completedStripes) progress.completedStripes = [];
+                const stripeKey = 'blue-1';
+                if (!progress.completedStripes.includes(stripeKey)) {
+                    progress.completedStripes.push(stripeKey);
+                }
+                localStorage.setItem('userProgress', JSON.stringify(progress));
+                
+                alert('✓ Quiz Passed!\n\nScore: ' + correct + '/' + totalQuestions + ' (' + percentage + '%)\n+100 XP Bonus Earned!\n\nStripe 1 Complete!');
+                
+                // Navigate
+                if (confirm('Continue to Streifen 2?')) {
+                    window.location.href = 'blue-belt-stripe2-gamified-de.html';
+                } else {
+                    window.location.href = 'gym-dashboard-de.html';
+                }
+            } else {
+                document.getElementById('quizFeedback').innerHTML = 
+                    '<span style="color: #dc2626;">Score: ' + correct + '/' + totalQuestions + ' (' + percentage + '%) - Need 70% to pass. Review and try again!</span>';
+            }
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
